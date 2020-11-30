@@ -1,0 +1,68 @@
+lights_out:
+  alias: Lights out
+  sequence:
+  - service: light.turn_off
+    data: {}
+    entity_id:
+    - light.living_room
+    - light.attic
+    - light.guestroom
+    - light.wardrobe
+  - delay: 00:03:00
+  - service: light.turn_off
+    data:
+      transition: 120
+      entity_id:
+      - light.hallway
+      - light.kitchen
+  mode: single
+wake_up_light_bedroom:
+  alias: Wake up light bedroom
+  sequence:
+  - service: light.turn_on
+    data:
+      xy_color:
+      - 0.4448
+      - 0.4066
+      brightness: 240
+      transition: 1200
+    entity_id: light.bedroom
+  mode: single
+  icon: mdi:weather-sunset-up
+scene_active_living_room_and_kitchen:
+  alias: 'Scene: Active (Living room & Kitchen)'
+  sequence:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Living room
+      scene_name: Active
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Kitchen
+      scene_name: Bright (custom)
+  mode: single
+  icon: mdi:lightbulb-group-outline
+scene_movie_living_room_and_kitchen:
+  alias: 'Scene: Movie (Living room & Kitchen)'
+  sequence:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Living room
+      scene_name: Movie
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Kitchen
+      scene_name: Movie
+  mode: single
+  icon: mdi:lightbulb-group-outline
+tts_p20:
+  alias: TTS P20HD
+  sequence:
+  - service: notify.mobile_app_p20hd_eea
+    data:
+      message: TTS
+      title: '{{ message }}'
+      data:
+        channel: alarm_stream
+  mode: single
+  icon: mdi:text-to-speech

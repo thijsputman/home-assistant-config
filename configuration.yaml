@@ -1,0 +1,186 @@
+
+# Configure a default setup of Home Assistant (frontend, api, etc)
+default_config:
+
+homeassistant:
+  customize: !include customize.yaml
+
+recorder:
+  commit_interval: 30
+  exclude:
+    entities:
+      - sensor.daily_gas
+      - sensor.daily_energy
+      - sensor.monthly_gas
+      - sensor.monthly_energy
+    entity_globs:
+      - sensor.dd_wrt_*_total_octets
+      - sensor.dd_wrt_*_bps
+      - sensor.*_raw
+      - sensor.9292_*
+      - sensor.daily_energy_*
+      - sensor.monthly_energy_*
+      - sensor.pi_hole_ads_*
+
+history:
+  exclude:
+    domains:
+      - automation
+    entities:
+      - binary_sensor.updater
+
+# InfluxDB
+influxdb:
+  api_version: 2
+  host: eu-central-1-1.aws.cloud2.influxdata.com
+  token: !secret influxdb_token
+  organization: !secret influxdb_organization
+  bucket: home-assistant
+  tags:
+    source: HA
+  tags_attributes:
+    - friendly_name
+  default_measurement: units
+  include:
+    entities:
+      - sensor.power_consumption
+      - sensor.hourly_gas_consumption
+
+# MQTT
+mqtt:
+  broker: pi4.sgraastra
+
+# Text to speech
+tts:
+  - platform: google_translate
+
+# Device tracker (DD-WRT)
+device_tracker:
+  - platform: ddwrt
+    host: !secret ddwrt_1_ip
+    # The device-tracker somehow inists on doing an uncached DNS lookup *every*
+    # *single* *time* it talks with DD-WRT (for both the A- and AAAA-record),
+    # leading to an absurd skewing of Pi-hole's statistics (50% of _total_
+    # requests are for this singular purpose).
+    # Even after setting up resolvctl properly on Ubuntu (and configuring Docker
+    # to use 127.0.0.53 as DNS instead of talking directly with Pi-hole) it's
+    # still doing so...
+    # As such, the above (and below) "workarounds" appear to be necessary.
+    username: !secret ddwrt_username
+    password: !secret ddwrt_password
+    interval_seconds: 10
+    consider_home: 120
+    new_device_defaults:
+      track_new_devices: false
+  - platform: ddwrt
+    host: !secret ddwrt_2_ip # Idem...
+    username: !secret ddwrt_username
+    password: !secret ddwrt_password
+    interval_seconds: 10
+    consider_home: 120
+    new_device_defaults:
+      track_new_devices: false
+
+# Toon
+toon:
+  client_id: !secret toon_client_id
+  client_secret: !secret toon_client_secret
+
+# Utility Meter (DSMR)
+
+utility_meter:
+  daily_energy_offpeak:
+    source: sensor.energy_consumption_tarif_1
+    cycle: daily
+  daily_energy_peak:
+    source: sensor.energy_consumption_tarif_2
+    cycle: daily
+  daily_gas:
+    source: sensor.gas_consumption
+    cycle: daily
+  monthly_energy_offpeak:
+    source: sensor.energy_consumption_tarif_1
+    cycle: monthly
+  monthly_energy_peak:
+    source: sensor.energy_consumption_tarif_2
+    cycle: monthly
+  monthly_gas:
+    source: sensor.gas_consumption
+    cycle: monthly
+
+# Arlo
+aarlo:
+  username: !secret arlo_username
+  password: !secret arlo_password
+  refresh_devices_every: 2
+  stream_timeout: 120
+  user_agent: linux
+  tfa_source: push
+  tfa_type: PUSH
+
+alarm_control_panel:
+  - platform: aarlo
+    code: !secret alarm_code
+    code_arm_required: false
+    away_mode_name: Armed
+    home_mode_name: Disarmed
+    night_mode_name: Night
+    alarm_volume: 8
+    trigger_time: 180
+
+camera:
+  - platform: aarlo
+
+binary_sensor:
+  # Arlo
+  - platform: aarlo
+    monitored_conditions:
+    - motion
+    - sound
+    - connectivity
+  # Ping Google DNS
+  - platform: ping
+    host: 8.8.8.8
+    name: 'Google DNS ping'
+    count: 4
+    scan_interval: 60
+
+switch:
+  - platform: aarlo
+    siren: true
+    snapshot: true
+    siren_volume: 6
+    siren_duration: 10
+
+media_player:
+  # Arlo
+  - platform: aarlo
+  # NVIDIA Shield TV
+  - platform: androidtv
+    name: NVIDIA Shield TV
+    device_class: androidtv
+    host: nvidia-shield-tv.sgraastra
+    exclude_unnamed_apps: true
+    apps:
+      com.nvidia.shield.remote: "Shield TV (home screen)"
+    state_detection_rules:
+      'com.nvidia.shield.remote':
+        - 'standby'
+  # Pi0 speaker (Bedroom)
+  - platform: mpd
+    name: Pi0 speaker (Bedroom)
+    host: pi0-speaker.sgraastra
+
+# Fireplace
+rest_command:
+  fireplace_start:
+    url: 'http://pi4.sgraastra:9000/hooks/fireplace-start'
+  fireplace_stop:
+    url: 'http://pi4.sgraastra:9000/hooks/fireplace-stop'
+
+sensor: !include sensors.yaml
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml
+scene: !include scenes.yaml

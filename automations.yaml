@@ -1,0 +1,1088 @@
+- id: '1591988158985'
+  alias: 🎮 Fireplace toggle (Magic Cube)
+  description: ''
+  trigger:
+  - device_id: 7053d7e589bf4a4496cff59a24b7c83c
+    domain: deconz
+    platform: device
+    type: remote_turned_clockwise
+    subtype: ''
+  condition: []
+  action:
+  - data: {}
+    entity_id: input_boolean.fireplace
+    service: input_boolean.toggle
+  mode: single
+- id: '1592048449550'
+  alias: 🤖 Fireplace toggle (input boolean)
+  description: ''
+  trigger:
+  - entity_id: input_boolean.fireplace
+    platform: state
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.fireplace
+        state: 'on'
+      sequence:
+      - service: rest_command.fireplace_start
+        data: {}
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.fireplace
+        state: 'off'
+      sequence:
+      - service: rest_command.fireplace_stop
+        data: {}
+    default: []
+  mode: single
+- id: '1601143331211'
+  alias: 🚨 | ⏰ Alarm arm night (daily at 22:30)
+  description: ''
+  trigger:
+  - platform: time
+    at: '22:30'
+  condition: []
+  action:
+  - service: alarm_control_panel.alarm_arm_night
+    entity_id: !secret aarlo_control_panel
+    data: {}
+  mode: single
+- id: '1601143516296'
+  alias: 🚨 | ⏰ Alarm disarm (daily at 08:00)
+  description: ''
+  trigger:
+  - platform: time
+    at: 08:00
+  condition:
+  - condition: state
+    entity_id: group.everyone
+    state: home
+  action:
+  - service: alarm_control_panel.alarm_disarm
+    data:
+      code: !secret alarm_code
+    entity_id: !secret aarlo_control_panel
+  mode: single
+- id: '1603806968872'
+  alias: 🤖 | 🌞 Thermostat schedule off (everyone away)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: group.everyone
+    from: home
+    to: not_home
+  condition:
+  - condition: state
+    entity_id: switch.thermostat_program
+    state: 'on'
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    entity_id: input_boolean.thermostat_previous_state
+  - service: climate.set_preset_mode
+    data:
+      preset_mode: away
+    entity_id: climate.thermostat
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.thermostat_program
+  mode: single
+- id: '1603808339707'
+  alias: 🤖 | 🌞 Thermostat schedule on (someone home)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: group.everyone
+    from: not_home
+    to: home
+  condition:
+  - condition: state
+    entity_id: input_boolean.thermostat_previous_state
+    state: 'on'
+  action:
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.thermostat_program
+  - service: input_boolean.turn_off
+    data: {}
+    entity_id: input_boolean.thermostat_previous_state
+  mode: single
+- id: '1604337738877'
+  alias: 🚨 | 🤖 Alarm arm away (everyone away)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: group.everyone
+    from: home
+    to: not_home
+  condition: []
+  action:
+  - service: alarm_control_panel.alarm_arm_away
+    entity_id: !secret aarlo_control_panel
+    data: {}
+  mode: single
+- id: '1604337770123'
+  alias: 🚨 | 🤖 Alarm disarm (someone home)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: group.everyone
+    from: not_home
+    to: home
+  condition: []
+  action:
+  - service: alarm_control_panel.alarm_disarm
+    data:
+      code: !secret alarm_code
+    entity_id: !secret aarlo_control_panel
+  mode: single
+- id: '1604338683175'
+  alias: 🤖 / ⏰ Fireplace off (Living room lights off / daily at 02:00)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: light.living_room
+    from: 'on'
+    to: 'off'
+  - platform: time
+    at: 02:00
+  condition:
+  - condition: state
+    entity_id: input_boolean.fireplace
+    state: 'on'
+  action:
+  - data: {}
+    entity_id: input_boolean.fireplace
+    service: input_boolean.turn_off
+  - delay: 00:00:30
+  - service: light.turn_off
+    data: {}
+    entity_id:
+    - light.fireplace_1_living_room
+    - light.fireplace_2_living_room
+  mode: single
+- id: '1604348574344'
+  alias: ⏰ Electric blanket on (daily at 23:00)
+  description: ''
+  trigger:
+  - platform: time
+    at: '23:00'
+  condition:
+  - condition: state
+    state: home
+    entity_id: group.everyone
+  action:
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.on_off_plug_in_unit_3
+  mode: single
+- id: '1604348675018'
+  alias: 🤖 Electric blanket off (20 minutes after Bedroom lights off)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: light.bedroom
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: switch.on_off_plug_in_unit_3
+    state: 'on'
+  action:
+  - delay: 00:20:00
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.on_off_plug_in_unit_3
+  mode: single
+- id: '1604354230527'
+  alias: 🎮 Ensuite maximum brightness (Magic Cube)
+  description: ''
+  trigger:
+  - device_id: 7053d7e589bf4a4496cff59a24b7c83c
+    domain: deconz
+    platform: device
+    type: remote_double_tap_any_side
+    subtype: ''
+  condition: []
+  action:
+  - service: light.turn_on
+    entity_id: light.hue_white_light_1
+    data:
+      brightness: 255
+  mode: single
+- id: '1604360962688'
+  alias: ⏰ Arlo snapshot (every 2 hours)
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: /2
+    minutes: 0
+    seconds: '0'
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id:
+      - camera.aarlo_back
+      - camera.aarlo_front
+      state: recording
+  action:
+  - service: aarlo.camera_request_snapshot
+    data: {}
+    entity_id:
+    - camera.aarlo_back
+    - camera.aarlo_front
+  mode: single
+- id: '1604940943358'
+  alias: ⏰ | 💡 Outside lights on (daily at dusk)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    below: '-4.0'
+    above: '-6.0'
+  condition:
+  - condition: time
+    after: '12:00'
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Garden
+      scene_name: Ambiance
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Front & back door
+      scene_name: Evening
+  mode: single
+- id: '1604941331222'
+  alias: ⏰ | 💡 Inside lights on (daily at dusk)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    below: '2.0'
+    above: '0.0'
+  condition:
+  - condition: time
+    after: '12:00'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.living_room
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Living room
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.guestroom
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Guestroom
+          scene_name: Evening
+    default: []
+  mode: single
+- id: '1604942792287'
+  alias: ⏰ | 💡 | 🌴 Attic lights off when everyone away (weekdays at 19:00 ± 00:30)
+  description: ''
+  trigger:
+  - platform: time
+    at: '18:30'
+  condition:
+  - condition: state
+    state: 'on'
+    entity_id: light.attic
+  - condition: state
+    entity_id: group.everyone
+    state: not_home
+  action:
+  - delay: '{{ range(0, 3600) | random }}'
+  - condition: state
+    entity_id: group.everyone
+    state: not_home
+  - service: light.turn_off
+    data: {}
+    entity_id: light.attic
+  mode: single
+- id: '1604943496117'
+  alias: ⏰ | 💡 Outside lights off (daily at 22:30)
+  description: ''
+  trigger:
+  - platform: time
+    at: '22:30'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.garden
+        state: 'on'
+      sequence:
+      - service: light.turn_off
+        data: {}
+        entity_id: light.garden
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.front_back_door
+        state: 'on'
+      sequence:
+      - service: light.turn_off
+        data: {}
+        entity_id: light.front_back_door
+    default: []
+  mode: single
+- id: '1604943870070'
+  alias: ⏰ | 💡 | 🌴 Inside lights off when everyone away (daily at 00:00 ± 01:00)
+  description: ''
+  trigger:
+  - platform: time
+    at: '23:00'
+  condition:
+  - condition: state
+    entity_id: group.everyone
+    state: not_home
+  action:
+  - delay: '{{ range(0, 7200) | random }}'
+  - condition: state
+    entity_id: group.everyone
+    state: not_home
+  - service: script.lights_out
+    data: {}
+    entity_id: light.attic
+  mode: single
+- id: '1604944472380'
+  alias: 💤 | 🤖 Everyone asleep (all lights off)
+  description: ''
+  trigger:
+  - platform: state
+    from: 'on'
+    to: 'off'
+    for: 00:10:00
+    entity_id: group.light_inside_rooms_all
+  condition:
+  - condition: state
+    entity_id: group.everyone
+    state: home
+  - condition: state
+    entity_id: input_boolean.nighttime
+    state: 'on'
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    entity_id: input_boolean.everyone_asleep
+  mode: single
+- id: '1604944531342'
+  alias: 💤 | ⏰ Everyone awake (daily at «wakeup» time)
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wakeup
+  condition:
+  - condition: state
+    entity_id: group.everyone
+    state: home
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'on'
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    entity_id: input_boolean.everyone_asleep
+  mode: single
+- id: '1604944801176'
+  alias: 🤖 | 💡 Front & back door maximum brightness (door open)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.openclose_12
+    - binary_sensor.openclose_16
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.nighttime
+    state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.front_back_door
+        state: 'on'
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness: 255
+          entity_id: "{% if trigger.entity_id == \"binary_sensor.openclose_12\" %}\n\
+            \  light.hue_filament_bulb_1\n{% else %}\n  light.hue_filament_bulb_1_2\n\
+            {% endif %}\n"
+      - wait_for_trigger:
+        - platform: template
+          value_template: '{{ is_state(trigger.entity_id, ''off'') }}'
+      - delay: 00:00:20
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Front & back door
+          scene_name: Evening
+    - conditions:
+      - condition: state
+        entity_id: light.front_back_door
+        state: 'off'
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness: 255
+          entity_id: "{% if trigger.entity_id == \"binary_sensor.openclose_12\" %}\n\
+            \  light.hue_filament_bulb_1\n{% else %}\n  light.hue_filament_bulb_1_2\n\
+            {% endif %}\n"
+      - wait_for_trigger:
+        - platform: template
+          value_template: '{{ is_state(trigger.entity_id, ''off'') }}'
+      - delay: 00:00:20
+      - service: light.turn_off
+        entity_id: light.front_back_door
+    default: []
+  mode: single
+  max: 2
+- id: '1605024371581'
+  alias: ⏰ | 💡 Wakeup light bedroom (daily at «wakeup light start» time)
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wakeup_light_start
+  condition: []
+  action:
+  - service: script.wake_up_light_bedroom
+    data: {}
+  - delay: 02:20
+  - service: light.turn_off
+    data: {}
+    entity_id: light.bedroom
+  mode: single
+- id: '1605228018087'
+  alias: 🌛 | ⏰ Nighttime
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+  - platform: sun
+    event: sunrise
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: sun
+        after: sunset
+      sequence:
+      - service: input_boolean.turn_on
+        data: {}
+        entity_id: input_boolean.nighttime
+    - conditions:
+      - condition: sun
+        after: sunrise
+      sequence:
+      - service: input_boolean.turn_off
+        data: {}
+        entity_id: input_boolean.nighttime
+    default: []
+  mode: single
+- id: '1605228511473'
+  alias: 🤖 | 🌞 Thermostat to preset "sleep" (everyone asleep)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.everyone_asleep
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: switch.thermostat_program
+    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: climate.thermostat
+      attribute: preset_mode
+      state: sleep
+  action:
+  - service: climate.set_preset_mode
+    data:
+      preset_mode: sleep
+    entity_id: climate.thermostat
+  mode: single
+- id: '1605356452236'
+  alias: 🤖 | 🌞 Attic heating on (Attic lights on)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: light.attic
+    from: 'off'
+    to: 'on'
+    for: 00:05
+  condition:
+  - condition: state
+    entity_id: switch.thermostat_program
+    state: 'on'
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 20.5
+    entity_id: climate.thermostat_29
+  mode: single
+- id: '1605356537576'
+  alias: 🤖 | 🌞 Attic heating off (Attic lights off)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: light.attic
+    from: 'on'
+    to: 'off'
+    for: 00:05
+  condition:
+  - condition: state
+    entity_id: switch.thermostat_program
+    state: 'on'
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 15
+    entity_id: climate.thermostat_29
+  mode: single
+- id: '1605402967826'
+  alias: ⏰ | 💡 | 🌴 Attic lights on when everyone away (90% of weekdays around dusk)
+  description: ''
+  trigger:
+  - platform: sun
+    event: sunset
+    offset: '-4800'
+  condition:
+  - condition: time
+    weekday:
+    - mon
+    - tue
+    - wed
+    - thu
+    - fri
+  - condition: state
+    entity_id: group.everyone
+    state: not_home
+  - condition: template
+    value_template: '{{ (range(0, 99) | random) > 10 }}'
+  action:
+  - delay: '{{ range(0, 4800) | random }}'
+  - condition: state
+    entity_id: group.everyone
+    state: not_home
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Attic
+      scene_name: Away
+  mode: single
+- id: '1605548847870'
+  alias: 🤖 Set next «wakeup» (everyone awake)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.everyone_asleep
+    to: 'off'
+    from: 'on'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: time
+        weekday:
+        - fri
+        - sat
+      sequence:
+      - service: input_datetime.set_datetime
+        data:
+          time: 09:00:00
+        entity_id: input_datetime.wakeup
+    - conditions:
+      - condition: time
+        weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - sun
+      sequence:
+      - service: input_datetime.set_datetime
+        data:
+          time: 08:00:00
+        entity_id: input_datetime.wakeup
+    default: []
+  mode: single
+- id: '1605551681027'
+  alias: 🤖 Set «wakeup light start» time («wakeup» time change)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_datetime.wakeup
+  condition: []
+  action:
+  - service: input_datetime.set_datetime
+    data:
+      time: '{{ (state_attr(''input_datetime.wakeup'', ''timestamp'') | int - 1200)
+        |  timestamp_custom(''%H:%M:%S'', False) }}'
+    entity_id: input_datetime.wakeup_light_start
+  mode: single
+- id: '1606159329722'
+  alias: 🤖 | 💡 Garden lights on (kitchen / garden door open)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.openclose_12
+    - binary_sensor.openclose_34
+    from: 'off'
+    to: 'on'
+    for: 00:00:03
+  condition:
+  - condition: state
+    entity_id: input_boolean.nighttime
+    state: 'on'
+  - condition: state
+    entity_id: light.garden
+    state: 'off'
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Garden
+      scene_name: Ambiance
+  - delay: 00:03:00
+  - service: light.turn_off
+    entity_id: light.garden
+  mode: single
+  max: 2
+- id: '1606160378164'
+  alias: 🚨 Door / window opened – 15 second grace period (everyone asleep)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.openclose_12
+    - binary_sensor.openclose_16
+    - binary_sensor.openclose_17
+    - binary_sensor.openclose_33
+    - binary_sensor.openclose_36
+    - group.openclose_bedroom
+    - group.openclose_living_room
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'on'
+  - condition: state
+    entity_id: !secret aarlo_control_panel
+    state: arm_night
+  action:
+  - event: custom_alarm_pre_trigger
+    event_data:
+      triggered_by: '{{ trigger.entity_id }}'
+  - delay: 00:00:15
+  - condition: state
+    entity_id: !secret aarlo_control_panel
+    state: arm_night
+  - service: alarm_control_panel.alarm_trigger
+    data: {}
+    entity_id: !secret aarlo_control_panel
+  mode: single
+- id: '1606161018637'
+  alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: !secret aarlo_control_panel
+    to: triggered
+  condition:
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'on'
+  action:
+  - service: light.turn_on
+    data:
+      brightness: 255
+      kelvin: 6500
+    entity_id: light.bedroom
+  mode: single
+- id: '1606168395080'
+  alias: 🚨 | 🔫 Pre-trigger warning (everyone asleep)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: custom_alarm_pre_trigger
+  condition: []
+  action:
+  - service: light.turn_on
+    data:
+      flash: long
+      entity_id: "{% if trigger.event.data.triggered_by == \"binary_sensor.openclose_12\"\
+        \ %}\n  light.front_hallway, light.back_hallway\n{% elif trigger.event.data.triggered_by\
+        \ == \"binary_sensor.openclose_16\" %}    \n  light.spot_4_kitchen_garden_side,\
+        \ light.spot_3_kitchen\n{% endif %}\n"
+  mode: single
+- id: '1606412740160'
+  alias: ⏰ | 🔊 Alarm bedroom (daily at «wakeup» time)
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wakeup
+  condition:
+  - condition: state
+    state: home
+    entity_id: group.everyone
+  action:
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.pi0_speaker_bedroom
+      volume_level: 0.45
+  - repeat:
+      count: '4'
+      sequence:
+      - service: media_player.play_media
+        data:
+          media_content_type: audio/ogg
+          media_content_id: file:/var/lib/mopidy/media/Gnome.ogg
+        entity_id: media_player.pi0_speaker_bedroom
+      - delay: 00:00:15
+  mode: single
+- id: '1606679161866'
+  alias: 🤖 | 🌞 Turn on shed electric heater (< 6ºC)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.temperature_27
+    below: '6'
+    for: 00:10:00
+  condition: []
+  action:
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.smart_plug_5
+  mode: single
+- id: '1606679446735'
+  alias: 🤖 | 🌞 Turn off shed electric heater (> 8ºC)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.temperature_27
+    for: 00:10:00
+    above: '8'
+  condition:
+  - condition: state
+    entity_id: switch.smart_plug_5
+    state: 'on'
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.smart_plug_5
+  mode: single
+- id: '1606680231233'
+  alias: 🤖 | 🌞 Turn off shed electric heater (after 90 minutes)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: switch.smart_plug_5
+    to: 'on'
+    for: 01:30:00
+  condition: []
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.smart_plug_5
+  mode: single
+- id: '1606680444691'
+  alias: 🤖 Electric blanket off (after 2 hours)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: switch.on_off_plug_in_unit_3
+    to: 'on'
+    for: 02:00:00
+  condition: []
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.on_off_plug_in_unit_3
+  mode: single
+- id: '1606680879430'
+  alias: 🤖 | 🌞 Toon™ anti-b0rk protection (when heating)
+  description: Toon is offline so much that a fallback is required...
+  trigger:
+  - platform: state
+    entity_id: climate.thermostat
+    to: heating
+    for: 00:01:00
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: group.everyone
+      state: not_home
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: 'on'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: group.everyone
+        state: not_home
+      sequence:
+      - service: climate.set_preset_mode
+        data:
+          preset_mode: away
+        entity_id: climate.thermostat
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.everyone_asleep
+        state: 'on'
+      sequence:
+      - service: climate.set_preset_mode
+        data:
+          preset_mode: sleep
+        entity_id: climate.thermostat
+    default: []
+  mode: single
+- id: '1606685571203'
+  alias: ⏰ | 🧊 Guestroom fan on (daily at 05:00)
+  description: ''
+  trigger:
+  - platform: time
+    at: 05:00:00
+  condition: []
+  action:
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.on_off_plug_in_unit_4
+  mode: single
+- id: '1606685598640'
+  alias: ⏰ | 🧊 Guestroom fan off (daily at 07:00)
+  description: ''
+  trigger:
+  - platform: time
+    at: 07:00:00
+  condition: []
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.on_off_plug_in_unit_4
+  mode: single
+- id: '1606752391985'
+  alias: 🤖 | 💡 Dim Living Room lights (Shield TV playing)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    to: playing
+    for: 00:00:05
+  condition:
+  - condition: state
+    entity_id: light.living_room
+    state: 'on'
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Living room
+      scene_name: Movie (ambiance)
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  mode: single
+- id: '1606752442664'
+  alias: 🤖 | 💡 Dim Living Room lights (Shield TV idle)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    for: 00:00:05
+    from: playing
+  condition:
+  - condition: state
+    entity_id: input_boolean.nighttime
+    state: 'on'
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Living room
+      scene_name: Ambiance
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  mode: single
+- id: '1606752964606'
+  alias: 🤖 Pause Shield TV (motion at front or back)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.aarlo_motion_front
+    - binary_sensor.aarlo_motion_back
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: media_player.nvidia_shield_tv
+    state: playing
+  action:
+  - service: media_player.media_play_pause
+    data: {}
+    entity_id: media_player.nvidia_shield_tv
+  - service: script.tts_p20
+    data:
+      message: Motion detected at {{state.attributes.camera_name}}
+  mode: single
+- id: '1606753908689'
+  alias: 🤖 | 💡 Lights off during daytime (> 35 W/²)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.weewx_solar_irradiance
+    for: 00:05:00
+    above: '35.0'
+  condition:
+  - condition: state
+    entity_id: input_boolean.nighttime
+    state: 'off'
+  - condition: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '2.0'
+  action:
+  - service: light.turn_off
+    data: {}
+    entity_id:
+    - light.living_room
+    - light.kitchen
+    - light.hallway
+  mode: single
+- id: '1606754403071'
+  alias: 🤖 | 💡 Lights on during daytime (< 25 W/²)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.weewx_solar_irradiance
+    for: 00:05:00
+    below: '25.0'
+  condition:
+  - condition: state
+    entity_id: input_boolean.nighttime
+    state: 'off'
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.living_room
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Living room
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  mode: single
+- id: '1606755779231'
+  alias: 🤖 Announce when it is raining (windows open)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.weewx_rain
+    above: '0'
+    for: 00:02:00
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.openclose_19
+      state: 'on'
+    - condition: state
+      entity_id: binary_sensor.openclose_20
+      state: 'on'
+    - condition: state
+      entity_id: binary_sensor.openclose_33
+      state: 'on'
+  action:
+  - service: script.tts_p20
+    data:
+      message: "It is raining outside, please close the {% if is_state('binary_sensor.openclose_19',\
+        \ 'on') or is_state('binary_sensor.openclose_20', 'on') %}\n  bedroom window\n\
+        \  {% if is_state('binary_sensor.openclose_23', 'on') %}\n    and the\n  {%\
+        \ endif %}\n{% elif is_state('binary_sensor.openclose_23', 'on') %}\n  attic\
+        \ window\n{% endif %}."
+  mode: single

@@ -1,0 +1,41 @@
+light.living_room:
+  icon: mdi:sofa
+light.kitchen:
+  icon: mdi:pot-steam
+light.hallway:
+  icon: mdi:door
+light.garden:
+  icon: mdi:tree
+light.bedroom:
+  icon: mdi:bed-king
+light.guestroom:
+  icon: mdi:bed-queen
+light.wardrobe:
+  icon: mdi:wardrobe
+light.attic:
+  icon: mdi:home-roof
+light.front_back_door:
+  icon: mdi:outdoor-lamp
+sensor.pi4_1_minute_load:
+  icon: mdi:gauge
+sensor.dd_wrt_1_1_minute_load:
+  icon: mdi:gauge
+sensor.dd_wrt_1_wan_in_mbps:
+  icon: mdi:download-network
+sensor.dd_wrt_1_wan_out_mbps:
+  icon: mdi:upload-network
+sensor.pi4_memory_available:
+  icon: mdi:memory
+sensor.dd_wrt_2_1_minute_load:
+  icon: mdi:gauge
+sensor.pi_hole_1_minute_load:
+  icon: mdi:gauge
+switch.on_off_plug_in_unit_3:
+  icon: mdi:thermometer-plus
+group.openclose_living_room: {}
+sensor.gas_usage_change:
+  icon: mdi:gas-cylinder
+sensor.daily_energy:
+  icon: mdi:counter
+sensor.monthly_energy:
+  icon: mdi:counter
