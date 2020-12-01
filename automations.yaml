@@ -987,13 +987,13 @@
       message: Motion detected at {{state.attributes.camera_name}}
   mode: single
 - id: '1606753908689'
-  alias: 🤖 | 💡 Lights off during daytime (> 35 W/²)
+  alias: 🤖 | 💡 Lights off during daytime (> 45 W/²)
   description: ''
   trigger:
   - platform: numeric_state
     entity_id: sensor.weewx_solar_irradiance
     for: 00:05:00
-    above: '35.0'
+    above: '45.0'
   condition:
   - condition: state
     entity_id: input_boolean.nighttime
@@ -1011,13 +1011,13 @@
     - light.hallway
   mode: single
 - id: '1606754403071'
-  alias: 🤖 | 💡 Lights on during daytime (< 25 W/²)
+  alias: 🤖 | 💡 Lights on during daytime (< 35 W/²)
   description: ''
   trigger:
   - platform: numeric_state
     entity_id: sensor.weewx_solar_irradiance
     for: 00:05:00
-    below: '25.0'
+    below: '35.0'
   condition:
   - condition: state
     entity_id: input_boolean.nighttime
