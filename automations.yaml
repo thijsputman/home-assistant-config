@@ -914,7 +914,6 @@
   - platform: state
     entity_id: media_player.nvidia_shield_tv
     to: playing
-    for: 00:00:05
   condition:
   - condition: state
     entity_id: light.living_room
@@ -923,7 +922,7 @@
   - service: hue.hue_activate_scene
     data:
       group_name: Living room
-      scene_name: Movie (ambiance)
+      scene_name: Movie
   - choose:
     - conditions:
       - condition: state
@@ -933,7 +932,7 @@
       - service: hue.hue_activate_scene
         data:
           group_name: Kitchen
-          scene_name: Ambiance
+          scene_name: Movie
     default: []
   mode: single
 - id: '1606752442664'
@@ -942,7 +941,6 @@
   trigger:
   - platform: state
     entity_id: media_player.nvidia_shield_tv
-    for: 00:00:05
     from: playing
   condition:
   - condition: state
