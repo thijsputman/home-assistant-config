@@ -179,8 +179,12 @@ rest_command:
     url: 'http://pi4.sgraastra:9000/hooks/fireplace-stop'
 
 sensor: !include sensors.yaml
+sensor custom: !include_dir_merge_list sensors/
 
 group: !include groups.yaml
+
 automation: !include automations.yaml
+automation custom: !include_dir_merge_list automations/
+
 script: !include scripts.yaml
 scene: !include scenes.yaml

@@ -1,0 +1,29 @@
+- alias: 🎮 Fireplace toggle (Magic Cube)
+  description: ''
+  trigger:
+  - device_id: 7053d7e589bf4a4496cff59a24b7c83c
+    domain: deconz
+    platform: device
+    type: remote_turned_clockwise
+    subtype: ''
+  condition: []
+  action:
+  - data: {}
+    entity_id: input_boolean.fireplace
+    service: input_boolean.toggle
+  mode: single
+- alias: 🎮 Ensuite maximum brightness (Magic Cube)
+  description: ''
+  trigger:
+  - device_id: 7053d7e589bf4a4496cff59a24b7c83c
+    domain: deconz
+    platform: device
+    type: remote_double_tap_any_side
+    subtype: ''
+  condition: []
+  action:
+  - service: light.turn_on
+    entity_id: light.hue_white_light_1
+    data:
+      brightness: 255
+  mode: single

@@ -1,18 +1,3 @@
-- id: '1591988158985'
-  alias: 🎮 Fireplace toggle (Magic Cube)
-  description: ''
-  trigger:
-  - device_id: 7053d7e589bf4a4496cff59a24b7c83c
-    domain: deconz
-    platform: device
-    type: remote_turned_clockwise
-    subtype: ''
-  condition: []
-  action:
-  - data: {}
-    entity_id: input_boolean.fireplace
-    service: input_boolean.toggle
-  mode: single
 - id: '1592048449550'
   alias: 🤖 Fireplace toggle (input boolean)
   description: ''
@@ -196,22 +181,6 @@
   - service: switch.turn_off
     data: {}
     entity_id: switch.on_off_plug_in_unit_3
-  mode: single
-- id: '1604354230527'
-  alias: 🎮 Ensuite maximum brightness (Magic Cube)
-  description: ''
-  trigger:
-  - device_id: 7053d7e589bf4a4496cff59a24b7c83c
-    domain: deconz
-    platform: device
-    type: remote_double_tap_any_side
-    subtype: ''
-  condition: []
-  action:
-  - service: light.turn_on
-    entity_id: light.hue_white_light_1
-    data:
-      brightness: 255
   mode: single
 - id: '1604360962688'
   alias: ⏰ Arlo snapshot (every 2 hours)
