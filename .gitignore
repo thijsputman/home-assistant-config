@@ -1,0 +1,8 @@
+**
+!.gitignore
+!.HA_VERSION
+!*.yaml
+!/automations
+!/sensors
+/secrets.yaml
+/known_devices.yaml
