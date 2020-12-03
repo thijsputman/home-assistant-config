@@ -29,6 +29,22 @@ history:
     entities:
       - binary_sensor.updater
 
+input_text:
+  # Alarm code for Aarlo's alarm control panel
+  # Sadly, Aarlo doesn't support the "code_template" property (yet), so changing
+  # this value in the front-end UI will break several automations that depend on
+  # it...
+  # The current approach/workaround is thus purely to prevent the front-end from
+  # resolving the alarm code "!secret" when editting automations in the UI.
+  alarm_code:
+    name: Alarm code
+    icon: mdi:form-textbox-password
+    mode: password
+    min: 4
+    max: 8
+    pattern: '[0-9]*'
+    initial: !secret alarm_code
+
 # InfluxDB
 influxdb:
   api_version: 2

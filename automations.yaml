@@ -48,7 +48,7 @@
   action:
   - service: alarm_control_panel.alarm_disarm
     data:
-      code: !secret alarm_code
+      code: '{{ states(''input_text.alarm_code'') }}'
     entity_id: !secret aarlo_control_panel
   mode: single
 - id: '1603806968872'
@@ -121,7 +121,7 @@
   action:
   - service: alarm_control_panel.alarm_disarm
     data:
-      code: !secret alarm_code
+      code: '{{ states(''input_text.alarm_code'') }}'
     entity_id: !secret aarlo_control_panel
   mode: single
 - id: '1604338683175'
