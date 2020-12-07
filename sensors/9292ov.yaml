@@ -1,0 +1,10 @@
+- platform: dutch_public_transport_api
+  name: 9292 OV Einhoven Centraal
+  station: eindhoven/bushalte-evoluon
+  destination: Eindhoven Station
+  show_future_departures: 1
+- platform: dutch_public_transport_api
+  name: 9292 OV Einhoven Airport
+  station: eindhoven/bushalte-evoluon
+  destination: Airport via PR Meerhoven
+  show_future_departures: 1

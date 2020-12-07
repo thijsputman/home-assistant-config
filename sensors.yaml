@@ -8,18 +8,6 @@
   - battery_level
   - signal_strength
 
-# 92929 OV
-- platform: dutch_public_transport_api
-  name: 9292 OV Einhoven Centraal
-  station: eindhoven/bushalte-evoluon
-  destination: Eindhoven Station
-  show_future_departures: 1
-- platform: dutch_public_transport_api
-  name: 9292 OV Einhoven Airport
-  station: eindhoven/bushalte-evoluon
-  destination: Airport via P+R Meerhoven
-  show_future_departures: 1
-
 # Media
 - platform: history_stats
   name: NVIDIA Shield TV playing (today)
