@@ -455,7 +455,10 @@
   trigger:
   - platform: time
     at: input_datetime.wakeup_light_start
-  condition: []
+  condition:
+  - condition: state
+    entity_id: timer.wakeup_grace_time
+    state: idle
   action:
   - service: script.wake_up_light_bedroom
     data: {}
@@ -593,6 +596,9 @@
     from: 'on'
   condition: []
   action:
+  - service: timer.start
+    data: {}
+    entity_id: timer.wakeup_grace_time
   - choose:
     - conditions:
       - condition: time
@@ -739,6 +745,9 @@
   - condition: state
     state: home
     entity_id: group.everyone
+  - condition: state
+    entity_id: timer.wakeup_grace_time
+    state: idle
   action:
   - service: media_player.volume_set
     data:
