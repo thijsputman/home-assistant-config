@@ -1103,6 +1103,9 @@
     - condition: state
       entity_id: binary_sensor.openclose_33
       state: 'on'
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'off'
   action:
   - service: script.tts_p20
     data:
