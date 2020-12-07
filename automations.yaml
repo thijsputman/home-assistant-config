@@ -886,7 +886,7 @@
     entity_id: switch.on_off_plug_in_unit_4
   mode: single
 - id: '1606752391985'
-  alias: 🤖 | 💡 Dim Living Room lights (Shield TV playing)
+  alias: 🤖 | 💡 Dim lights (Shield TV playing)
   description: ''
   trigger:
   - platform: state
@@ -912,9 +912,20 @@
           group_name: Kitchen
           scene_name: Movie
     default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Movie
+    default: []
   mode: single
 - id: '1606752442664'
-  alias: 🤖 | 💡 Dim Living Room lights (Shield TV idle)
+  alias: 🤖 | 💡 Restore lights (Shield TV idle)
   description: ''
   trigger:
   - platform: state
@@ -939,6 +950,17 @@
         data:
           group_name: Kitchen
           scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
     default: []
   mode: single
 - id: '1606752964606'
