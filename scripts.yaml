@@ -66,3 +66,20 @@ tts_p20:
         channel: alarm_stream
   mode: single
   icon: mdi:text-to-speech
+persistent_notification_all_devices:
+  alias: Persistent notification (all devices)
+  sequence:
+  - service: notify.all_devices
+    data:
+      title: '{{ title }}'
+      message: '{{ message }}'
+      data:
+        tag: '{{ tag }}'
+        clickAction: !secret lovelace_home_dashboard
+  - service: persistent_notification.create
+    data:
+      title: '{{ title }}'
+      message: '{{ message }}'
+      notification_id: '{{ tag }}'
+  mode: single
+  icon: mdi:message-plus-outline

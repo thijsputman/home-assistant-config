@@ -194,6 +194,13 @@ rest_command:
   fireplace_stop:
     url: 'http://pi4.sgraastra:9000/hooks/fireplace-stop'
 
+notify:
+  - name: All devices
+    platform: group
+    services:
+      - service: mobile_app_gm1913
+      - service: mobile_app_sm_g930f
+
 sensor: !include sensors.yaml
 sensor custom: !include_dir_merge_list sensors/
 
