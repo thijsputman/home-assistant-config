@@ -1062,3 +1062,72 @@
         \ endif %}\n{% elif is_state('binary_sensor.openclose_23', 'on') %}\n  attic\
         \ window\n{% endif %}."
   mode: single
+- id: '1607091201500'
+  alias: ⏰ | 💡 Inside lights on (when dark at «wakeup» time)
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wakeup
+  condition:
+  - condition: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    below: '2.0'
+  - condition: state
+    entity_id: timer.wakeup_grace_time
+    state: idle
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.living_room
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Living room
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  mode: single
+- id: '1607093512408'
+  alias: ⏰ | 💡 Inside lights off (daily at dawn)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '2.0'
+    below: '4.0'
+  condition:
+  - condition: time
+    before: '12:00'
+  action:
+  - service: light.turn_off
+    data: {}
+    entity_id:
+    - light.living_room
+    - light.kitchen
+    - light.hallway
+  mode: single
