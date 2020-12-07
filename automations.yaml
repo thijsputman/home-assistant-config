@@ -314,7 +314,7 @@
     default: []
   mode: single
 - id: '1604942792287'
-  alias: ⏰ | 💡 | 🌴 Attic lights off when everyone away (weekdays at 19:00 ± 00:30)
+  alias: ⏰ | 💡 | 🌴 Attic lights off when everyone away (weekdays around 19:00)
   description: ''
   trigger:
   - platform: time
@@ -365,7 +365,7 @@
     default: []
   mode: single
 - id: '1604943870070'
-  alias: ⏰ | 💡 | 🌴 Inside lights off when everyone away (daily at 00:00 ± 01:00)
+  alias: ⏰ | 💡 | 🌴 Inside lights off when everyone away (daily around 00:00)
   description: ''
   trigger:
   - platform: time
@@ -585,7 +585,7 @@
     entity_id: climate.thermostat_29
   mode: single
 - id: '1605402967826'
-  alias: ⏰ | 💡 | 🌴 Attic lights on when everyone away (90% of weekdays around dusk)
+  alias: ⏰ | 💡 | 🌴 Attic lights on when everyone away (most weekdays around dusk)
   description: ''
   trigger:
   - platform: sun
