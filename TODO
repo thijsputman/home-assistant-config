@@ -1,0 +1,3 @@
+- [ ] Move all input\_\* definitions relevant to automations into a separate
+      YAML file (instead of defining them in the Lovelace UI; makes the
+      Git-repository more portable)

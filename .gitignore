@@ -1,7 +1,9 @@
 **
 !.gitignore
+!TODO
 !.HA_VERSION
 !*.yaml
+!*.md
 !/automations
 !/sensors
 /secrets.yaml

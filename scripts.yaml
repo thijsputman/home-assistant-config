@@ -16,6 +16,7 @@ lights_out:
       - light.hallway
       - light.kitchen
   mode: single
+  icon: mdi:lightbulb-group-off
 wake_up_light_bedroom:
   alias: Wake up light bedroom
   sequence:
