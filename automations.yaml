@@ -242,9 +242,23 @@
   action:
   - choose:
     - conditions:
-      - condition: state
-        entity_id: light.living_room
-        state: 'off'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: light.living_room
+          state: 'off'
+        - condition: and
+          conditions:
+          - condition: numeric_state
+            entity_id: light.living_room
+            attribute: brightness
+            above: '110'
+            below: '120'
+          - condition: numeric_state
+            entity_id: light.living_room
+            attribute: color_temp
+            above: '225'
+            below: '235'
       sequence:
       - service: hue.hue_activate_scene
         data:
@@ -253,9 +267,23 @@
     default: []
   - choose:
     - conditions:
-      - condition: state
-        entity_id: light.kitchen
-        state: 'off'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: light.kitchen
+          state: 'off'
+        - condition: and
+          conditions:
+          - condition: numeric_state
+            entity_id: light.kitchen
+            attribute: brightness
+            above: '125'
+            below: '135'
+          - condition: numeric_state
+            entity_id: light.kitchen
+            attribute: color_temp
+            above: '225'
+            below: '235'
       sequence:
       - service: hue.hue_activate_scene
         data:
@@ -985,13 +1013,13 @@
       message: Motion detected at {{state.attributes.camera_name}}
   mode: single
 - id: '1606753908689'
-  alias: 🤖 | 💡 Lights off during daytime (> 45 W/²)
+  alias: 🤖 | 💡 Lights off during daytime (☀ > 40 W/²)
   description: ''
   trigger:
   - platform: numeric_state
     entity_id: sensor.weewx_solar_irradiance
     for: 00:05:00
-    above: '45.0'
+    above: '40.0'
   condition:
   - condition: state
     entity_id: input_boolean.nighttime
@@ -1009,13 +1037,13 @@
     - light.hallway
   mode: single
 - id: '1606754403071'
-  alias: 🤖 | 💡 Lights on during daytime (< 35 W/²)
+  alias: 🤖 | 💡 Lights on during daytime (☀ < 30 W/²)
   description: ''
   trigger:
   - platform: numeric_state
     entity_id: sensor.weewx_solar_irradiance
     for: 00:05:00
-    below: '35.0'
+    below: '30.0'
   condition:
   - condition: state
     entity_id: input_boolean.nighttime
@@ -1030,7 +1058,7 @@
       - service: hue.hue_activate_scene
         data:
           group_name: Living room
-          scene_name: Ambiance
+          scene_name: Daytime
     default: []
   - choose:
     - conditions:
@@ -1041,7 +1069,7 @@
       - service: hue.hue_activate_scene
         data:
           group_name: Kitchen
-          scene_name: Ambiance
+          scene_name: Daytime
     default: []
   - choose:
     - conditions:
