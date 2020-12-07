@@ -1084,7 +1084,7 @@
     default: []
   mode: single
 - id: '1606755779231'
-  alias: 🤖 Announce when it is raining (windows open)
+  alias: 🤖 | 🔊 Announce when it is raining (windows open)
   description: ''
   trigger:
   - platform: numeric_state
@@ -1109,6 +1109,15 @@
   action:
   - service: script.tts_p20
     data:
+      message: "It is raining outside, please close the {% if is_state('binary_sensor.openclose_19',\
+        \ 'on') or is_state('binary_sensor.openclose_20', 'on') %}\n  bedroom window\n\
+        \  {% if is_state('binary_sensor.openclose_23', 'on') %}\n    and the\n  {%\
+        \ endif %}\n{% elif is_state('binary_sensor.openclose_23', 'on') %}\n  attic\
+        \ window\n{% endif %}."
+  - service: script.persistent_notification_all_devices
+    data:
+      tag: raining
+      title: It is raining outside
       message: "It is raining outside, please close the {% if is_state('binary_sensor.openclose_19',\
         \ 'on') or is_state('binary_sensor.openclose_20', 'on') %}\n  bedroom window\n\
         \  {% if is_state('binary_sensor.openclose_23', 'on') %}\n    and the\n  {%\
