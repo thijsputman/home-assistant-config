@@ -1248,3 +1248,29 @@
       data:
         tag: '{{ trigger.event.data.service_data.notification_id }}'
   mode: single
+- id: '1607632596413'
+  alias: ⏰ | 🎄 Christmas star on (dusk)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.nighttime
+    to: 'on'
+  condition: []
+  action:
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.on_off_plug_in_unit_7
+  mode: single
+- id: '1607632623075'
+  alias: ⏰ | 🎄 Christmas star off (dawn)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.nighttime
+    to: 'off'
+  condition: []
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.on_off_plug_in_unit_7
+  mode: single
