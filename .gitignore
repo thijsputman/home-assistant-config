@@ -8,7 +8,7 @@
 /image
 /tts
 /www
-/home-assistant_v2.db
+/home-assistant_v2.db*
 /home-assistant.log
 
 # Privacy sensitive
