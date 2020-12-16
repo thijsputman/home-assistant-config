@@ -1054,6 +1054,9 @@
       - condition: state
         entity_id: light.living_room
         state: 'off'
+      - condition: state
+        entity_id: media_player.nvidia_shield_tv
+        state: 'off'
       sequence:
       - service: hue.hue_activate_scene
         data:
