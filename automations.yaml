@@ -1277,3 +1277,29 @@
     data: {}
     entity_id: switch.on_off_plug_in_unit_7
   mode: single
+- id: '1607992740551'
+  alias: 🎮 Stop alarm bedroom
+  description: ''
+  trigger:
+  - device_id: da1237666189a9a364fa383795ba532d
+    domain: deconz
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_on
+  condition:
+  - condition: template
+    value_template: |-
+      {{
+        ( as_timestamp(now()) - as_timestamp(state_attr(
+            'automation.alarm_bedroom_daily_at_wakeup_time',
+            'last_triggered'
+          )) | int(0) ) <= 60
+      }}
+  action:
+  - service: automation.turn_off
+    data: {}
+    entity_id: automation.alarm_bedroom_daily_at_wakeup_time
+  - service: automation.turn_on
+    data: {}
+    entity_id: automation.alarm_bedroom_daily_at_wakeup_time
+  mode: single
