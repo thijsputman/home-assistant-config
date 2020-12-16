@@ -1,10 +1,16 @@
-**
-!.gitignore
-!TODO
-!.HA_VERSION
-!*.yaml
-!*.md
-!/automations
-!/sensors
+# Home Assistant internals
+/.aarlo
+/.cloud
+/.storage
+/blueprints/automation/homeassistant
+/custom_components
+/deps
+/image
+/tts
+/www
+/home-assistant_v2.db
+/home-assistant.log
+
+# Privacy sensitive
 /secrets.yaml
 /known_devices.yaml
