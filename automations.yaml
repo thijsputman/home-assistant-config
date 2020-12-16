@@ -1196,41 +1196,6 @@
     - light.kitchen
     - light.hallway
   mode: single
-- id: '1607291150647'
-  alias: 🤖 | 🎄 Christmas tree on (Living Room lights on when someone home)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: light.living_room
-    to: 'on'
-  condition:
-  - condition: state
-    entity_id: group.everyone
-    state: home
-  action:
-  - service: switch.turn_on
-    data: {}
-    entity_id: switch.on_off_plug_in_unit_6
-  mode: single
-- id: '1607291531599'
-  alias: 🤖 | 🎄 Christmas tree off (Living Room lights off / everyone away)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: group.everyone
-    to: not_home
-  - platform: state
-    entity_id: light.living_room
-    to: 'off'
-  condition:
-  - condition: state
-    entity_id: switch.on_off_plug_in_unit_6
-    state: 'on'
-  action:
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.on_off_plug_in_unit_6
-  mode: single
 - id: '1607362699584'
   alias: 🔊 Clear dismissed persistent notification (all devices; whitelisted only)
   description: ''
@@ -1250,32 +1215,6 @@
       message: clear_notification
       data:
         tag: '{{ trigger.event.data.service_data.notification_id }}'
-  mode: single
-- id: '1607632596413'
-  alias: ⏰ | 🎄 Christmas star on (dusk)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: input_boolean.nighttime
-    to: 'on'
-  condition: []
-  action:
-  - service: switch.turn_on
-    data: {}
-    entity_id: switch.on_off_plug_in_unit_7
-  mode: single
-- id: '1607632623075'
-  alias: ⏰ | 🎄 Christmas star off (dawn)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: input_boolean.nighttime
-    to: 'off'
-  condition: []
-  action:
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.on_off_plug_in_unit_7
   mode: single
 - id: '1607992740551'
   alias: 🎮 Stop alarm bedroom
