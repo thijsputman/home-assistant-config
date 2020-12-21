@@ -1327,3 +1327,78 @@
           scene_name: Evening
     default: []
   mode: single
+- id: '1608581555565'
+  alias: 🌛 | ⏰ Twilight
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: '-6.0'
+  - platform: numeric_state
+    entity_id: sun.sun
+    above: '2.0'
+  - platform: numeric_state
+    entity_id: sun.sun
+    below: '2.0'
+    attribute: elevation
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    below: '-6.0'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: sun.sun
+        state: 'true'
+        attribute: rising
+      sequence:
+      - choose:
+        - conditions:
+          - condition: numeric_state
+            entity_id: sun.sun
+            attribute: elevation
+            below: '2.0'
+            above: '-6.0'
+          sequence:
+          - service: input_select.select_option
+            data:
+              option: dawn
+            entity_id: input_select.twilight
+        - conditions:
+          - condition: numeric_state
+            entity_id: sun.sun
+            attribute: elevation
+            above: '2.0'
+          sequence:
+          - service: input_select.select_option
+            data:
+              option: above horizon
+            entity_id: input_select.twilight
+        default: []
+    default:
+    - choose:
+      - conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: '-6.0'
+          below: '2.0'
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: dusk
+          entity_id: input_select.twilight
+      - conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          below: '-6.0'
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: below horizon
+      default: []
+  mode: single
