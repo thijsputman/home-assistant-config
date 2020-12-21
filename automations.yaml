@@ -52,7 +52,7 @@
     entity_id: !secret aarlo_control_panel
   mode: single
 - id: '1603806968872'
-  alias: 🤖 | 🌞 Thermostat schedule off (everyone away)
+  alias: 🤖 | 🌡️ Thermostat schedule off (everyone away)
   description: ''
   trigger:
   - platform: state
@@ -76,7 +76,7 @@
     entity_id: switch.thermostat_program
   mode: single
 - id: '1603808339707'
-  alias: 🤖 | 🌞 Thermostat schedule on (someone home)
+  alias: 🤖 | 🌡️ Thermostat schedule on (someone home)
   description: ''
   trigger:
   - platform: state
@@ -523,7 +523,7 @@
     default: []
   mode: single
 - id: '1605228511473'
-  alias: 🤖 | 🌞 Thermostat to preset "sleep" (everyone asleep)
+  alias: 🤖 | 🌡️ Thermostat to preset "sleep" (everyone asleep)
   description: ''
   trigger:
   - platform: state
@@ -547,7 +547,7 @@
     entity_id: climate.thermostat
   mode: single
 - id: '1605356452236'
-  alias: 🤖 | 🌞 Attic heating on (Attic lights on)
+  alias: 🤖 | 🌡️ Attic heating on (Attic lights on)
   description: ''
   trigger:
   - platform: state
@@ -566,7 +566,7 @@
     entity_id: climate.thermostat_29
   mode: single
 - id: '1605356537576'
-  alias: 🤖 | 🌞 Attic heating off (Attic lights off)
+  alias: 🤖 | 🌡️ Attic heating off (Attic lights off)
   description: ''
   trigger:
   - platform: state
@@ -792,7 +792,7 @@
       - delay: 00:00:15
   mode: single
 - id: '1606679161866'
-  alias: 🤖 | 🌞 Turn on shed electric heater (< 6ºC)
+  alias: 🤖 | 🌡️ Turn on shed electric heater (< 6ºC)
   description: ''
   trigger:
   - platform: numeric_state
@@ -806,7 +806,7 @@
     entity_id: switch.smart_plug_5
   mode: single
 - id: '1606679446735'
-  alias: 🤖 | 🌞 Turn off shed electric heater (> 8ºC)
+  alias: 🤖 | 🌡️ Turn off shed electric heater (> 8ºC)
   description: ''
   trigger:
   - platform: numeric_state
@@ -823,7 +823,7 @@
     entity_id: switch.smart_plug_5
   mode: single
 - id: '1606680231233'
-  alias: 🤖 | 🌞 Turn off shed electric heater (after 90 minutes)
+  alias: 🤖 | 🌡️ Turn off shed electric heater (after 90 minutes)
   description: ''
   trigger:
   - platform: state
@@ -851,7 +851,7 @@
     entity_id: switch.on_off_plug_in_unit_3
   mode: single
 - id: '1606680879430'
-  alias: 🤖 | 🌞 Toon™ anti-b0rk protection (when heating)
+  alias: 🤖 | 🌡️ Toon™ anti-b0rk protection (when heating)
   description: Toon is offline so much that a fallback is required...
   trigger:
   - platform: state
@@ -890,7 +890,7 @@
     default: []
   mode: single
 - id: '1606685571203'
-  alias: ⏰ | 🧊 Guestroom fan on (daily at 05:00)
+  alias: ⏰ | 🌪️ Guestroom fan on (daily at 05:00)
   description: ''
   trigger:
   - platform: time
@@ -902,7 +902,7 @@
     entity_id: switch.on_off_plug_in_unit_4
   mode: single
 - id: '1606685598640'
-  alias: ⏰ | 🧊 Guestroom fan off (daily at 07:00)
+  alias: ⏰ | 🌪️ Guestroom fan off (daily at 07:00)
   description: ''
   trigger:
   - platform: time
@@ -1013,7 +1013,7 @@
       message: Motion detected at {{state.attributes.camera_name}}
   mode: single
 - id: '1606753908689'
-  alias: 🤖 | 💡 Lights off during daytime (☀ > 40 W/²)
+  alias: 🤖 | 💡 Lights off during daytime (☀️ > 40 W/²)
   description: ''
   trigger:
   - platform: numeric_state
@@ -1037,7 +1037,7 @@
     - light.hallway
   mode: single
 - id: '1606754403071'
-  alias: 🤖 | 💡 Lights on during daytime (☀ < 30 W/²)
+  alias: 🤖 | 💡 Lights on during daytime (☀️ < 30 W/²)
   description: ''
   trigger:
   - platform: numeric_state
