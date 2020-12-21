@@ -1052,7 +1052,7 @@
   - platform: state
     entity_id: input_select.twilight
     from: dawn
-    to: above horizon
+    to: daytime
   condition:
   - condition: state
     entity_id: input_boolean.nighttime
@@ -1386,7 +1386,7 @@
           sequence:
           - service: input_select.select_option
             data:
-              option: above horizon
+              option: daytime
             entity_id: input_select.twilight
         default: []
     default:
@@ -1410,6 +1410,7 @@
         sequence:
         - service: input_select.select_option
           data:
-            option: below horizon
+            option: nighttime
+          entity_id: input_select.twilight
       default: []
   mode: single
