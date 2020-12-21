@@ -1229,7 +1229,7 @@
         tag: '{{ trigger.event.data.service_data.notification_id }}'
   mode: single
 - id: '1607992740551'
-  alias: 🎮 Stop alarm bedroom
+  alias: 🎮 Snooze alarm bedroom (Smart Switch)
   description: ''
   trigger:
   - device_id: da1237666189a9a364fa383795ba532d
@@ -1237,15 +1237,16 @@
     platform: device
     type: remote_button_short_press
     subtype: turn_on
+  - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+    domain: deconz
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_on
   condition:
   - condition: template
-    value_template: |-
-      {{
-        ( as_timestamp(now()) - as_timestamp(state_attr(
-            'automation.alarm_bedroom_daily_at_wakeup_time',
-            'last_triggered'
-          )) | int(0) ) <= 60
-      }}
+    value_template: "{{\n  ( as_timestamp(now()) - as_timestamp(state_attr(\n    \
+      \  'automation.alarm_bedroom_daily_at_wakeup_time',\n      'last_triggered'\n\
+      \    )) | int(0) ) <= 60\n}}"
   action:
   - service: automation.turn_off
     data: {}
@@ -1253,6 +1254,9 @@
   - service: automation.turn_on
     data: {}
     entity_id: automation.alarm_bedroom_daily_at_wakeup_time
+  - service: media_player.media_stop
+    data: {}
+    entity_id: media_player.pi0_speaker_bedroom
   mode: single
 - id: '1591988158985'
   alias: 🎮 Fireplace toggle (Magic Cube)
