@@ -953,7 +953,7 @@
     default: []
   mode: single
 - id: '1606752442664'
-  alias: 🤖 | 💡 Restore lights (Shield TV idle)
+  alias: 🤖 | 💡 Restore lights (Shield TV paused)
   description: ''
   trigger:
   - platform: state
@@ -963,11 +963,16 @@
   - condition: state
     entity_id: input_boolean.nighttime
     state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: media_player.nvidia_shield_tv
+      state: 'off'
   action:
   - service: hue.hue_activate_scene
     data:
       group_name: Living room
-      scene_name: Ambiance
+      scene_name: Movie (ambiance)
   - choose:
     - conditions:
       - condition: state
@@ -1273,4 +1278,42 @@
     data:
       brightness: 255
   mode: single
-
+- id: '1608579565624'
+  alias: 🤖 | 💡 Restore lights (Shield TV off)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.nighttime
+    state: 'on'
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Living room
+      scene_name: Ambiance
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  mode: single

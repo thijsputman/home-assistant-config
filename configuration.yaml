@@ -178,7 +178,9 @@ media_player:
     host: nvidia-shield-tv.sgraastra
     exclude_unnamed_apps: true
     apps:
-      com.nvidia.shield.remote: "Shield TV (home screen)"
+      com.nvidia.shield.remote: "Shield TV"
+      com.nvidia.geforcenow: "GeForce NOW"
+      com.google.android.tv: "Live Channels"
     state_detection_rules:
       'com.nvidia.shield.remote':
         - 'standby'
