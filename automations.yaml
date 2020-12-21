@@ -1049,10 +1049,17 @@
     entity_id: sensor.weewx_solar_irradiance
     for: 00:05:00
     below: '30.0'
+  - platform: state
+    entity_id: input_select.twilight
+    from: dawn
+    to: above horizon
   condition:
   - condition: state
     entity_id: input_boolean.nighttime
     state: 'off'
+  - condition: numeric_state
+    entity_id: sensor.weewx_solar_irradiance
+    below: '30.0'
   action:
   - choose:
     - conditions:
