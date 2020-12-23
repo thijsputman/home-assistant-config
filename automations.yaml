@@ -1349,6 +1349,7 @@
   - platform: numeric_state
     entity_id: sun.sun
     above: '2.0'
+    attribute: elevation
   - platform: numeric_state
     entity_id: sun.sun
     below: '2.0'
@@ -1361,10 +1362,8 @@
   action:
   - choose:
     - conditions:
-      - condition: state
-        entity_id: sun.sun
-        state: 'true'
-        attribute: rising
+      - condition: template
+        value_template: '{{ is_state_attr(''sun.sun'', ''rising'', true) }}'
       sequence:
       - choose:
         - conditions:
