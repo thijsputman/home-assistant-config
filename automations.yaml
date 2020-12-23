@@ -1445,3 +1445,21 @@
           entity_id: input_select.twilight
       default: []
   mode: single
+- id: '1608737163515'
+  alias: 🤖 | 🔊 Blink Attic lights (doorbell rang)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.vibration_43
+    to: 'on'
+  condition: []
+  action:
+  - repeat:
+      count: '2'
+      sequence:
+      - service: light.turn_on
+        data:
+          flash: short
+        entity_id: light.attic
+      - delay: 00:00:01
+  mode: single
