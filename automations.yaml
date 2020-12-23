@@ -1027,19 +1027,50 @@
     above: '40.0'
   condition:
   - condition: state
-    entity_id: input_boolean.nighttime
-    state: 'off'
-  - condition: numeric_state
-    entity_id: sun.sun
-    attribute: elevation
-    above: '2.0'
+    entity_id: input_select.twilight
+    state: daytime
   action:
+  - choose:
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: brightness
+          above: '110'
+          below: '120'
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: color_temp
+          above: '225'
+          below: '235'
+      sequence:
+      - service: light.turn_off
+        data: {}
+        entity_id: light.living_room
+    default: []
+  - choose:
+    - conditions:
+      - condition: and
+        conditions:
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: brightness
+          above: '125'
+          below: '135'
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: color_temp
+          above: '225'
+          below: '235'
+      sequence:
+      - service: light.turn_off
+        data: {}
+        entity_id: light.kitchen
+    default: []
   - service: light.turn_off
     data: {}
-    entity_id:
-    - light.living_room
-    - light.kitchen
-    - light.hallway
+    entity_id: light.hallway
   mode: single
 - id: '1606754403071'
   alias: 🤖 | 💡 Lights on during daytime (☀️ < 30 W/²)
@@ -1053,10 +1084,11 @@
     entity_id: input_select.twilight
     from: dawn
     to: daytime
+    for: 00:01:00
   condition:
   - condition: state
-    entity_id: input_boolean.nighttime
-    state: 'off'
+    entity_id: input_select.twilight
+    state: daytime
   - condition: numeric_state
     entity_id: sensor.weewx_solar_irradiance
     below: '30.0'
