@@ -1,0 +1,75 @@
+- alias: 🌛 | ⏰ Time of Day
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: -6.0
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    above: 2.0
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    below: 2.0
+  - platform: numeric_state
+    entity_id: sun.sun
+    attribute: elevation
+    below: -6.0
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: |-
+          {{ is_state_attr('sun.sun', 'rising', true) }}
+      sequence:
+      - choose:
+        - conditions:
+          - condition: numeric_state
+            entity_id: sun.sun
+            attribute: elevation
+            below: 2.0
+            above: -6.0
+          sequence:
+          - service: input_select.select_option
+            data:
+              option: dawn
+            entity_id: input_select.time_of_day
+        - conditions:
+          - condition: numeric_state
+            entity_id: sun.sun
+            attribute: elevation
+            above: 2.0
+          sequence:
+          - service: input_select.select_option
+            data:
+              option: day
+            entity_id: input_select.time_of_day
+        default: []
+    default:
+    - choose:
+      - conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          above: -6.0
+          below: 2.0
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: dusk
+          entity_id: input_select.time_of_day
+      - conditions:
+        - condition: numeric_state
+          entity_id: sun.sun
+          attribute: elevation
+          below: -6.0
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: night
+          entity_id: input_select.time_of_day
+      default: []
+  mode: single

@@ -209,6 +209,8 @@ sensor custom: !include_dir_merge_list sensors/
 
 group: !include groups.yaml
 
+input_select: !include_dir_merge_named input/select/
+
 automation: !include automations.yaml
 automation custom: !include_dir_merge_list automations/
 
