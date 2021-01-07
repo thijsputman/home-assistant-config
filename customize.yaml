@@ -39,3 +39,5 @@ sensor.daily_energy:
   icon: mdi:counter
 sensor.monthly_energy:
   icon: mdi:counter
+light.basement:
+  icon: mdi:stairs
