@@ -22,6 +22,7 @@ recorder:
       - sensor.daily_energy_*
       - sensor.monthly_energy_*
       - sensor.pi_hole_ads_*
+      - input_text.hue_scene_previous_*
 
 history:
   exclude:

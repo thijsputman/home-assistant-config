@@ -1,0 +1,11 @@
+hue_scene_previous_kitchen:
+  name: Hue scene previous (Kitchen)
+  icon: mdi:lightbulb-group-outline
+
+hue_scene_previous_kitchen_counter_cupboards:
+  name: Hue scene previous (Kitchen counter & cupboards)
+  icon: mdi:lightbulb-group-outline
+
+hue_scene_previous_living_room:
+  name: Hue scene previous (Living room)
+  icon: mdi:lightbulb-group-outline

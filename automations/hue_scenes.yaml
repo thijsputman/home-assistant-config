@@ -1,0 +1,313 @@
+# Heuristically track the Hue scene name based on the group's (i.e. room/zone)
+# brightness, color_temp and/or xy_color (depending on what is available).
+#
+# Note that when a *zone* scene changes, the *room(s)* it belongs to keep
+# reporting their previous scene as the active scene (i.e. some of their lights
+# changed, but the Hue API doesn't report this change).
+# I'm relying on this behaviour in some other (room/scene-related) automations.
+# For the below it's relevant for our tracking of the previously active scene
+# (which we want to be *different* from the current active scene, as otherwise
+# tracking it serves little purpose...).
+# The inverse behaviour does not apply to zones: Changing their containing
+# room(s) does appear to change the active scene for the zone...
+
+- alias: 🚧 | 💡 Store Hue scene (Kitchen)
+  description: ''
+  trigger:
+    - platform: state
+      entity_id: light.kitchen
+  condition: []
+  action:
+    - choose:
+      - conditions:
+          # Keep track of previous scene; skip if <Unknown> or identical to the
+          # already stored previous scene.
+          - condition: template
+            value_template: >-
+              {{  not is_state('input_select.hue_scene_kitchen', '<Unknown>') and
+                  not is_state('input_select.hue_scene_kitchen',
+                    states('input_text.hue_scene_previous_kitchen')) }}
+        sequence:
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.hue_scene_previous_kitchen
+            value: >-
+              {{ states('input_select.hue_scene_kitchen') }}
+    - choose:
+      # Daytime
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: brightness
+          above: 125
+          below: 135
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: color_temp
+          above: 225
+          below: 235
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Daytime
+          entity_id: input_select.hue_scene_kitchen
+      # Ambiance
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: brightness
+          above: 75
+          below: 85
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: color_temp
+          above: 430
+          below: 440
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Ambiance
+          entity_id: input_select.hue_scene_kitchen
+      # Movie
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: brightness
+          above: 0
+          below: 10
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: color_temp
+          above: 430
+          below: 440
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Movie
+          entity_id: input_select.hue_scene_kitchen
+      # Bright (custom)
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: brightness
+          above: 250
+          below: 260
+        - condition: numeric_state
+          entity_id: light.kitchen
+          attribute: color_temp
+          above: 340
+          below: 350
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Bright (custom)
+          entity_id: input_select.hue_scene_kitchen
+      # <Off>
+      - conditions:
+        - condition: state
+          entity_id: light.kitchen
+          state: 'off'
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: <Off>
+          entity_id: input_select.hue_scene_kitchen
+      # <Unknown>
+      default:
+        - service: input_select.select_option
+          data:
+            option: <Unknown>
+          entity_id: input_select.hue_scene_kitchen
+  mode: single
+  max_exceeded: silent
+- alias: 🚧 | 💡 Store Hue scene (Kitchen counter & cupboards)
+  description: ''
+  trigger:
+    - platform: state
+      entity_id: light.kitchen_counter_cupboards
+  condition: []
+  action:
+    - choose:
+      - conditions:
+          # Keep track of previous scene; skip if <Unknown> or identical to the
+          # already stored previous scene.
+          - condition: template
+            value_template: >-
+              {{  not is_state('input_select.hue_scene_kitchen_counter_cupboards', '<Unknown>') and
+                  not is_state('input_select.hue_scene_kitchen_counter_cupboards',
+                    states('input_text.hue_scene_previous_kitchen_counter_cupboards')) }}
+        sequence:
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.hue_scene_previous_kitchen_counter_cupboards
+            value: >-
+              {{ states('input_select.hue_scene_kitchen_counter_cupboards') }}
+    - choose:
+      # Activity
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.kitchen_counter_cupboards
+          attribute: brightness
+          above: 125
+          below: 135
+        - condition: numeric_state
+          entity_id: light.kitchen_counter_cupboards
+          above: 0.405
+          below: 0.415
+          value_template: >-
+            {{ state.attributes.xy_color[0] }}
+        - condition: numeric_state
+          entity_id: light.kitchen_counter_cupboards
+          above: 0.390
+          below: 0.400
+          value_template: >-
+            {{ state.attributes.xy_color[1] }}
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Activity
+          entity_id: input_select.hue_scene_kitchen_counter_cupboards
+      # <Off>
+      - conditions:
+        - condition: state
+          entity_id: light.kitchen_counter_cupboards
+          state: 'off'
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: <Off>
+          entity_id: input_select.hue_scene_kitchen_counter_cupboards
+      # <Unknown>
+      default:
+        - service: input_select.select_option
+          data:
+            option: <Unknown>
+          entity_id: input_select.hue_scene_kitchen_counter_cupboards
+  mode: single
+  max_exceeded: silent
+- alias: 🚧 | 💡 Store Hue scene (Living room)
+  description: ''
+  trigger:
+    - platform: state
+      entity_id: light.living_room
+  condition: []
+  action:
+    - choose:
+      - conditions:
+          # Keep track of previous scene; skip if <Unknown> or identical to the
+          # already stored previous scene.
+          - condition: template
+            value_template: >-
+              {{  not is_state('input_select.hue_scene_living_room', '<Unknown>') and
+                  not is_state('input_select.hue_scene_living_room',
+                    states('input_text.hue_scene_previous_living_room')) }}
+        sequence:
+        - service: input_text.set_value
+          data:
+            entity_id: input_text.hue_scene_previous_living_room
+            value: >-
+              {{ states('input_select.hue_scene_living_room') }}
+    - choose:
+      # Daytime
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: brightness
+          above: 110
+          below: 120
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: color_temp
+          above: 225
+          below: 235
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Daytime
+          entity_id: input_select.hue_scene_living_room
+      # Ambiance
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: brightness
+          above: 130
+          below: 140
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: color_temp
+          above: 440
+          below: 450
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Ambiance
+          entity_id: input_select.hue_scene_living_room
+      # Movie
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: brightness
+          above: 1
+          below: 10
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: color_temp
+          above: 440
+          below: 450
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Movie
+          entity_id: input_select.hue_scene_living_room
+      # Movie (ambiance)
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: brightness
+          above: 11
+          below: 20
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: color_temp
+          above: 440
+          below: 450
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Movie (ambiance)
+          entity_id: input_select.hue_scene_living_room
+      # Active
+      - conditions:
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: brightness
+          above: 175
+          below: 185
+        - condition: numeric_state
+          entity_id: light.living_room
+          attribute: color_temp
+          above: 420
+          below: 430
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: Active
+          entity_id: input_select.hue_scene_living_room
+      # <Off>
+      - conditions:
+        - condition: state
+          entity_id: light.living_room
+          state: 'off'
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: <Off>
+          entity_id: input_select.hue_scene_living_room
+      # <Unknown>
+      default:
+        - service: input_select.select_option
+          data:
+            option: <Unknown>
+          entity_id: input_select.hue_scene_living_room
+  mode: single
+  max_exceeded: silent
