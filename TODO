@@ -1,3 +1,28 @@
-- [ ] Move all input\_\* definitions relevant to automations into a separate
-      YAML file (instead of defining them in the Lovelace UI; makes the
-      Git-repository more portable)
+# ToDo
+
+- [ ] Move all input\_\* definitions relevant to automations into separate YAML
+      files (instead of defining them in the Lovelace UI; this makes the
+      automations portable)
+- [ ] Switch the alarm to "arm night" when everyone's asleep (in addition to
+      doing this at 22:30 when someone's home). Furthermore, don't switch the
+      alarm to "arm night" at 22:30 when it's set to "away"...
+- [ ] Add notification for opened doors/windows when everyone's away
+- [ ] Add cumulative daily energy consumption sensor (combining the current on-
+      and off-peak values). Add this to the **utility_meter** (and perhaps get
+      rid off the `daily_energy` and `monthly_energy` ones and use the
+      utility_meter integration instead?)
+- [ ] When Home Assistant restarts, or the automations are reloaded, all timer
+      states are lost. Might want to put some failsafes in place to deal with
+      this better. For example the electric heater in the shed might
+      inadvertently get stuck in the "on" state due to this...
+- [ ] Further implement the doorbell sensor and the "washing machine
+      done"-sensor (both based on creative usage of vibration sensors)
+- [ ] Use the lux sensors in various rooms to replace the global solar
+      irradiance measurement
+- [ ] Replace use of `nighttime` helper with new `time_of_day` helper. See if
+      it's possible to use it in the graphs too; then the
+      `input_boolean.nighttime` can be deleted altogether
+- [ ] The transition from "lights off at dawn" to "daytime lights on when its
+      dark during the day" is not optimal yet. At the moment I'm delaying the
+      latter by 10 seconds to prevent it from interfering with the former, there
+      should be a nicer way to handle that...
