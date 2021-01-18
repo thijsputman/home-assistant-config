@@ -1,4 +1,4 @@
-- alias: 🌛 | ⏰ Time of Day
+- alias: 🚧 | ⏰ Time of Day
   description: ''
   trigger:
   - platform: numeric_state
@@ -73,3 +73,4 @@
           entity_id: input_select.time_of_day
       default: []
   mode: single
+  max_exceeded: silent
