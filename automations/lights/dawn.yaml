@@ -1,0 +1,68 @@
+- alias: ⏰ | 💡 Inside lights on (when dark at «wakeup» time)
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wakeup
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: input_select.time_of_day
+      state: night
+    - condition: state
+      entity_id: input_select.time_of_day
+      state: dawn
+  - condition: state
+    entity_id: timer.wakeup_grace_time
+    state: idle
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.living_room
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Living room
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  mode: single
+- alias: ⏰ | 💡 Inside lights off (daily just after dawn)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_select.time_of_day
+    from: dawn
+    to: day
+  condition: []
+  action:
+  - service: light.turn_off
+    data: {}
+    entity_id:
+    - light.living_room
+    - light.kitchen
+    - light.hallway
+  mode: single

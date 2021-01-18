@@ -1,0 +1,82 @@
+- alias: ⏰ | 💡 Outside lights on (daily at civil dusk)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_select.time_of_day
+    from: dusk
+    to: night
+  condition: []
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Garden
+      scene_name: Ambiance
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Front & back door
+      scene_name: Evening
+  mode: single
+- alias: ⏰ | 💡 Inside lights on (daily just before sunset)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_select.time_of_day
+    from: day
+    to: dusk
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: light.living_room
+          state: 'off'
+        - condition: state
+          entity_id: input_select.hue_scene_living_room
+          state: Daytime
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Living room
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: light.kitchen
+          state: 'off'
+        - condition: state
+          entity_id: input_select.hue_scene_kitchen
+          state: Daytime
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.guestroom
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Guestroom
+          scene_name: Evening
+    default: []
+  mode: single
