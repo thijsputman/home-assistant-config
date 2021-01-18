@@ -1463,16 +1463,6 @@
         entity_id: light.attic
       - delay: 00:00:01
   mode: single
-- id: '1609597845147'
-  alias: 🤖 | 💡 Kitchen workspace light toggle (motion detected) [WIP]
-  description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      motion_entity: binary_sensor.presence_53
-      light_target:
-        entity_id: light.extended_color_light_1_3
-      no_motion_wait: '120'
 - id: '1609807066138'
   alias: ⏰ | 🌡️ Attic heating on (weekdays at 08:30)
   description: ''
