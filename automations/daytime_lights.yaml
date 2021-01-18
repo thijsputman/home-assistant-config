@@ -1,0 +1,93 @@
+- alias: 🤖 | 💡 Lights off during daytime (☀️ > 40 W/²)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.weewx_solar_irradiance
+    for: 00:05:00
+    above: 40.0
+  condition:
+  - condition: state
+    entity_id: input_select.time_of_day
+    state: day
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.hue_scene_living_room
+        state:  Daytime
+      sequence:
+      - service: light.turn_off
+        data: {}
+        entity_id: light.living_room
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_select.hue_scene_kitchen
+        state:  Daytime
+      sequence:
+      - service: light.turn_off
+        data: {}
+        entity_id: light.kitchen
+    default: []
+  - service: light.turn_off
+    data: {}
+    entity_id: light.hallway
+  mode: single
+- alias: 🤖 | 💡 Lights on during daytime (☀️ < 30 W/²)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.weewx_solar_irradiance
+    for: 00:05:00
+    below: 30.0
+  - platform: state
+    entity_id: input_select.time_of_day
+    from: dawn
+    to: day
+    for: 00:00:10
+  condition:
+  - condition: state
+    entity_id: input_select.time_of_day
+    state: day
+  - condition: numeric_state
+    entity_id: sensor.weewx_solar_irradiance
+    below: 30.0
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.living_room
+        state: 'off'
+      - condition: state
+        entity_id: media_player.nvidia_shield_tv
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Living room
+          scene_name: Daytime
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Daytime
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'off'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  mode: single
