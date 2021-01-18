@@ -920,6 +920,15 @@
   - platform: state
     entity_id: media_player.nvidia_shield_tv
     to: playing
+    from: standby
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: paused
+    to: playing
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: idle
+    to: playing
   condition:
   - condition: state
     entity_id: light.living_room
@@ -959,6 +968,15 @@
   - platform: state
     entity_id: media_player.nvidia_shield_tv
     from: playing
+    to: paused
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: playing
+    to: standby
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: playing
+    to: idle
   condition:
   - condition: state
     entity_id: input_boolean.nighttime
@@ -1337,6 +1355,19 @@
   trigger:
   - platform: state
     entity_id: media_player.nvidia_shield_tv
+    to: 'off'
+    from: standby
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: playing
+    to: 'off'
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: paused
+    to: 'off'
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: idle
     to: 'off'
   condition:
   - condition: state
