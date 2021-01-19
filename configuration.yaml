@@ -9,7 +9,8 @@ recorder:
   exclude:
     entities:
       - sensor.daily_gas
-      - sensor.daily_energy
+      # N.B. The "sensor.daily_energy" should *not* be excluded; it is required
+      # to graph the daily cumulative energy usage over time...
       - sensor.monthly_gas
       - sensor.monthly_energy
       - input_text.alarm_code
@@ -20,8 +21,11 @@ recorder:
       - sensor.9292_*
       - sensor.daily_energy_*
       - sensor.monthly_energy_*
+      - sensor.*_energy_costs
+      - sensor.*_gas_costs
       - sensor.pi_hole_ads_*
       - input_text.hue_scene_previous_*
+      - input_number.rate_*
 
 history:
   exclude:
@@ -200,6 +204,7 @@ group: !include groups.yaml
 
 input_select: !include_dir_merge_named input/select/
 input_text: !include_dir_merge_named input/text/
+input_number: !include_dir_merge_named input/number/
 
 automation: !include automations.yaml
 automation custom: !include_dir_merge_list automations/

@@ -1,0 +1,24 @@
+rate_energy_peak:
+  name: Energy rate (peak)
+  icon: mdi:cash-lock
+  min: 0.0
+  max: 1.0
+  step: 0.001
+  initial: 0.21417
+  unit_of_measurement: € / kWh
+rate_energy_offpeak:
+  name: Energy rate (off-peak)
+  icon: mdi:cash-lock
+  min: 0.0
+  max: 1.0
+  step: 0.001
+  initial: 0.20425
+  unit_of_measurement: € / kWh
+rate_gas:
+  name: Gas rate
+  icon: mdi:cash-lock
+  min: 0.0
+  max: 5.0
+  step: 0.001
+  initial: 0.72633
+  unit_of_measurement: € / m³

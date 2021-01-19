@@ -7,10 +7,6 @@
       doing this at 22:30 when someone's home). Furthermore, don't switch the
       alarm to "arm night" at 22:30 when it's set to "away"...
 - [ ] Add notification for opened doors/windows when everyone's away
-- [ ] Add cumulative daily energy consumption sensor (combining the current on-
-      and off-peak values). Add this to the **utility_meter** (and perhaps get
-      rid off the `daily_energy` and `monthly_energy` ones and use the
-      utility_meter integration instead?)
 - [ ] When Home Assistant restarts, or the automations are reloaded, all timer
       states are lost. Might want to put some failsafes in place to deal with
       this better. For example the electric heater in the shed might

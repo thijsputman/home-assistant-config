@@ -16,28 +16,6 @@
   start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
   end: '{{ now() }}'
 
-# DSMR (Slimme Meter)
-- platform: dsmr
-  host: pi0-dsmr.sgraastra
-  port: 2001
-  dsmr_version: 5
-- platform: template
-  sensors:
-    daily_energy:
-      friendly_name: Daily energy
-      unit_of_measurement: kWh
-      value_template: >
-        {{
-          states('sensor.daily_energy_offpeak')|float + states('sensor.daily_energy_peak')|float
-        }}
-    monthly_energy:
-      friendly_name: Monthly energy
-      unit_of_measurement: kWh
-      value_template: >
-        {{
-          states('sensor.monthly_energy_offpeak')|float + states('sensor.monthly_energy_peak')|float
-        }}
-
 # Pi4
 - platform: snmp
   name: 'Pi4 1-minute load'

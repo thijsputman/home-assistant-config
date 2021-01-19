@@ -1,0 +1,128 @@
+# DSMR (Dutch Slimme Meter Requirements)
+
+- platform: dsmr
+  host: pi0-dsmr.sgraastra
+  port: 2001
+  dsmr_version: 5
+
+- platform: template
+  sensors:
+    # Peak and off-peak cumulative measurements
+    daily_energy:
+      friendly_name: Daily energy
+      unit_of_measurement: kWh
+      value_template: >-
+        {{
+          (
+            states('sensor.daily_energy_offpeak')|float +
+            states('sensor.daily_energy_peak')|float
+          ) | round(3)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              state_attr('sensor.daily_energy_offpeak', 'last_period')|float +
+              state_attr('sensor.daily_energy_peak', 'last_period')|float
+            ) | round(3)
+          }}
+    monthly_energy:
+      friendly_name: Monthly energy
+      unit_of_measurement: kWh
+      value_template: >-
+        {{
+          (
+            states('sensor.monthly_energy_offpeak')|float +
+            states('sensor.monthly_energy_peak')|float
+          ) | round(3)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              state_attr('sensor.monthly_energy_offpeak', 'last_period')|float +
+              state_attr('sensor.monthly_energy_peak', 'last_period')|float
+            ) | round(3)
+          }}
+    # Energy costs
+    daily_energy_costs:
+      friendly_name: Daily energy costs
+      unit_of_measurement: €
+      value_template: >-
+        {{
+          (
+            (states('sensor.daily_energy_offpeak')|float *
+              states('input_number.rate_energy_offpeak')|float) +
+            (states('sensor.daily_energy_peak')|float *
+              states('input_number.rate_energy_peak')|float)
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.daily_energy_offpeak', 'last_period')|float *
+                states('input_number.rate_energy_offpeak')|float) +
+              (state_attr('sensor.daily_energy_peak', 'last_period')|float *
+                states('input_number.rate_energy_peak')|float)
+            ) | round(2)
+          }}
+    monthly_energy_costs:
+      friendly_name: Monthly energy costs
+      unit_of_measurement: €
+      value_template: >-
+        {{
+          (
+            (states('sensor.monthly_energy_offpeak')|float *
+              states('input_number.rate_energy_offpeak')|float) +
+            (states('sensor.monthly_energy_peak')|float *
+              states('input_number.rate_energy_peak')|float)
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_energy_offpeak', 'last_period')|float *
+                states('input_number.rate_energy_offpeak')|float) +
+              (state_attr('sensor.monthly_energy_peak', 'last_period')|float *
+                states('input_number.rate_energy_peak')|float)
+            ) | round(2)
+          }}
+    # Gas costs
+    daily_gas_costs:
+      friendly_name: Daily gas costs
+      unit_of_measurement: €
+      value_template: >-
+        {{
+          (
+            states('sensor.daily_gas')|float *
+            states('input_number.rate_gas')|float
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              state_attr('sensor.daily_gas', 'last_period')|float *
+              states('input_number.rate_gas')|float
+            ) | round(2)
+          }}
+    monthly_gas_costs:
+      friendly_name: Monthly gas costs
+      unit_of_measurement: €
+      value_template: >-
+        {{
+          (
+            states('sensor.monthly_gas')|float *
+            states('input_number.rate_gas')|float
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              state_attr('sensor.monthly_gas', 'last_period')|float *
+              states('input_number.rate_gas')|float
+            ) | round(2)
+          }}
