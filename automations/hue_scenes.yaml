@@ -235,7 +235,7 @@
         - condition: numeric_state
           entity_id: light.living_room
           attribute: color_temp
-          above: 440
+          above: 430
           below: 450
         sequence:
         - service: input_select.select_option
@@ -252,7 +252,7 @@
         - condition: numeric_state
           entity_id: light.living_room
           attribute: color_temp
-          above: 440
+          above: 430
           below: 450
         sequence:
         - service: input_select.select_option
@@ -269,7 +269,7 @@
         - condition: numeric_state
           entity_id: light.living_room
           attribute: color_temp
-          above: 440
+          above: 430
           below: 450
         sequence:
         - service: input_select.select_option
