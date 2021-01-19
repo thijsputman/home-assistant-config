@@ -451,6 +451,16 @@
   - condition: state
     entity_id: switch.thermostat_program
     state: 'on'
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: climate.thermostat
+      attribute: preset_modes
+      state: comfort
+    - condition: state
+      entity_id: climate.thermostat
+      state: home
+      attribute: preset_mode
   action:
   - service: climate.set_temperature
     data:
@@ -1146,6 +1156,9 @@
     - wed
     - thu
     - fri
+  - condition: state
+    entity_id: switch.thermostat_program
+    state: 'on'
   action:
   - service: climate.set_temperature
     data:
