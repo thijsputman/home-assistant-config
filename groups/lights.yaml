@@ -1,0 +1,11 @@
+light_inside_rooms_all:
+  name: All rooms (inside)
+  icon: mdi:home-lightbulb-outline
+  entities:
+    - light.living_room
+    - light.kitchen
+    - light.hallway
+    - light.bedroom
+    - light.guestroom
+    - light.wardrobe
+    - light.attic

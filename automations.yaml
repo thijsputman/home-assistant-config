@@ -36,14 +36,14 @@
     data: {}
   mode: single
 - id: '1601143516296'
-  alias: 🚨 | ⏰ Alarm disarm (daily at 08:00)
+  alias: 🚨 | ⏰ Alarm disarm (daily at 08:00 when someone home)
   description: ''
   trigger:
   - platform: time
     at: 08:00
   condition:
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: home
   action:
   - service: alarm_control_panel.alarm_disarm
@@ -56,7 +56,7 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: group.everyone
+    entity_id: group.family
     from: home
     to: not_home
   condition:
@@ -80,7 +80,7 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: group.everyone
+    entity_id: group.family
     from: not_home
     to: home
   condition:
@@ -100,7 +100,7 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: group.everyone
+    entity_id: group.family
     from: home
     to: not_home
   condition: []
@@ -114,7 +114,7 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: group.everyone
+    entity_id: group.family
     from: not_home
     to: home
   condition: []
@@ -150,7 +150,7 @@
     - light.fireplace_2_living_room
   mode: single
 - id: '1604348574344'
-  alias: ⏰ Electric blanket on (daily at 23:00)
+  alias: ⏰ Electric blanket on (daily at 23:00 when someone home)
   description: ''
   trigger:
   - platform: time
@@ -158,7 +158,7 @@
   condition:
   - condition: state
     state: home
-    entity_id: group.everyone
+    entity_id: group.family
   action:
   - service: switch.turn_on
     data: {}
@@ -216,12 +216,12 @@
     state: 'on'
     entity_id: light.attic
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: not_home
   action:
   - delay: '{{ range(0, 3600) | random }}'
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: not_home
   - service: light.turn_off
     data: {}
@@ -264,19 +264,19 @@
     at: '23:00'
   condition:
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: not_home
   action:
   - delay: '{{ range(0, 7200) | random }}'
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: not_home
   - service: script.lights_out
     data: {}
     entity_id: light.attic
   mode: single
 - id: '1604944472380'
-  alias: 💤 | 🤖 Everyone asleep (all lights off)
+  alias: 💤 | 🤖 Everyone at home asleep (all lights off)
   description: ''
   trigger:
   - platform: state
@@ -286,7 +286,7 @@
     entity_id: group.light_inside_rooms_all
   condition:
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: home
   - condition: state
     entity_id: input_boolean.nighttime
@@ -297,14 +297,14 @@
     entity_id: input_boolean.everyone_asleep
   mode: single
 - id: '1604944531342'
-  alias: 💤 | ⏰ Everyone awake (daily at «wakeup» time)
+  alias: 💤 | ⏰ Everyone at home awake (daily at «wakeup» time)
   description: ''
   trigger:
   - platform: time
     at: input_datetime.wakeup
   condition:
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: home
   - condition: state
     entity_id: input_boolean.everyone_asleep
@@ -502,14 +502,14 @@
     - thu
     - fri
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: not_home
   - condition: template
     value_template: '{{ (range(0, 99) | random) > 10 }}'
   action:
   - delay: '{{ range(0, 4800) | random }}'
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: not_home
   - service: hue.hue_activate_scene
     data:
@@ -674,7 +674,7 @@
   condition:
   - condition: state
     state: home
-    entity_id: group.everyone
+    entity_id: group.family
   - condition: state
     entity_id: timer.wakeup_grace_time
     state: idle
@@ -764,7 +764,7 @@
   - condition: or
     conditions:
     - condition: state
-      entity_id: group.everyone
+      entity_id: group.family
       state: not_home
     - condition: state
       entity_id: input_boolean.everyone_asleep
@@ -773,7 +773,7 @@
   - choose:
     - conditions:
       - condition: state
-        entity_id: group.everyone
+        entity_id: group.family
         state: not_home
       sequence:
       - service: climate.set_preset_mode
@@ -1140,14 +1140,14 @@
       - delay: 00:00:01
   mode: single
 - id: '1609807066138'
-  alias: ⏰ | 🌡️ Attic heating on (weekdays at 08:30)
+  alias: ⏰ | 🌡️ Attic heating on (weekdays at 08:30 when someone home)
   description: ''
   trigger:
   - platform: time
     at: 08:30:00
   condition:
   - condition: state
-    entity_id: group.everyone
+    entity_id: group.family
     state: home
   - condition: time
     weekday:

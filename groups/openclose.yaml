@@ -1,21 +1,3 @@
-everyone:
-  name: Everyone
-  icon: mdi:account-group
-  entities:
-    - person.thijs_putman
-
-light_inside_rooms_all:
-  name: All rooms (inside)
-  icon: mdi:home-lightbulb-outline
-  entities:
-    - light.living_room
-    - light.kitchen
-    - light.hallway
-    - light.bedroom
-    - light.guestroom
-    - light.wardrobe
-    - light.attic
-
 openclose_bedroom:
   name: Bedroom (door & windows)
   icon: mdi:window-open-variant
