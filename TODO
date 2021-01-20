@@ -1,3 +1,5 @@
+<!-- vim: syntax=Markdown -->
+
 # ToDo
 
 - [ ] Move all input\_\* definitions relevant to automations into separate YAML
