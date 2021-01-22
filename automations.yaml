@@ -476,10 +476,7 @@
     from: 'on'
     to: 'off'
     for: 00:05
-  condition:
-  - condition: state
-    entity_id: switch.thermostat_program
-    state: 'on'
+  condition: []
   action:
   - service: climate.set_temperature
     data:
