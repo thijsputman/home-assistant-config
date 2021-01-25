@@ -2,7 +2,7 @@
 
 # ToDo
 
-- Move all input\_\* definitions relevant to automations into separate YAML
+- Move all `input_*` definitions relevant to automations into separate YAML
   files (instead of defining them in the Lovelace UI; this makes the automations
   portable)
 - Switch the alarm to "arm night" when everyone's asleep (in addition to doing
@@ -27,4 +27,6 @@
 - After moving the Aarlo automations to a separate file (i.e. out of the one
   controlled by the Lovelace UI), the `alarm_code` helper shouldn't be necessary
   anymore (and the `!secret` can be included into the automation again)
-
+- Get a proper RGBWW led controller for the kitchen counter. The current one
+  isn't reliable; worked around in automation(s) at the moment, not the nicest
+  solution...
