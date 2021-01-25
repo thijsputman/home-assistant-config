@@ -1,0 +1,52 @@
+- alias: 🤖 | 🔊 Announce when it is raining (windows open)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.weewx_rain
+    above: 0
+    for: 00:02:00
+  condition:
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.openclose_19
+      state: 'on'
+    - condition: state
+      entity_id: binary_sensor.openclose_20
+      state: 'on'
+    - condition: state
+      entity_id: binary_sensor.openclose_33
+      state: 'on'
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'off'
+  action:
+  - service: script.tts_p20
+    data:
+      message: >-
+        It is raining outside, please close the
+        {% if is_state('binary_sensor.openclose_19', 'on') or
+          is_state('binary_sensor.openclose_20', 'on') %}
+            bedroom window
+            {% if is_state('binary_sensor.openclose_23', 'on') %}
+              and the
+            {% endif %}
+        {% elif is_state('binary_sensor.openclose_23', 'on') %}
+          attic window
+        {% endif %}
+  - service: script.persistent_notification_all_devices
+    data:
+      tag: raining
+      title: It is raining outside
+      message: >-
+        It is raining outside, please close the
+        {% if is_state('binary_sensor.openclose_19', 'on') or
+          is_state('binary_sensor.openclose_20', 'on') %}
+            bedroom window
+            {% if is_state('binary_sensor.openclose_23', 'on') %}
+              and the
+            {% endif %}
+        {% elif is_state('binary_sensor.openclose_23', 'on') %}
+          attic window
+        {% endif %}
+  mode: single
