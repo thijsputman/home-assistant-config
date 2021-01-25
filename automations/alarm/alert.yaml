@@ -1,0 +1,67 @@
+- alias: 🚨 Door / window opened – 15 second grace period (everyone asleep)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.openclose_12
+    - binary_sensor.openclose_16
+    - binary_sensor.openclose_17
+    - binary_sensor.openclose_33
+    - binary_sensor.openclose_36
+    - group.openclose_bedroom
+    - group.openclose_living_room
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'on'
+  - condition: state
+    entity_id: !secret aarlo_control_panel
+    state: arm_night
+  action:
+  - event: custom_alarm_pre_trigger
+    event_data:
+      triggered_by: '{{ trigger.entity_id }}'
+  - delay: 00:00:15
+  - condition: state
+    entity_id: !secret aarlo_control_panel
+    state: arm_night
+  - service: alarm_control_panel.alarm_trigger
+    data: {}
+    entity_id: !secret aarlo_control_panel
+  mode: single
+- alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: !secret aarlo_control_panel
+    to: triggered
+  condition:
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'on'
+  action:
+  - service: light.turn_on
+    data:
+      brightness: 255
+      kelvin: 6500
+    entity_id: light.bedroom
+  mode: single
+- alias: 🚨 | 🔫 Pre-trigger warning (everyone asleep)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: custom_alarm_pre_trigger
+  condition: []
+  action:
+  - service: light.turn_on
+    data:
+      flash: long
+      entity_id: >-
+        {% if trigger.event.data.triggered_by == "binary_sensor.openclose_12" %}
+          light.front_hallway, light.back_hallway
+        {% elif trigger.event.data.triggered_by == "binary_sensor.openclose_16" %}
+          light.spot_4_kitchen_garden_side, light.spot_3_kitchen
+        {% endif %}
+  mode: single

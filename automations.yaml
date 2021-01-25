@@ -23,34 +23,6 @@
         data: {}
     default: []
   mode: single
-- id: '1601143331211'
-  alias: 🚨 | ⏰ Alarm arm night (daily at 22:30)
-  description: ''
-  trigger:
-  - platform: time
-    at: '22:30'
-  condition: []
-  action:
-  - service: alarm_control_panel.alarm_arm_night
-    entity_id: !secret aarlo_control_panel
-    data: {}
-  mode: single
-- id: '1601143516296'
-  alias: 🚨 | ⏰ Alarm disarm (daily at 08:00 when someone home)
-  description: ''
-  trigger:
-  - platform: time
-    at: 08:00
-  condition:
-  - condition: state
-    entity_id: group.family
-    state: home
-  action:
-  - service: alarm_control_panel.alarm_disarm
-    data:
-      code: '{{ states(''input_text.alarm_code'') }}'
-    entity_id: !secret aarlo_control_panel
-  mode: single
 - id: '1603806968872'
   alias: 🤖 | 🌡️ Thermostat schedule off (everyone away)
   description: ''
@@ -94,35 +66,6 @@
   - service: input_boolean.turn_off
     data: {}
     entity_id: input_boolean.thermostat_previous_state
-  mode: single
-- id: '1604337738877'
-  alias: 🚨 | 🤖 Alarm arm away (everyone away)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: group.family
-    from: home
-    to: not_home
-  condition: []
-  action:
-  - service: alarm_control_panel.alarm_arm_away
-    entity_id: !secret aarlo_control_panel
-    data: {}
-  mode: single
-- id: '1604337770123'
-  alias: 🚨 | 🤖 Alarm disarm (someone home)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: group.family
-    from: not_home
-    to: home
-  condition: []
-  action:
-  - service: alarm_control_panel.alarm_disarm
-    data:
-      code: '{{ states(''input_text.alarm_code'') }}'
-    entity_id: !secret aarlo_control_panel
   mode: single
 - id: '1604338683175'
   alias: 🤖 / ⏰ Fireplace off (Living room lights off / daily at 02:00)
@@ -594,74 +537,6 @@
     entity_id: light.garden
   mode: single
   max: 2
-- id: '1606160378164'
-  alias: 🚨 Door / window opened – 15 second grace period (everyone asleep)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.openclose_12
-    - binary_sensor.openclose_16
-    - binary_sensor.openclose_17
-    - binary_sensor.openclose_33
-    - binary_sensor.openclose_36
-    - group.openclose_bedroom
-    - group.openclose_living_room
-    from: 'off'
-    to: 'on'
-  condition:
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: 'on'
-  - condition: state
-    entity_id: !secret aarlo_control_panel
-    state: arm_night
-  action:
-  - event: custom_alarm_pre_trigger
-    event_data:
-      triggered_by: '{{ trigger.entity_id }}'
-  - delay: 00:00:15
-  - condition: state
-    entity_id: !secret aarlo_control_panel
-    state: arm_night
-  - service: alarm_control_panel.alarm_trigger
-    data: {}
-    entity_id: !secret aarlo_control_panel
-  mode: single
-- id: '1606161018637'
-  alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: !secret aarlo_control_panel
-    to: triggered
-  condition:
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: 'on'
-  action:
-  - service: light.turn_on
-    data:
-      brightness: 255
-      kelvin: 6500
-    entity_id: light.bedroom
-  mode: single
-- id: '1606168395080'
-  alias: 🚨 | 🔫 Pre-trigger warning (everyone asleep)
-  description: ''
-  trigger:
-  - platform: event
-    event_type: custom_alarm_pre_trigger
-  condition: []
-  action:
-  - service: light.turn_on
-    data:
-      flash: long
-      entity_id: "{% if trigger.event.data.triggered_by == \"binary_sensor.openclose_12\"\
-        \ %}\n  light.front_hallway, light.back_hallway\n{% elif trigger.event.data.triggered_by\
-        \ == \"binary_sensor.openclose_16\" %}    \n  light.spot_4_kitchen_garden_side,\
-        \ light.spot_3_kitchen\n{% endif %}\n"
-  mode: single
 - id: '1606412740160'
   alias: ⏰ | 🔊 Alarm bedroom (daily at «wakeup» time)
   description: ''
