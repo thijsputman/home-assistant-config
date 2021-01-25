@@ -1,4 +1,4 @@
-- alias: 📺 | 💡 Dim lights (Shield TV on/playing)
+- alias: 📺 | 💡 Dim lights (Shield TV playing)
   description: ''
   trigger:
   - platform: state
@@ -13,14 +13,6 @@
     entity_id: media_player.nvidia_shield_tv
     from: idle
     to: playing
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: 'off'
-    to: standby
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: 'off'
-    to: idle
   condition:
   - condition: state
     entity_id: light.living_room
@@ -53,7 +45,7 @@
           scene_name: Movie
     default: []
   mode: single
-- alias: 📺 | 💡 Restore lights (Shield TV paused)
+- alias: 📺 | 💡 Restore lights (Shield TV on/paused)
   description: ''
   trigger:
   - platform: state
@@ -67,6 +59,14 @@
   - platform: state
     entity_id: media_player.nvidia_shield_tv
     from: playing
+    to: idle
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: 'off'
+    to: standby
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: 'off'
     to: idle
   condition:
   - condition: state
