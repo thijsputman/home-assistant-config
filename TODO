@@ -24,9 +24,6 @@
   during the day" is not optimal yet. At the moment I'm delaying the latter by
   10 seconds to prevent it from interfering with the former, there should be a
   nicer way to handle that...
-- After moving the Aarlo automations to a separate file (i.e. out of the one
-  controlled by the Lovelace UI), the `alarm_code` helper shouldn't be necessary
-  anymore (and the `!secret` can be included into the automation again)
 - Get a proper RGBWW led controller for the kitchen counter. The current one
   isn't reliable; worked around in automation(s) at the moment, not the nicest
   solution...

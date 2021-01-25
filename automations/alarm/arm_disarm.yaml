@@ -21,8 +21,7 @@
   action:
   - service: alarm_control_panel.alarm_disarm
     data:
-      code: >-
-        {{ states('input_text.alarm_code') }}
+      code: !secret alarm_code
     entity_id: !secret aarlo_control_panel
   mode: single
 - alias: 🚨 | 🤖 Alarm arm away (everyone away)
@@ -49,7 +48,6 @@
   action:
   - service: alarm_control_panel.alarm_disarm
     data:
-      code: >-
-        {{ states('input_text.alarm_code') }}
+      code: !secret alarm_code
     entity_id: !secret aarlo_control_panel
   mode: single

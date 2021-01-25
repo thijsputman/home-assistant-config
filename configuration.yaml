@@ -13,7 +13,6 @@ recorder:
       # to graph the daily cumulative energy usage over time...
       - sensor.monthly_gas
       - sensor.monthly_energy
-      - input_text.alarm_code
     entity_globs:
       - sensor.dd_wrt_*_total_octets
       - sensor.dd_wrt_*_bps
