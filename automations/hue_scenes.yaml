@@ -1,22 +1,46 @@
 # Heuristically track the Hue scene name based on the group's (i.e. room/zone)
 # brightness, color_temp and/or xy_color (depending on what is available).
 #
-# Note that when a *zone* scene changes, the *room(s)* it belongs to keep
+# Note that when a *zone* changes scene, the *room(s)* it belongs to keep
 # reporting their previous scene as the active scene (i.e. some of their lights
-# changed, but the Hue API doesn't report this change).
+# changed, but the Hue API doesn't report on this change).
 # I'm relying on this behaviour in some other (room/scene-related) automations.
 # For the below it's relevant for our tracking of the previously active scene
 # (which we want to be *different* from the current active scene, as otherwise
 # tracking it serves little purpose...).
-# The inverse behaviour does not apply to zones: Changing their containing
+# The inverse behaviour does _not_ apply to zones: Changing their containing
 # room(s) does appear to change the active scene for the zone...
+# Furthermore, if a zone change causes a room to transition from off to on, the
+# room *does* report a state change (namely, it will start reporting its last
+# active scene). This causes the below heuristic to fail, as such exceptions
+# have to be put in place to handle this "off-on" scenario.
 
 - alias: 🚧 | 💡 Store Hue scene (Kitchen)
   description: ''
   trigger:
     - platform: state
       entity_id: light.kitchen
-  condition: []
+      # Slight delay allows "Kitchen counter & cupboards" to complete first
+      for: 00:00:05
+  condition:
+    # If "Kitchen" is off and "Kitchen counter & cupboards" switched to
+    # "Activity", don't do anything. In this situation the Hue API messes up
+    # (see comment in the header) and as such it's best to do nothing.
+    - condition: or
+      conditions:
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: input_select.hue_scene_kitchen
+              state: <Off>
+            - condition: template
+              value_template: >-
+                {{ not is_state(
+                    'input_select.hue_scene_kitchen_counter_cupboards',
+                    'Activity') }}
+        - condition: template
+          value_template: >-
+            {{ not is_state('input_select.hue_scene_kitchen', '<Off>') }}
   action:
     - choose:
       - conditions:
