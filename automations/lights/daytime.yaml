@@ -70,9 +70,14 @@
     default: []
   - choose:
     - conditions:
-      - condition: state
-        entity_id: light.kitchen
-        state: 'off'
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: light.kitchen
+          state: 'off'
+        - condition: state
+          entity_id: input_select.hue_scene_kitchen_counter_cupboards
+          state:  Activity
       sequence:
       - service: hue.hue_activate_scene
         data:
