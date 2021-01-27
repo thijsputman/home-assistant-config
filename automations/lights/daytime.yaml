@@ -75,9 +75,14 @@
         - condition: state
           entity_id: light.kitchen
           state: 'off'
-        - condition: state
-          entity_id: input_select.hue_scene_kitchen_counter_cupboards
-          state:  Activity
+        - condition: and
+          conditions:
+          - condition: state
+            entity_id: input_select.hue_scene_kitchen_counter_cupboards
+            state: Activity
+          - condition: state
+            entity_id: input_select.hue_scene_kitchen
+            state: <Off>
       sequence:
       - service: hue.hue_activate_scene
         data:
