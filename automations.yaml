@@ -23,50 +23,6 @@
         data: {}
     default: []
   mode: single
-- id: '1603806968872'
-  alias: 🤖 | 🌡️ Thermostat schedule off (everyone away)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: group.family
-    from: home
-    to: not_home
-  condition:
-  - condition: state
-    entity_id: switch.thermostat_program
-    state: 'on'
-  action:
-  - service: input_boolean.turn_on
-    data: {}
-    entity_id: input_boolean.thermostat_previous_state
-  - service: climate.set_preset_mode
-    data:
-      preset_mode: away
-    entity_id: climate.thermostat
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.thermostat_program
-  mode: single
-- id: '1603808339707'
-  alias: 🤖 | 🌡️ Thermostat schedule on (someone home)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: group.family
-    from: not_home
-    to: home
-  condition:
-  - condition: state
-    entity_id: input_boolean.thermostat_previous_state
-    state: 'on'
-  action:
-  - service: switch.turn_on
-    data: {}
-    entity_id: switch.thermostat_program
-  - service: input_boolean.turn_off
-    data: {}
-    entity_id: input_boolean.thermostat_previous_state
-  mode: single
 - id: '1604338683175'
   alias: 🤖 / ⏰ Fireplace off (Living room lights off / daily at 02:00)
   description: ''
@@ -357,75 +313,6 @@
         entity_id: input_boolean.nighttime
     default: []
   mode: single
-- id: '1605228511473'
-  alias: 🤖 | 🌡️ Thermostat to preset "sleep" (everyone asleep)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: input_boolean.everyone_asleep
-    from: 'off'
-    to: 'on'
-  condition:
-  - condition: state
-    entity_id: switch.thermostat_program
-    state: 'on'
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: climate.thermostat
-      attribute: preset_mode
-      state: sleep
-  action:
-  - service: climate.set_preset_mode
-    data:
-      preset_mode: sleep
-    entity_id: climate.thermostat
-  mode: single
-- id: '1605356452236'
-  alias: 🤖 | 🌡️ Attic heating on (Attic lights on)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: light.attic
-    from: 'off'
-    to: 'on'
-    for: 00:05
-  condition:
-  - condition: state
-    entity_id: switch.thermostat_program
-    state: 'on'
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: climate.thermostat
-      attribute: preset_modes
-      state: comfort
-    - condition: state
-      entity_id: climate.thermostat
-      state: home
-      attribute: preset_mode
-  action:
-  - service: climate.set_temperature
-    data:
-      temperature: 20.5
-    entity_id: climate.thermostat_29
-  mode: single
-- id: '1605356537576'
-  alias: 🤖 | 🌡️ Attic heating off (Attic lights off)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: light.attic
-    from: 'on'
-    to: 'off'
-    for: 00:05
-  condition: []
-  action:
-  - service: climate.set_temperature
-    data:
-      temperature: 15
-    entity_id: climate.thermostat_29
-  mode: single
 - id: '1605402967826'
   alias: ⏰ | 💡 | 🌴 Attic lights on when everyone away (most weekdays around dusk)
   description: ''
@@ -624,45 +511,6 @@
     data: {}
     entity_id: switch.on_off_plug_in_unit_3
   mode: single
-- id: '1606680879430'
-  alias: 🤖 | 🌡️ Toon™ anti-b0rk protection (when heating)
-  description: Toon is offline so much that a fallback is required...
-  trigger:
-  - platform: state
-    entity_id: climate.thermostat
-    to: heating
-    for: 00:01:00
-  condition:
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: group.family
-      state: not_home
-    - condition: state
-      entity_id: input_boolean.everyone_asleep
-      state: 'on'
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: group.family
-        state: not_home
-      sequence:
-      - service: climate.set_preset_mode
-        data:
-          preset_mode: away
-        entity_id: climate.thermostat
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.everyone_asleep
-        state: 'on'
-      sequence:
-      - service: climate.set_preset_mode
-        data:
-          preset_mode: sleep
-        entity_id: climate.thermostat
-    default: []
-  mode: single
 - id: '1606685571203'
   alias: ⏰ | 🌪️ Guestroom fan on (daily at 05:00)
   description: ''
@@ -816,43 +664,4 @@
           flash: short
         entity_id: light.attic
       - delay: 00:00:01
-  mode: single
-- id: '1609807066138'
-  alias: ⏰ | 🌡️ Attic heating on (weekdays at 08:30 when someone home)
-  description: ''
-  trigger:
-  - platform: time
-    at: 08:30:00
-  condition:
-  - condition: state
-    entity_id: group.family
-    state: home
-  - condition: time
-    weekday:
-    - mon
-    - tue
-    - wed
-    - thu
-    - fri
-  - condition: state
-    entity_id: switch.thermostat_program
-    state: 'on'
-  action:
-  - service: climate.set_temperature
-    data:
-      temperature: 20.5
-    entity_id: climate.thermostat_29
-  - wait_for_trigger:
-    - platform: state
-      entity_id: light.attic
-      to: 'on'
-      for: 00:05:00
-    timeout: 01:30:00
-    continue_on_timeout: false
-  - condition: template
-    value_template: '{{ wait.completed }}'
-  - service: climate.set_temperature
-    data:
-      temperature: 15
-    entity_id: climate.thermostat_29
   mode: single
