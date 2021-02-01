@@ -23,8 +23,8 @@
     tado_smart_thermostat_mode:
       friendly_name: "tado° Smart Thermostat mode"
       value_template: >-
-        {{ state_attr('climate.tado_smart_thermostat', 'hvac_modes') }}
+        {{ states('climate.tado_smart_thermostat') }}
     tado_smart_thermostat_action:
       friendly_name: "tado° Smart Thermostat action"
       value_template: >-
-        {{ states('climate.tado_smart_thermostat') }}
+        {{ state_attr('climate.tado_smart_thermostat', 'hvac_action') }}
