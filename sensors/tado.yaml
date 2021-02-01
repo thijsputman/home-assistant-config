@@ -1,0 +1,30 @@
+# tado° (via HomeKit controller)
+
+- platform: template
+  sensors:
+    tado_smart_thermostat_temperature:
+      friendly_name: "tado° Smart Thermostat temperature"
+      unit_of_measurement: '°C'
+      device_class: temperature
+      value_template: >-
+        {{ state_attr('climate.tado_smart_thermostat', 'current_temperature') }}
+    tado_smart_thermostat_setpoint:
+      friendly_name: "tado° Smart Thermostat setpoint"
+      unit_of_measurement: '°C'
+      device_class: temperature
+      value_template: >-
+        {{ state_attr('climate.tado_smart_thermostat', 'temperature') }}
+    tado_smart_thermostat_humidity:
+      friendly_name: "tado° Smart Thermostat humidity"
+      unit_of_measurement: '%'
+      device_class: humidity
+      value_template: >-
+        {{ state_attr('climate.tado_smart_thermostat', 'current_humidity') }}
+    tado_smart_thermostat_mode:
+      friendly_name: "tado° Smart Thermostat mode"
+      value_template: >-
+        {{ state_attr('climate.tado_smart_thermostat', 'hvac_modes') }}
+    tado_smart_thermostat_action:
+      friendly_name: "tado° Smart Thermostat action"
+      value_template: >-
+        {{ state_attr('climate.tado_smart_thermostat', 'hvac_action') }}

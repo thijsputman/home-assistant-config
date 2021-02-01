@@ -1,4 +1,3 @@
-# Configure a default setup of Home Assistant (frontend, api, etc)
 default_config:
 
 homeassistant:
@@ -85,13 +84,7 @@ device_tracker:
     new_device_defaults:
       track_new_devices: false
 
-# Toon
-toon:
-  client_id: !secret toon_client_id
-  client_secret: !secret toon_client_secret
-
 # Utility Meter (DSMR)
-
 utility_meter:
   daily_energy_offpeak:
     source: sensor.energy_consumption_tarif_1
