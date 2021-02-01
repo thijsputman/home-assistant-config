@@ -20,6 +20,8 @@
   during the day" is not optimal yet. At the moment I'm delaying the latter by
   10 seconds to prevent it from interfering with the former, there should be a
   nicer way to handle that...
+- Move all icon customisations for sensors defined in YAML from
+  `📄 customize.yaml` to their respective YAML files
 - Get a proper RGBWW led controller for the kitchen counter. The current one
   isn't reliable; worked around in automation(s) at the moment, not the nicest
   solution...

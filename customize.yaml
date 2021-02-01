@@ -41,3 +41,5 @@ sensor.monthly_energy:
   icon: mdi:counter
 light.basement:
   icon: mdi:stairs
+sensor.pi4_memory_used_percentage:
+  icon: mdi:memory
