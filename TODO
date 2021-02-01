@@ -5,10 +5,6 @@
 - Move all `input_*` definitions relevant to automations into separate YAML
   files (instead of defining them in the Lovelace UI; this makes the automations
   portable)
-- Switch the alarm to "arm night" when everyone's asleep (in addition to doing
-  this at 22:30 when someone's home). Furthermore, don't switch the alarm to
-  "arm night" at 22:30 when it's set to "away"...
-- Add notification for opened doors/windows when everyone's away
 - When Home Assistant restarts, or the automations are reloaded, all timer
   states are lost. Might want to put some failsafes in place to deal with this
   better. For example the electric heater in the shed might inadvertently get
@@ -27,3 +23,26 @@
 - Get a proper RGBWW led controller for the kitchen counter. The current one
   isn't reliable; worked around in automation(s) at the moment, not the nicest
   solution...
+  - Going to give it a try with this one:
+    <https://nl.aliexpress.com/item/1005001430323964.html>
+- tado° Enhancements and experiments:
+  - Test how the "Away" mode actually works. Does it switch the thermostat mode
+    to "off", or does the mode not change (I expect the latter &ndash; in case
+    of the former, some additional logic is required for the home/away
+    automations)?
+  - Create several "backstops" (controlled via HomeKit) to ensure heating is
+    properly controlled when there is no access to the Tado service (i.e. no
+    Internet connection)
+
+## Alarm
+
+- Switch the alarm to "arm night" when everyone's asleep (in addition to doing
+  this at 22:30 when someone's home). Furthermore, don't switch the alarm to
+  "arm night" at 22:30 when it's set to "away"...
+- Add notification for opened doors/windows when everyone's away
+- Test `📄 automations/alarm/alert.yaml`; completely _ad lib_ at the moment...
+- Introduce a manual alarm control panel. Currently relying on the A(a)rlo being
+  available/online. Better to use a manual control panel and make Arlo follow
+  the state of that panel. In that case, if Arlo is ever offline (doesn't happen
+  that much, but still) only the cameras will stop working – not the entire
+  alarm system
