@@ -48,6 +48,10 @@ influxdb:
     entities:
       - sensor.power_consumption
       - sensor.hourly_gas_consumption
+      - sensor.weewx_outside_temperature
+      - sensor.tado_smart_thermostat_setpoint
+      - sensor.tado_smart_thermostat_mode
+      - input_select.time_of_day
 
 # MQTT
 mqtt:
