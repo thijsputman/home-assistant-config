@@ -43,3 +43,5 @@ light.basement:
   icon: mdi:stairs
 sensor.pi4_memory_used_percentage:
   icon: mdi:memory
+binary_sensor.nintendo_switch_ping:
+  icon: mdi:nintendo-switch

@@ -140,12 +140,18 @@ binary_sensor:
     - motion
     - sound
     - connectivity
-  # Ping Google DNS
+  # Google DNS (ping)
   - platform: ping
     host: 8.8.8.8
-    name: 'Google DNS ping'
+    name: 'Google DNS (ping)'
     count: 4
     scan_interval: 60
+  # Nintendo Switch (ping)
+  - platform: ping
+    host: !secret nintendo_switch_hostname
+    name: 'Nintendo Switch (ping)'
+    count: 2
+    scan_interval: 20
 
 switch:
   - platform: aarlo
