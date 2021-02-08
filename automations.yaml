@@ -81,29 +81,6 @@
     data: {}
     entity_id: switch.on_off_plug_in_unit_3
   mode: single
-- id: '1604360962688'
-  alias: ⏰ Arlo snapshot (every 2 hours)
-  description: ''
-  trigger:
-  - platform: time_pattern
-    hours: /2
-    minutes: 0
-    seconds: '0'
-  condition:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id:
-      - camera.aarlo_back
-      - camera.aarlo_front
-      state: recording
-  action:
-  - service: aarlo.camera_request_snapshot
-    data: {}
-    entity_id:
-    - camera.aarlo_back
-    - camera.aarlo_front
-  mode: single
 - id: '1604942792287'
   alias: ⏰ | 💡 | 🌴 Attic lights off when everyone away (weekdays around 19:00)
   description: ''

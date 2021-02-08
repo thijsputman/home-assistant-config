@@ -1,0 +1,45 @@
+- alias: ⏰ | 📹 Arlo snapshot (every 2 hours)
+  description: ''
+  trigger:
+  - platform: time_pattern
+    hours: /2
+    minutes: 0
+    seconds: '0'
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id:
+      - camera.aarlo_back
+      - camera.aarlo_front
+      state: recording
+  action:
+  - service: aarlo.camera_request_snapshot
+    data: {}
+    entity_id:
+    - camera.aarlo_back
+    - camera.aarlo_front
+  mode: single
+- alias: ⏰ | 📹 Arlo store daily garden snapshot (at dawn and dusk)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_select.time_of_day
+    from: dawn
+    to: day
+  - platform: state
+    entity_id: input_select.time_of_day
+    from: day
+    to: dusk
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: camera.aarlo_back
+      state: recording
+  action:
+  - service: aarlo.camera_request_snapshot_to_file
+    data:
+      filename: "/config/var/aarlo/back-{{ now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') }}.jpg"
+    entity_id: camera.aarlo_back
+  mode: single

@@ -2,6 +2,8 @@ default_config:
 
 homeassistant:
   customize: !include customize.yaml
+  allowlist_external_dirs:
+    - /config/var
 
 recorder:
   commit_interval: 30
