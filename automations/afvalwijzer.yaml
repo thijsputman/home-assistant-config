@@ -1,0 +1,47 @@
+- alias: ⏰ | 🔊 Trash reminder (Black and Green bins)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.afvalwijzer_next_in_days
+    to: '1'
+    # Remind at 21:00 the day before pickup
+    for: '21:00:00'
+  condition:
+  - condition: state
+    entity_id: sensor.afvalwijzer_next_item
+    state:
+      - restafval
+      - gft
+  action:
+  - service: script.persistent_notification_all_devices
+    data:
+      tag: trash
+      title: Trash reminder
+      message: >-
+        Don't forget to put the
+          {% if is_state('sensor.afvalwijzer_next_item', 'restafval') %}
+            Black bin
+          {% elif is_state('sensor.afvalwijzer_next_item', 'gft') %}
+            Green bin
+          {% endif %}
+        outside!
+  mode: single
+- alias: ⏰ | 🔊 Trash reminder (Paper)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: sensor.afvalwijzer_next_in_days
+    to: '0'
+    # Remind at 09:30 on the day of pickup
+    for: '09:30:00'
+  condition:
+  - condition: state
+    entity_id: sensor.afvalwijzer_next_item
+    state: paper
+  action:
+  - service: script.persistent_notification_all_devices
+    data:
+      tag: trash
+      title: Trash reminder
+      message: Don't forget to put the paper outside!
+  mode: single
