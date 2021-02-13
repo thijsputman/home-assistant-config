@@ -7,6 +7,7 @@
     to: 'on'
     for: 00:05:00
   condition:
+  # Follow the main (Living room) thermostat's setting
   - condition: numeric_state
     entity_id: sensor.tado_smart_thermostat_setpoint
     above: 18.0
@@ -16,8 +17,8 @@
   action:
   - service: climate.set_temperature
     data:
-      temperature: 20.5
-    entity_id: climate.thermostat_29
+      temperature: 21.0
+    entity_id: climate.tado_smart_radiator_attic
   mode: single
 - alias: 🤖 | 🌡️ Attic heating off (Attic lights off)
   description: ''
@@ -31,18 +32,15 @@
   action:
   - service: climate.set_temperature
     data:
-      temperature: 15.0
-    entity_id: climate.thermostat_29
+      temperature: 12.0
+    entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: ⏰ | 🌡️ Attic heating on (weekdays at 08:30 when someone home)
+- alias: ⏰ | 🌡️ Attic heating off (weekdays when lights remain off)
   description: ''
   trigger:
   - platform: time
-    at: 08:30:00
+    at: "09:00:00"
   condition:
-  - condition: state
-    entity_id: group.family
-    state: home
   - condition: time
     weekday:
     - mon
@@ -50,34 +48,29 @@
     - wed
     - thu
     - fri
+  # Only relevant if the Attic radiator is actively heating
+  - condition: numeric_state
+    entity_id: sensor.tado_smart_radiator_attic_setpoint
+    above: 18.0
   - condition: state
-    entity_id: climate.tado_smart_thermostat
+    entity_id: sensor.tado_smart_radiator_attic_mode
     state: heat
   action:
-  - service: climate.set_temperature
-    data:
-      temperature: 20.5
-    entity_id: climate.thermostat_29
   - wait_for_trigger:
     - platform: state
       entity_id: light.attic
       to: 'on'
-    - platform: state
-      entity_id: group.family
-      from: home
-      to: not_home
     timeout: 01:30:00
     continue_on_timeout: true
-  # Abort (i.e. leave the heating on) if the light in the Attic is switched on
-  # within 90 minutes. Otherwise (including the "no-one home" anymore short-
-  # circuit) switch the heating back off...
+  # Only continue (i.e. switch the radiator off) if the light in the Attic was
+  # _not_ turned on within 90 minutes
   - condition: template
     value_template: >-
       {{
-        wait.trigger.entity_id != 'light.state'
+        wait.trigger.entity_id != 'light.attic'
       }}
   - service: climate.set_temperature
     data:
-      temperature: 15.0
+      temperature: 12.0
     entity_id: climate.thermostat_29
   mode: single
