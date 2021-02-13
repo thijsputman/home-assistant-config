@@ -67,7 +67,7 @@ tts:
 device_tracker:
   - platform: ddwrt
     host: !secret ddwrt_1_ip
-    # The device-tracker somehow inists on doing an uncached DNS lookup *every*
+    # The device-tracker somehow insists on doing an uncached DNS lookup *every*
     # *single* *time* it talks with DD-WRT (for both the A- and AAAA-record),
     # leading to an absurd skewing of Pi-hole's statistics (50% of _total_
     # requests are for this singular purpose).
@@ -128,13 +128,20 @@ aarlo:
 
 alarm_control_panel:
   - platform: aarlo
-    code: !secret alarm_code
-    code_arm_required: false
     away_mode_name: Armed
     home_mode_name: Disarmed
     night_mode_name: Night
-    alarm_volume: 8
+  - platform: manual
+    name: "Home Alarm"
+    code: !secret alarm_code
+    code_arm_required: false
+    arming_time: 0
+    delay_time: 30
     trigger_time: 180
+    disarmed:
+      trigger_time: 0
+    armed_night:
+      delay_time: 60
 
 camera:
   - platform: aarlo
@@ -209,6 +216,7 @@ group: !include_dir_merge_named groups/
 input_select: !include_dir_merge_named input/select/
 input_text: !include_dir_merge_named input/text/
 input_number: !include_dir_merge_named input/number/
+input_boolean: !include_dir_merge_named input/boolean/
 
 automation: !include automations.yaml
 automation custom: !include_dir_merge_list automations/

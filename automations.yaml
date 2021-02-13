@@ -544,7 +544,7 @@
       service: dismiss
   condition:
   - condition: template
-    value_template: '{{ trigger.event.data.service_data.notification_id in [''raining'']
+    value_template: '{{ trigger.event.data.service_data.notification_id in [''raining'', ''home_alarm'']
       }}'
   action:
   - service: notify.all_devices

@@ -1,41 +1,65 @@
-- alias: 🚨 Door / window opened – 15 second grace period (everyone asleep)
+- alias: 🚨 Trigger alarm (door / window opened)
   description: ''
   trigger:
   - platform: state
+    # Not using groups of sensors – They will trigger "off" → "on" if one of
+    # their members transitions from "unavailable" → "on", which leads to false
+    # alarms...
     entity_id:
     - binary_sensor.openclose_12
     - binary_sensor.openclose_16
     - binary_sensor.openclose_17
     - binary_sensor.openclose_33
     - binary_sensor.openclose_36
-    - group.openclose_bedroom
-    - group.openclose_living_room
+    - binary_sensor.openclose_18
+    - binary_sensor.openclose_19
+    - binary_sensor.openclose_20
+    - binary_sensor.openclose_8
+    - binary_sensor.openclose_14
+    - binary_sensor.openclose_15
     from: 'off'
     to: 'on'
   condition:
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: 'on'
-  - condition: state
-    entity_id: !secret aarlo_control_panel
-    state: arm_night
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_night
   action:
-  - event: custom_alarm_pre_trigger
-    event_data:
-      triggered_by: '{{ trigger.entity_id }}'
-  - delay: 00:00:15
-  - condition: state
-    entity_id: !secret aarlo_control_panel
-    state: arm_night
   - service: alarm_control_panel.alarm_trigger
     data: {}
-    entity_id: !secret aarlo_control_panel
+    entity_id: alarm_control_panel.home_alarm
+  mode: single
+- alias: 🚨 | 🔊 Sound the alarm (alarm triggered)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: triggered
+  condition: []
+  action:
+  - service: switch.turn_on
+    entity_id: switch.warning_device_8
+  mode: single
+- alias: 🚨 | 🔊 Stop sounding the alarm (alarm trigger ended)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    from: triggered
+  condition: []
+  action:
+  - service: switch.turn_off
+    entity_id: switch.warning_device_8
   mode: single
 - alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)
   description: ''
   trigger:
   - platform: state
-    entity_id: !secret aarlo_control_panel
+    entity_id: alarm_control_panel.home_alarm
     to: triggered
   condition:
   - condition: state
@@ -48,20 +72,104 @@
       kelvin: 6500
     entity_id: light.bedroom
   mode: single
-- alias: 🚨 | 🔫 Pre-trigger warning (everyone asleep)
+- alias: 🚨 | 💡 Flash lights (pending alarm; front or back door open)
   description: ''
   trigger:
-  - platform: event
-    event_type: custom_alarm_pre_trigger
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: pending
   condition: []
   action:
-  - service: light.turn_on
+  - choose:
+    - conditions:
+      # Front door
+      - condition: state
+        entity_id: binary_sensor.openclose_16
+        state: "on"
+      sequence:
+      - service: light.turn_on
+        data:
+          flash: long
+          entity_id:
+          - light.hue_filament_bulb_1_5
+          - light.hue_filament_bulb_1_4
+    - conditions:
+      # Back door
+      - condition: state
+        entity_id: binary_sensor.openclose_12
+        state: "on"
+      sequence:
+      - service: light.turn_on
+        data:
+          flash: long
+          entity_id:
+          - light.spot_4_kitchen_garden_side
+          - light.spot_3_kitchen
+    default: []
+  mode: single
+- alias: 🚨 | 📱 Send notification (pending alarm)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: pending
+  condition: []
+  action:
+  - service: script.persistent_notification_all_devices
     data:
-      flash: long
-      entity_id: >-
-        {% if trigger.event.data.triggered_by == "binary_sensor.openclose_12" %}
-          light.front_hallway, light.back_hallway
-        {% elif trigger.event.data.triggered_by == "binary_sensor.openclose_16" %}
-          light.spot_4_kitchen_garden_side, light.spot_3_kitchen
-        {% endif %}
+      tag: home_alarm
+      title: Home Alarm pending!
+      message: >-
+        The Home Alarm just got activated! If not promptly disarmed it wil trigger...
+  mode: single
+- alias: 🚨 | 📱 Send notification (alarm triggered)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: triggered
+  condition: []
+  action:
+  - service: script.persistent_notification_all_devices
+    data:
+      # Separate tag – dismissing this from the Lovelace UI will *not*
+      # auto-dismiss it from any of the other devices
+      tag: home_alarm_triggered
+      title: Home Alarm triggered!
+      message: >-
+        The Home Alarm just got triggered!
+  mode: single
+# Toggle "input_boolean.active_alarm_state" to "true" when the alarm goes to
+# "pending" and keep it that way until the alarm is actively disarmed. Indicates
+# the home is an active alarm state – mainly used to hide semi-sensitive
+# information from any tech-savvy burglar trying to operate the Lovelace UI.
+- alias: 🚧 | 🚨 Active alarm state
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: pending
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: disarmed
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: pending
+      sequence:
+      - service: input_boolean.turn_on
+        data:
+          entity_id: input_boolean.active_alarm_state
+    - conditions:
+      - condition: state
+        entity_id: alarm_control_panel.home_alarm
+        state: disarmed
+      sequence:
+      - service: input_boolean.turn_off
+        data:
+          entity_id: input_boolean.active_alarm_state
+    default: []
   mode: single

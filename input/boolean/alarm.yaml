@@ -1,0 +1,3 @@
+active_alarm_state:
+  name: Active alarm state
+  icon: mdi:alarm-light-outline

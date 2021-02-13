@@ -1,4 +1,48 @@
-- alias: ⏰ | 📹 Arlo snapshot (every 2 hours)
+- alias: 📹 | ⏰ Arm Arlo (daily at 22:30)
+  description: ''
+  trigger:
+  - platform: time
+    at: '22:30'
+  # In case "Everyone asleep" occurs before 22:30
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: armed_night
+  condition:
+  # Only act if Arlo is currently disarmed (to prevent unintentionally toggling
+  # from armed "Away" to armed "Night")
+  - condition: state
+    entity_id: !secret aarlo_control_panel
+    state: "disarmed"
+  action:
+  - service: alarm_control_panel.alarm_arm_night
+    entity_id: !secret aarlo_control_panel
+    data: {}
+  mode: single
+- alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: armed_away
+  condition: []
+  action:
+  - service: alarm_control_panel.alarm_arm_away
+    entity_id: !secret aarlo_control_panel
+    data: {}
+  mode: single
+- alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: disarmed
+  condition: []
+  action:
+  - service: alarm_control_panel.alarm_disarm
+    data: {}
+    entity_id: !secret aarlo_control_panel
+  mode: single
+- alias: 📹 | ⏰ Arlo snapshot (every 2 hours)
   description: ''
   trigger:
   - platform: time_pattern
@@ -20,7 +64,7 @@
     - camera.aarlo_back
     - camera.aarlo_front
   mode: single
-- alias: ⏰ | 📹 Arlo store daily garden snapshot (at dawn and dusk)
+- alias: 📹 | ⏰ Arlo store daily garden snapshot (at dawn and dusk)
   description: ''
   trigger:
   - platform: state

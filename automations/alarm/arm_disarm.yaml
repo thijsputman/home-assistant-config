@@ -1,28 +1,27 @@
-- alias: 🚨 | ⏰ Alarm arm night (daily at 22:30)
+- alias: 🚨 | ⏰ Alarm arm night (everyone asleep)
   description: ''
   trigger:
-  - platform: time
-    at: '22:30'
+  - platform: state
+    entity_id: input_boolean.everyone_asleep
+    to: "on"
   condition: []
   action:
   - service: alarm_control_panel.alarm_arm_night
-    entity_id: !secret aarlo_control_panel
+    entity_id: alarm_control_panel.home_alarm
     data: {}
   mode: single
-- alias: 🚨 | ⏰ Alarm disarm (daily at 08:00 when someone home)
+- alias: 🚨 | ⏰ Alarm disarm (everyone awake)
   description: ''
   trigger:
-  - platform: time
-    at: '08:00'
-  condition:
-  - condition: state
-    entity_id: group.family
-    state: home
+  - platform: state
+    entity_id: input_boolean.everyone_asleep
+    to: "off"
+  condition: []
   action:
   - service: alarm_control_panel.alarm_disarm
     data:
       code: !secret alarm_code
-    entity_id: !secret aarlo_control_panel
+    entity_id: alarm_control_panel.home_alarm
   mode: single
 - alias: 🚨 | 🤖 Alarm arm away (everyone away)
   description: ''
@@ -34,7 +33,7 @@
   condition: []
   action:
   - service: alarm_control_panel.alarm_arm_away
-    entity_id: !secret aarlo_control_panel
+    entity_id: alarm_control_panel.home_alarm
     data: {}
   mode: single
 - alias: 🚨 | 🤖 Alarm disarm (someone home)
@@ -49,5 +48,5 @@
   - service: alarm_control_panel.alarm_disarm
     data:
       code: !secret alarm_code
-    entity_id: !secret aarlo_control_panel
+    entity_id: alarm_control_panel.home_alarm
   mode: single
