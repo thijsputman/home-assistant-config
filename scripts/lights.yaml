@@ -59,31 +59,3 @@ scene_movie_living_room_and_kitchen:
       scene_name: Movie
   mode: single
   icon: mdi:lightbulb-group-outline
-tts_p20:
-  alias: TTS P20HD
-  sequence:
-  - service: notify.mobile_app_p20hd_eea
-    data:
-      message: TTS
-      title: '{{ message }}'
-      data:
-        channel: alarm_stream
-  mode: single
-  icon: mdi:text-to-speech
-persistent_notification_all_devices:
-  alias: Persistent notification (all devices)
-  sequence:
-  - service: notify.all_devices
-    data:
-      title: '{{ title }}'
-      message: '{{ message }}'
-      data:
-        tag: '{{ tag }}'
-        clickAction: !secret lovelace_home_dashboard
-  - service: persistent_notification.create
-    data:
-      title: '{{ title }}'
-      message: '{{ message }}'
-      notification_id: '{{ tag }}'
-  mode: single
-  icon: mdi:message-plus-outline
