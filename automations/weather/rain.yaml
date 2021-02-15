@@ -1,4 +1,4 @@
-- alias: 🤖 | 🔊 Announce when it is raining (windows open)
+- alias: 📱/🔊 | 🌦️ Announce when it is raining (windows open)
   description: ''
   trigger:
   - platform: numeric_state

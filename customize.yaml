@@ -32,7 +32,6 @@ sensor.pi_hole_1_minute_load:
   icon: mdi:gauge
 switch.on_off_plug_in_unit_3:
   icon: mdi:thermometer-plus
-group.openclose_living_room: {}
 sensor.gas_usage_change:
   icon: mdi:gas-cylinder
 sensor.daily_energy:

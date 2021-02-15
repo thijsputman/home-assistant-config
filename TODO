@@ -2,6 +2,13 @@
 
 # ToDo
 
+- [General](#general)
+- [tado°](#tado)
+- [Lights](#lights)
+- [Alarm](#alarm)
+
+## General
+
 - Move all `input_*` definitions relevant to automations into separate YAML
   files (instead of defining them in the Lovelace UI; this makes the automations
   portable)
@@ -16,35 +23,55 @@
 - Replace use of `nighttime` helper with new `time_of_day` helper. See if it's
   possible to use it in the graphs too; then the `input_boolean.nighttime` can
   be deleted altogether
-- The transition from "lights off at dawn" to "daytime lights on when its dark
-  during the day" is not optimal yet. At the moment I'm delaying the latter by
-  10 seconds to prevent it from interfering with the former, there should be a
-  nicer way to handle that...
 - Move all icon customisations for sensors defined in YAML from
   `📄 customize.yaml` to their respective YAML files
+- Nintendo Switch on/off detection: This Switch comes online regularly for a
+  minute or so, which makes the current approach for controlling the Living Room
+  lights unusable. See if there's a(nother) way of handling this – for now the
+  automations are included, but disabled in the UI
+
+## tado°
+
+- Test how the "Away" mode actually works. Does it switch the thermostat mode to
+  "off", or does the mode not change (I expect the latter &ndash; in case of the
+  former, some additional logic is required for the home/away automations)?
+  - It appears the mode does not change (remains `heat`) – it changes the
+    temperature and sets the "online mode" to `away`
+- Create several "backstops" (controlled via HomeKit) to ensure heating is
+  properly controlled when there is no access to the Tado service (i.e. no
+  Internet connection)
+
+## Lights
+
+- Daytime lights should respect wakeup time (similar to "Inside lights on (when
+  dark at «wakeup» time)")
+- For Summer: Garden light automatic off at 22:30 should only happen if light
+  state has not been modified manually (i.e. we're sitting outside)
 - Get a proper RGBWW led controller for the kitchen counter. The current one
   isn't reliable; worked around in automation(s) at the moment, not the nicest
   solution...
   - Going to give it a try with this one:
     <https://nl.aliexpress.com/item/1005001430323964.html>
-- tado° Enhancements and experiments:
-  - Test how the "Away" mode actually works. Does it switch the thermostat mode
-    to "off", or does the mode not change (I expect the latter &ndash; in case
-    of the former, some additional logic is required for the home/away
-    automations)?
-  - Create several "backstops" (controlled via HomeKit) to ensure heating is
-    properly controlled when there is no access to the Tado service (i.e. no
-    Internet connection)
+- The transition from "lights off at dawn" to "daytime lights on when its dark
+  during the day" is not optimal yet. At the moment I'm delaying the latter by
+  10 seconds to prevent it from interfering with the former, there should be a
+  nicer way to handle that...
+- Failure mode for Kitchen-counter motion lights: Switch Kitchen to "Ambiance",
+  trigger counter motion sensor, switch Kitchen to "Bright (Custom)" (while
+  motion sensor is still active). After motion clears, Kitchen switches back to
+  "Ambiance" instead of to "Bright (Custom")
 
 ## Alarm
 
-- Switch the alarm to "arm night" when everyone's asleep (in addition to doing
-  this at 22:30 when someone's home). Furthermore, don't switch the alarm to
-  "arm night" at 22:30 when it's set to "away"...
-- Add notification for opened doors/windows when everyone's away
-- Test `📄 automations/alarm/alert.yaml`; completely _ad lib_ at the moment...
-- Introduce a manual alarm control panel. Currently relying on the A(a)rlo being
-  available/online. Better to use a manual control panel and make Arlo follow
-  the state of that panel. In that case, if Arlo is ever offline (doesn't happen
-  that much, but still) only the cameras will stop working – not the entire
-  alarm system
+- Flash the colour lamps/lights bulbs in the Living Room red while the alarm is
+  activated; also, check if the siren's light actually flashes when the alarm is
+  sounding
+- Use the buttons in the bedroom to disable the siren (only when the alarm is
+  sounding) – pressing the button again should re-enable the sound
+- Currently Arlo's cameras are automatically armed daily at 22:30. Make this
+  contingent on the state of the lights in the back garden. When we're sitting
+  outside late in Summer, don't arm Arlo (or at least not until the garden
+  lights go off)
+- Perhaps use the "Template Alarm Control Panel" instead of the current setup
+  with a set of automations? Unsure whether that would really make thing easier
+  to understand though...
