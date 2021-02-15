@@ -1,10 +1,11 @@
-- alias: ⏰ | 🔊 Trash reminder (Black and Green bins)
+- alias: 📱 | ⏰ Trash reminder (Black and Green bins)
   description: ''
   trigger:
-  - platform: state
+  # Remind at 21:00 the day _before_ pickup
+  - platform: numeric_state
     entity_id: sensor.afvalwijzer_next_in_days
-    to: '1'
-    # Remind at 21:00 the day before pickup
+    above: 0
+    below: 2
     for: '21:00:00'
   condition:
   - condition: state
@@ -26,13 +27,13 @@
           {% endif %}
         outside!
   mode: single
-- alias: ⏰ | 🔊 Trash reminder (Paper)
+- alias: 📱 | ⏰ Trash reminder (Paper)
   description: ''
   trigger:
-  - platform: state
+  # Remind at 09:30 on the day of pickup
+  - platform: numeric_state
     entity_id: sensor.afvalwijzer_next_in_days
-    to: '0'
-    # Remind at 09:30 on the day of pickup
+    below: 1
     for: '09:30:00'
   condition:
   - condition: state
