@@ -533,26 +533,6 @@
     data:
       message: Motion detected at {{state.attributes.camera_name}}
   mode: single
-- id: '1607362699584'
-  alias: 🔊 Clear dismissed persistent notification (all devices; whitelisted only)
-  description: ''
-  trigger:
-  - platform: event
-    event_type: call_service
-    event_data:
-      domain: persistent_notification
-      service: dismiss
-  condition:
-  - condition: template
-    value_template: '{{ trigger.event.data.service_data.notification_id in [''raining'', ''home_alarm'']
-      }}'
-  action:
-  - service: notify.all_devices
-    data:
-      message: clear_notification
-      data:
-        tag: '{{ trigger.event.data.service_data.notification_id }}'
-  mode: single
 - id: '1607992740551'
   alias: 🎮 Snooze alarm bedroom (Smart Switch)
   description: ''
