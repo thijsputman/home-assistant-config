@@ -1,0 +1,65 @@
+- alias: 📱 Announce on (suspected) integration failure
+  description: ''
+  trigger:
+  # DSMR
+  - platform: state
+    entity_id: sensor.power_consumption
+    to: "unknown"
+    for: "00:20:00"
+  - platform: state
+    entity_id: sensor.gas_consumption
+    to: "unknown"
+    for: "02:00:00" # Gas consumption updates once per hour
+  # WeeWX
+  - platform: state
+    entity_id: sensor.weewx_outside_temperature
+    to: "unknown"
+    for: "00:20:00"
+  - platform: state
+    entity_id: sensor.weewx_outside_temperature_balcony
+    to: "unknown"
+    for: "00:20:00"
+  # deCONZ
+  - platform: state
+    entity_id: light.range_extender_2
+    to: "unknown"
+    for: "00:20:00"
+  # Hue
+  - platform: state
+    entity_id: sensor.hue_dimmer_switch_1_battery_level
+    to: "unknown"
+    for: "00:20:00"
+  # tado° (online integration & HomeKit)
+  - platform: state
+    entity_id: binary_sensor.ib1700339968_connection_state
+    to: "unknown"
+    for: "00:20:00"
+  - platform: state
+    entity_id: climate.tado_smart_thermostat
+    to: "unknown"
+    for: "00:20:00"
+  # Neato
+  - platform: state
+    entity_id: vacuum.neato_d7
+    to: "unknown"
+    for: "00:20:00"
+  # Pi-hole
+  - platform: state
+    entity_id: switch.pi_hole
+    to: "unknown"
+    for: "00:20:00"
+  condition:
+  # Only trigger when remote UI is connected (i.e. Internet is most likely
+  # working) – without Internet-connectivity sensors will become unavailable
+  # without an actual integration failure
+  - condition: state
+    entity_id: binary_sensor.remote_ui
+    state:  "on"
+  action:
+  - service: script.persistent_notification_my_devices
+    data:
+      tag: system_general
+      title: Possible integration failure detected!
+      message: >-
+        Entity "{{ trigger.entity_id }}" has been in an unknown state for {{ trigger.for }}.
+  mode: single
