@@ -62,6 +62,9 @@
       - condition: state
         entity_id: media_player.nvidia_shield_tv
         state: 'off'
+      - condition: state
+        entity_id: binary_sensor.nintendo_switch_ping
+        state: 'off'
       sequence:
       - service: hue.hue_activate_scene
         data:

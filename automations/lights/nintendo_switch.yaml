@@ -1,0 +1,94 @@
+- alias: 📺 | 💡 Dim lights (Nintendo Switch on)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.nintendo_switch_ping
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: light.living_room
+    state: 'on'
+  # Prevent triggering when no-one is home or everyone is asleep (most likely
+  # the Switch is doing some maintenance and automatically woke from stand-by)
+  - condition: state
+    entity_id: group.family
+    state: home
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'off'
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Living room
+      scene_name: Movie (ambiance)
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  mode: single
+- alias: 📺 | 💡 Restore lights (Nintendo Switch off)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.nintendo_switch_ping
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.nighttime
+    state: 'on'
+  # Prevent triggering when no-one is home or everyone is asleep (most likely
+  # the Switch is doing some maintenance and automatically woke from stand-by)
+  - condition: state
+    entity_id: group.family
+    state: home
+  - condition: state
+    entity_id: input_boolean.everyone_asleep
+    state: 'off'
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Living room
+      scene_name: Ambiance
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.kitchen
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Kitchen
+          scene_name: Ambiance
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.hallway
+        state: 'on'
+      sequence:
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Hallway
+          scene_name: Evening
+    default: []
+  mode: single
