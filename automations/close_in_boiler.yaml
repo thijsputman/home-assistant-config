@@ -1,0 +1,110 @@
+- alias: 🌡️ | 💤/✈️ Close-in boiler off (everyone asleep / everyone away)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.everyone_asleep
+    to: "on"
+  - platform: state
+    entity_id: group.family
+    from: home
+    to: not_home
+  condition: []
+  action:
+  # Wait for the dishwasher to finish (controlled by the same plug)
+  - wait_for_trigger:
+    - platform: numeric_state
+      entity_id: sensor.power_57
+      below: 10
+      for: "00:20:00"
+    timeout: "04:00:00"
+    continue_on_timeout: false
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.smart_plug_9
+  mode: single
+- alias: 🌡️ | 💤/✈️ Close-in boiler on (everyone awake / someone home)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.everyone_asleep
+    to: "off"
+  - platform: state
+    entity_id: group.family
+    from: not_home
+    to: home
+  condition: []
+  action:
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.smart_plug_9
+  mode: single
+- alias: 🌡️ | ⏰ Close-in boiler on (housekeeper comes when everyone away)
+  description: ''
+  # Using an input_datetime to store on which day of the week the housekeeper
+  # comes – compared against sensor.date (which changes daily at 00:00)
+  trigger:
+  - platform: template
+    value_template: >-
+      {{
+        (
+          state_attr("input_datetime.housekeeper_pre_arrival", "timestamp") |
+            timestamp_custom("%w")
+        ) == (states("sensor.date") | as_timestamp | timestamp_custom("%w"))
+      }}
+  condition:
+  - condition: state
+    entity_id: switch.smart_plug_9
+    state: "off"
+  - condition: state
+    entity_id: group.family
+    state: not_home
+  action:
+  # Use the same input_datetime to store at what time the housekeeper comes
+  # (i.e. for how much to delay after 00:00)
+  - delay: >-
+      state_attr("input_datetime.housekeeper_pre_arrival", "timestamp") |
+        timestamp_custom("%H:%M")
+  # Only continue if the plug is still "off" (someone might've come home in the
+  # meantime)
+  - condition: state
+    entity_id: switch.smart_plug_9
+    state: "off"
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.smart_plug_9
+  - delay: "03:00:00"
+  # Only continue if still no-one is home
+  - condition: state
+    entity_id: group.family
+    state: not_home
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.smart_plug_9
+  mode: single
+- alias: 🌡️ | ⏰ Close-in boiler Legionella protection (twice-weekly when everyone away)
+  description: ''
+  trigger:
+  - platform: time
+    at: "03:00:00"
+  condition:
+  # On Tuesdays and Saturdays (i.e. twice-weekly)
+  - condition: template
+    value_template: >-
+      {{ now().isoweekday() in [2, 6] }}
+  - condition: state
+    entity_id: switch.smart_plug_9
+    state: "off"
+  - condition: state
+    entity_id: group.family
+    state: not_home
+  action:
+  # Toggle on for two hours – this should heat the water sufficiently to prevent
+  # a Legionella hazard
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.smart_plug_9
+  - delay: "02:00:00"
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.smart_plug_9
+  mode: single
