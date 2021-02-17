@@ -1,0 +1,4 @@
+aarlo_pause:
+  name: Arlo pause
+  icon: 'mdi:timer-outline'
+  duration: "00:15:00"

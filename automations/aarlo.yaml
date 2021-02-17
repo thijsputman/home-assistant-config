@@ -42,6 +42,48 @@
     data: {}
     entity_id: !secret aarlo_control_panel
   mode: single
+- alias: 📹 | ⏳ Pause Arlo (timer started)
+  description: ''
+  trigger:
+  - platform: event
+    event_type:
+    - timer.started
+    - timer.restarted
+    event_data:
+      entity_id: timer.aarlo_pause
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: not
+        conditions:
+        - condition: state
+          entity_id: !secret aarlo_control_panel
+          state: armed_night
+      sequence:
+      - service: timer.cancel
+        data:
+          entity_id: timer.aarlo_pause
+    default:
+    - service: alarm_control_panel.alarm_disarm
+      entity_id: !secret aarlo_control_panel
+      data: {}
+  mode: single
+- alias: 📹 | ⏳ Resume Arlo (timer ended)
+  description: ''
+  trigger:
+  - platform: event
+    event_type:
+    - timer.finished
+    - timer.paused
+    event_data:
+      entity_id: timer.aarlo_pause
+  condition: []
+  action:
+  - service: alarm_control_panel.alarm_arm_night
+    entity_id: !secret aarlo_control_panel
+    data: {}
+  mode: single
 - alias: 📹 | ⏰ Arlo snapshot (every 2 hours)
   description: ''
   trigger:

@@ -219,6 +219,8 @@ input_number: !include_dir_merge_named input/number/
 input_boolean: !include_dir_merge_named input/boolean/
 input_datetime: !include_dir_merge_named input/datetime/
 
+timer: !include_dir_merge_named timer/
+
 automation: !include automations.yaml
 automation custom: !include_dir_merge_list automations/
 
