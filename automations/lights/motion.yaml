@@ -1,4 +1,4 @@
-- alias: 🤖 | 💡 Kitchen counter & cupboards toggle (motion detected)
+- alias: 💡 | 👋 Kitchen counter & cupboards toggle (motion detected)
   description: ''
   trigger:
   - platform: state
@@ -63,3 +63,22 @@
             - delay: 2
   mode: restart
   max_exceeded: silent
+- alias: 💡 | 👋 Toilet light toggle (motion detected)
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: binary_sensor.presence_60
+      light_target:
+        entity_id:
+        - light.toilet
+      no_motion_wait: 300
+- alias: 💡 | 👋 Basement light toggle (motion detected)
+  description: ''
+  use_blueprint:
+    path: homeassistant/motion_light.yaml
+    input:
+      motion_entity: binary_sensor.presence_50
+      light_target:
+        entity_id: light.basement
+      no_motion_wait: 60

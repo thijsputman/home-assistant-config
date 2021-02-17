@@ -594,16 +594,6 @@
     data:
       brightness: 255
   mode: single
-- id: '1608564470366'
-  alias: 🤖 | 💡 Basement light toggle (motion detected)
-  description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      motion_entity: binary_sensor.presence_50
-      light_target:
-        entity_id: light.basement
-      no_motion_wait: '30'
 - id: '1608737163515'
   alias: 🤖 | 🔊 Blink Attic lights (doorbell rang)
   description: ''
