@@ -1,4 +1,26 @@
-- alias: 📱 Announce on (suspected) integration failure
+- alias: 🚧 | 📱 Clear dismissed persistent notification (all devices; whitelisted only)
+  description: ''
+  trigger:
+  - platform: event
+    event_type: call_service
+    event_data:
+      domain: persistent_notification
+      service: dismiss
+  condition:
+  - condition: template
+    value_template: >-
+      {{
+        trigger.event.data.service_data.notification_id in
+          ['raining', 'home_alarm', 'system_general', 'calamity_leak']
+      }}
+  action:
+  - service: notify.all_devices
+    data:
+      message: clear_notification
+      data:
+        tag: >-
+          {{ trigger.event.data.service_data.notification_id }}
+  mode: single
   description: ''
   trigger:
   # DSMR
