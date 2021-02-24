@@ -1,0 +1,40 @@
+- alias: 🤯/💧 | 📱 Send notification (water detected)
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.water_59
+    from: "off"
+    to: "on"
+  condition: []
+  action:
+  - service: script.persistent_notification_all_devices
+    data:
+      tag: calamity_leak
+      title: Leak detected!
+      message: >-
+        {{ trigger.to_state.attributes.friendly_name }} detected water!
+  mode: single
+- alias: 🤯/💧 | 🔊 Sound the alarm (water detected when someone home)
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.water_59
+    from: "off"
+    to: "on"
+  condition:
+  - condition: state
+    entity_id: group.family
+    state: home
+  action:
+  - repeat:
+      count: 8
+      sequence:
+        - service: switch.turn_on
+          entity_id: switch.warning_device_8
+        - delay: 5
+        - service: switch.turn_off
+          entity_id: switch.warning_device_8
+        # Stop if the water sensor clears
+        - condition: state
+          entity_id: binary_sensor.water_59
+          state: "on"
+        - delay: 10
+  mode: single
