@@ -48,15 +48,30 @@
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Toilet light toggle (motion detected)
-  description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      motion_entity: binary_sensor.presence_60
-      light_target:
-        entity_id:
-        - light.toilet
-      no_motion_wait: 300
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.presence_60
+    from: "off"
+    to: "on"
+  condition: []
+  action:
+  - service: light.turn_on
+    data:
+      brightness: 255
+      kelvin: 4500
+    entity_id: light.toilet
+  - wait_for_trigger:
+      platform: state
+      entity_id: binary_sensor.presence_60
+      from: "on"
+      to: "off"
+  - delay: 330
+  - service: light.turn_off
+    data:
+      entity_id: light.toilet
+      transition: 30
+  mode: restart
+  max_exceeded: silent
 - alias: 💡 | 👋 Basement light toggle (motion detected)
   description: ''
   use_blueprint:
