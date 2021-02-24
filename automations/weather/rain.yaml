@@ -25,28 +25,28 @@
     data:
       message: >-
         It is raining outside, please close the
-        {% if is_state('binary_sensor.openclose_19', 'on') or
-          is_state('binary_sensor.openclose_20', 'on') %}
-            bedroom window
-            {% if is_state('binary_sensor.openclose_23', 'on') %}
-              and the
-            {% endif %}
-        {% elif is_state('binary_sensor.openclose_23', 'on') %}
-          attic window
-        {% endif %}
+        {%- if is_state('binary_sensor.openclose_19', 'on') or
+          is_state('binary_sensor.openclose_20', 'on')
+            %} bedroom window
+            {%- if is_state('binary_sensor.openclose_23', 'on')
+              %} and the
+            {%- endif -%}
+        {%- elif is_state('binary_sensor.openclose_23', 'on')
+          %} attic window
+        {%- endif -%}.
   - service: script.persistent_notification_all_devices
     data:
       tag: raining
       title: It is raining outside
       message: >-
         It is raining outside, please close the
-        {% if is_state('binary_sensor.openclose_19', 'on') or
-          is_state('binary_sensor.openclose_20', 'on') %}
-            bedroom window
-            {% if is_state('binary_sensor.openclose_23', 'on') %}
-              and the
-            {% endif %}
-        {% elif is_state('binary_sensor.openclose_23', 'on') %}
-          attic window
-        {% endif %}
+        {%- if is_state('binary_sensor.openclose_19', 'on') or
+          is_state('binary_sensor.openclose_20', 'on')
+            %} bedroom window
+            {%- if is_state('binary_sensor.openclose_23', 'on')
+              %} and the
+            {%- endif -%}
+        {%- elif is_state('binary_sensor.openclose_23', 'on')
+          %} attic window
+        {%- endif -%}.
   mode: single
