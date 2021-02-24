@@ -1,0 +1,23 @@
+- alias: 📺 | 👋 Pause Shield TV (motion at front or back)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.aarlo_motion_front
+    - binary_sensor.aarlo_motion_back
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: media_player.nvidia_shield_tv
+    state: playing
+  action:
+  - service: media_player.media_play_pause
+    data: {}
+    entity_id: media_player.nvidia_shield_tv
+  - service: script.tts_p20
+    data:
+      message: >-
+        Motion detected at the
+          {{ trigger.to_state.attributes.attributes.friendly_name }}.
+  mode: single

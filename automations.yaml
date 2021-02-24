@@ -512,27 +512,6 @@
     data: {}
     entity_id: switch.on_off_plug_in_unit_4
   mode: single
-- id: '1606752964606'
-  alias: 🤖 Pause Shield TV (motion at front or back)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.aarlo_motion_front
-    - binary_sensor.aarlo_motion_back
-    to: 'on'
-  condition:
-  - condition: state
-    entity_id: media_player.nvidia_shield_tv
-    state: playing
-  action:
-  - service: media_player.media_play_pause
-    data: {}
-    entity_id: media_player.nvidia_shield_tv
-  - service: script.tts_p20
-    data:
-      message: Motion detected at {{state.attributes.camera_name}}
-  mode: single
 - id: '1607992740551'
   alias: 🎮 Snooze alarm bedroom (Smart Switch)
   description: ''
