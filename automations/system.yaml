@@ -21,6 +21,7 @@
         tag: >-
           {{ trigger.event.data.service_data.notification_id }}
   mode: single
+- alias: 📱 Notify on (suspected) integration failure
   description: ''
   trigger:
   # DSMR
@@ -60,7 +61,12 @@
     entity_id: climate.tado_smart_thermostat
     to: "unknown"
     for: "00:20:00"
-  # Neato
+  # A(a)rlo (online integration)
+  - platform: state
+    entity_id: !secret aarlo_connected_sensor
+    to: "unknown"
+    for: "00:20:00"
+  # Neato (online integration)
   - platform: state
     entity_id: vacuum.neato_d7
     to: "unknown"
@@ -72,8 +78,8 @@
     for: "00:20:00"
   condition:
   # Only trigger when remote UI is connected (i.e. Internet is most likely
-  # working) – without Internet-connectivity sensors will become unavailable
-  # without an actual integration failure
+  # working) – without Internet-connectivity (some of the) sensors will become
+  # unavailable without an actual integration failure
   - condition: state
     entity_id: binary_sensor.remote_ui
     state:  "on"
@@ -81,7 +87,8 @@
   - service: script.persistent_notification_my_devices
     data:
       tag: system_general
-      title: Possible integration failure detected!
+      title: Potential integration failure
       message: >-
-        Entity "{{ trigger.entity_id }}" has been in an unknown state for {{ trigger.for }}.
+        {{ trigger.to_state.attributes.friendly_name }} has been in an unknown
+        state for {{ trigger.for }}.
   mode: single
