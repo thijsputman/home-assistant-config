@@ -7,16 +7,9 @@
     to: 'on'
   condition: []
   action:
-  # The (cheap) RGBWW led controller for the Kitchen counter is stubborn;
-  # doesn't reliably activate the scene (so we send the command multiple times).
-  - repeat:
-      count: 2
-      sequence:
-        - service: hue.hue_activate_scene
-          data:
-            group_name: Kitchen counter & cupboards
-            scene_name: Activity
-        - delay: 2
+  - service: script.hue_activate_scene_kitchen_counter_cupboards
+    data:
+      scene_name: Activity
   - wait_for_trigger:
     - platform: state
       entity_id: binary_sensor.presence_53
@@ -36,31 +29,22 @@
             {{  not is_state('input_select.hue_scene_kitchen', '<Off>') and
                 not is_state('input_select.hue_scene_kitchen', '<Unknown>') }}
       sequence:
-      - repeat:
-          count: 2
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                # This works because changing "Kitchen counter & cupboards"
-                # doesn't actually change the "Kitchen" scene (it retains its
-                # state even though some of its lights changed). We can simply
-                # re-apply the already active scene.
-                group_name: Kitchen
-                scene_name: >-
-                  {{ states('input_select.hue_scene_kitchen') }}
-            - delay: 2
+      - service: script.hue_activate_scene_kitchen
+        data:
+          # This works because changing "Kitchen counter & cupboards"
+          # doesn't actually change the "Kitchen" scene (it retains its
+          # state even though some of its lights changed). We can simply
+          # re-apply the already active scene.
+          scene_name: >-
+            {{ states('input_select.hue_scene_kitchen') }}
     - conditions:
         - condition: template
           value_template: >-
             {{ is_state('input_select.hue_scene_kitchen', '<Off>') }}
       sequence:
-      - repeat:
-          count: 2
-          sequence:
-            - service: light.turn_off
-              data:
-                entity_id: light.kitchen
-            - delay: 2
+      - service: light.turn_off
+        data:
+          entity_id: light.kitchen
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Toilet light toggle (motion detected)

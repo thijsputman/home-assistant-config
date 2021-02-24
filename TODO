@@ -47,11 +47,6 @@
   dark at «wakeup» time)")
 - For Summer: Garden light automatic off at 22:30 should only happen if light
   state has not been modified manually (i.e. we're sitting outside)
-- Get a proper RGBWW led controller for the kitchen counter. The current one
-  isn't reliable; worked around in automation(s) at the moment, not the nicest
-  solution...
-  - Going to give it a try with this one:
-    <https://nl.aliexpress.com/item/1005001430323964.html>
 - The transition from "lights off at dawn" to "daytime lights on when its dark
   during the day" is not optimal yet. At the moment I'm delaying the latter by
   10 seconds to prevent it from interfering with the former, there should be a

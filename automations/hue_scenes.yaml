@@ -21,7 +21,7 @@
     - platform: state
       entity_id: light.kitchen
       # Slight delay allows "Kitchen counter & cupboards" to complete first
-      for: 00:00:05
+      for: "00:00:02"
   condition:
     # If "Kitchen" is off and "Kitchen counter & cupboards" switched to
     # "Activity", don't do anything. In this situation the Hue API messes up
@@ -172,20 +172,41 @@
         - condition: numeric_state
           entity_id: light.kitchen_counter_cupboards
           attribute: brightness
-          above: 125
-          below: 135
-        - condition: numeric_state
-          entity_id: light.kitchen_counter_cupboards
-          above: 0.405
-          below: 0.415
-          value_template: >-
-            {{ state.attributes.xy_color[0] }}
-        - condition: numeric_state
-          entity_id: light.kitchen_counter_cupboards
-          above: 0.390
-          below: 0.400
-          value_template: >-
-            {{ state.attributes.xy_color[1] }}
+          above: 245
+          below: 256
+        # For this zone(/scene combination) the Hue API starts off by providing
+        # xy_color values and then – sometimes – switches to a color_temp value
+        # midway through the scene being active (not prompted by an change to
+        # the lights). Hence, we have to deal with both...
+        - condition: or
+          conditions:
+          - condition: numeric_state
+            entity_id: light.kitchen_counter_cupboards
+            attribute: color_temp
+            above: 230
+            below: 240
+          - condition: and
+            conditions:
+            - condition: numeric_state
+              entity_id: light.kitchen_counter_cupboards
+              above: 0.350
+              below: 0.390
+              value_template: >-
+                {% if state.attributes.xy_color is defined %}
+                  {{ state.attributes.xy_color[0] }}
+                {% else %}
+                  0.0
+                {% endif %}
+            - condition: numeric_state
+              entity_id: light.kitchen_counter_cupboards
+              above: 0.350
+              below: 0.390
+              value_template: >-
+                {% if state.attributes.xy_color is defined %}
+                  {{ state.attributes.xy_color[1] }}
+                {% else %}
+                  0.0
+                {% endif %}
         sequence:
         - service: input_select.select_option
           data:

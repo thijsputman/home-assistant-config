@@ -33,29 +33,3 @@ wake_up_light_bedroom:
     entity_id: light.bedroom
   mode: single
   icon: mdi:weather-sunset-up
-scene_active_living_room_and_kitchen:
-  alias: 'Scene: Active (Living room & Kitchen)'
-  sequence:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Living room
-      scene_name: Active
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Kitchen
-      scene_name: Bright (custom)
-  mode: single
-  icon: mdi:lightbulb-group-outline
-scene_movie_living_room_and_kitchen:
-  alias: 'Scene: Movie (Living room & Kitchen)'
-  sequence:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Living room
-      scene_name: Movie
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Kitchen
-      scene_name: Movie
-  mode: single
-  icon: mdi:lightbulb-group-outline

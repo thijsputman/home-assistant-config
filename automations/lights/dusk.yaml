@@ -52,9 +52,8 @@
           entity_id: input_select.hue_scene_kitchen
           state: Daytime
       sequence:
-      - service: hue.hue_activate_scene
+      - service: script.hue_activate_scene_kitchen
         data:
-          group_name: Kitchen
           scene_name: Ambiance
     default: []
   - choose:
