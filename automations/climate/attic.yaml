@@ -72,5 +72,5 @@
   - service: climate.set_temperature
     data:
       temperature: 12.0
-    entity_id: climate.thermostat_29
+    entity_id: climate.tado_smart_radiator_attic
   mode: single
