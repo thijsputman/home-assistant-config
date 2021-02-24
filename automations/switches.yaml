@@ -1,0 +1,14 @@
+- alias: 🎮 Fireplace toggle (Magic Cube)
+  description: ''
+  trigger:
+  - device_id: 7053d7e589bf4a4496cff59a24b7c83c
+    domain: deconz
+    platform: device
+    type: remote_turned_clockwise
+    subtype: ''
+  condition: []
+  action:
+  - data: {}
+    entity_id: input_boolean.fireplace
+    service: input_boolean.toggle
+  mode: single
