@@ -2,12 +2,13 @@
   description: ''
   trigger:
   # Remind at 21:00 the day _before_ pickup
-  - platform: numeric_state
-    entity_id: sensor.afvalwijzer_next_in_days
-    above: 0
-    below: 2
-    for: '21:00:00'
+  - platform: time
+    at: "21:00"
   condition:
+  - condition: numeric_state
+    entity_id: sensor.afvalwijzer_next_in_days
+    below: 2
+    above: 0
   - condition: state
     entity_id: sensor.afvalwijzer_next_item
     state:
@@ -20,22 +21,23 @@
       title: Trash reminder
       message: >-
         Don't forget to put the
-          {% if is_state('sensor.afvalwijzer_next_item', 'restafval') %}
-            Black bin
-          {% elif is_state('sensor.afvalwijzer_next_item', 'gft') %}
-            Green bin
-          {% endif %}
-        outside!
+          {%- if is_state('sensor.afvalwijzer_next_item', 'restafval')
+            %} Black bin
+          {%- elif is_state('sensor.afvalwijzer_next_item', 'gft')
+            %} Green bin
+          {%- endif
+        %} outside!
   mode: single
 - alias: 📱 | ⏰ Trash reminder (Paper)
   description: ''
   trigger:
   # Remind at 09:30 on the day of pickup
-  - platform: numeric_state
+  - platform: time
+    at: "09:30"
+  condition:
+  - condition: numeric_state
     entity_id: sensor.afvalwijzer_next_in_days
     below: 1
-    for: '09:30:00'
-  condition:
   - condition: state
     entity_id: sensor.afvalwijzer_next_item
     state: paper
