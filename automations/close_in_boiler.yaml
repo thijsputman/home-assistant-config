@@ -1,23 +1,49 @@
-- alias: 🌡️ | 💤/✈️ Close-in boiler off (everyone asleep / everyone away)
+- alias: 🌡️ | ⏰ Close-in boiler off (daily after 22:00)
   description: ''
   trigger:
-  - platform: state
-    entity_id: input_boolean.everyone_asleep
-    to: "on"
+  - platform: time
+    at: "22:00"
+  condition:
+  - condition: state
+    entity_id: switch.smart_plug_9
+    state: "on"
+  action:
+  # First, wait for the next heating-cycle to start (cycle-time ± 75 minutes /
+  # on-demand when warm water is used)
+  - wait_for_trigger:
+    - platform: numeric_state
+      entity_id: sensor.power_57
+      above: 1000
+      for: "00:00:10"
+    timeout: "03:00:00"
+    continue_on_timeout: false
+  # Then, wait for the boiler to become inactive for a while (i.e. heating-cycle
+  # completed / no warm water being used) – this way, we always switch off the
+  # boiler when it's full of warm water, ensuring warm water remains available
+  # until approximately midnight...
+  - wait_for_trigger:
+    - platform: numeric_state
+      entity_id: sensor.power_57
+      below: 50
+      for: "00:15:00"
+    timeout: "01:30:00"
+    continue_on_timeout: false
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.smart_plug_9
+  mode: single
+- alias: 🌡️ | ✈️ Close-in boiler off (everyone away)
+  description: ''
+  trigger:
   - platform: state
     entity_id: group.family
     from: home
     to: not_home
-  condition: []
+  condition:
+  - condition: state
+    entity_id: switch.smart_plug_9
+    state: "on"
   action:
-  # Wait for the dishwasher to finish (controlled by the same plug)
-  - wait_for_trigger:
-    - platform: numeric_state
-      entity_id: sensor.power_57
-      below: 10
-      for: "00:20:00"
-    timeout: "04:00:00"
-    continue_on_timeout: false
   - service: switch.turn_off
     data: {}
     entity_id: switch.smart_plug_9
@@ -32,7 +58,10 @@
     entity_id: group.family
     from: not_home
     to: home
-  condition: []
+  condition:
+  - condition: state
+    entity_id: switch.smart_plug_9
+    state: "off"
   action:
   - service: switch.turn_on
     data: {}
@@ -85,7 +114,7 @@
   description: ''
   trigger:
   - platform: time
-    at: "03:00:00"
+    at: "02:00:00"
   condition:
   # On Tuesdays and Saturdays (i.e. twice-weekly)
   - condition: template
@@ -98,12 +127,12 @@
     entity_id: group.family
     state: not_home
   action:
-  # Toggle on for two hours – this should heat the water sufficiently to prevent
-  # a Legionella hazard
+  # Toggle on for three hours (i.e. at least two heating cycles) – this should
+  # heat the water sufficiently to prevent a Legionella hazard
   - service: switch.turn_on
     data: {}
     entity_id: switch.smart_plug_9
-  - delay: "02:00:00"
+  - delay: "03:00:00"
   - service: switch.turn_off
     data: {}
     entity_id: switch.smart_plug_9
