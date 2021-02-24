@@ -120,7 +120,8 @@
       tag: home_alarm
       title: Home Alarm pending!
       message: >-
-        The Home Alarm just got activated! If not promptly disarmed it wil trigger...
+        The Home Alarm just got activated!
+        If not promptly disarmed it wil trigger...
   mode: single
 - alias: 🚨 | 📱 Send notification (alarm triggered)
   description: ''

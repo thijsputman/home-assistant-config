@@ -1,4 +1,4 @@
-- alias: 🤖 | 🎄 Christmas tree on (Living Room lights on when someone home)
+- alias: 🎄 | ✈️ Christmas tree on (Living Room lights on when someone home)
   description: ''
   trigger:
   - platform: state
@@ -13,7 +13,7 @@
     data: {}
     entity_id: switch.on_off_plug_in_unit_6
   mode: single
-- alias: 🤖 | 🎄 Christmas tree off (Living Room lights off / everyone away)
+- alias: 🎄 | 💡/✈️ Christmas tree off (Living Room lights off / everyone away)
   description: ''
   trigger:
   - platform: state
@@ -31,7 +31,7 @@
     data: {}
     entity_id: switch.on_off_plug_in_unit_6
   mode: single
-- alias: ⏰ | 🎄 Christmas star on (dusk)
+- alias: 🎄 | ⏰ Christmas star on (dusk)
   description: ''
   trigger:
   - platform: state
@@ -43,7 +43,7 @@
     data: {}
     entity_id: switch.on_off_plug_in_unit_7
   mode: single
-- alias: ⏰ | 🎄 Christmas star off (dawn)
+- alias: 🎄 | ⏰ Christmas star off (dawn)
   description: ''
   trigger:
   - platform: state

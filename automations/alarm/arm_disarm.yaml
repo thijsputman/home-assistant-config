@@ -1,4 +1,4 @@
-- alias: 🚨 | ⏰ Alarm arm night (everyone asleep)
+- alias: 🚨 | 💤 Alarm arm night (everyone asleep)
   description: ''
   trigger:
   - platform: state
@@ -10,7 +10,7 @@
     entity_id: alarm_control_panel.home_alarm
     data: {}
   mode: single
-- alias: 🚨 | ⏰ Alarm disarm (everyone awake)
+- alias: 🚨 | 💤 Alarm disarm (everyone awake)
   description: ''
   trigger:
   - platform: state
@@ -23,7 +23,7 @@
       code: !secret alarm_code
     entity_id: alarm_control_panel.home_alarm
   mode: single
-- alias: 🚨 | 🤖 Alarm arm away (everyone away)
+- alias: 🚨 | ✈️ Alarm arm away (everyone away)
   description: ''
   trigger:
   - platform: state
@@ -36,7 +36,7 @@
     entity_id: alarm_control_panel.home_alarm
     data: {}
   mode: single
-- alias: 🚨 | 🤖 Alarm disarm (someone home)
+- alias: 🚨 | ✈️ Alarm disarm (someone home)
   description: ''
   trigger:
   - platform: state

@@ -5,7 +5,7 @@ light.kitchen:
 light.hallway:
   icon: mdi:door
 light.garden:
-  icon: mdi:tree
+  icon: mdi:nature
 light.bedroom:
   icon: mdi:bed-king
 light.guestroom:
@@ -44,3 +44,5 @@ sensor.pi4_memory_used_percentage:
   icon: mdi:memory
 binary_sensor.nintendo_switch_ping:
   icon: mdi:nintendo-switch
+light.toilet:
+  icon: mdi:paper-roll-outline
