@@ -50,7 +50,7 @@
     pi4_sandbox_memory_used_percentage:
       value_template: >
         {{  (
-              (1 - (states('sensor.pi4_sandbox_memory_available')|float)/4096) * 100
+              (1 - (states('sensor.pi4_sandbox_memory_available')|float)/2048) * 100
             ) | round(2)
         }}
       unit_of_measurement: '%'
