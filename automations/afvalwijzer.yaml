@@ -40,7 +40,7 @@
     below: 1
   - condition: state
     entity_id: sensor.afvalwijzer_next_item
-    state: paper
+    state: papier
   action:
   - service: script.persistent_notification_all_devices
     data:
