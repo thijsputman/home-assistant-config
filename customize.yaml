@@ -46,3 +46,9 @@ binary_sensor.nintendo_switch_ping:
   icon: mdi:nintendo-switch
 light.toilet:
   icon: mdi:paper-roll-outline
+sensor.pi4_sandbox_memory_available:
+  icon: mdi:memory
+sensor.pi4_sandbox_memory_used_percentage:
+  icon: mdi:memory
+sensor.pi4_sandbox_1_minute_load:
+  icon: mdi:gauge
