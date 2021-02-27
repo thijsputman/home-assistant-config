@@ -61,7 +61,7 @@
       kelvin: 4500
     entity_id: light.toilet
   - wait_for_trigger:
-      platform: state
+    - platform: state
       entity_id: binary_sensor.presence_60
       from: "on"
       to: "off"
@@ -91,11 +91,30 @@
         entity_id: light.wardrobe
       no_motion_wait: 120
 - alias: 💡 | 👋 Bathroom light toggle (motion detected)
-  description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      motion_entity: binary_sensor.presence_68
-      light_target:
-        entity_id: light.bathroom
-      no_motion_wait: 1800
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.presence_68
+    from: "off"
+    to: "on"
+  - platform: state
+    entity_id: binary_sensor.presence_71
+    from: "off"
+    to: "on"
+  condition: []
+  action:
+  - service: light.turn_on
+    data:
+      brightness: 255
+      kelvin: 2900
+    entity_id: light.bathroom
+  # The "set" appears needed for is_state() to trigger on a state change of
+  # trigger.entity_id...
+  - wait_template: >-
+      {% set sensor = trigger.entity_id %}
+      {{ is_state(sensor, 'off') }}
+  - delay: 330
+  - service: light.turn_off
+    data:
+      entity_id: light.bathroom
+      transition: 30
+  mode: restart
