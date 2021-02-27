@@ -1,0 +1,22 @@
+- alias: 🌪️ | 🤖 Bathroom fan on (💧 > 60%)
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.humidity_25
+    above: 60.0
+    for: "00:00:30"
+  condition: []
+  action:
+  - service: light.turn_on
+    data:
+      entity_id: light.smart_relay_1
+- alias: 🌪️ | 🤖 Bathroom fan off (💧 < 60%; 2 hour rundown)
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.humidity_25
+    below: 60.0
+    for: "02:00:00"
+  condition: []
+  action:
+  - service: light.turn_off
+    data:
+      entity_id: light.smart_relay_1

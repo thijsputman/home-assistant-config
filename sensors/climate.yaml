@@ -1,0 +1,6 @@
+- platform: derivative
+  name: Humidity change (Bathroom)
+  round: 1
+  source: sensor.humidity_25
+  unit_time: min
+  time_window: "00:02:00"
