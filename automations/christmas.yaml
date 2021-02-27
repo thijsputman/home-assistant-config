@@ -35,8 +35,8 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: input_boolean.nighttime
-    to: 'on'
+    entity_id: input_select.time_of_day
+    to: dusk
   condition: []
   action:
   - service: switch.turn_on
@@ -47,8 +47,8 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: input_boolean.nighttime
-    to: 'off'
+    entity_id: input_select.time_of_day
+    to: dawn
   condition: []
   action:
   - service: switch.turn_off

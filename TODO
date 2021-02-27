@@ -20,9 +20,6 @@
   (both based on creative usage of vibration sensors)
 - Use the lux sensors in various rooms to replace the global solar irradiance
   measurement
-- Replace use of `nighttime` helper with new `time_of_day` helper. See if it's
-  possible to use it in the graphs too; then the `input_boolean.nighttime` can
-  be deleted altogether
 - Move all icon customisations for sensors defined in YAML from
   `📄 customize.yaml` to their respective YAML files
 - Nintendo Switch on/off detection: This Switch comes online regularly for a

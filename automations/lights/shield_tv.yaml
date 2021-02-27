@@ -68,9 +68,11 @@
     from: 'off'
     to: idle
   condition:
-  - condition: state
-    entity_id: input_boolean.nighttime
-    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: input_select.time_of_day
+      state: day
   - condition: not
     conditions:
     - condition: state
@@ -123,9 +125,11 @@
     from: idle
     to: 'off'
   condition:
-  - condition: state
-    entity_id: input_boolean.nighttime
-    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: input_select.time_of_day
+      state: day
   action:
   - service: hue.hue_activate_scene
     data:

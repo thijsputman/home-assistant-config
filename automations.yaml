@@ -115,8 +115,8 @@
     entity_id: group.family
     state: home
   - condition: state
-    entity_id: input_boolean.nighttime
-    state: 'on'
+    entity_id: input_select.time_of_day
+    state: night
   action:
   - service: input_boolean.turn_on
     data: {}
@@ -151,9 +151,11 @@
     from: 'off'
     to: 'on'
   condition:
-  - condition: state
-    entity_id: input_boolean.nighttime
-    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: input_select.time_of_day
+      state: day
   action:
   - choose:
     - conditions:
@@ -212,33 +214,6 @@
   - service: light.turn_off
     data: {}
     entity_id: light.bedroom
-  mode: single
-- id: '1605228018087'
-  alias: 🌛 | ⏰ Nighttime
-  description: ''
-  trigger:
-  - platform: sun
-    event: sunset
-  - platform: sun
-    event: sunrise
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: sun
-        after: sunset
-      sequence:
-      - service: input_boolean.turn_on
-        data: {}
-        entity_id: input_boolean.nighttime
-    - conditions:
-      - condition: sun
-        after: sunrise
-      sequence:
-      - service: input_boolean.turn_off
-        data: {}
-        entity_id: input_boolean.nighttime
-    default: []
   mode: single
 - id: '1605402967826'
   alias: ⏰ | 💡 | 🌴 Attic lights on when everyone away (most weekdays around dusk)
@@ -335,9 +310,11 @@
     to: 'on'
     for: 00:00:03
   condition:
-  - condition: state
-    entity_id: input_boolean.nighttime
-    state: 'on'
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: input_select.time_of_day
+      state: day
   - condition: state
     entity_id: light.garden
     state: 'off'

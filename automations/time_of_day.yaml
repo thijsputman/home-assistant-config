@@ -74,3 +74,31 @@
       default: []
   mode: single
   max_exceeded: silent
+# The "Nighttime" boolean is used in graphs to provide a dark(er) background
+# when it's dark outside
+- alias: 🚧 | 🌛 Nighttime on (at dusk)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_select.time_of_day
+    from: day
+    to: dusk
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    data: {}
+    entity_id: input_boolean.nighttime
+  mode: single
+- alias: 🚧 | 🌛 Nighttime off (after dawn)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_select.time_of_day
+    from: dawn
+    to: day
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    data: {}
+    entity_id: input_boolean.nighttime
+  mode: single
