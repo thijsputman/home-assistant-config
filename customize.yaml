@@ -52,3 +52,5 @@ sensor.pi4_sandbox_memory_used_percentage:
   icon: mdi:memory
 sensor.pi4_sandbox_1_minute_load:
   icon: mdi:gauge
+light.bathroom:
+  icon: mdi:shower
