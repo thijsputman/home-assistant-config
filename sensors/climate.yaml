@@ -4,3 +4,7 @@
   source: sensor.humidity_25
   unit_time: min
   time_window: "00:02:00"
+- platform: derivative
+  name: Humidity change – realtime (Bathroom)
+  round: 1
+  source: sensor.humidity_25
