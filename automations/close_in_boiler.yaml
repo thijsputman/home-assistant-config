@@ -3,6 +3,12 @@
   trigger:
   - platform: time
     at: "22:00"
+  # Fallback: Switch off when everyone goes to sleep (might have been manually
+  # switched on after 22:00, or we might have come home after 22:00)
+  - platform: state
+    entity_id: input_boolean.everyone_asleep
+    from: 'off'
+    to: 'on'
   condition:
   - condition: state
     entity_id: switch.smart_plug_9
