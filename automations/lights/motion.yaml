@@ -65,7 +65,7 @@
       entity_id: binary_sensor.presence_60
       from: "on"
       to: "off"
-  - delay: 330
+  - delay: 270
   - service: light.turn_off
     data:
       entity_id: light.toilet
@@ -102,17 +102,29 @@
     to: "on"
   condition: []
   action:
-  - service: light.turn_on
-    data:
-      brightness: 255
-      kelvin: 2900
-    entity_id: light.bathroom
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: input_boolean.everyone_asleep
+        state: 'on'
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness: 60
+          kelvin: 2200
+        entity_id: light.bathroom
+    default:
+    - service: light.turn_on
+      data:
+        brightness: 255
+        kelvin: 2900
+      entity_id: light.bathroom
   # The "set" appears needed for is_state() to trigger on a state change of
   # trigger.entity_id...
   - wait_template: >-
       {% set sensor = trigger.entity_id %}
       {{ is_state(sensor, 'off') }}
-  - delay: 330
+  - delay: 150
   - service: light.turn_off
     data:
       entity_id: light.bathroom
