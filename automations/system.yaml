@@ -103,7 +103,7 @@
   # Neato (online integration)
   - platform: state
     entity_id: vacuum.neato_d7
-    to: "unknown"
+    to: "unavailable"
     for: "00:20:00"
   # Pi-hole
   - platform: state
@@ -123,6 +123,6 @@
       tag: system_general
       title: Potential integration failure
       message: >-
-        {{ trigger.to_state.attributes.friendly_name }} has been in an unknown
-        state for {{ trigger.for }}.
+        {{ trigger.to_state.attributes.friendly_name }} has been in an
+        unknown/unavailable state for {{ trigger.for }}.
   mode: single
