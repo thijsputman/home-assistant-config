@@ -5,7 +5,10 @@
     entity_id: binary_sensor.presence_53
     from: 'off'
     to: 'on'
-  condition: []
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.lightlevel_55
+    below: 600
   action:
   - service: script.hue_activate_scene_kitchen_counter_cupboards
     data:
@@ -83,13 +86,26 @@
       no_motion_wait: 60
 - alias: 💡 | 👋 Wardrobe light toggle (motion detected)
   description: ''
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      motion_entity: binary_sensor.presence_63
-      light_target:
-        entity_id: light.wardrobe
-      no_motion_wait: 120
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.presence_63
+    from: "off"
+    to: "on"
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.lightlevel_65
+    below: 50
+  action:
+  - service: light.turn_on
+    entity_id: light.wardrobe
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.presence_63
+      from: "on"
+      to: "off"
+  - delay: 120
+  - service: light.turn_off
+    entity_id: light.wardrobe
 - alias: 💡 | 👋 Bathroom light toggle (motion detected)
   trigger:
   - platform: state
@@ -100,7 +116,10 @@
     entity_id: binary_sensor.presence_71
     from: "off"
     to: "on"
-  condition: []
+  condition:
+  - condition: numeric_state
+    entity_id: sensor.lightlevel_bathroom
+    below: 200
   action:
   - choose:
     - conditions:

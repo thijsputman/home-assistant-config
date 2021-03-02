@@ -71,10 +71,6 @@
 - Use the lux sensors in various rooms to replace the global solar irradiance
   measurement (i.e. separate automations for the Living Room, Kitchen, Hallway
   downstairs and Hallway upstairs)
-- Average out the lux level of the three motion sensors on the first floor to
-  approximate lux level in the upstairs hallway
-- Make the motions lights for the Kitchen counter, Bathroom and Wardrobe
-  dependent on lux level
 
 ## Alarm
 

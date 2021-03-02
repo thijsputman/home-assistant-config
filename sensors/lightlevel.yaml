@@ -1,0 +1,22 @@
+- platform: template
+  sensors:
+    lightlevel_bathroom:
+      value_template: >-
+        {{ ((
+              (states('sensor.lightlevel_70')|float) +
+              (states('sensor.lightlevel_73')|float)
+            )|float / 2) | round(1)
+        }}
+      unit_of_measurement: 'lx'
+      friendly_name: 'Light-level (Bathroom)'
+      icon_template: 'hass:brightness-5'
+    lightlevel_upstairs_hallway:
+      value_template: >-
+        {{ ((
+              (states('sensor.lightlevel_bathroom')|float) +
+              (states('sensor.lightlevel_65')|float)
+            )|float / 2) | round(1)
+        }}
+      unit_of_measurement: 'lx'
+      friendly_name: 'Light-level (Upstairs hallway)'
+      icon_template: 'hass:brightness-5'
