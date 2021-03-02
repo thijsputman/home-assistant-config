@@ -16,27 +16,43 @@
   states are lost. Might want to put some failsafes in place to deal with this
   better. For example the electric heater in the shed might inadvertently get
   stuck in the "on" state due to this...
+  - Run an automation at Home Assistant restart and/or when the automations get
+    reloaded and toggle all "dangerous" entities into their safe/"off" state?
 - Further implement the doorbell sensor and the "washing machine done"-sensor
   (both based on creative usage of vibration sensors)
-- Use the lux sensors in various rooms to replace the global solar irradiance
-  measurement
 - Move all icon customisations for sensors defined in YAML from
   `📄 customize.yaml` to their respective YAML files
 - Nintendo Switch on/off detection: This Switch comes online regularly for a
   minute or so, which makes the current approach for controlling the Living Room
   lights unusable. See if there's a(nother) way of handling this – for now the
   automations are included, but disabled in the UI
+- State attributes store history too, so there's no need to create template
+  sensors if they're purely used for graphing in dashboards (`mini-graph-card`
+  can graph attributes) or in other automations (use a template to retrieve the
+  attribute's value)
+  - Main value of template sensors is to easily retrieve an attribute's history
+    without having it structural on a dashboard (i.e. incidental usage)
+  - See which of the current template sensors (mainly tado° related) are
+    actually useful given the above considerations; remove the ones that are
+    not...
+- Some of the automation/helper-combinations can be replaced with template
+  sensors – mainly those that effectively are nothing more than a set of
+  operations on the state of one or more existing sensors:
+  - Time of Day / Nighttime
+  - The Hue scene heuristics – might be more trouble than it's worth (unless
+    this somehow enables the inputs for the heuristic to be stored outside of
+    the template sensor)
 
 ## tado°
 
-- Test how the "Away" mode actually works. Does it switch the thermostat mode to
-  "off", or does the mode not change (I expect the latter &ndash; in case of the
-  former, some additional logic is required for the home/away automations)?
-  - It appears the mode does not change (remains `heat`) – it changes the
-    temperature and sets the "online mode" to `away`
+- It appears the "Off" state/`hvac_action` clears the setpoint temperature.
+  Check if the Attic thermostat automations properly cope with that. Also, make
+  the Attic thermostat follow the on/off state of the main thermostat
+  (functionally not needed, mainly for consistency)
 - Create several "backstops" (controlled via HomeKit) to ensure heating is
-  properly controlled when there is no access to the Tado service (i.e. no
-  Internet connection)
+  properly controlled when there is no access to the online Tado service
+  - On hold till the first time this actually turns out to be an issue. As of
+    yet, the Tado online service has been rock-solid...
 
 ## Lights
 
@@ -52,6 +68,13 @@
   trigger counter motion sensor, switch Kitchen to "Bright (Custom)" (while
   motion sensor is still active). After motion clears, Kitchen switches back to
   "Ambiance" instead of to "Bright (Custom")
+- Use the lux sensors in various rooms to replace the global solar irradiance
+  measurement (i.e. separate automations for the Living Room, Kitchen, Hallway
+  downstairs and Hallway upstairs)
+- Average out the lux level of the three motion sensors on the first floor to
+  approximate lux level in the upstairs hallway
+- Make the motions lights for the Kitchen counter, Bathroom and Wardrobe
+  dependent on lux level
 
 ## Alarm
 
