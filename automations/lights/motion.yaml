@@ -8,7 +8,7 @@
   condition:
   - condition: numeric_state
     entity_id: sensor.lightlevel_55
-    below: 600
+    below: 200
   action:
   - service: script.hue_activate_scene_kitchen_counter_cupboards
     data:
