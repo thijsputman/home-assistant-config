@@ -1,0 +1,35 @@
+- platform: template
+  sensors:
+    time_of_day:
+      friendly_name: "Time of Day"
+      icon_template: mdi:theme-light-dark
+      value_template: >-
+        {%- if state_attr('sun.sun', 'elevation') > -4.0 and state_attr('sun.sun', 'elevation') < 2.0  -%}
+          {%- if is_state_attr('sun.sun', 'rising', true) -%}
+            dawn
+          {%- else -%}
+            dusk
+          {%- endif -%}
+        {%- else -%}
+          {%- if state_attr('sun.sun', 'elevation') >= 2.0 -%}
+            day
+          {%- else -%}
+            night
+          {%- endif -%}
+        {%- endif -%}
+    time_of_day_numeric:
+      friendly_name: "Time of Day (numeric)"
+      icon_template: mdi:theme-light-dark
+      value_template: >-
+        {%- if states('sensor.time_of_day') == 'day' -%}
+          0.0
+        {%- elif states('sensor.time_of_day') == 'night' -%}
+          1.0
+        {%- elif
+          states('sensor.time_of_day') == 'dusk' or
+          states('sensor.time_of_day') == 'dawn'
+        -%}
+          0.5
+        {%- else -%}
+          -1.0
+        {%- endif -%}
