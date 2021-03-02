@@ -1,4 +1,4 @@
-- alias: 🤖 | 💡 Lights off during daytime (☀️ > 40 W/²)
+- alias: 💡 | ⛅ Lights off during daytime (☀️ > 40 W/²)
   description: ''
   trigger:
   - platform: numeric_state
@@ -20,21 +20,11 @@
         data: {}
         entity_id: light.living_room
     default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_select.hue_scene_kitchen
-        state:  Daytime
-      sequence:
-      - service: light.turn_off
-        data: {}
-        entity_id: light.kitchen
-    default: []
   - service: light.turn_off
     data: {}
     entity_id: light.hallway
   mode: single
-- alias: 🤖 | 💡 Lights on during daytime (☀️ < 30 W/²)
+- alias: 💡 | ⛅ Lights on during daytime (☀️ < 30 W/²)
   description: ''
   trigger:
   - platform: numeric_state
@@ -73,26 +63,6 @@
     default: []
   - choose:
     - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: light.kitchen
-          state: 'off'
-        - condition: and
-          conditions:
-          - condition: state
-            entity_id: input_select.hue_scene_kitchen_counter_cupboards
-            state: Activity
-          - condition: state
-            entity_id: input_select.hue_scene_kitchen
-            state: <Off>
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          scene_name: Daytime
-    default: []
-  - choose:
-    - conditions:
       - condition: state
         entity_id: light.hallway
         state: 'off'
@@ -102,4 +72,73 @@
           group_name: Hallway
           scene_name: Evening
     default: []
+  mode: single
+- alias: 💡 | ⛅ Kitchen lights on during daytime (💡 < 100 lux)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.lightlevel_47
+    for: "00:01:00"
+    below: 100
+  - platform: state
+    entity_id: sensor.time_of_day
+    from: dawn
+    to: day
+    for: "00:00:10"
+  condition:
+  - condition: state
+    entity_id: sensor.time_of_day
+    state: day
+  - condition: numeric_state
+    entity_id: sensor.lightlevel_47
+    below: 100
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: light.kitchen
+      state: 'off'
+    - condition: and
+      conditions:
+      - condition: state
+        entity_id: input_select.hue_scene_kitchen_counter_cupboards
+        state: Activity
+      - condition: state
+        entity_id: input_select.hue_scene_kitchen
+        state: <Off>
+  action:
+  - choose:
+    # If the Kitchen counter & cupboards lights are on, leave those on
+    - conditions:
+      - condition: state
+        entity_id: input_select.hue_scene_kitchen_counter_cupboards
+        state: Activity
+      sequence:
+      - service: script.hue_activate_scene_kitchen
+        data:
+          scene_name: Daytime
+      - service: script.hue_activate_scene_kitchen_counter_cupboards
+        data:
+          scene_name: Activity
+    default:
+    - service: script.hue_activate_scene_kitchen
+      data:
+        scene_name: Daytime
+  mode: single
+- alias: 💡 | ⛅ Kitchen lights off during daytime (💡 > 80 lux)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.lightlevel_47
+    for: "00:01:00"
+    above: 80
+  condition:
+  - condition: state
+    entity_id: sensor.time_of_day
+    state: day
+  - condition: state
+    entity_id: input_select.hue_scene_kitchen
+    state: Daytime
+  action:
+  - service: light.turn_off
+    entity_id: light.kitchen
   mode: single
