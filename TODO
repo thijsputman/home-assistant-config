@@ -86,3 +86,5 @@
 - Perhaps use the "Template Alarm Control Panel" instead of the current setup
   with a set of automations? Unsure whether that would really make thing easier
   to understand though...
+- Send a notification when windows or doors are left open when leaving the house
+  (i.e. when the alarm is switched into "Armed away"-mode)

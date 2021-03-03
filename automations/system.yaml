@@ -11,7 +11,7 @@
     value_template: >-
       {{
         trigger.event.data.service_data.notification_id in
-          ['raining', 'home_alarm', 'system_general', 'calamity_leak']
+          ['raining', 'home_alarm', 'system_general', 'calamity_leak', 'trash']
       }}
   action:
   - service: notify.all_devices
@@ -21,9 +21,9 @@
         tag: >-
           {{ trigger.event.data.service_data.notification_id }}
   mode: single
-- alias: 📱 | 🔋 Sensor low battery notification (any battery-level < 20%)
+- alias: 📱 Sensor low battery notification (🔋 < 20%)
   variables:
-    # Exclude mobile phones and tablets
+    # Exclude mobile devices
     exclude:
     - sensor.p20hd_eea_battery_level
     - sensor.sm_g930f_battery_level

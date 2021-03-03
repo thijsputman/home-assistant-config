@@ -106,6 +106,8 @@
   - delay: 120
   - service: light.turn_off
     entity_id: light.wardrobe
+  mode: restart
+  max_exceeded: silent
 - alias: 💡 | 👋 Bathroom light toggle (motion detected)
   trigger:
   - platform: state
@@ -149,3 +151,4 @@
       entity_id: light.bathroom
       transition: 30
   mode: restart
+  max_exceeded: silent

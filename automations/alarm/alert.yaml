@@ -5,6 +5,9 @@
     # Not using groups of sensors – They will trigger "off" → "on" if one of
     # their members transitions from "unavailable" → "on", which leads to false
     # alarms...
+    # Furthermore, listing the individual entities is relevant as some
+    # doors/windows might intentionally be left open – using a group would
+    # obscure all further state transitions.
     entity_id:
     - binary_sensor.openclose_12
     - binary_sensor.openclose_16
@@ -143,7 +146,7 @@
 # Toggle "input_boolean.active_alarm_state" to "true" when the alarm goes to
 # "pending" and keep it that way until the alarm is actively disarmed. Indicates
 # the home is an active alarm state – mainly used to hide semi-sensitive
-# information from any tech-savvy burglar trying to operate the Lovelace UI.
+# information from a tech-savvy burglar trying to use the Lovelace dashboard.
 - alias: 🚧 | 🚨 Active alarm state
   description: ''
   trigger:
