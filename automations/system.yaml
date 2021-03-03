@@ -55,68 +55,50 @@
       message: >-
         <ul><li>{{sensors}}</li><ul>
   mode: single
-- alias: 📱 Notify on (suspected) integration failure
+- alias: 📱 Notify on integration failure (unknown/unavailable-state)
   description: ''
+  variables:
+    # Entities that require Internet-connectivity to function
+    online:
+      - binary_sensor.ib1700339968_connection_state
+      - !secret aarlo_connected_sensor
+      - vacuum.neato_d7
+      - switch.pi_hole
   trigger:
-  # DSMR
   - platform: state
-    entity_id: sensor.power_consumption
-    to: "unknown"
-    for: "00:20:00"
+    entity_id:
+    - sensor.power_consumption
+    - sensor.weewx_outside_temperature
+    - sensor.weewx_outside_temperature_balcony
+    - light.range_extender_2  # deCONZ
+    - sensor.hue_dimmer_switch_1_battery_level
+    - binary_sensor.ib1700339968_connection_state # tado° (online)
+    - climate.tado_smart_thermostat
+    - !secret aarlo_connected_sensor
+    - vacuum.neato_d7
+    - switch.pi_hole
+    to:
+    - "unknown"
+    - "unavailable"
+    for: "00:10:00"
+  # Gas consumption updates once per hour
   - platform: state
     entity_id: sensor.gas_consumption
-    to: "unknown"
-    for: "02:00:00" # Gas consumption updates once per hour
-  # WeeWX
-  - platform: state
-    entity_id: sensor.weewx_outside_temperature
-    to: "unknown"
-    for: "00:20:00"
-  - platform: state
-    entity_id: sensor.weewx_outside_temperature_balcony
-    to: "unknown"
-    for: "00:20:00"
-  # deCONZ
-  - platform: state
-    entity_id: light.range_extender_2
-    to: "unknown"
-    for: "00:20:00"
-  # Hue
-  - platform: state
-    entity_id: sensor.hue_dimmer_switch_1_battery_level
-    to: "unknown"
-    for: "00:20:00"
-  # tado° (online integration & HomeKit)
-  - platform: state
-    entity_id: binary_sensor.ib1700339968_connection_state
-    to: "unknown"
-    for: "00:20:00"
-  - platform: state
-    entity_id: climate.tado_smart_thermostat
-    to: "unknown"
-    for: "00:20:00"
-  # A(a)rlo (online integration)
-  - platform: state
-    entity_id: !secret aarlo_connected_sensor
-    to: "unknown"
-    for: "00:20:00"
-  # Neato (online integration)
-  - platform: state
-    entity_id: vacuum.neato_d7
-    to: "unavailable"
-    for: "00:20:00"
-  # Pi-hole
-  - platform: state
-    entity_id: switch.pi_hole
-    to: "unknown"
-    for: "00:20:00"
+    to:
+    - "unknown"
+    - "unavailable"
+    for: "01:00:00"
   condition:
-  # Only trigger when remote UI is connected (i.e. Internet is most likely
-  # working) – without Internet-connectivity (some of the) sensors will become
-  # unavailable without an actual integration failure
-  - condition: state
-    entity_id: binary_sensor.remote_ui
-    state:  "on"
+  # We should either be online (i.e. the Remote UI is connected), or the entity
+  # in question should _not_ require Internet-connectivity to function
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: binary_sensor.remote_ui
+      state:  "on"
+    - condition: template
+      value_template: >-
+        {{ not trigger.entity_id in online }}
   action:
   - service: script.persistent_notification_my_devices
     data:
@@ -124,5 +106,6 @@
       title: Potential integration failure
       message: >-
         {{ trigger.to_state.attributes.friendly_name }} has been in an
-        unknown/unavailable state for {{ trigger.for }}.
+        {{ trigger.to_state.state }}-state for
+        {{ relative_time(trigger.to_state.last_changed) }}.
   mode: single
