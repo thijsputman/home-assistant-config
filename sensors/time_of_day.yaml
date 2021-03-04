@@ -29,7 +29,7 @@
           states('sensor.time_of_day') == 'dusk' or
           states('sensor.time_of_day') == 'dawn'
         -%}
-          0.5
+          1.0
         {%- else -%}
           -1.0
         {%- endif -%}
