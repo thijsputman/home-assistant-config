@@ -66,6 +66,19 @@
   name: 'WeeWX wind direction'
   unit_of_measurement: '°'
   value_template: "{{ value | round(0) }}"
+# Due to the placement of the weather station, the wind direction is rather
+# jittery. The below filter smooths out the measurements as bit. It's using a
+# moving average instead of low-pass filter as the input time series is
+# "unevenly spaced" (i.e. measurements come in as the wind direction changes,
+# not at a regular interval).
+- platform: filter
+  name: "WeeWX wind direction (filtered)"
+  entity_id: sensor.weewx_wind_direction
+  filters:
+    - filter: time_simple_moving_average
+      type: last
+      window_size: "00:10"
+      precision: 0
 - platform: mqtt
   state_topic: 'weewx/windGustDir'
   name: 'WeeWX wind gust direction'
