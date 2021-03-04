@@ -1,0 +1,6 @@
+motion_bathroom:
+  name: Motion Sensors (Bathroom)
+  icon: hass:brightness-5
+  entities:
+    - binary_sensor.presence_68
+    - binary_sensor.presence_71
