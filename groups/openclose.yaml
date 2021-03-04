@@ -1,3 +1,4 @@
+# Used in Lovelace dashboard
 openclose_bedroom:
   name: Bedroom (door & windows)
   icon: mdi:window-open-variant
@@ -5,7 +6,6 @@ openclose_bedroom:
      - binary_sensor.openclose_18
      - binary_sensor.openclose_19
      - binary_sensor.openclose_20
-
 openclose_living_room:
   name: Living room (door & windows)
   icon: mdi:window-open-variant
@@ -13,15 +13,3 @@ openclose_living_room:
      - binary_sensor.openclose_8
      - binary_sensor.openclose_14
      - binary_sensor.openclose_15
-
-openclose_inside_all:
-  name: All doors and windows (inside)
-  icon: mdi:home-alert-outline
-  entities:
-    - binary_sensor.openclose_12
-    - binary_sensor.openclose_16
-    - binary_sensor.openclose_17
-    - binary_sensor.openclose_33
-    - binary_sensor.openclose_36
-    - group.openclose_bedroom
-    - group.openclose_living_room
