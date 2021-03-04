@@ -4,7 +4,10 @@
       friendly_name: "Time of Day"
       icon_template: mdi:theme-light-dark
       value_template: >-
-        {%- if state_attr('sun.sun', 'elevation') > -4.0 and state_attr('sun.sun', 'elevation') < 2.0  -%}
+        {%- if
+          state_attr('sun.sun', 'elevation') > -4.0 and
+          state_attr('sun.sun', 'elevation') < 2.0
+        -%}
           {%- if is_state_attr('sun.sun', 'rising', true) -%}
             dawn
           {%- else -%}

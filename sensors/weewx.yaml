@@ -84,6 +84,14 @@
   name: 'WeeWX wind gust direction'
   unit_of_measurement: '°'
   value_template: "{{ value | round(0) }}"
+- platform: filter
+  name: "WeeWX wind gust direction (filtered)"
+  entity_id: sensor.weewx_wind_gust_direction
+  filters:
+    - filter: time_simple_moving_average
+      type: last
+      window_size: "00:10"
+      precision: 0
 - platform: mqtt
   state_topic: 'weewx/radiation_Wpm2'
   name: 'WeeWX solar irradiance'
