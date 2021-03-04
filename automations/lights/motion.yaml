@@ -97,6 +97,9 @@
     below: 50
   action:
   - service: light.turn_on
+    data:
+      brightness: 255
+      kelvin: 2900
     entity_id: light.wardrobe
   - wait_for_trigger:
     - platform: state
