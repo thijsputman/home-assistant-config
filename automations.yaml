@@ -101,45 +101,6 @@
     data: {}
     entity_id: light.attic
   mode: single
-- id: '1604944472380'
-  alias: 💤 | 🤖 Everyone at home asleep (all lights off)
-  description: ''
-  trigger:
-  - platform: state
-    from: 'on'
-    to: 'off'
-    for: 00:10:00
-    entity_id: group.light_inside_rooms_all
-  condition:
-  - condition: state
-    entity_id: group.family
-    state: home
-  - condition: state
-    entity_id: input_select.time_of_day
-    state: night
-  action:
-  - service: input_boolean.turn_on
-    data: {}
-    entity_id: input_boolean.everyone_asleep
-  mode: single
-- id: '1604944531342'
-  alias: 💤 | ⏰ Everyone at home awake (daily at «wakeup» time)
-  description: ''
-  trigger:
-  - platform: time
-    at: input_datetime.wakeup
-  condition:
-  - condition: state
-    entity_id: group.family
-    state: home
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: 'on'
-  action:
-  - service: input_boolean.turn_off
-    data: {}
-    entity_id: input_boolean.everyone_asleep
-  mode: single
 - id: '1604944801176'
   alias: 🤖 | 💡 Front & back door maximum brightness (door open)
   description: ''
