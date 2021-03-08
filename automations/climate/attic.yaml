@@ -1,13 +1,13 @@
-- alias: 🤖 | 🌡️ Attic heating on (Attic lights on)
+- alias: 🌡️ | 💡 Attic heating on (Attic lights on)
   description: ''
   trigger:
   - platform: state
     entity_id: light.attic
     from: 'off'
     to: 'on'
-    for: 00:05:00
+    for: '00:05:00'
   condition:
-  # Follow the main (Living room) thermostat's setting
+  # Only act if the main (Living room) thermostat is on
   - condition: numeric_state
     entity_id: sensor.tado_smart_thermostat_setpoint
     above: 18.0
@@ -20,14 +20,41 @@
       temperature: 21.0
     entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🤖 | 🌡️ Attic heating off (Attic lights off)
+- alias: 🌡️ | 🤖 Attic heating on (keep on while lights are on)
+  description: ''
+  # This is primarily to prevent the tado°-schedule from switching the Attic
+  # heating off on weekdays at 19:00 (while the lights is still on). Manual
+  # adjustments also trigger this automation, but since it only triggers below
+  # 18°, manual temperature adjustments are generally unaffected...
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.tado_smart_radiator_attic_setpoint
+    below: 18.0
+  condition:
+  - condition: state
+    entity_id: light.attic
+    state: 'on'
+  # Only act if the main (Living room) thermostat is on
+  - condition: numeric_state
+    entity_id: sensor.tado_smart_thermostat_setpoint
+    above: 18.0
+  - condition: state
+    entity_id: climate.tado_smart_thermostat
+    state: heat
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 21.0
+    entity_id: climate.tado_smart_radiator_attic
+  mode: single
+- alias: 🌡️ | 💡 Attic heating off (Attic lights off)
   description: ''
   trigger:
   - platform: state
     entity_id: light.attic
     from: 'on'
     to: 'off'
-    for: 00:05:00
+    for: '00:05:00'
   condition: []
   action:
   - service: climate.set_temperature
@@ -35,11 +62,11 @@
       temperature: 12.0
     entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: ⏰ | 🌡️ Attic heating off (weekdays when lights remain off)
+- alias: 🌡️ | ⏰ Attic heating off (weekdays when lights remain off)
   description: ''
   trigger:
   - platform: time
-    at: "09:00:00"
+    at: '09:00:00'
   condition:
   - condition: time
     weekday:
@@ -48,7 +75,7 @@
     - wed
     - thu
     - fri
-  # Only relevant if the Attic radiator is actively heating
+  # Only relevant if the Attic radiator is on
   - condition: numeric_state
     entity_id: sensor.tado_smart_radiator_attic_setpoint
     above: 18.0
@@ -64,13 +91,61 @@
     - platform: state
       entity_id: light.attic
       to: 'on'
-    timeout: 01:30:00
+    timeout: '01:30:00'
     continue_on_timeout: true
   # Only continue (i.e. switch the radiator off) if the timer expired (i.e. the
   # light in the Attic was not switched on within 90 minutes)
   - condition: template
     value_template: >-
       {{ wait.trigger == 'none' }}
+  - service: climate.set_temperature
+    data:
+      temperature: 12.0
+    entity_id: climate.tado_smart_radiator_attic
+  mode: single
+- alias: 🌡️ | ✈️ Attic heating off (tado° from Away- to Home-mode)
+  description: ''
+  trigger:
+  # When tado° transitions from Away- to Home-mode, it restores all schedules
+  # and thus potentially switches the Attic radiator on...
+  - platform: state
+    entity_id: sensor.tado_living_room_tado_mode
+    from: AWAY
+    to: HOME
+    # Hold the state for a short while to ensure HomeKit (which we use for
+    # radiator control) catches up with the online state...
+    for: '00:01:00'
+  condition:
+  # Only relevant if the Attic radiator is on
+  - condition: numeric_state
+    entity_id: sensor.tado_smart_radiator_attic_setpoint
+    above: 18.0
+  - condition: state
+    entity_id: sensor.tado_smart_radiator_attic_mode
+    state: heat
+  action:
+  - service: climate.set_temperature
+    data:
+      temperature: 12.0
+    entity_id: climate.tado_smart_radiator_attic
+  mode: single
+- alias: 🌡️ | 🤖 Attic heating off (Living room thermostat off)
+  description: ''
+  trigger:
+  # Mainly intended as a fail-safe to ensure the Attic radiator (which can
+  # control the cv-boiler by itself) doesn't stay on throughout the night...
+  - platform: numeric_state
+    entity_id: sensor.tado_smart_thermostat_setpoint
+    below: 18.0
+  condition:
+  # Only relevant if the Attic radiator is on
+  - condition: numeric_state
+    entity_id: sensor.tado_smart_radiator_attic_setpoint
+    above: 18.0
+  - condition: state
+    entity_id: sensor.tado_smart_radiator_attic_mode
+    state: heat
+  action:
   - service: climate.set_temperature
     data:
       temperature: 12.0
