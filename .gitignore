@@ -16,3 +16,5 @@
 /secrets.yaml
 /known_devices.yaml
 /groups/private.yaml
+
+/deCONZ.rest

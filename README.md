@@ -9,6 +9,7 @@ included in this repository...
 
 1. [`📄 TODO`](./TODO)
 2. [`📄 docs/PRIVACY.md`](./docs/PRIVACY.md)
+3. [`📄 docs/deCONZ.md`](./docs/deCONZ.md)
 
 ## License
 
