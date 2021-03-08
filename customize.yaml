@@ -54,3 +54,7 @@ sensor.pi4_sandbox_1_minute_load:
   icon: mdi:gauge
 light.bathroom:
   icon: mdi:shower
+sensor.weewx_wind_direction_filtered:
+  icon: mdi:compass
+sensor.weewx_wind_gust_direction_filtered:
+  icon: mdi:compass
