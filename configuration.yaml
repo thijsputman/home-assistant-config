@@ -6,7 +6,7 @@ homeassistant:
     - /config/var
 
 recorder:
-  commit_interval: 30
+  db_url: sqlite:////nvme/home-assistant_v2.db
   exclude:
     entities:
       - sensor.daily_gas
