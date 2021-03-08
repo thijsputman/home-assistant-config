@@ -79,7 +79,7 @@
   - platform: numeric_state
     entity_id: sensor.lightlevel_47
     for: "00:01:00"
-    below: 100
+    below: 80
   - platform: state
     entity_id: sensor.time_of_day
     from: dawn
@@ -91,7 +91,7 @@
     state: day
   - condition: numeric_state
     entity_id: sensor.lightlevel_47
-    below: 100
+    below: 80
   - condition: or
     conditions:
     - condition: state
@@ -130,7 +130,7 @@
   - platform: numeric_state
     entity_id: sensor.lightlevel_47
     for: "00:01:00"
-    above: 80
+    above: 65
   condition:
   - condition: state
     entity_id: sensor.time_of_day
