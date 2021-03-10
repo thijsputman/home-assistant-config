@@ -1,0 +1,151 @@
+# (Ab?)using the Utility Meter to measure consumption/costs of a select number
+# appliances
+
+- platform: template
+  sensors:
+    # Close-in Boiler (Kitchen)
+    monthly_consumption_costs_boiler_kitchen:
+      friendly_name: Monthly costs (Close-in boiler – Kitchen)
+      unit_of_measurement: €
+      # Runs mostly during peak-hours, use peak-rate to approximate costs
+      value_template: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_boiler_kitchen')|float *
+              states('input_number.rate_energy_peak')|float)
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_boiler_kitchen',
+                  'last_period')|float *
+                states('input_number.rate_energy_peak')|float)
+            ) | round(2)
+          }}
+    # Electric heater (Shed)
+    monthly_consumption_costs_heater_shed:
+      friendly_name: Monthly costs  (Electric heater – Shed)
+      unit_of_measurement: €
+      # Runs all-day round, use average of the two rates to approximate costs
+      value_template: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_heater_shed')|float *
+              (states('input_number.rate_energy_peak')|float +
+              states('input_number.rate_energy_offpeak')|float) / 2)
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_heater_shed',
+                  'last_period')|float *
+                (states('input_number.rate_energy_peak')|float +
+                states('input_number.rate_energy_offpeak')|float) / 2)
+            ) | round(2)
+          }}
+    # Washing machine
+    monthly_consumption_costs_washing_machine:
+      friendly_name: Monthly costs (Washing machine)
+      unit_of_measurement: €
+      # Runs mostly off-peak, use that rate to approximate
+      value_template: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_washing_machine')|float *
+              states('input_number.rate_energy_offpeak')|float)
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_washing_machine',
+                  'last_period')|float *
+                states('input_number.rate_energy_offpeak')|float)
+            ) | round(2)
+          }}
+    monthly_consumption_costs_dryer:
+      friendly_name: Monthly costs (Dryer)
+      unit_of_measurement: €
+      # Runs mostly off-peak, use that rate to approximate
+      value_template: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_dryer')|float *
+              states('input_number.rate_energy_offpeak')|float)
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_dryer',
+                  'last_period')|float *
+                states('input_number.rate_energy_offpeak')|float)
+            ) | round(2)
+          }}
+    # Dishwasher
+    power_dishwasher_actual:
+      friendly_name: Power (Dishwasher) [actual]
+      unit_of_measurement: W
+      # Dishwasher and Close-in boiler share the same outlet – "Diswasher"
+      # measures both devices; "Close-in boiler" only the boiler
+      # There's a slight discrepancy between the two measurements, need to
+      # gather a bit of data first to determine if/how) to account for this...
+      value_template: >-
+        {{
+          states('sensor.power_88_actual')|float -
+            states('sensor.power_57')|float
+        }}
+    monthly_consumption_dishwasher_actual:
+      friendly_name: Monthly consumption (Dishwasher) [actual]
+      unit_of_measurement: kWh
+      value_template: >-
+        {{
+          states('sensor.monthly_consumption_dishwasher')|float -
+            states('sensor.monthly_consumption_boiler_kitchen')|float
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            state_attr('sensor.monthly_consumption_dishwasher',
+              'last_period')|float -
+              state_attr('sensor.monthly_consumption_boiler_kitchen',
+                'last_period')|float
+          }}
+    consumption_dishwasher_actual:
+      friendly_name: Consumption (Dishwasher) [actual]
+      unit_of_measurement: kWh
+      # In absolute terms this number is nonsensical: Both consumption counters
+      # are cumulative and didn't start at the same time (so the absolute number
+      # starts out negative). It's used to graph daily usage (i.e. the delta
+      # with yesterday – for that purpose it works just fine).
+      value_template: >-
+        {{
+          states('sensor.consumption_87_actual')|float -
+            states('sensor.consumption_58')|float
+        }}
+    monthly_consumption_costs_dishwasher:
+      friendly_name: Monthly costs (Dishwasher)
+      unit_of_measurement: €
+      # Runs mostly off-peak, use that rate to approximate
+      value_template: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_dishwasher_actual')|float *
+              states('input_number.rate_energy_offpeak')|float)
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_dishwasher_actual',
+                  'last_period')|float *
+                states('input_number.rate_energy_offpeak')|float)
+            ) | round(2)
+          }}

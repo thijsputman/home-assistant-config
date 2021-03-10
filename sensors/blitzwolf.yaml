@@ -1,0 +1,56 @@
+# The Blitzwolf BW-SHP13 is the only affordable 16A ZigBee smart-plug on the
+# market that also supports metering – with one major caveat: Its measurements
+# are quite a bit off...
+#
+# Haven't bothered using a multi-meter, but comparing what is reported by the
+# Blitzwolf versus DSMR, the factor of 0.88 mentioned in the below GitHub-issue
+# appears quite accurate. Should be applied to both the power/current and the
+# consumption (i.e. cumulative) measurements.
+# N.B. Factor might be different from plug to plug, so revalidate whenever a
+# new plug is added!
+#
+# See here for detailed discusson:
+#   https://github.com/Koenkk/zigbee2mqtt/issues/3812#issuecomment-651709435
+#   https://github.com/Koenkk/zigbee2mqtt/issues/3812#issuecomment-652637304
+#
+
+- platform: template
+  sensors:
+    power_88_actual:
+      friendly_name: Power 88 [actual]
+      unit_of_measurement: W
+      value_template: >-
+        {{
+          states('sensor.power_88')|float * 0.88
+        }}
+      attribute_templates:
+        current: >-
+          {{
+            state_attr('sensor.power_88', 'current')|float * 0.88
+          }}
+    consumption_87_actual:
+      friendly_name: Consumption 87 [actual]
+      unit_of_measurement: W
+      value_template: >-
+        {{
+          states('sensor.consumption_87')|float * 0.88
+        }}
+    power_86_actual:
+      friendly_name: Power 86 [actual]
+      unit_of_measurement: W
+      value_template: >-
+        {{
+          states('sensor.power_86')|float * 0.88
+        }}
+      attribute_templates:
+        current: >-
+          {{
+            state_attr('sensor.power_86', 'current')|float * 0.88
+          }}
+    consumption_85_actual:
+      friendly_name: Consumption 85 [actual]
+      unit_of_measurement: W
+      value_template: >-
+        {{
+          states('sensor.consumption_85')|float * 0.88
+        }}

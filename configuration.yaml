@@ -27,6 +27,8 @@ recorder:
       - sensor.*_energy_costs*
       - sensor.*_gas_costs*
       - input_number.rate_*
+      # Utility Meter – Appliances
+      - sensor.monthly_consumption_*
 
 history:
   exclude:
@@ -91,8 +93,8 @@ device_tracker:
     new_device_defaults:
       track_new_devices: false
 
-# Utility Meter (DSMR)
 utility_meter:
+  # Utility Meter (DSMR)
   daily_energy_offpeak:
     source: sensor.energy_consumption_tarif_1
     cycle: daily
@@ -110,6 +112,22 @@ utility_meter:
     cycle: monthly
   monthly_gas:
     source: sensor.gas_consumption
+    cycle: monthly
+  # Appliances
+  monthly_consumption_boiler_kitchen:
+    source: sensor.consumption_58
+    cycle: monthly
+  monthly_consumption_heater_shed:
+    source: sensor.consumption_42
+    cycle: monthly
+  monthly_consumption_washing_machine:
+    source: sensor.consumption_85_actual
+    cycle: monthly
+  monthly_consumption_dryer:
+    source: sensor.consumption_84
+    cycle: monthly
+  monthly_consumption_dishwasher:
+    source: sensor.consumption_87_actual
     cycle: monthly
 
 # Neato
