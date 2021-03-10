@@ -73,7 +73,7 @@
           scene_name: Evening
     default: []
   mode: single
-- alias: 💡 | ⛅ Kitchen lights on during daytime (💡 < 100 lux)
+- alias: 💡 | ⛅ Kitchen lights on during daytime (💡 < 80 lux)
   description: ''
   trigger:
   - platform: numeric_state
@@ -124,7 +124,7 @@
       data:
         scene_name: Daytime
   mode: single
-- alias: 💡 | ⛅ Kitchen lights off during daytime (💡 > 80 lux)
+- alias: 💡 | ⛅ Kitchen lights off during daytime (💡 > 65 lux)
   description: ''
   trigger:
   - platform: numeric_state
