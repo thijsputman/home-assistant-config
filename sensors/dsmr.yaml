@@ -89,6 +89,36 @@
                 states('input_number.rate_energy_peak')|float)
             ) | round(2)
           }}
+    monthly_energy_costs_daily_average:
+      friendly_name: Monthly energy costs (daily average)
+      unit_of_measurement: €
+      value_template: >-
+        {{
+          (
+            (
+              (states('sensor.monthly_energy_offpeak')|float *
+                states('input_number.rate_energy_offpeak')|float) +
+              (states('sensor.monthly_energy_peak')|float *
+                states('input_number.rate_energy_peak')|float)
+            ) /
+              state_attr('sensor.monthly_energy_offpeak', 'last_reset').today().day|int
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (
+                (state_attr('sensor.monthly_energy_offpeak', 'last_period')|float *
+                  states('input_number.rate_energy_offpeak')|float) +
+                (state_attr('sensor.monthly_energy_peak', 'last_period')|float *
+                  states('input_number.rate_energy_peak')|float)
+              ) / (
+                state_attr('sensor.monthly_energy_offpeak', 'last_reset') -
+                  timedelta(days=1)
+              ).day|int
+            ) | round(2)
+          }}
     # Gas costs
     daily_gas_costs:
       friendly_name: Daily gas costs
@@ -124,5 +154,31 @@
             (
               state_attr('sensor.monthly_gas', 'last_period')|float *
               states('input_number.rate_gas')|float
+            ) | round(2)
+          }}
+    monthly_gas_costs_daily_average:
+      friendly_name: Monthly gas costs (daily average)
+      unit_of_measurement: €
+      value_template: >-
+        {{
+          (
+            (
+              states('sensor.monthly_gas')|float *
+              states('input_number.rate_gas')|float
+            ) /
+              state_attr('sensor.monthly_gas', 'last_reset').today().day|int
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (
+                state_attr('sensor.monthly_gas', 'last_period')|float *
+                states('input_number.rate_gas')|float
+              ) / (
+                state_attr('sensor.monthly_gas', 'last_reset') -
+                  timedelta(days=1)
+              ).day|int
             ) | round(2)
           }}

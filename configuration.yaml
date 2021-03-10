@@ -19,12 +19,13 @@ recorder:
       - sensor.dd_wrt_*_bps
       - sensor.*_raw
       - sensor.9292_*
-      - sensor.daily_energy_*
-      - sensor.monthly_energy_*
-      - sensor.*_energy_costs
-      - sensor.*_gas_costs
       - sensor.pi_hole_ads_*
       - input_text.hue_scene_previous_*
+      # Utility Meter – DSMR
+      - sensor.daily_energy_*
+      - sensor.monthly_energy_*
+      - sensor.*_energy_costs*
+      - sensor.*_gas_costs*
       - input_number.rate_*
 
 history:
