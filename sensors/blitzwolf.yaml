@@ -22,7 +22,7 @@
       # When idle, sensors alternate between 0 and 1 Watt
       value_template: >-
         {%- if states('sensor.power_88')|float <= 1 -%}
-          0
+          {{ 0.0|float }}
         {%- else -%}
           {{
             states('sensor.power_88')|float * 0.88
@@ -47,7 +47,7 @@
       # When idle, sensors alternate between 0 and 1 Watt
       value_template: >-
         {%- if states('sensor.power_86')|float <= 1 -%}
-          0
+          {{ 0.0|float }}
         {%- else -%}
           {{
             states('sensor.power_86')|float * 0.88
