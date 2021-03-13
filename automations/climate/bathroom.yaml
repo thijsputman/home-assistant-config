@@ -1,20 +1,29 @@
-- alias: 🌪️ | 🤖 Bathroom fan on (💧 > 60%)
+- alias: 🌪️ | 🤖 Bathroom fan on (Δ💧 > 10%/min)
   trigger:
   - platform: numeric_state
-    entity_id: sensor.humidity_25
-    above: 60.0
-    for: "00:00:30"
+    entity_id: sensor.humidity_change_bathroom
+    above: 10.0
   condition: []
   action:
+  # Only act if humidity in the Bathroom is too high (and also prevent errant
+  # spikes in the derivative from triggering the automation). We wait a couple
+  # minutes as the initial derivative increase might occur before relative
+  # humidity goes above 60%...
+  - wait_for_trigger:
+    - platform: numeric_state
+      entity_id: sensor.humidity_25
+      above: 60.0
+    timeout: '00:05:00'
+    continue_on_timeout: false
   - service: light.turn_on
     data:
       entity_id: light.smart_relay_1
-- alias: 🌪️ | 🤖 Bathroom fan off (💧 < 60%; 2 hour rundown)
+- alias: 🌪️ | 🤖 Bathroom fan off (Δ💧 < 1%/min; 20 minute rundown)
   trigger:
   - platform: numeric_state
-    entity_id: sensor.humidity_25
-    below: 60.0
-    for: "02:00:00"
+    entity_id: sensor.humidity_change_bathroom
+    below: 1.0
+    for: "00:20:00"
   condition: []
   action:
   - service: light.turn_off
