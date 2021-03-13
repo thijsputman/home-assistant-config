@@ -103,7 +103,7 @@
       # the 10A unit _is_ drawing substantial power (indicating the boiler is
       # heating) or _was_ drawing power in the last 2 minutes (indicated by not
       # drawing power now and having its state changed within the last 2
-      # minutes). These 2 minutes are the maximum possible time discrepancy
+      # minutes). The 2:30 time-window is the maximum possible time discrepancy
       # between the Blitzwolf and Xiaomi measurements.
       # As the power strip both devices are connected to prevents the boiler
       # from drawing substantial power when the dishwasher is doing so, the
@@ -119,7 +119,7 @@
             (
               states('sensor.power_57')|float <= 1 and
                 states.sensor.power_57.last_changed|as_local +
-                  timedelta(minutes=2) >
+                  timedelta(minutes=2,seconds=30) >
                 states.sensor.power_57.last_changed.utcnow()|as_local
             )
           -%}
@@ -155,16 +155,24 @@
       # are cumulative and didn't start at the same time (so the absolute number
       # starts out negative). It's used to graph daily usage (i.e. the delta
       # with yesterday – for that purpose it works just fine).
-      # Additionally, this measurement most likely overshoots reality as the
-      # the Blitzwolf-plug has a lower resolution than the Xiaomi-plug and will
-      # thus accumulate more than we substract here (i.e. it counts the same
-      # peak in usage longer than the Xiaomi-plug does). See the comment at
-      # "sensor.power_dishwasher_actual" for more details.
+      # Additionally, this measurement most likely slightly overshoots reality
+      # as the the Blitzwolf-plug has a lower resolution than the Xiaomi-plug
+      # and will thus accumulate a bit more than we substract here (i.e. it
+      # counts the same peak in usage longer than the Xiaomi-plug does). See the
+      # comment at "sensor.power_dishwasher_actual" for more details.
+      # And then, the Blitzwolf-plug takes a couple minutes to report its first
+      # consumption data-point after Home Assistant start. To prevent a downward
+      # spike after every HA restart, wait with the compution until the value
+      # is actually available.
       value_template: >-
-        {{
-          states('sensor.consumption_87_actual')|float -
+        {%- if states('sensor.consumption_87')|float <= 0.0 -%}
+          {{
+            states('sensor.consumption_87_actual')|float -
             states('sensor.consumption_58')|float
-        }}
+          }}
+        {%- else -%}
+          {{ states('sensor.consumption_87') }}
+        {%- endif -%}
     monthly_consumption_costs_dishwasher:
       friendly_name: Monthly costs (Dishwasher)
       unit_of_measurement: €
