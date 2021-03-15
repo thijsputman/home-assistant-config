@@ -11,7 +11,14 @@
     value_template: >-
       {{
         trigger.event.data.service_data.notification_id in
-          ['raining', 'home_alarm', 'system_general', 'calamity_leak', 'trash']
+          [
+            'raining',
+            'home_alarm',
+            'system_general',
+            'calamity_leak',
+            'calamity_smoke',
+            'trash'
+          ]
       }}
   action:
   - service: notify.all_devices

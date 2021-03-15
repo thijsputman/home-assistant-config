@@ -25,16 +25,59 @@
     state: home
   action:
   - repeat:
+      # Short pulses for 2 minutes – just to get people's attention...
       count: 8
       sequence:
         - service: switch.turn_on
           entity_id: switch.warning_device_8
-        - delay: 5
+        - delay: 3
         - service: switch.turn_off
           entity_id: switch.warning_device_8
         # Stop if the water sensor clears
         - condition: state
           entity_id: binary_sensor.water_59
           state: "on"
-        - delay: 10
+        - delay: 12
+  mode: single
+- alias: 🤯/🔥 | 📱 Send notification (smoke detected)
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.fire_81
+    from: "off"
+    to: "on"
+  condition: []
+  action:
+  - service: script.persistent_notification_all_devices
+    data:
+      tag: calamity_smoke
+      title: Smoke detected!
+      message: >-
+        {{ trigger.to_state.attributes.friendly_name }} detected smoke!
+  mode: single
+- alias: 🤯/🔥 | 🔊 Sound the alarm (smoke detected)
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.fire_81
+    from: "off"
+    to: "on"
+    # Hold state for 1 minute so we don't raise hell on a false alarm...
+    for: "00:01:00"
+  condition: []
+  # Sound the alarm for 15 minutes or until the smoke detector clears. The goal
+  # is to draw as much attention as possible regardless of whether someone is
+  # home – the neighbours might notice and call the Fire department. If after
+  # 15 minutes the alarm is still sounding, it has probably outlives its
+  # usefulness...
+  action:
+  - service: switch.turn_on
+    entity_id: switch.warning_device_8
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.fire_81
+      from: "on"
+      to: "off"
+    timeout: "00:15:00"
+    continue_on_timeout: true
+  - service: switch.turn_off
+    entity_id: switch.warning_device_8
   mode: single
