@@ -101,10 +101,11 @@
       # superior – 10A Xiaomi-unit).
       # We cope with this by ignoring the 16A unit (this one / dishwasher) if
       # the 10A unit _is_ drawing substantial power (indicating the boiler is
-      # heating) or _was_ drawing power in the last 2 minutes (indicated by not
+      # heating) or _was_ drawing power in the last 3 minutes (indicated by not
       # drawing power now and having its state changed within the last 2
-      # minutes). The 2:30 time-window is the maximum possible time discrepancy
-      # between the Blitzwolf and Xiaomi measurements.
+      # minutes). The 3 minute-window has (empirically) been determined to
+      # be the minimum delay required to not get errant spikes/measurements from
+      # the Blitzwolf-unit.
       # As the power strip both devices are connected to prevents the boiler
       # from drawing substantial power when the dishwasher is doing so, the
       # approximation mostly holds. The time discrepancy is managable as the
@@ -119,7 +120,7 @@
             (
               states('sensor.power_57')|float <= 1 and
                 states.sensor.power_57.last_changed|as_local +
-                  timedelta(minutes=2,seconds=30) >
+                  timedelta(minutes=3) >
                 states.sensor.power_57.last_changed.utcnow()|as_local
             )
           -%}
