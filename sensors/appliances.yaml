@@ -165,13 +165,13 @@
       # spike after every HA restart, wait with the compution until the value
       # is actually available.
       value_template: >-
-        {%- if states('sensor.consumption_87')|float <= 0.0 -%}
+        {%- if states('sensor.consumption_87_actual')|float > 0.0 -%}
           {{
             states('sensor.consumption_87_actual')|float -
             states('sensor.consumption_58')|float
           }}
         {%- else -%}
-          {{ states('sensor.consumption_87') }}
+          {{ states('sensor.consumption_87_actual') }}
         {%- endif -%}
     monthly_consumption_costs_dishwasher:
       friendly_name: Monthly costs (Dishwasher)
