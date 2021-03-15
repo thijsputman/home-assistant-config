@@ -124,7 +124,7 @@
       title: Home Alarm pending!
       message: >-
         The Home Alarm just got activated!
-        If not promptly disarmed it wil trigger...
+        If not promptly disarmed it will trigger...
   mode: single
 - alias: 🚨 | 📱 Send notification (alarm triggered)
   description: ''
