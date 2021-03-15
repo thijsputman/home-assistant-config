@@ -1,0 +1,10 @@
+- platform: template
+  sensors:
+    ds1815_1_minute_load:
+      value_template: >
+        {{
+          states('sensor.ds1815_cpu_load_average_1_min')|float |
+            multiply(25) | round(1)
+        }}
+      unit_of_measurement: '%'
+      friendly_name: 'ds1815 1-minute load'
