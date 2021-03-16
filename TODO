@@ -68,9 +68,6 @@
   trigger counter motion sensor, switch Kitchen to "Bright (Custom)" (while
   motion sensor is still active). After motion clears, Kitchen switches back to
   "Ambiance" instead of to "Bright (Custom")
-- Use the lux sensors in various rooms to replace the global solar irradiance
-  measurement (i.e. separate automations for the Living Room, Kitchen, Hallway
-  downstairs and Hallway upstairs)
 
 ## Alarm
 
