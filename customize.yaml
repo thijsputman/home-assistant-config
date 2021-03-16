@@ -58,3 +58,9 @@ sensor.weewx_wind_direction_filtered:
   icon: mdi:compass
 sensor.weewx_wind_gust_direction_filtered:
   icon: mdi:compass
+sensor.binary_dryer:
+  icon: mdi:tumble-dryer
+sensor.binary_dishwasher:
+  icon: mdi:dishwasher
+sensor.binary_washing_machine:
+  icon: mdi:washing-machine

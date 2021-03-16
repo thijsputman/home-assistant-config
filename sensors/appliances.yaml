@@ -48,6 +48,17 @@
             ) | round(2)
           }}
     # Washing machine
+    binary_washing_machine:
+      friendly_name: Washing machine
+      device_class: power
+      value_template: >-
+        {%- if states('sensor.power_86_actual') in ['unknown', 'unavailable'] -%}
+          {{ states('sensor.power_86_actual') }}
+        {%- elif states('sensor.power_86_actual')|float > 0 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
     monthly_consumption_costs_washing_machine:
       friendly_name: Monthly costs (Washing machine)
       unit_of_measurement: €
@@ -68,6 +79,19 @@
                 states('input_number.rate_energy_offpeak')|float)
             ) | round(2)
           }}
+    # Dryer
+    binary_dryer:
+      friendly_name: Dryer
+      device_class: power
+      # Dryer's idle/standby consumption is 2 Watt
+      value_template: >-
+        {%- if states('sensor.power_83') in ['unknown', 'unavailable'] -%}
+          {{ states('sensor.power_83') }}
+        {%- elif states('sensor.power_83')|float > 2 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
     monthly_consumption_costs_dryer:
       friendly_name: Monthly costs (Dryer)
       unit_of_measurement: €
@@ -89,6 +113,19 @@
             ) | round(2)
           }}
     # Dishwasher
+    binary_dishwasher:
+      friendly_name: Dishwasher
+      device_class: power
+      value_template: >-
+        {%- if states('sensor.power_dishwasher_actual') in
+          ['unknown', 'unavailable']
+        -%}
+          {{ states('sensor.power_dishwasher_actual') }}
+        {%- elif states('sensor.power_dishwasher_actual')|float > 0 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
     power_dishwasher_actual:
       friendly_name: Power (Dishwasher) [actual]
       unit_of_measurement: W
@@ -100,12 +137,12 @@
       # in value and over time (the 16A Blitzwolf lags behind the – vastly
       # superior – 10A Xiaomi-unit).
       # We cope with this by ignoring the 16A unit (this one / dishwasher) if
-      # the 10A unit _is_ drawing substantial power (indicating the boiler is
-      # heating) or _was_ drawing power in the last 3 minutes (indicated by not
-      # drawing power now and having its state changed within the last 2
-      # minutes). The 3 minute-window has (empirically) been determined to
-      # be the minimum delay required to not get errant spikes/measurements from
-      # the Blitzwolf-unit.
+      # the 10A unit _is_ drawing power (indicating the boiler is heating) or
+      # _was_ drawing power in the last 2 minutes (indicated by not drawing
+      # power now and having its state changed within the last 2 minutes). The
+      # 2 minute-window has (empirically) been determined to be the minimum
+      # delay required to not get errant spikes/measurements from the
+      # Blitzwolf-unit.
       # As the power strip both devices are connected to prevents the boiler
       # from drawing substantial power when the dishwasher is doing so, the
       # approximation mostly holds. The time discrepancy is managable as the
@@ -116,11 +153,11 @@
       # the wall outlet. Ah well, for the future...
       value_template: >-
         {%- if states.sensor.power_57 is defined -%}
-          {%- if states('sensor.power_57')|float > 1000 or
+          {%- if states('sensor.power_57')|float > 1 or
             (
               states('sensor.power_57')|float <= 1 and
                 states.sensor.power_57.last_changed|as_local +
-                  timedelta(minutes=3) >
+                  timedelta(minutes=2) >
                 states.sensor.power_57.last_changed.utcnow()|as_local
             )
           -%}

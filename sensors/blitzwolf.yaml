@@ -12,7 +12,6 @@
 # See here for detailed discusson:
 #   https://github.com/Koenkk/zigbee2mqtt/issues/3812#issuecomment-651709435
 #   https://github.com/Koenkk/zigbee2mqtt/issues/3812#issuecomment-652637304
-#
 
 - platform: template
   sensors:
@@ -24,48 +23,60 @@
       # of power (< 1 Watt) which appears to be amplified by the measurement
       # error in the Blitzwolf plug.
       value_template: >-
-        {%- if states('sensor.power_88')|float <= 5 -%}
-          {{ 0.0|float }}
+        {%- if states('sensor.power_88') in ['unknown', 'unavailable'] -%}
+          {{ states('sensor.power_88') }}
+        {%- elif states('sensor.power_88')|float <= 5 -%}
+          {{ 0|float }}
         {%- else -%}
           {{
-            states('sensor.power_88')|float * 0.88
+            (states('sensor.power_88')|float * 0.88)|round(0)
           }}
         {%- endif -%}
       attribute_templates:
-        # Don't bother correcting the current for the 0/5-float
+        # Just do a simple numeric correction here
         current: >-
           {{
-            state_attr('sensor.power_88', 'current')|float * 0.88
+            (state_attr('sensor.power_88', 'current')|float * 0.88)|round(0)
           }}
     consumption_87_actual:
       friendly_name: Consumption 87 [actual]
-      unit_of_measurement: W
+      unit_of_measurement: kWh
       value_template: >-
-        {{
-          states('sensor.consumption_87')|float * 0.88
-        }}
+        {%- if states('sensor.consumption_87') in ['unknown', 'unavailable'] -%}
+          {{ states('sensor.consumption_87') }}
+        {%- else -%}
+          {{
+            (states('sensor.consumption_87')|float * 0.88)|round(2)
+          }}
+        {%- endif -%}
     power_86_actual:
       friendly_name: Power 86 [actual]
       unit_of_measurement: W
       # When idle, the value floats between 0 and 1 Watts
       value_template: >-
-        {%- if states('sensor.power_86')|float <= 1 -%}
-          {{ 0.0|float }}
+        {%- if states('sensor.power_86') in ['unknown', 'unavailable'] -%}
+          {{ states('sensor.power_86') }}
+        {%- elif states('sensor.power_86')|float <= 1 -%}
+          {{ 0|float }}
         {%- else -%}
           {{
-            states('sensor.power_86')|float * 0.88
+            (states('sensor.power_86')|float * 0.88)|round(0)
           }}
         {%- endif -%}
       attribute_templates:
-        # Don't bother correcting the current for the 0/1-float
+        # Just do a simple numeric correction here
         current: >-
           {{
-            state_attr('sensor.power_86', 'current')|float * 0.88
+            (state_attr('sensor.power_86', 'current')|float * 0.88)|round(0)
           }}
     consumption_85_actual:
       friendly_name: Consumption 85 [actual]
-      unit_of_measurement: W
+      unit_of_measurement: KWh
       value_template: >-
-        {{
-          states('sensor.consumption_85')|float * 0.88
-        }}
+        {%- if states('sensor.consumption_85') in ['unknown', 'unavailable'] -%}
+          {{ states('sensor.consumption_85') }}
+        {%- else -%}
+          {{
+            (states('sensor.consumption_85')|float * 0.88)|round(2)
+          }}
+        {%- endif -%}
