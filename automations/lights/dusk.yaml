@@ -58,9 +58,19 @@
     default: []
   - choose:
     - conditions:
-      - condition: state
-        entity_id: light.hallway
-        state: 'off'
+      # Act if _any_ of the lights in the Hallway is off (the daytime
+      # automations toggle individual lights – unlike the other rooms)
+      - condition: or
+        conditions:
+        - condition: state
+          entity_id: light.upstairs_hallway
+          state: 'off'
+        - condition: state
+          entity_id: light.hue_filament_bulb_1_4
+          state: 'off'
+        - condition: state
+          entity_id: light.hue_filament_bulb_1_5
+          state: 'off'
       sequence:
       - service: hue.hue_activate_scene
         data:
