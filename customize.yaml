@@ -17,9 +17,9 @@ light.attic:
 light.front_back_door:
   icon: mdi:outdoor-lamp
 sensor.pi4_1_minute_load:
-  icon: mdi:gauge
+  icon: mdi:chip
 sensor.dd_wrt_1_1_minute_load:
-  icon: mdi:gauge
+  icon: mdi:chip
 sensor.dd_wrt_1_wan_in_mbps:
   icon: mdi:download-network
 sensor.dd_wrt_1_wan_out_mbps:
@@ -27,9 +27,9 @@ sensor.dd_wrt_1_wan_out_mbps:
 sensor.pi4_memory_available:
   icon: mdi:memory
 sensor.dd_wrt_2_1_minute_load:
-  icon: mdi:gauge
+  icon: mdi:chip
 sensor.pi_hole_1_minute_load:
-  icon: mdi:gauge
+  icon: mdi:chip
 switch.on_off_plug_in_unit_3:
   icon: mdi:thermometer-plus
 sensor.gas_usage_change:
@@ -51,7 +51,7 @@ sensor.pi4_sandbox_memory_available:
 sensor.pi4_sandbox_memory_used_percentage:
   icon: mdi:memory
 sensor.pi4_sandbox_1_minute_load:
-  icon: mdi:gauge
+  icon: mdi:chip
 light.bathroom:
   icon: mdi:shower
 sensor.weewx_wind_direction_filtered:
@@ -64,3 +64,5 @@ sensor.binary_dishwasher:
   icon: mdi:dishwasher
 sensor.binary_washing_machine:
   icon: mdi:washing-machine
+sensor.ds1815_1_minute_load:
+  icon: mdi:chip
