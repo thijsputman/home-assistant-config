@@ -29,8 +29,11 @@
   trigger:
   - platform: numeric_state
     entity_id: sensor.humidity_change_bathroom
+    # We're not interested in the direction of change – just its reduction
+    value_template: >-
+      {{ state.state|float|abs }}
     below: 0.5
-    for: "00:20:00"
+    for: "00:40:00"
   condition: []
   action:
   - service: light.turn_off
