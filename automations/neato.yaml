@@ -1,0 +1,22 @@
+- alias: 📱 | 🧹 Notify on Neato D7 docking-failure
+  trigger:
+  - platform: template
+    value_template: >-
+      {%- if states('sensor.neato_d7_battery')|int <
+        state_attr('vacuum.neato_d7', 'battery_level_at_clean_end')|int
+      -%}
+        true
+      {%- else -%}
+        false
+      {%- endif -%}
+    for: "00:20:00"
+  condition: []
+  action:
+  - service: script.persistent_notification_my_devices
+    data:
+      tag: system_general
+      title: 🧹 Neato D7 failed to dock!
+      message: >-
+        {{ trigger.to_state.attributes.friendly_name }} battery-level has been
+        below "battery-level at clean end" for
+        {{ relative_time(trigger.to_state.last_changed) }}.
