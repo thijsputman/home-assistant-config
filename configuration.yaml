@@ -37,6 +37,16 @@ history:
     entities:
       - binary_sensor.updater
 
+lovelace:
+  mode: storage
+  dashboards:
+    lovelace-home:
+      mode: yaml
+      title: !secret lovelace_street_name
+      icon: 'mdi:home-roof'
+      show_in_sidebar: true
+      filename: lovelace/home.yaml
+
 # InfluxDB
 influxdb:
   api_version: 2

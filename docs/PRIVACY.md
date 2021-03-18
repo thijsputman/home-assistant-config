@@ -23,8 +23,7 @@ explanation:
 - `📄 secrets.yaml` – Contains usernames, passwords and other secrets (duh, 😇).
   It's also (ab)used to store a couple IP addresses
   ([see below](#1-local-network)) and several entity names that would otherwise
-  leak private information (e.g. the name of my main Lovelace dashboard is the
-  name of the street our house is on).
+  leak private information (e.g. the name of the street our house is on).
 
 - `📄 know_devices.yaml` – To prevent leaking MAC addresses of wireless devices
   on the local network. This could (potentially,
@@ -33,6 +32,9 @@ explanation:
 
 - `📄 groups/private.yaml` – Groups that contain the names of household members
   (such as `Family` – used for presence detection) are stored here.
+
+- `📄 lovelace/home/security/occupancy.yaml` – Lovelace card that shows the
+  presence/state of household members (and thus contains their names).
 
 ## Areas of Concern
 

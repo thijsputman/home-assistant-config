@@ -1,0 +1,24 @@
+type: 'custom:mini-graph-card'
+name: Solar irradiance (past 48h)
+hour24: true
+hours_to_show: 48
+points_per_hour: 2
+cache: true
+show:
+  labels: true
+  labels_secondary: false
+decimals: 1
+state_map:
+  - value: 'off'
+    label: '0.0'
+  - value: 'on'
+entities:
+  - entity: sensor.weewx_solar_irradiance
+    show_points: false
+  - color: gray
+    entity: input_boolean.nighttime
+    name: Night
+    show_line: false
+    show_points: false
+    show_legend: false
+    y_axis: secondary

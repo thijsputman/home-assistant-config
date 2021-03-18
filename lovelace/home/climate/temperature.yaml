@@ -1,0 +1,121 @@
+type: 'custom:mod-card'
+style: |
+  ha-card {
+    background: var( --ha-card-background, var(--card-background-color, white) );
+    box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+  }
+report_size: 2
+card:
+  type: vertical-stack
+  cards:
+    - type: 'custom:mini-graph-card'
+      style: |
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+          padding-bottom: 0px !important;
+          margin-bottom: 0px !important;
+        }
+      title: null
+      name: Temperature (past 48h)
+      hour24: true
+      hours_to_show: 48
+      points_per_hour: 1
+      cache: true
+      show:
+        labels: true
+        labels_secondary: false
+      state_map:
+        - value: 'off'
+        - value: 'on'
+      decimals: 1
+      entities:
+        - entity: sensor.tado_smart_thermostat_temperature
+          name: Living room
+          show_points: false
+          show_fill: false
+        - entity: sensor.temperature_3
+          name: Attic
+          show_points: false
+          show_fill: false
+        - entity: sensor.temperature_9
+          name: Bedroom
+          show_points: false
+          show_fill: false
+        - entity: sensor.temperature_21
+          name: Kitchen
+          show_points: false
+          show_fill: false
+        - color: gray
+          entity: input_boolean.nighttime
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+          smoothing: false
+        - color: gray
+          entity: input_boolean.everyone_asleep
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+          smoothing: false
+    - type: 'custom:mini-graph-card'
+      style: |
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+          padding-top: 0px !important;
+          margin-top: 0px !important;
+        }
+      title: null
+      name: Current temperature (48h trend)
+      hour24: true
+      hours_to_show: 48
+      points_per_hour: 1
+      cache: true
+      show:
+        name: false
+        icon: false
+        state: false
+        labels: true
+        labels_secondary: false
+      state_map:
+        - value: 'off'
+        - value: 'on'
+      decimals: 1
+      entities:
+        - entity: sensor.temperature_24
+          name: Bathroom
+          show_points: false
+          show_fill: false
+        - entity: sensor.temperature_30
+          name: Hallway
+          show_points: false
+          show_fill: false
+        - entity: sensor.temperature_37
+          name: Guestroom
+          show_points: false
+          show_fill: false
+        - entity: sensor.temperature_78
+          name: Basement
+          show_points: false
+          show_fill: false
+        - color: gray
+          entity: input_boolean.nighttime
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+          smoothing: false
+        - color: gray
+          entity: input_boolean.everyone_asleep
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+          smoothing: false

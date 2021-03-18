@@ -1,0 +1,18 @@
+type: horizontal-stack
+cards:
+  - type: entities
+    entities:
+      - entity: input_datetime.wakeup
+  - type: button
+    tap_action:
+      action: call-service
+      service: script.turn_on
+      service_data:
+        entity_id: script.lights_out
+      confirmation:
+        text: Turn off all lights?
+    show_state: false
+    show_icon: true
+    show_name: false
+    icon_height: 64px
+    icon: 'mdi:lightbulb-group-off'

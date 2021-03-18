@@ -2,14 +2,12 @@
 
 The _live_ configuration of my personal Home Assistant instance.
 
-Currently, the Lovelace dashboards are UI managed – as such they are not (yet)
-included in this repository...
-
 ## Further Reading
 
 1. [`📄 TODO`](./TODO)
-2. [`📄 docs/PRIVACY.md`](./docs/PRIVACY.md)
-3. [`📄 docs/deCONZ.md`](./docs/deCONZ.md)
+2. [`📄 lovelace/README.md`](./lovelace/README.md)
+3. [`📄 docs/PRIVACY.md`](./docs/PRIVACY.md)
+4. [`📄 docs/deCONZ.md`](./docs/deCONZ.md)
 
 ## License
 

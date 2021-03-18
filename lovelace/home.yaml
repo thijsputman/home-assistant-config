@@ -1,0 +1,173 @@
+title: !secret lovelace_street_name
+views:
+  # Security
+  - path: security
+    title: Security
+    panel: false
+    icon: 'mdi:shield-home'
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - !include home/security/alarm_panel.yaml
+          - !include home/security/occupancy.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/security/aarlo_front.yaml
+          - !include home/security/aarlo_back.yaml
+          - type: glance
+            entities:
+              - entity: binary_sensor.fire_81
+                name: Smoke
+              - entity: binary_sensor.water_59
+                name: Water (Attic)
+            show_state: false
+      - type: vertical-stack
+        cards:
+          - !include home/security/open_close.yaml
+          - type: entities
+            entities:
+              - entity: sensor.9292_ov_einhoven_centraal
+                name: Eindhoven Centraal
+                icon: 'mdi:bus-marker'
+              - entity: sensor.9292_ov_einhoven_centraal_future_1
+                icon: 'mdi:bus'
+                name: Eindhoven Centraal
+              - entity: sensor.9292_ov_einhoven_airport
+                name: Eindhoven Airport
+                icon: 'mdi:bus-marker'
+              - entity: sensor.9292_ov_einhoven_airport_future_1
+                icon: 'mdi:bus'
+                name: Eindhoven Airport
+  # Climate
+  - title: Climate
+    path: climate
+    icon: 'mdi:home-thermometer'
+    badges: []
+    cards:
+      - type: vertical-stack
+        cards:
+          - !include home/climate/thermostat.yaml
+          - !include home/climate/temperature.yaml
+      - type: vertical-stack
+        cards:
+          - type: grid
+            cards:
+              - type: button
+                tap_action:
+                  action: toggle
+                entity: switch.on_off_plug_in_unit_3
+              - type: button
+                tap_action:
+                  action: toggle
+                entity: switch.smart_plug_5
+              - type: button
+                tap_action:
+                  action: toggle
+                entity: switch.on_off_plug_in_unit_4
+          - !include home/climate/bathroom_fan.yaml
+      - type: weather-forecast
+        entity: !secret weather_home
+  # Lights
+  - title: Lights
+    path: lights
+    icon: 'mdi:home-lightbulb-outline'
+    badges: []
+    cards:
+      - !include home/lights/rooms.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/lights/wakeup.yaml
+          - type: grid
+            cards:
+              - type: button
+                tap_action:
+                  action: toggle
+                entity: input_boolean.fireplace
+              - type: button
+                tap_action:
+                  action: toggle
+                entity: light.hue_white_light_1
+                icon: 'mdi:vanity-light'
+                name: Ensuite
+          - !include home/lights/hue_scenes.yaml
+      - !include home/lights/lux_downstairs.yaml
+      - !include home/lights/lux_upstairs.yaml
+  # Consumption
+  - title: Consumption
+    path: consumption
+    icon: 'mdi:finance'
+    badges: []
+    cards:
+      - !include home/consumption/energy.yaml
+      - !include home/consumption/gas.yaml
+      - type: grid
+        cards:
+          - !include home/consumption/appliances/heater_shed.yaml
+          - !include home/consumption/appliances/boiler_kitchen.yaml
+          - !include home/consumption/appliances/washing_machine.yaml
+          - !include home/consumption/appliances/dryer.yaml
+          - !include home/consumption/appliances/dishwasher.yaml
+        columns: 2
+        square: false
+  # Network
+  - title: Network
+    path: network
+    icon: 'mdi:lan'
+    badges: []
+    cards:
+      - !include home/network/pi4.yaml
+      - !include home/network/pi4_sandbox.yaml
+      - !include home/network/bandwidth_ping.yaml
+      - !include home/network/pihole.yaml
+      - !include home/network/routers_dns.yaml
+      - !include home/network/synology.yaml
+  # Weather
+  - title: Weather
+    path: weather
+    icon: 'mdi:weather-partly-cloudy'
+    badges: []
+    cards:
+      - !include home/weather/temperature.yaml
+      - !include home/weather/pressure.yaml
+      - !include home/weather/humidity.yaml
+      - !include home/weather/wind.yaml
+      - !include home/weather/wind_direction.yaml
+      - !include home/weather/sun.yaml
+      - !include home/weather/rain.yaml
+      - !include home/weather/sun_history.yaml
+      - type: weather-forecast
+        entity: !secret weather_home
+  # Chores
+  - icon: 'mdi:broom'
+    title: Chores
+    path: chores
+    badges: []
+    cards:
+      - !include home/chores/afvalwijzer.yaml
+      - !include home/chores/neato.yaml
+  # Media
+  - title: Media
+    path: media
+    icon: 'mdi:filmstrip'
+    badges: []
+    cards:
+      - type: media-control
+        entity: media_player.nvidia_shield_tv
+      - type: 'custom:mini-graph-card'
+        hours_to_show: 240
+        group_by: date
+        name: NVIDIA Shield TV hours watched (10 day trend)
+        hour24: true
+        lower_bound: 0
+        aggregate_func: max
+        decimals: 1
+        show:
+          graph: bar
+          labels: true
+          state: false
+        entities:
+          - entity: sensor.nvidia_shield_tv_playing_today
+            unit: h
+      - type: media-control
+        entity: media_player.pi0_speaker_bedroom

@@ -1,0 +1,66 @@
+type: 'custom:mod-card'
+card_mod:
+  style:
+    .: |
+      ha-card {
+        background: var( --ha-card-background, var(--card-background-color, white) );
+        box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+      }
+    hui-vertical-stack-card$: |
+      mini-graph-card{
+        margin: 0px !important;
+      }
+report_size: 5
+card:
+  type: vertical-stack
+  cards:
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+          }
+      name: Internet bandwidth & ping (past 8h)
+      icon: 'mdi:wan'
+      hour24: true
+      points_per_hour: 8
+      aggregate_func: max
+      hours_to_show: 8
+      decimals: 1
+      logarithmic: true
+      show:
+        labels: hover
+        fill: fade
+      entities:
+        - entity: sensor.dd_wrt_1_wan_in_mbps
+          name: Download (Mbps)
+          show_points: false
+          show_fill: false
+        - entity: sensor.dd_wrt_1_wan_out_mbps
+          name: Upload (Mbps)
+          show_points: false
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding-top: 0px !important;
+            background-color: #F2F9FD;
+          }
+      hour24: true
+      hours_to_show: 8
+      points_per_hour: 5
+      cache: true
+      icon: 'mdi:speedometer'
+      show:
+        labels: hover
+        name: false
+        icon: false
+      decimals: 1
+      entities:
+        - entity: sensor.google_dns_roundtrip_time
+          color: '#E74C3C'
+          show_points: false
+          show_fill: false

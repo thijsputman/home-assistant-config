@@ -1,0 +1,34 @@
+type: grid
+cards:
+  - type: button
+    tap_action:
+      action: more-info
+    entity: input_select.hue_scene_kitchen
+    show_name: false
+    show_state: true
+    show_icon: true
+    icon_height: 36px
+    icon: 'mdi:pot-steam'
+    hold_action:
+      action: none
+  - type: button
+    tap_action:
+      action: more-info
+    entity: input_select.hue_scene_kitchen_counter_cupboards
+    hold_action:
+      action: none
+    show_name: false
+    show_state: true
+    icon_height: 36px
+    icon: 'mdi:water-pump'
+  - type: button
+    tap_action:
+      action: more-info
+    entity: input_select.hue_scene_living_room
+    show_name: false
+    show_state: true
+    hold_action:
+      action: none
+    icon_height: 36px
+    icon: 'mdi:sofa'
+square: false

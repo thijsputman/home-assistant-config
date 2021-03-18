@@ -1,0 +1,15 @@
+type: 'custom:mini-graph-card'
+hours_to_show: 240
+group_by: date
+name: Maximum solar irradiance (10-day trend)
+hour24: true
+lower_bound: 0
+aggregate_func: max
+decimals: 1
+show:
+  graph: bar
+  labels: true
+  state: false
+entities:
+  - entity: sensor.weewx_solar_irradiance
+    unit: W/m²

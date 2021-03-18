@@ -1,0 +1,25 @@
+type: 'custom:mini-graph-card'
+name: Brightness (past 48h)
+hour24: true
+hours_to_show: 48
+points_per_hour: 1
+cache: true
+logarithmic: true
+show:
+  state: false
+decimals: 1
+entities:
+  - entity: sensor.lightlevel_46
+    name: Living room
+    show_points: false
+    show_fill: false
+  - entity: sensor.lightlevel_47
+    name: Kitchen
+    show_points: false
+    show_fill: false
+  - entity: sensor.weewx_solar_irradiance
+    name: Solar
+    color: darkslategray
+    show_line: false
+    show_points: false
+    y_axis: secondary

@@ -1,0 +1,77 @@
+type: 'custom:mod-card'
+style: |
+  ha-card {
+    background: var( --ha-card-background, var(--card-background-color, white) );
+    box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+  }
+report_size: 5
+card:
+  type: vertical-stack
+  cards:
+    - type: button
+      style: |
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+          padding-bottom: 0px !important;
+          margin-bottom: 0px !important;
+        }
+        ha-card ha-icon[data-state=off]{
+          color: var(--disabled-text-color) !important;
+        }
+        ha-card ha-icon[data-state=on]{
+          color: var(--success-color) !important;
+        }
+        ha-card span{
+          font-size: 1rem;
+          color: var(--paper-grey-500);
+        }
+      tap_action:
+        action: more-info
+      entity: sensor.binary_dishwasher
+      show_name: true
+      show_icon: true
+      show_state: false
+      icon_height: 48px
+    - type: entity
+      style: |
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+        }
+        ha-card div.header{
+          display: none;
+        }
+        ha-card div.info{
+          padding: 0px;
+          text-align: center;
+        }
+      entity: sensor.monthly_consumption_costs_dishwasher
+      attribute: last_period
+      unit: € / month
+    - type: 'custom:mini-graph-card'
+      style: |
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+          padding-top: 0px !important;
+          margin-top: 0px !important;
+        }
+      align_state: center
+      hours_to_show: 240
+      group_by: date
+      hour24: true
+      lower_bound: 0
+      height: 120
+      show:
+        name: false
+        icon: false
+        graph: bar
+        labels: false
+      entities:
+        - entity: sensor.power_dishwasher_actual
+          show_graph: false
+        - entity: sensor.consumption_dishwasher_actual
+          aggregate_func: delta
+          color: thistle
+          name: Power usage

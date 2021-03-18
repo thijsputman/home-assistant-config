@@ -1,0 +1,82 @@
+type: 'custom:mod-card'
+card_mod:
+  style:
+    .: |
+      ha-card {
+        background: var( --ha-card-background, var(--card-background-color, white) );
+        box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+      }
+    hui-vertical-stack-card$: |
+      mini-graph-card, hui-button-card{
+        margin: 0px !important;
+      }
+report_size: 5
+card:
+  type: vertical-stack
+  cards:
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+          }
+      name: Humidity Bathroom (past 4h)
+      hour24: true
+      hours_to_show: 4
+      points_per_hour: 12
+      cache: true
+      color_thresholds:
+        - value: 50
+          color: '#3498DB'
+        - value: 90
+          color: '#E74C3C'
+      show:
+        labels: hover
+        labels_secondary: hover
+        fill: fade
+      decimals: 1
+      entities:
+        - entity: sensor.humidity_25
+          show_graph: false
+        - entity: sensor.humidity_change_bathroom
+          name: Δ-humidity (%/min)
+          unit: '%/min'
+          color: var(--secondary-text-color)
+          show_points: false
+          show_fill: false
+          y_axis: secondary
+        - entity: sensor.humidity_25
+          name: Humidity (%)
+          show_points: false
+    - type: button
+      card_mod:
+        style:
+          .: |
+            ha-card {
+              border: 0px;
+              box-shadow: unset;
+              background-color: #F3F9FD;
+              padding-top: 0px !important;
+              padding-bottom: 4px !important;
+            }
+          ha-icon$: |
+            @keyframes rotate{
+              0% {
+                transform: rotate(0);
+              }
+              100% {
+                transform: rotate(360deg);
+              }
+            }
+            :host{
+              width: auto !important;
+            }
+            :host([data-state=on]){
+              animation: 1.5s linear 0s infinite running rotate;
+            }
+      tap_action:
+        action: toggle
+      entity: light.smart_relay_1
+      icon_height: 65px
+      show_name: false

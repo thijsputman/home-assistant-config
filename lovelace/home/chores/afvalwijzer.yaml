@@ -1,0 +1,85 @@
+type: 'custom:mod-card'
+style: |
+  ha-card {
+    background: var( --ha-card-background, var(--card-background-color, white) );
+    box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+  }
+report_size: 2
+card:
+  type: vertical-stack
+  cards:
+    - type: conditional
+      conditions:
+        - entity: sensor.afvalwijzer_next_item
+          state: restafval
+      card:
+        type: entity
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding: 0px 3em 0px 3em !important;
+          }
+        entity: sensor.afvalwijzer_restafval
+        attribute: days_until_collection_date
+        unit: days
+        name: 'Next pick-up: Black bin'
+        icon: 'mdi:recycle'
+    - type: conditional
+      conditions:
+        - entity: sensor.afvalwijzer_next_item
+          state: gft
+      card:
+        type: entity
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding-top: 0px !important;
+            margin-top: 0px !important;
+          }
+        entity: sensor.afvalwijzer_gft
+        attribute: days_until_collection_date
+        unit: days
+        name: 'Next pick-up: Green bin'
+        icon: 'mdi:food-apple-outline'
+    - type: conditional
+      conditions:
+        - entity: sensor.afvalwijzer_next_item
+          state: papier
+      card:
+        type: entity
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding-top: 0px !important;
+            margin-top: 0px !important;
+          }
+        entity: sensor.afvalwijzer_papier
+        attribute: days_until_collection_date
+        unit: days
+        name: 'Next pick-up: Paper'
+        icon: 'mdi:newspaper-variant-multiple-outline'
+    - type: glance
+      style: |
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+          padding-top: 0px !important;
+          margin-top: 0px !important;
+        }
+      entities:
+        - entity: sensor.afvalwijzer_restafval
+          name: Black bin
+          icon: 'mdi:recycle'
+        - entity: sensor.afvalwijzer_gft
+          name: Green bin
+          icon: 'mdi:food-apple-outline'
+        - entity: sensor.afvalwijzer_papier
+          name: Paper
+          icon: 'mdi:newspaper-variant-multiple-outline'
+      show_state: true
+      show_icon: true
+      show_name: true
+      state_color: true

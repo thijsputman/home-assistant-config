@@ -22,7 +22,7 @@ persistent_notification_all_devices:
       data:
         tag: >-
           {{ tag }}
-        clickAction: !secret lovelace_home_dashboard
+        clickAction: lovelace-home
   - service: persistent_notification.create
     data:
       title: >-
@@ -45,7 +45,7 @@ persistent_notification_my_devices:
       data:
         tag: >-
           {{ tag }}
-        clickAction: !secret lovelace_home_dashboard
+        clickAction: lovelace-home
   - service: persistent_notification.create
     data:
       title: >-

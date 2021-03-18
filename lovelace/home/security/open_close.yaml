@@ -1,0 +1,97 @@
+type: 'custom:mod-card'
+style: |
+  ha-card {
+    background: var( --ha-card-background, var(--card-background-color, white) );
+    box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+  }
+report_size: 3
+card:
+  type: vertical-stack
+  cards:
+    - type: glance
+      style: |
+        :host{
+          margin-bottom: 0px !important;
+        }
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+          padding-bottom: 0px !important;
+          margin-bottom: 0px !important;
+          --paper-item-icon-active-color: var(--warning-color);
+        }
+      title: Entryways
+      entities:
+        - entity: binary_sensor.openclose_16
+          icon: 'mdi:door-closed'
+          show_last_changed: true
+        - entity: binary_sensor.openclose_34
+          name: Back gate
+          icon: 'mdi:door-closed'
+          show_last_changed: true
+      show_state: false
+      state_color: true
+      show_icon: true
+      show_name: true
+    - type: glance
+      style: |
+        :host{
+          margin-top: 0px !important;
+        }
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+          padding-top: 0px !important;
+          margin-top: 0px !important;
+          padding-bottom: 0px !important;
+          margin-bottom: 0px !important;
+          --paper-item-icon-active-color: var(--warning-color);
+        }
+        ha-card h1{
+          padding-top: 0px;
+        }
+        ha-card div.entity{
+          margin-bottom: 0px;
+        }
+      title: Doors & windows
+      entities:
+        - entity: binary_sensor.openclose_12
+          name: Kitchen
+          icon: 'mdi:door-closed'
+          show_last_changed: true
+        - entity: binary_sensor.openclose_36
+          name: Kitchen
+          icon: 'mdi:window-closed'
+          show_last_changed: true
+        - entity: group.openclose_living_room
+          name: Living room
+          show_last_changed: true
+      show_state: false
+      state_color: true
+      show_icon: true
+      show_name: true
+    - type: glance
+      style: |
+        ha-card {
+          border: 0px;
+          box-shadow: unset;
+          padding-top: 0px !important;
+          margin-top: 0px !important;
+          --paper-item-icon-active-color: var(--warning-color);
+        }
+      entities:
+        - entity: group.openclose_bedroom
+          name: Bedroom
+          show_last_changed: true
+        - entity: binary_sensor.openclose_17
+          name: Bathroom
+          icon: 'mdi:window-closed'
+          show_last_changed: true
+        - entity: binary_sensor.openclose_33
+          name: Attic
+          icon: 'mdi:window-closed'
+          show_last_changed: true
+      show_state: false
+      state_color: true
+      show_icon: true
+      show_name: true

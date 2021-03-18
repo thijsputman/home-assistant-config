@@ -1,0 +1,87 @@
+type: entities
+entities:
+  - entity: light.living_room
+    extend_paper_buttons_row:
+      buttons:
+        - icon: 'mdi:floor-lamp'
+          tap_action:
+            action: call-service
+            service: hue.hue_activate_scene
+            service_data:
+              group_name: Living room
+              scene_name: Ambiance
+        - icon: 'mdi:lightbulb-on-outline'
+          tap_action:
+            action: call-service
+            service: hue.hue_activate_scene
+            service_data:
+              group_name: Living room
+              scene_name: Active
+        - icon: 'mdi:movie'
+          tap_action:
+            action: call-service
+            service: hue.hue_activate_scene
+            service_data:
+              group_name: Living room
+              scene_name: Movie (ambiance)
+  - type: 'custom:paper-buttons-row'
+    buttons:
+      - name: Ambiance
+        icon: 'mdi:floor-lamp'
+        tap_action:
+          action: call-service
+          service: script.hue_activate_scene_living_room_kitchen
+          service_data:
+            scene_name: Ambiance
+      - name: Active
+        icon: 'mdi:lightbulb-on-outline'
+        tap_action:
+          action: call-service
+          service: script.hue_activate_scene_living_room_kitchen
+          service_data:
+            scene_name: Active
+      - name: Movie
+        icon: 'mdi:movie'
+        tap_action:
+          action: call-service
+          service: script.hue_activate_scene_living_room_kitchen
+          service_data:
+            scene_name: Movie
+  - entity: light.kitchen
+    extend_paper_buttons_row:
+      buttons:
+        - icon: 'mdi:floor-lamp'
+          tap_action:
+            action: call-service
+            service: hue.hue_activate_scene
+            service_data:
+              group_name: Kitchen
+              scene_name: Ambiance
+        - icon: 'mdi:lightbulb-on-outline'
+          tap_action:
+            action: call-service
+            service: hue.hue_activate_scene
+            service_data:
+              group_name: Kitchen
+              scene_name: Bright (custom)
+  - entity: light.hallway
+  - entity: light.garden
+  - type: 'custom:paper-buttons-row'
+    buttons:
+      - name: Ambiance
+        icon: 'mdi:weather-night'
+      - name: Summer night
+        icon: 'mdi:glass-cocktail'
+      - name: Bright
+        icon: 'mdi:track-light'
+  - entity: light.bedroom
+  - entity: light.guestroom
+  - entity: light.wardrobe
+  - entity: light.bathroom
+  - entity: light.toilet
+  - entity: light.basement
+  - entity: light.attic
+  - entity: light.front_back_door
+title: Lights
+state_color: false
+show_header_toggle: false

@@ -1,0 +1,163 @@
+type: 'custom:mod-card'
+card_mod:
+  style: |
+    ha-card {
+      background: var( --ha-card-background, var(--card-background-color, white) );
+      box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+    }
+report_size: 5
+card:
+  type: vertical-stack
+  cards:
+    - type: glance
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+          }
+      entities:
+        - entity: sensor.ds1815_1_minute_load
+        - entity: sensor.ds1815_memory_usage_real
+        - entity: sensor.ds1815_temperature
+        - entity: binary_sensor.ds1815_security_status
+      show_name: false
+      show_icon: true
+      show_state: true
+      state_color: false
+      columns: 4
+      title: Synology DS1815+
+    - type: glance
+      card_mod:
+        style:
+          .: |
+            ha-card {
+              border: 0px;
+              box-shadow: unset;
+            }
+            ha-card div.entities{
+              padding: 0px 32px 4px 32px !important;
+            }
+          div.entity:
+            $:
+              state-badge$ ha-icon$: |
+                :host::after{
+                  font-weight: bold;
+                  font-variant-position: super;
+                }
+      entities:
+        - entity: sensor.ds1815_drive_1_status
+          icon: 'mdi:harddisk'
+          card_mod:
+            style:
+              state-badge$ ha-icon$: >
+                {%- if states('sensor.ds1815_drive_1_status') !=
+                'normal' -%}
+                  :host{
+                    color: var(--error-color);
+                  }
+                {%- endif -%}
+                :host::after{
+                  content: "1"
+                }
+        - entity: sensor.ds1815_drive_2_status
+          icon: 'mdi:harddisk'
+          card_mod:
+            style:
+              state-badge$ ha-icon$: >
+                {%- if states('sensor.ds1815_drive_2_status') !=
+                'normal' -%}
+                  :host{
+                    color: var(--error-color);
+                  }
+                {%- endif -%}
+                :host::after{
+                  content: "2"
+                }
+        - entity: sensor.ds1815_drive_3_status
+          icon: 'mdi:harddisk'
+          card_mod:
+            style:
+              state-badge$ ha-icon$: >
+                {%- if states('sensor.ds1815_drive_3_status') !=
+                'normal' -%}
+                  :host{
+                    color: var(--error-color);
+                  }
+                {%- endif -%}
+                :host::after{
+                  content: "3"
+                }
+        - entity: sensor.ds1815_drive_4_status
+          icon: 'mdi:harddisk'
+          card_mod:
+            style:
+              state-badge$ ha-icon$: >
+                {%- if states('sensor.ds1815_drive_4_status') !=
+                'normal' -%}
+                  :host{
+                    color: var(--error-color);
+                  }
+                {%- endif -%}
+                :host::after{
+                  content: "4"
+                }
+        - entity: sensor.ds1815_drive_5_status
+          icon: 'mdi:harddisk'
+          card_mod:
+            style:
+              state-badge$ ha-icon$: >
+                {%- if states('sensor.ds1815_drive_5_status') !=
+                'normal' -%}
+                  :host{
+                    color: var(--error-color);
+                  }
+                {%- endif -%}
+                :host::after{
+                  content: "5"
+                }
+        - entity: sensor.ds1815_drive_6_status
+          icon: 'mdi:harddisk'
+          card_mod:
+            style:
+              state-badge$ ha-icon$: >
+                {%- if states('sensor.ds1815_drive_6_status') !=
+                'normal' -%}
+                  :host{
+                    color: var(--error-color);
+                  }
+                {%- endif -%}
+                :host::after{
+                  content: "6"
+                }
+        - entity: sensor.ds1815_drive_7_status
+          icon: 'mdi:harddisk'
+          card_mod:
+            style:
+              state-badge$ ha-icon$: >
+                {%- if states('sensor.ds1815_drive_7_status') !=
+                'normal' -%}
+                  :host{
+                    color: var(--error-color);
+                  }
+                {%- endif -%}
+                :host::after{
+                  content: "7"
+                }
+        - entity: sensor.ds1815_drive_8_status
+          icon: 'mdi:harddisk'
+          card_mod:
+            style:
+              state-badge$ ha-icon$: >
+                {%- if states('sensor.ds1815_drive_8_status') !=
+                'normal' -%}
+                  :host{
+                    color: var(--error-color);
+                  }
+                {%- endif -%}
+                :host::after{
+                  content: "8"
+                }
+      columns: 8
+      show_state: false
+      show_name: false

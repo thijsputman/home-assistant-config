@@ -1,0 +1,249 @@
+type: vertical-stack
+cards:
+  - type: 'custom:mini-graph-card'
+    name: Gas usage (past 48h)
+    hour24: true
+    hours_to_show: 48
+    points_per_hour: 1
+    cache: true
+    show:
+      labels: true
+      labels_secondary: false
+    state_map:
+      - value: 'off'
+        label: '0'
+      - value: 'on'
+    decimals: 3
+    color_thresholds:
+      - value: 0
+        color: '#f39c12'
+      - value: 0.6
+        color: '#d35400'
+      - value: 1.2
+        color: '#c0392b'
+    entities:
+      - entity: sensor.hourly_gas_consumption
+        name: Change rate
+        show_points: false
+        unit: m³/h
+      - color: gray
+        entity: input_boolean.nighttime
+        show_line: false
+        show_points: false
+        show_legend: false
+        y_axis: secondary
+        smoothing: false
+      - color: gray
+        entity: input_boolean.everyone_asleep
+        show_line: false
+        show_points: false
+        show_legend: false
+        y_axis: secondary
+        smoothing: false
+  - type: 'custom:mini-graph-card'
+    hours_to_show: 240
+    group_by: date
+    name: Daily gas usage (past 10 days)
+    hour24: true
+    lower_bound: 0
+    aggregate_func: delta
+    decimals: 2
+    cache: true
+    show:
+      graph: bar
+      labels: true
+    entities:
+      - entity: sensor.daily_gas
+        show_graph: false
+        unit: m³
+      - entity: sensor.gas_consumption
+        unit: m³
+        color: thistle
+  - type: horizontal-stack
+    cards:
+      - type: 'custom:mod-card'
+        style: |
+          ha-card {
+            background: var( --ha-card-background, var(--card-background-color, white) );
+            box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+          }
+        card:
+          type: grid
+          cards:
+            - type: entity
+              style: |
+                ha-card {
+                  border: 0px;
+                  box-shadow: unset;
+                }
+                ha-card div.info{
+                  padding-bottom: 0px;
+                }
+                ha-card span.value{
+                  display: inline-block;
+                  width: 3.2em;
+                  height: 0.92em;
+                  vertical-align: text-bottom;
+                  text-align: right;
+                }
+              entity: sensor.daily_gas_costs
+              name: Today
+              icon: 'mdi:cash'
+            - type: entity
+              style: |
+                ha-card {
+                  border: 0px;
+                  box-shadow: unset;
+                }
+                ha-card div.icon{
+                  display: none;
+                }
+                ha-card span.value{
+                  display: inline-block;
+                  width: 3.2em;
+                  height: 0.92em;
+                  vertical-align: text-bottom;
+                  text-align: right;
+                }
+              entity: sensor.monthly_gas_costs_daily_average
+              unit: € / day
+              name: This month
+              icon: 'mdi:cash'
+            - type: entity
+              style: |
+                ha-card {
+                  border: 0px;
+                  box-shadow: unset;
+                }
+                ha-card div.header{
+                  display: none;
+                }
+                ha-card span.value{
+                  display: inline-block;
+                  width: 3.2em;
+                  height: 0.92em;
+                  vertical-align: text-bottom;
+                  text-align: right;
+                }
+              entity: sensor.monthly_gas_costs
+            - type: entity
+              style: |
+                ha-card {
+                  border: 0px;
+                  box-shadow: unset;
+                }
+                ha-card div.header{
+                  display: none;
+                }
+                ha-card span.value{
+                  display: inline-block;
+                  white-space: normal !important;
+                  overflow: hidden;
+                  width: 3.2em;
+                  height: 0.92em;
+                  vertical-align: text-bottom;
+                  text-align: right;
+                }
+                ha-card span.value::before{
+                  content: "{{ states('sensor.monthly_gas')|round(2) }} wrap"
+                }
+              entity: sensor.monthly_gas
+              unit: m³
+          columns: 1
+          square: false
+      - type: 'custom:mod-card'
+        style: |
+          ha-card {
+            background: var( --ha-card-background, var(--card-background-color, white) );
+            box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
+          }
+        card:
+          type: grid
+          cards:
+            - type: entity
+              style: |
+                ha-card {
+                  border: 0px;
+                  box-shadow: unset;
+                }
+                ha-card div.info{
+                  padding-bottom: 0px;
+                }
+                ha-card span.value{
+                  display: inline-block;
+                  width: 3.2em;
+                  height: 0.92em;
+                  vertical-align: text-bottom;
+                  text-align: right;
+                }
+              entity: sensor.daily_gas_costs
+              attribute: last_period
+              unit: €
+              name: Yesterday
+              icon: 'mdi:cash'
+            - type: entity
+              style: |
+                ha-card {
+                  border: 0px;
+                  box-shadow: unset;
+                }
+                ha-card div.icon{
+                  display: none;
+                }
+                ha-card span.value{
+                  display: inline-block;
+                  width: 3.2em;
+                  height: 0.92em;
+                  vertical-align: text-bottom;
+                  text-align: right;
+                }
+              entity: sensor.monthly_gas_costs_daily_average
+              attribute: last_period
+              unit: € / day
+              name: Last month
+              icon: 'mdi:cash'
+            - type: entity
+              style: |
+                ha-card {
+                  border: 0px;
+                  box-shadow: unset;
+                }
+                ha-card div.header{
+                  display: none;
+                }
+                ha-card span.value{
+                  display: inline-block;
+                  width: 3.2em;
+                  height: 0.92em;
+                  vertical-align: text-bottom;
+                  text-align: right;
+                }
+              entity: sensor.monthly_gas_costs
+              attribute: last_period
+              unit: €
+            - type: entity
+              style: |
+                ha-card {
+                  border: 0px;
+                  box-shadow: unset;
+                }
+                ha-card div.header{
+                  display: none;
+                }
+                ha-card span.value{
+                  display: inline-block;
+                  white-space: normal !important;
+                  overflow: hidden;
+                  width: 3.2em;
+                  height: 0.92em;
+                  vertical-align: text-bottom;
+                  text-align: right;
+                }
+                ha-card span.value::before{
+                  content: "{{ state_attr('sensor.monthly_gas', 'last_period')|round(2) }} wrap"
+                }
+              entity: sensor.monthly_gas
+              attribute: last_period
+              unit: m³
+          columns: 1
+          square: false
