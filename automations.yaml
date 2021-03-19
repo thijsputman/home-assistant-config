@@ -68,63 +68,6 @@
     data: {}
     entity_id: light.attic
   mode: single
-- id: '1604944801176'
-  alias: 🤖 | 💡 Front & back door maximum brightness (door open)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.openclose_12
-    - binary_sensor.openclose_16
-    from: 'off'
-    to: 'on'
-  condition:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: input_select.time_of_day
-      state: day
-  action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.front_back_door
-        state: 'on'
-      sequence:
-      - service: light.turn_on
-        data:
-          brightness: 255
-          entity_id: "{% if trigger.entity_id == \"binary_sensor.openclose_12\" %}\n\
-            \  light.hue_filament_bulb_1\n{% else %}\n  light.hue_filament_bulb_1_2\n\
-            {% endif %}\n"
-      - wait_for_trigger:
-        - platform: template
-          value_template: '{{ is_state(trigger.entity_id, ''off'') }}'
-      - delay: 00:00:20
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Front & back door
-          scene_name: Evening
-    - conditions:
-      - condition: state
-        entity_id: light.front_back_door
-        state: 'off'
-      sequence:
-      - service: light.turn_on
-        data:
-          brightness: 255
-          entity_id: "{% if trigger.entity_id == \"binary_sensor.openclose_12\" %}\n\
-            \  light.hue_filament_bulb_1\n{% else %}\n  light.hue_filament_bulb_1_2\n\
-            {% endif %}\n"
-      - wait_for_trigger:
-        - platform: template
-          value_template: '{{ is_state(trigger.entity_id, ''off'') }}'
-      - delay: 00:00:20
-      - service: light.turn_off
-        entity_id: light.front_back_door
-    default: []
-  mode: single
-  max: 2
 - id: '1605024371581'
   alias: ⏰ | 💡 Wakeup light bedroom (daily at «wakeup light start» time)
   description: ''
@@ -226,36 +169,6 @@
         |  timestamp_custom(''%H:%M:%S'', False) }}'
     entity_id: input_datetime.wakeup_light_start
   mode: single
-- id: '1606159329722'
-  alias: 🤖 | 💡 Garden lights on (kitchen / garden door open)
-  description: ''
-  trigger:
-  - platform: state
-    entity_id:
-    - binary_sensor.openclose_12
-    - binary_sensor.openclose_34
-    from: 'off'
-    to: 'on'
-    for: 00:00:03
-  condition:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: input_select.time_of_day
-      state: day
-  - condition: state
-    entity_id: light.garden
-    state: 'off'
-  action:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Garden
-      scene_name: Ambiance
-  - delay: 00:03:00
-  - service: light.turn_off
-    entity_id: light.garden
-  mode: single
-  max: 2
 - id: '1606412740160'
   alias: ⏰ | 🔊 Alarm bedroom (daily at «wakeup» time)
   description: ''

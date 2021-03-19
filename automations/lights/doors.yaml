@@ -1,0 +1,101 @@
+- id: '1604944801176'
+  alias: 💡 | 🚪 Front / back door to maximum brightness (door open)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.openclose_12
+    - binary_sensor.openclose_16
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+  action:
+  - choose:
+    # Lights already on
+    - conditions:
+      - condition: state
+        entity_id: light.front_back_door
+        state: 'on'
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness: 255
+          entity_id: >-
+            {%- if trigger.entity_id == "binary_sensor.openclose_12" -%}
+              light.hue_filament_bulb_1
+            {%- else -%}
+              light.hue_filament_bulb_1_2
+            {%- endif -%}
+      - wait_for_trigger:
+        - platform: template
+          value_template: >-
+            {{ is_state(trigger.entity_id, 'off') }}
+      - delay: '00:00:30'
+      - service: hue.hue_activate_scene
+        data:
+          group_name: Front & back door
+          scene_name: Evening
+    # Lights off
+    - conditions:
+      - condition: state
+        entity_id: light.front_back_door
+        state: 'off'
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness: 255
+          entity_id: >-
+            {%- if trigger.entity_id == "binary_sensor.openclose_12" -%}
+              light.hue_filament_bulb_1
+            {%- else -%}
+              light.hue_filament_bulb_1_2
+            {%- endif -%}
+      - wait_for_trigger:
+        - platform: template
+          value_template: >-
+            {{ is_state(trigger.entity_id, 'off') }}
+      - delay: '00:00:30'
+      - service: light.turn_off
+        entity_id: light.front_back_door
+    default: []
+  mode: parallel
+  max: 2
+  max_exceeded: silent
+- id: '1606159329722'
+  alias: 💡 | 🚪 Garden lights on (kitchen / garden door open)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.openclose_12
+    - binary_sensor.openclose_34
+    from: 'off'
+    to: 'on'
+    for: '00:00:03'
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+  - condition: state
+    entity_id: light.garden
+    state: 'off'
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Garden
+      scene_name: Ambiance
+  - wait_for_trigger:
+    - platform: template
+      value_template: >-
+        {{ is_state(trigger.entity_id, 'off') }}
+  - delay: '00:05:00'
+  - service: light.turn_off
+    entity_id: light.garden
+  mode: restart
