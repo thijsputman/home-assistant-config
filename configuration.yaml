@@ -67,6 +67,13 @@ influxdb:
       - sensor.tado_smart_thermostat_setpoint
       - sensor.tado_smart_thermostat_mode
       - sensor.time_of_day
+      # Appliances
+      - sensor.power_41 # Electric heater (Shed)
+      - sensor.power_57 # Close-in boiler (Kitchen)
+      - sensor.power_83 # Dryer
+      - sensor.power_86_actual # Washing machine
+      - sensor.power_dishwasher_actual
+      - sensor.power_lights_all
 
 # MQTT
 mqtt:
