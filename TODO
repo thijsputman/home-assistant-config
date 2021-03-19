@@ -9,79 +9,98 @@
 
 ## General
 
-- Move all `input_*` definitions relevant to automations into separate YAML
-  files (instead of defining them in the Lovelace UI; this makes the automations
-  portable)
-- When Home Assistant restarts, or the automations are reloaded, all timer
-  states are lost. Might want to put some failsafes in place to deal with this
-  better. For example the electric heater in the shed might inadvertently get
-  stuck in the "on" state due to this...
+- [ ] Move all `input_*` definitions relevant to automations into separate YAML
+      files (instead of defining them in the Lovelace UI; this makes the
+      automations portable)
+- [ ] When Home Assistant restarts, or the automations are reloaded, all timer
+      states are lost. Might want to put some failsafes in place to deal with
+      this better. For example the electric heater in the shed might
+      inadvertently get stuck in the "on" state due to this...
   - Run an automation at Home Assistant restart and/or when the automations get
     reloaded and toggle all "dangerous" entities into their safe/"off" state?
-- Further implement the doorbell sensor and the "washing machine done"-sensor
-  (both based on creative usage of vibration sensors)
-- Move all icon customisations for sensors defined in YAML from
-  `📄 customize.yaml` to their respective YAML files
-- Nintendo Switch on/off detection: This Switch comes online regularly for a
-  minute or so, which makes the current approach for controlling the Living Room
-  lights unusable. See if there's a(nother) way of handling this – for now the
-  automations are included, but disabled in the UI
-- State attributes store history too, so there's no need to create template
-  sensors if they're purely used for graphing in dashboards (`mini-graph-card`
-  can graph attributes) or in other automations (use a template to retrieve the
-  attribute's value)
+- [ ] Further refine the doorbell sensor ~~and the "washing machine
+      done"-sensor~~ (based on creative usage of vibration sensors)
+- [ ] Move all icon customisations for sensors defined in YAML from
+      `📄 customize.yaml` to their respective YAML files
+- [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
+      `light_x`, `openclose_y`, the other half already have sensible names)
+- [ ] Nintendo Switch on/off detection: This Switch comes online regularly for a
+      minute or so, which makes the current approach for controlling the Living
+      Room lights unusable. See if there's a(nother) way of handling this – for
+      now the automations are included, but disabled in the UI
+- [ ] State attributes store history too, so there's no need to create template
+      sensors if they're purely used for graphing in dashboards
+      (`mini-graph-card` can graph attributes) or in other automations (use a
+      template to retrieve the attribute's value)
   - Main value of template sensors is to easily retrieve an attribute's history
     without having it structural on a dashboard (i.e. incidental usage)
   - See which of the current template sensors (mainly tado° related) are
     actually useful given the above considerations; remove the ones that are
     not...
-- Some of the automation/helper-combinations can be replaced with template
-  sensors – mainly those that effectively are nothing more than a set of
-  operations on the state of one or more existing sensors:
+- [ ] Some of the automation/helper-combinations can be replaced with template
+      sensors – mainly those that effectively are nothing more than a set of
+      operations on the state of one or more existing sensors:
   - ✔ Time of Day / Nighttime
   - The Hue scene heuristics – might be more trouble than it's worth (unless
     this somehow enables the inputs for the heuristic to be stored outside of
     the template sensor)
+- [ ] Ensure that all state-_triggers_ have both a `from`- and `to`-state
+      specified (where applicable) to ensure transitions to/from
+      `unknown`/`unavailable` don't inadvertently trigger automations
+- [ ] Allow the wakeup alarm sound to be muted (it should still trigger all
+      automations, but not generate any sound) – maybe also mute it
+      automatically when no-one is home?
+- [ ] Reload ping sensors one minute after restarting Home Assistant – they bug
+      out quite often after a restart...
+- [ ] Add notification on Synology disk-failure
 
 ## tado°
 
-- It appears the "Off" state/`hvac_action` clears the setpoint temperature.
-  Check if the Attic thermostat automations properly cope with that. Also, make
-  the Attic thermostat follow the on/off state of the main thermostat
-  (functionally not needed, mainly for consistency)
-- Create several "backstops" (controlled via HomeKit) to ensure heating is
-  properly controlled when there is no access to the online Tado service
+- [ ] It appears the "Off" state/`hvac_action` clears the setpoint temperature.
+      Check if the Attic thermostat automations properly cope with that. Also,
+      make the Attic thermostat follow the on/off state of the main thermostat
+      (functionally not needed, mainly for consistency)
+- [ ] Create several "backstops" (controlled via HomeKit) to ensure heating is
+      properly controlled when there is no access to the online Tado service
   - On hold till the first time this actually turns out to be an issue. As of
     yet, the Tado online service has been rock-solid...
 
 ## Lights
 
-- Daytime lights should respect wakeup time (similar to "Inside lights on (when
-  dark at «wakeup» time)")
-- For Summer: Garden light automatic off at 22:30 should only happen if light
-  state has not been modified manually (i.e. we're sitting outside)
-- The transition from "lights off at dawn" to "daytime lights on when its dark
-  during the day" is not optimal yet. At the moment I'm delaying the latter by
-  10 seconds to prevent it from interfering with the former, there should be a
-  nicer way to handle that...
-- Failure mode for Kitchen-counter motion lights: Switch Kitchen to "Ambiance",
-  trigger counter motion sensor, switch Kitchen to "Bright (Custom)" (while
-  motion sensor is still active). After motion clears, Kitchen switches back to
-  "Ambiance" instead of to "Bright (Custom")
+- [ ] Daytime lights should respect wakeup time (similar to "Inside lights on
+      (when dark at «wakeup» time)")
+- [ ] For Summer: Garden light automatic off at 22:30 should only happen if
+      light state has not been modified manually (i.e. we're sitting outside)
+- [ ] The transition from "lights off at dawn" to "daytime lights on when its
+      dark during the day" is not optimal yet. At the moment I'm delaying the
+      latter by 10 seconds to prevent it from interfering with the former, there
+      should be a nicer way to handle that...
+- [ ] Failure mode for Kitchen-counter motion lights: Switch Kitchen to
+      "Ambiance", trigger counter motion sensor, switch Kitchen to "Bright
+      (Custom)" (while motion sensor is still active). After motion clears,
+      Kitchen switches back to "Ambiance" instead of to "Bright (Custom")
+- [ ] Let the occupancy simulation toggle `input_boolean.everyone_asleep` when
+      it switches off all lights (easiest way to keep consistent behaviour). Do
+      ensure this doesn't conflict with the alarm settings
 
 ## Alarm
 
-- Flash the colour lamps/lights bulbs in the Living Room red while the alarm is
-  activated; also, check if the siren's light actually flashes when the alarm is
-  sounding
-- Use the buttons in the bedroom to disable the siren (only when the alarm is
-  sounding) – pressing the button again should re-enable the sound
-- Currently Arlo's cameras are automatically armed daily at 22:30. Make this
-  contingent on the state of the lights in the back garden. When we're sitting
-  outside late in Summer, don't arm Arlo (or at least not until the garden
-  lights go off)
-- Perhaps use the "Template Alarm Control Panel" instead of the current setup
-  with a set of automations? Unsure whether that would really make thing easier
-  to understand though...
-- Send a notification when windows or doors are left open when leaving the house
-  (i.e. when the alarm is switched into "Armed away"-mode)
+- [ ] Flash the colour lamps/lights bulbs in the Living Room red while the alarm
+      is activated; also, check if the siren's light actually flashes when the
+      alarm is sounding
+- [ ] Use the buttons in the bedroom to disable the siren (only when the alarm
+      is sounding) – pressing the button again should re-enable the sound
+- [ ] Currently Arlo's cameras are automatically armed daily at 22:30. Make this
+      contingent on the state of the lights in the back garden. When we're
+      sitting outside late in Summer, don't arm Arlo (or at least not until the
+      garden lights go off)
+- [ ] Perhaps use the "Template Alarm Control Panel" instead of the current
+      setup with a set of automations? Unsure whether that would really make
+      thing easier to understand though...
+- [ ] Send a notification when windows or doors are left open when leaving the
+      house (i.e. when the alarm is switched into "Armed away"-mode)
+- [ ] Set a basic Arlo schedule in the Arlo app (on every night, off in the
+      morning) so it doesn't fully depend on Home Assistant; ensure the
+      automations cope with the Arlo changing states outside of their control
+- [ ] Implement the new "Saving Media"-functionality from version `0.7.1` of
+      `hass-aarlo`
