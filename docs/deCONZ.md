@@ -4,6 +4,10 @@
   - [Xiaomi Mi Smart Plug (`lumi.plug.mmeu01`)](#xiaomi-mi-smart-plug-lumiplugmmeu01)
   - [BlitzWolf Smart Socket (`TS0121`)](#blitzwolf-smart-socket-ts0121)
 
+As a general caution, if Zigbee-entities become `unavailable` after restarting
+deCONZ (without restarting Home Assistant), **_reload_** the integration before
+trying anything else...
+
 ## Device-compatibility
 
 ### Xiaomi Mi Smart Plug (`lumi.plug.mmeu01`)
@@ -28,13 +32,25 @@ REST API and try again.
 
 Multiple attempts might be required.
 
-#### References
+**N.B.** This appears to be somewhat of a generic issue – sensor entities
+getting left behind after removing certain devices. Similar instructions might
+apply to both related and unrelated device-types.
+
+Reference:
 
 - <https://github.com/dresden-elektronik/deconz-rest-plugin/issues/4238#issuecomment-774679112>
 - <https://github.com/dresden-elektronik/deconz-rest-plugin/issues/2583>
 
 ### BlitzWolf Smart Socket (`TS0121`)
 
-This unit appears (again, through limited testing) to behave similar to the
-[Xiaomi unit](#xiaomi-mi-smart-plug-lumiplugmmeu01) – roughly speaking the same
-instructions apply...
+This unit appears (again, through limited testing) has similar problems as the
+[Xiaomi unit](#xiaomi-mi-smart-plug-lumiplugmmeu01) – different instructions
+apply though:
+
+> Resetting the device (initializing pairing sequence by holding power button
+> for more than 5 seconds) while having pairing mode/sensor search active in
+> Phoscon some kind of "re-joined" the plug to the ConBee/ZigBee mesh.
+
+Reference:
+
+- <https://github.com/dresden-elektronik/deconz-rest-plugin/issues/2988#issuecomment-791972997>
