@@ -16,7 +16,7 @@ entities:
   - entity: sensor.weewx_solar_irradiance
     show_points: false
   - color: gray
-    entity: input_boolean.nighttime
+    entity: sensor.time_of_day_numeric
     name: Night
     show_line: false
     show_points: false

@@ -71,7 +71,7 @@
   - condition: not
     conditions:
     - condition: state
-      entity_id: input_select.time_of_day
+      entity_id: sensor.time_of_day
       state: day
   - condition: not
     conditions:
@@ -128,7 +128,7 @@
   - condition: not
     conditions:
     - condition: state
-      entity_id: input_select.time_of_day
+      entity_id: sensor.time_of_day
       state: day
   action:
   - service: hue.hue_activate_scene

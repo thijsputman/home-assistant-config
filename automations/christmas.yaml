@@ -35,7 +35,7 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: input_select.time_of_day
+    entity_id: sensor.time_of_day
     from: day
     to: dusk
   condition: []
@@ -48,7 +48,7 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: input_select.time_of_day
+    entity_id: sensor.time_of_day
     from: night
     to: dawn
   condition: []

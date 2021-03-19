@@ -55,7 +55,7 @@
   - condition: not
     conditions:
     - condition: state
-      entity_id: input_select.time_of_day
+      entity_id: sensor.time_of_day
       state: day
   # Prevent triggering when no-one is home or everyone is asleep (most likely
   # the Switch is doing some maintenance and automatically woke from stand-by)

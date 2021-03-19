@@ -27,7 +27,7 @@ cards:
         show_points: false
         unit: m³/h
       - color: gray
-        entity: input_boolean.nighttime
+        entity: sensor.time_of_day_numeric
         show_line: false
         show_points: false
         show_legend: false

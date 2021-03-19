@@ -24,7 +24,7 @@ cards:
       - entity: sensor.power_consumption
         show_points: false
       - color: gray
-        entity: input_boolean.nighttime
+        entity: sensor.time_of_day_numeric
         show_line: false
         show_points: false
         show_legend: false

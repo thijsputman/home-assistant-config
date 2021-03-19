@@ -110,11 +110,11 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: input_select.time_of_day
+    entity_id: sensor.time_of_day
     from: dawn
     to: day
   - platform: state
-    entity_id: input_select.time_of_day
+    entity_id: sensor.time_of_day
     from: day
     to: dusk
   condition:

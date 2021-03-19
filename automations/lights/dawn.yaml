@@ -7,10 +7,10 @@
   - condition: or
     conditions:
     - condition: state
-      entity_id: input_select.time_of_day
+      entity_id: sensor.time_of_day
       state: night
     - condition: state
-      entity_id: input_select.time_of_day
+      entity_id: sensor.time_of_day
       state: dawn
   - condition: state
     entity_id: timer.wakeup_grace_time
@@ -53,7 +53,7 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: input_select.time_of_day
+    entity_id: sensor.time_of_day
     from: dawn
     to: day
   condition: []

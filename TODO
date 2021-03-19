@@ -38,7 +38,7 @@
 - Some of the automation/helper-combinations can be replaced with template
   sensors – mainly those that effectively are nothing more than a set of
   operations on the state of one or more existing sensors:
-  - Time of Day / Nighttime (under evaluation)
+  - ✔ Time of Day / Nighttime
   - The Hue scene heuristics – might be more trouble than it's worth (unless
     this somehow enables the inputs for the heuristic to be stored outside of
     the template sensor)
