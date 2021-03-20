@@ -1,0 +1,10 @@
+wakeup:
+  name: Wakeup
+  has_date: false
+  has_time: true
+  icon: 'mdi:weather-sunset-up'
+wakeup_light_start:
+  name: Wakeup light start
+  has_date: false
+  has_time: true
+  icon: 'mdi:brightness-6'

@@ -47,8 +47,8 @@
 - [ ] Ensure that all state-_triggers_ have both a `from`- and `to`-state
       specified (where applicable) to ensure transitions to/from
       `unknown`/`unavailable` don't inadvertently trigger automations
-- [ ] Allow the wakeup alarm sound to be muted (it should still trigger all
-      automations, but not generate any sound) – maybe also mute it
+- [x] ~~Allow the wakeup alarm sound to be muted (it should still trigger all
+      automations, but not generate any sound)~~ – maybe mute the wakeup alarm
       automatically when no-one is home?
 - [ ] Reload ping sensors one minute after restarting Home Assistant – they bug
       out quite often after a restart...
