@@ -1,5 +1,4 @@
-- id: '1604944801176'
-  alias: 💡 | 🚪 Front / back door to maximum brightness (door open)
+- alias: 💡 | 🚪 Front / back door to maximum brightness (door open)
   description: ''
   trigger:
   - platform: state
@@ -66,8 +65,7 @@
   mode: parallel
   max: 2
   max_exceeded: silent
-- id: '1606159329722'
-  alias: 💡 | 🚪 Garden lights on (kitchen / garden door open)
+- alias: 💡 | 🚪 Garden lights on (kitchen / garden door open)
   description: ''
   trigger:
   - platform: state

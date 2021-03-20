@@ -3,15 +3,13 @@
 # ToDo
 
 - [General](#general)
+- [Lovelace](#lovelace)
 - [tado°](#tado)
 - [Lights](#lights)
 - [Alarm](#alarm)
 
 ## General
 
-- [ ] Move all `input_*` definitions relevant to automations into separate YAML
-      files (instead of defining them in the Lovelace UI; this makes the
-      automations portable)
 - [ ] When Home Assistant restarts, or the automations are reloaded, all timer
       states are lost. Might want to put some failsafes in place to deal with
       this better. For example the electric heater in the shed might
@@ -54,6 +52,11 @@
       out quite often after a restart...
 - [ ] Add notification on Synology disk-failure
 
+## Lovelace
+
+- [ ] Some of the `mini-graph-card`-graphs have inconsistent decimal places in
+      their legends (probably because of illconfigured state-maps?)
+
 ## tado°
 
 - [ ] It appears the "Off" state/`hvac_action` clears the setpoint temperature.
@@ -67,8 +70,6 @@
 
 ## Lights
 
-- [ ] Daytime lights should respect wakeup time (similar to "Inside lights on
-      (when dark at «wakeup» time)")
 - [ ] For Summer: Garden light automatic off at 22:30 should only happen if
       light state has not been modified manually (i.e. we're sitting outside)
 - [ ] The transition from "lights off at dawn" to "daytime lights on when its
