@@ -1,4 +1,4 @@
-- alias: 📺 | 💡 Dim lights (Nintendo Switch on)
+- alias: 💡 | 📺 Dim lights (Nintendo Switch on)
   description: ''
   trigger:
   - platform: state
@@ -44,7 +44,7 @@
           scene_name: Evening
     default: []
   mode: single
-- alias: 📺 | 💡 Restore lights (Nintendo Switch off)
+- alias: 💡 | 📺 Restore lights (Nintendo Switch off)
   description: ''
   trigger:
   - platform: state

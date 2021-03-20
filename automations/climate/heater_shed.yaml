@@ -1,0 +1,43 @@
+- alias: 🌡️ | 🤖 Turn on shed electric heater (< 6ºC)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.temperature_27
+    below: 6
+    for: '00:10:00'
+  condition: []
+  action:
+  - service: switch.turn_on
+    data: {}
+    entity_id: switch.smart_plug_5
+  mode: single
+- alias: 🌡️ | 🤖 Turn off shed electric heater (> 8ºC)
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.temperature_27
+    for: '00:10:00'
+    above: 8
+  condition:
+  - condition: state
+    entity_id: switch.smart_plug_5
+    state: 'on'
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.smart_plug_5
+  mode: single
+- alias: 🌡️ | ⏰ Turn off shed electric heater (after 90 minutes)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: switch.smart_plug_5
+    from: 'off'
+    to: 'on'
+    for: '01:30:00'
+  condition: []
+  action:
+  - service: switch.turn_off
+    data: {}
+    entity_id: switch.smart_plug_5
+  mode: single

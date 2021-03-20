@@ -60,16 +60,3 @@ lights_out:
     - light.guestroom
   mode: single
   icon: mdi:lightbulb-group-off
-wake_up_light_bedroom:
-  alias: Wake up light bedroom
-  sequence:
-  - service: light.turn_on
-    data:
-      xy_color:
-      - 0.4448
-      - 0.4066
-      brightness: 240
-      transition: 1200
-    entity_id: light.bedroom
-  mode: single
-  icon: mdi:weather-sunset-up

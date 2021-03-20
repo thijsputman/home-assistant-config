@@ -1,4 +1,4 @@
-- alias: 📺 | 💡 Dim lights (Shield TV playing)
+- alias: 💡 | 📺 Dim lights (Shield TV playing)
   description: ''
   trigger:
   - platform: state
@@ -45,7 +45,7 @@
           scene_name: Movie
     default: []
   mode: single
-- alias: 📺 | 💡 Restore lights (Shield TV on/paused)
+- alias: 💡 | 📺 Restore lights (Shield TV on/paused)
   description: ''
   trigger:
   - platform: state
@@ -118,7 +118,7 @@
           scene_name: Evening
     default: []
   mode: single
-- alias: 📺 | 💡 Restore lights (Shield TV off)
+- alias: 💡 | 📺 Restore lights (Shield TV off)
   description: ''
   trigger:
   - platform: state

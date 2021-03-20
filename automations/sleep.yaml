@@ -38,3 +38,122 @@
     data: {}
     entity_id: input_boolean.everyone_asleep
   mode: single
+- alias: 💤 Set next «wakeup» (everyone awake)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.everyone_asleep
+    to: 'off'
+    from: 'on'
+  condition: []
+  action:
+  - service: timer.start
+    data: {}
+    entity_id: timer.wakeup_grace_time
+  - choose:
+    - conditions:
+      - condition: time
+        weekday:
+        - fri
+        - sat
+      sequence:
+      - service: input_datetime.set_datetime
+        data:
+          time: '09:00:00'
+        entity_id: input_datetime.wakeup
+    - conditions:
+      - condition: time
+        weekday:
+        - mon
+        - tue
+        - wed
+        - thu
+        - sun
+      sequence:
+      - service: input_datetime.set_datetime
+        data:
+          time: '08:00:00'
+        entity_id: input_datetime.wakeup
+    default: []
+  mode: single
+- alias: 💤 Set «wakeup light start» time («wakeup» time change)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_datetime.wakeup
+  condition: []
+  action:
+  - service: input_datetime.set_datetime
+    data:
+      time: >-
+        {{
+          (state_attr('input_datetime.wakeup', 'timestamp') | int - 1200) |
+            timestamp_custom('%H:%M:%S', false)
+        }}
+    entity_id: input_datetime.wakeup_light_start
+  mode: single
+- alias: 💤 | 🔊 Alarm bedroom (daily at «wakeup» time)
+  # N.B. This automation's name is used in the next automation!
+  description: ''
+  trigger:
+  - platform: time
+    at: input_datetime.wakeup
+  condition:
+  - condition: state
+    state: home
+    entity_id: group.family
+  - condition: state
+    entity_id: timer.wakeup_grace_time
+    state: idle
+  action:
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.pi0_speaker_bedroom
+      volume_level: 0.45
+  - repeat:
+      count: 4
+      sequence:
+      - service: media_player.play_media
+        data:
+          media_content_type: audio/ogg
+          media_content_id: file:/var/lib/mopidy/media/Gnome.ogg
+        entity_id: media_player.pi0_speaker_bedroom
+      - delay: '00:00:15'
+  mode: single
+- id: '1607992740551'
+  alias: 💤 | 🕹️ Snooze alarm bedroom (Smart Switch)
+  description: ''
+  trigger:
+  # Bedside Smart Switches
+  - device_id: da1237666189a9a364fa383795ba532d
+    domain: deconz
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_on
+  - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+    domain: deconz
+    platform: device
+    type: remote_button_short_press
+    subtype: turn_on
+  condition:
+  # Only act if the alarm is sounding (i.e. in the ±90 seconds after that
+  # automation started)
+  - condition: template
+    value_template: >-
+      {{
+        (as_timestamp(now())|int - as_timestamp(
+          state_attr('automation.alarm_bedroom_daily_at_wakeup_time',
+            'last_triggered')
+        ) | int(0) ) <= 90
+      }}
+  action:
+  - service: automation.turn_off
+    data: {}
+    entity_id: automation.alarm_bedroom_daily_at_wakeup_time
+  - service: automation.turn_on
+    data: {}
+    entity_id: automation.alarm_bedroom_daily_at_wakeup_time
+  - service: media_player.media_stop
+    data: {}
+    entity_id: media_player.pi0_speaker_bedroom
+  mode: single

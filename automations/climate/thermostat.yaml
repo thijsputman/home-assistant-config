@@ -3,7 +3,7 @@
 # Scheduling and "Away" mode are arranged via the tado° app/service. The below
 # automations are mainly concerned with switching the "Away" mode on and off
 # and some exceptional scheduling conditions.
-- alias: 🤖 | 🌡️ tado° to "Away" mode (everyone away)
+- alias: 🌡️ | ✈️ tado° to "Away" mode (everyone away)
   description: ''
   trigger:
   - platform: state
@@ -18,7 +18,7 @@
       preset_mode: away
     entity_id: climate.tado_living_room
   mode: single
-- alias: 🤖 | 🌡️ tado° to "Home" mode (someone home)
+- alias: 🌡️ | ✈️ tado° to "Home" mode (someone home)
   description: ''
   trigger:
   - platform: state
@@ -37,7 +37,7 @@
 # at the next schedule change (19:00 or 20:30 depending on day of the week). If
 # we go to bed before that time, the heating will be switched on again later in
 # the evening...
-- alias: 🤖 | 🌡️ Lower thermostat (everyone asleep)
+- alias: 🌡️ | 💤 Lower thermostat (everyone asleep)
   description: ''
   trigger:
   - platform: state

@@ -1,4 +1,4 @@
-- alias: ⏰ | 💡 Outside lights on (daily at civil dusk)
+- alias: 💡 | ⏰ Outside lights on (daily at civil dusk)
   description: ''
   trigger:
   - platform: state
@@ -16,7 +16,7 @@
       group_name: Front & back door
       scene_name: Evening
   mode: single
-- alias: ⏰ | 💡 Inside lights on (daily just before sunset)
+- alias: 💡 | ⏰ Inside lights on (daily just before sunset)
   description: ''
   trigger:
   - platform: state
@@ -87,5 +87,33 @@
         data:
           group_name: Guestroom
           scene_name: Evening
+    default: []
+  mode: single
+- alias: 💡 | ⏰ Outside lights off (daily at 22:30)
+  description: ''
+  trigger:
+  - platform: time
+    at: '22:30:00'
+  condition: []
+  action:
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.garden
+        state: 'on'
+      sequence:
+      - service: light.turn_off
+        data: {}
+        entity_id: light.garden
+    default: []
+  - choose:
+    - conditions:
+      - condition: state
+        entity_id: light.front_back_door
+        state: 'on'
+      sequence:
+      - service: light.turn_off
+        data: {}
+        entity_id: light.front_back_door
     default: []
   mode: single

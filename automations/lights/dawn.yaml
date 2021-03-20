@@ -1,4 +1,4 @@
-- alias: ⏰ | 💡 Inside lights on (when dark at «wakeup» time)
+- alias: 💡 | ⏰ Inside lights on (when dark at «wakeup» time)
   description: ''
   trigger:
   - platform: time
@@ -49,7 +49,7 @@
           scene_name: Evening
     default: []
   mode: single
-- alias: ⏰ | 💡 Inside lights off (daily just after dawn)
+- alias: 💡 | ⏰ Inside lights off (daily just after dawn)
   description: ''
   trigger:
   - platform: state
