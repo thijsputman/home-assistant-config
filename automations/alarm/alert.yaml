@@ -150,7 +150,7 @@
           - light.spot_3_kitchen
     default: []
   mode: single
-- alias: 🚨 | 📱 Send notification (pending alarm)
+- alias: 🚨 | 📱 Send notification (alarm pending)
   description: ''
   trigger:
   - platform: state

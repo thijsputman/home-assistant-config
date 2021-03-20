@@ -1,0 +1,24 @@
+- alias: 🚨 | 📱 Notify on open doors/windows (alarm "Armed away")
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: armed_away
+  condition:
+  - condition: state
+    entity_id: group.openclose_all
+    state: 'on'
+  action:
+  - service: script.persistent_notification_all_devices
+    data:
+      tag: away
+      title: 🚪 Doors and/or windows left open!
+      message: >-
+        The following doors and/or windows are still open:
+        <ul>
+          <li>
+            {{-
+              expand('group.openclose_all') |
+                selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
+              -}}
+          </li>
+        </ul>

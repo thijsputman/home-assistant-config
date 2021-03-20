@@ -17,7 +17,8 @@
             'system_general',
             'calamity_leak',
             'calamity_smoke',
-            'trash'
+            'trash',
+            'away'
           ]
       }}
   action:
