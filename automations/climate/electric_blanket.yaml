@@ -32,6 +32,10 @@
 - alias: 🌡️ | ⏰ Electric blanket off (after 2 hours)
   description: ''
   trigger:
+  # In case Home Assistant or deCONZ restarts, the switch transitions from "on"
+  # to "unavailable" back to "on" – omission of the "from"-state here is
+  # intentional in the hopes it ensures the switch doesn't stay on indefinetely
+  # (but instead restarts its timer).
   - platform: state
     entity_id: switch.on_off_plug_in_unit_3
     to: 'on'

@@ -3,6 +3,7 @@
   trigger:
   - platform: state
     entity_id: input_boolean.everyone_asleep
+    from: "off"
     to: "on"
   condition: []
   action:
@@ -15,6 +16,7 @@
   trigger:
   - platform: state
     entity_id: input_boolean.everyone_asleep
+    from: "on"
     to: "off"
   condition: []
   action:

@@ -27,14 +27,17 @@
     data: {}
     entity_id: switch.smart_plug_5
   mode: single
-- alias: 🌡️ | ⏰ Turn off shed electric heater (after 90 minutes)
+- alias: 🌡️ | ⏰ Turn off shed electric heater (after 2 hours)
   description: ''
   trigger:
+  # In case Home Assistant or deCONZ restarts, the switch transitions from "on"
+  # to "unavailable" back to "on" – omission of the "from"-state here is
+  # intentional in the hopes it ensures the switch doesn't stay on indefinetely
+  # (but instead restarts its timer).
   - platform: state
     entity_id: switch.smart_plug_5
-    from: 'off'
     to: 'on'
-    for: '01:30:00'
+    for: '02:00:00'
   condition: []
   action:
   - service: switch.turn_off

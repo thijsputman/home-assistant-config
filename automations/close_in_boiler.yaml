@@ -59,6 +59,7 @@
   trigger:
   - platform: state
     entity_id: input_boolean.everyone_asleep
+    from: "on"
     to: "off"
   - platform: state
     entity_id: group.family

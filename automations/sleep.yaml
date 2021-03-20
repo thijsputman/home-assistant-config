@@ -43,8 +43,8 @@
   trigger:
   - platform: state
     entity_id: input_boolean.everyone_asleep
-    to: 'off'
     from: 'on'
+    to: 'off'
   condition: []
   action:
   - service: timer.start

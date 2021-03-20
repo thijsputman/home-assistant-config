@@ -3,6 +3,7 @@
   trigger:
   - platform: state
     entity_id: light.living_room
+    from: 'off'
     to: 'on'
   condition:
   - condition: state
@@ -18,9 +19,11 @@
   trigger:
   - platform: state
     entity_id: group.family
+    from: home
     to: not_home
   - platform: state
     entity_id: light.living_room
+    from: 'on'
     to: 'off'
   condition:
   - condition: state

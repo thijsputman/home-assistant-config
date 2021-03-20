@@ -10,12 +10,6 @@
 
 ## General
 
-- [ ] When Home Assistant restarts, or the automations are reloaded, all timer
-      states are lost. Might want to put some failsafes in place to deal with
-      this better. For example the electric heater in the shed might
-      inadvertently get stuck in the "on" state due to this...
-  - Run an automation at Home Assistant restart and/or when the automations get
-    reloaded and toggle all "dangerous" entities into their safe/"off" state?
 - [ ] Further refine the doorbell sensor ~~and the "washing machine
       done"-sensor~~ (based on creative usage of vibration sensors)
 - [ ] Move all icon customisations for sensors defined in YAML from
@@ -42,9 +36,6 @@
   - The Hue scene heuristics – might be more trouble than it's worth (unless
     this somehow enables the inputs for the heuristic to be stored outside of
     the template sensor)
-- [ ] Ensure that all state-_triggers_ have both a `from`- and `to`-state
-      specified (where applicable) to ensure transitions to/from
-      `unknown`/`unavailable` don't inadvertently trigger automations
 - [ ] Reload ping sensors one minute after restarting Home Assistant – they bug
       out quite often after a restart...
 - [ ] Add notification on Synology disk-failure
