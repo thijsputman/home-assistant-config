@@ -88,8 +88,6 @@
 - [ ] Flash the colour lamps/lights bulbs in the Living Room red while the alarm
       is activated; also, check if the siren's light actually flashes when the
       alarm is sounding
-- [ ] Use the buttons in the bedroom to disable the siren (only when the alarm
-      is sounding) – pressing the button again should re-enable the sound
 - [ ] Currently Arlo's cameras are automatically armed daily at 22:30. Make this
       contingent on the state of the lights in the back garden. When we're
       sitting outside late in Summer, don't arm Arlo (or at least not until the
