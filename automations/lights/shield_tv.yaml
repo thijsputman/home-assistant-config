@@ -14,6 +14,7 @@
     from: idle
     to: playing
   condition:
+  # Only act if Living room lights are on
   - condition: state
     entity_id: light.living_room
     state: 'on'
@@ -67,17 +68,29 @@
     entity_id: media_player.nvidia_shield_tv
     from: 'off'
     to: idle
+  - platform: state
+    entity_id: media_player.nvidia_shield_tv
+    from: 'off'
+    to: paused
   condition:
+  # Only act if Living room lights are on _and_ it's not daytime. They daytime-
+  # condition is the easiest way to prevent turning the lights back on when it's
+  # not needed (as it's most likely light enough during the day).
+  # The "light on"-condition might seem counter-intuitive, but even when playing
+  # some lights in the Living room remain on. As _all_ Shield TV automations are
+  # conditional on the lights being on, the Shield TV alone can never turn the
+  # lights on if they weren't on to begin with.
+  # This is the cleanest way (i.e. dependent only on the state of the Living
+  # room lights) to prevent the Shield TV from turning on the lights if it wakes
+  # up unattended at the night...
+  - condition: state
+    entity_id: light.living_room
+    state: 'on'
   - condition: not
     conditions:
     - condition: state
       entity_id: sensor.time_of_day
       state: day
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: media_player.nvidia_shield_tv
-      state: 'off'
   action:
   - service: hue.hue_activate_scene
     data:
@@ -125,6 +138,10 @@
     from: idle
     to: 'off'
   condition:
+  # Only act if Living room lights are on _and_ it's not daytime
+  - condition: state
+    entity_id: light.living_room
+    state: 'on'
   - condition: not
     conditions:
     - condition: state
