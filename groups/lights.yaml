@@ -3,8 +3,25 @@ light_inside_rooms:
   name: Inside rooms
   icon: mdi:home-lightbulb
   entities:
-    - light.living_room
-    - light.kitchen
+    - light.attic
     - light.bedroom
     - light.guestroom
+    - light.kitchen
+    - light.living_room
+# All rooms/lights
+lights_all:
+  name: All lights
+  icon: mdi:lightbulb-group-outline
+  entities:
     - light.attic
+    - light.basement
+    - light.bathroom
+    - light.bedroom
+    - light.front_back_door
+    - light.garden
+    - light.guestroom
+    - light.hallway
+    - light.kitchen
+    - light.living_room
+    - light.toilet
+    - light.wardrobe

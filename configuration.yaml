@@ -146,6 +146,9 @@ utility_meter:
   monthly_consumption_dishwasher:
     source: sensor.consumption_87_actual
     cycle: monthly
+  monthly_consumption_lights_all:
+    source: sensor.consumption_lights_all
+    cycle: monthly
 
 # Neato
 neato:
