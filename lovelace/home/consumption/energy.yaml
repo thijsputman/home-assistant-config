@@ -55,185 +55,195 @@ cards:
   - type: horizontal-stack
     cards:
       - type: 'custom:mod-card'
-        style: |
-          ha-card {
-            background: var( --ha-card-background, var(--card-background-color, white) );
-            box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
-          }
+        card_mod:
+          style: |
+            ha-card {
+              background: var(--llh-mod-card-background);
+              box-shadow: var(--llh-mod-card-box-shadow);
+            }
         card:
           type: grid
           cards:
             - type: entity
-              style: |
-                ha-card {
-                  border: 0px;
-                  box-shadow: unset;
-                }
-                ha-card div.info{
-                  padding-bottom: 0px;
-                }
-                ha-card span.value{
-                  display: inline-block;
-                  width: 3.2em;
-                  height: 0.92em;
-                  vertical-align: text-bottom;
-                  text-align: right;
-                }
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                    box-shadow: unset;
+                  }
+                  ha-card div.info{
+                    padding-bottom: 0px;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
               entity: sensor.daily_energy_costs
               name: Today
               icon: 'mdi:cash'
             - type: entity
-              style: |
-                ha-card {
-                  border: 0px;
-                  box-shadow: unset;
-                }
-                ha-card div.icon{
-                  display: none;
-                }
-                ha-card span.value{
-                  display: inline-block;
-                  width: 3.2em;
-                  height: 0.92em;
-                  vertical-align: text-bottom;
-                  text-align: right;
-                }
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                    box-shadow: unset;
+                  }
+                  ha-card div.icon{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
               entity: sensor.monthly_energy_costs_daily_average
               unit: € / day
               name: This month
               icon: 'mdi:cash'
             - type: entity
-              style: |
-                ha-card {
-                  border: 0px;
-                  box-shadow: unset;
-                }
-                ha-card div.header{
-                  display: none;
-                }
-                ha-card span.value{
-                  display: inline-block;
-                  width: 3.2em;
-                  height: 0.92em;
-                  vertical-align: text-bottom;
-                  text-align: right;
-                }
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                    box-shadow: unset;
+                  }
+                  ha-card div.header{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
               entity: sensor.monthly_energy_costs
             - type: entity
-              style: |
-                ha-card {
-                  border: 0px;
-                  box-shadow: unset;
-                }
-                ha-card div.header{
-                  display: none;
-                }
-                ha-card span.value{
-                  display: inline-block;
-                  white-space: normal !important;
-                  overflow: hidden;
-                  width: 3.2em;
-                  height: 0.92em;
-                  vertical-align: text-bottom;
-                  text-align: right;
-                }
-                ha-card span.value::before{
-                  content: "{{ states('sensor.monthly_energy')|round(2) }} wrap"
-                }
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                    box-shadow: unset;
+                  }
+                  ha-card div.header{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    white-space: normal !important;
+                    overflow: hidden;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+                  ha-card span.value::before{
+                    content: "{{ states('sensor.monthly_energy')|round(2) }} wrap"
+                  }
               entity: sensor.monthly_energy
           columns: 1
           square: false
       - type: 'custom:mod-card'
-        style: |
-          ha-card {
-            background: var( --ha-card-background, var(--card-background-color, white) );
-            box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
-          }
+        card_mod:
+          style: |
+            ha-card {
+              background: var(--llh-mod-card-background);
+              box-shadow: var(--llh-mod-card-box-shadow);
+            }
         card:
           type: grid
           cards:
             - type: entity
-              style: |
-                ha-card {
-                  border: 0px;
-                  box-shadow: unset;
-                }
-                ha-card div.info{
-                  padding-bottom: 0px;
-                }
-                ha-card span.value{
-                  display: inline-block;
-                  width: 3.2em;
-                  height: 0.92em;
-                  vertical-align: text-bottom;
-                  text-align: right;
-                }
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                    box-shadow: unset;
+                  }
+                  ha-card div.info{
+                    padding-bottom: 0px;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
               entity: sensor.daily_energy_costs
               attribute: last_period
               unit: €
               name: Yesterday
               icon: 'mdi:cash'
             - type: entity
-              style: |
-                ha-card {
-                  border: 0px;
-                  box-shadow: unset;
-                }
-                ha-card div.icon{
-                  display: none;
-                }
-                ha-card span.value{
-                  display: inline-block;
-                  width: 3.2em;
-                  height: 0.92em;
-                  vertical-align: text-bottom;
-                  text-align: right;
-                }
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                    box-shadow: unset;
+                  }
+                  ha-card div.icon{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
               entity: sensor.monthly_energy_costs_daily_average
               attribute: last_period
               unit: € / day
               name: Last month
               icon: 'mdi:cash'
             - type: entity
-              style: |
-                ha-card {
-                  border: 0px;
-                  box-shadow: unset;
-                }
-                ha-card div.header{
-                  display: none;
-                }
-                ha-card span.value{
-                  display: inline-block;
-                  width: 3.2em;
-                  height: 0.92em;
-                  vertical-align: text-bottom;
-                  text-align: right;
-                }
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                    box-shadow: unset;
+                  }
+                  ha-card div.header{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
               entity: sensor.monthly_energy_costs
               attribute: last_period
               unit: €
             - type: entity
-              style: |
-                ha-card {
-                  border: 0px;
-                  box-shadow: unset;
-                }
-                ha-card div.header{
-                  display: none;
-                }
-                ha-card span.value{
-                  display: inline-block;
-                  white-space: normal !important;
-                  overflow: hidden;
-                  width: 3.2em;
-                  height: 0.92em;
-                  vertical-align: text-bottom;
-                  text-align: right;
-                }
-                ha-card span.value::before{
-                  content: "{{ state_attr('sensor.monthly_energy', 'last_period')|round(2) }} wrap"
-                }
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                    box-shadow: unset;
+                  }
+                  ha-card div.header{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    white-space: normal !important;
+                    overflow: hidden;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+                  ha-card span.value::before{
+                    content: "{{ state_attr('sensor.monthly_energy', 'last_period')|round(2) }} wrap"
+                  }
               entity: sensor.monthly_energy
               attribute: last_period
               unit: kWh

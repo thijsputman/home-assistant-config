@@ -1,21 +1,23 @@
 type: 'custom:mod-card'
-style: |
-  ha-card {
-    background: var( --ha-card-background, var(--card-background-color, white) );
-    box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
-  }
+card_mod:
+  style: |
+    ha-card {
+      background: var(--llh-mod-card-background);
+      box-shadow: var(--llh-mod-card-box-shadow);
+    }
 report_size: 3
 card:
   type: vertical-stack
   cards:
     - type: glance
-      style: |
-        ha-card {
-          border: 0px;
-          box-shadow: unset;
-          margin: 0px !important;
-          padding: 0px !important;
-        }
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            margin: 0px !important;
+            padding: 0px !important;
+          }
       title: Raspberry Pi 4 – Sandbox
       entities:
         - entity: sensor.pi4_sandbox_1_minute_load
@@ -32,13 +34,14 @@ card:
       state_color: false
       columns: 4
     - type: 'custom:mini-graph-card'
-      style: |
-        ha-card {
-          border: 0px;
-          box-shadow: unset;
-          margin: 0px !important;
-          padding: 0px !important;
-        }
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            margin: 0px !important;
+            padding: 0px !important;
+          }
       name: 24-hour trend
       hour24: true
       hours_to_show: 24

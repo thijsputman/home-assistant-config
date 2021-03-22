@@ -51,8 +51,8 @@
       Check if the Attic thermostat automations properly cope with that. Also,
       make the Attic thermostat follow the on/off state of the main thermostat
       (functionally not needed, mainly for consistency)
-- [ ] Create several "backstops" (controlled via HomeKit) to ensure heating is
-      properly controlled when there is no access to the online Tado service
+- [x] ~~Create several "backstops" (controlled via HomeKit) to ensure heating is
+      properly controlled when there is no access to the online Tado service~~
   - On hold till the first time this actually turns out to be an issue. As of
     yet, the Tado online service has been rock-solid...
 

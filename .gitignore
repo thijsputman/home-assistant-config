@@ -7,7 +7,7 @@
 /deps
 /image
 /tts
-/www
+/www/custom-jsm
 /var
 /home-assistant_v2.db*
 /home-assistant.log

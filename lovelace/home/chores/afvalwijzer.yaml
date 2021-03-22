@@ -1,9 +1,10 @@
 type: 'custom:mod-card'
-style: |
-  ha-card {
-    background: var( --ha-card-background, var(--card-background-color, white) );
-    box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
-  }
+card_mod:
+  style: |
+    ha-card {
+      background: var(--llh-mod-card-background);
+      box-shadow: var(--llh-mod-card-box-shadow);
+    }
 report_size: 2
 card:
   type: vertical-stack
@@ -14,12 +15,13 @@ card:
           state: restafval
       card:
         type: entity
-        style: |
-          ha-card {
-            border: 0px;
-            box-shadow: unset;
-            padding: 0px 3em 0px 3em !important;
-          }
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              box-shadow: unset;
+              padding: 0px 3em 0px 3em !important;
+            }
         entity: sensor.afvalwijzer_restafval
         attribute: days_until_collection_date
         unit: days
@@ -31,13 +33,14 @@ card:
           state: gft
       card:
         type: entity
-        style: |
-          ha-card {
-            border: 0px;
-            box-shadow: unset;
-            padding-top: 0px !important;
-            margin-top: 0px !important;
-          }
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              box-shadow: unset;
+              padding-top: 0px !important;
+              margin-top: 0px !important;
+            }
         entity: sensor.afvalwijzer_gft
         attribute: days_until_collection_date
         unit: days
@@ -49,6 +52,21 @@ card:
           state: papier
       card:
         type: entity
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              box-shadow: unset;
+              padding-top: 0px !important;
+              margin-top: 0px !important;
+            }
+        entity: sensor.afvalwijzer_papier
+        attribute: days_until_collection_date
+        unit: days
+        name: 'Next pick-up: Paper'
+        icon: 'mdi:newspaper-variant-multiple-outline'
+    - type: glance
+      card_mod:
         style: |
           ha-card {
             border: 0px;
@@ -56,19 +74,6 @@ card:
             padding-top: 0px !important;
             margin-top: 0px !important;
           }
-        entity: sensor.afvalwijzer_papier
-        attribute: days_until_collection_date
-        unit: days
-        name: 'Next pick-up: Paper'
-        icon: 'mdi:newspaper-variant-multiple-outline'
-    - type: glance
-      style: |
-        ha-card {
-          border: 0px;
-          box-shadow: unset;
-          padding-top: 0px !important;
-          margin-top: 0px !important;
-        }
       entities:
         - entity: sensor.afvalwijzer_restafval
           name: Black bin

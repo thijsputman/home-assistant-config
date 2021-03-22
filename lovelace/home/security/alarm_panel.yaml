@@ -1,21 +1,23 @@
 type: 'custom:mod-card'
-style: |
-  ha-card {
-    background: var( --ha-card-background, var(--card-background-color, white) );
-    box-shadow: var( --ha-card-box-shadow, 0px 2px 1px -1px rgba(0, 0, 0, 0.2), 0px 1px 1px 0px rgba(0, 0, 0, 0.14), 0px 1px 3px 0px rgba(0, 0, 0, 0.12) );
-  }
+card_mod:
+  style: |
+    ha-card {
+      background: var(--llh-mod-card-background);
+      box-shadow: var(--llh-mod-card-box-shadow);
+    }
 report_size: 5
 card:
   type: vertical-stack
   cards:
     - type: alarm-panel
-      style: |
-        ha-card {
-          border: 0px;
-          box-shadow: unset;
-          padding-bottom: 0px !important;
-          margin-bottom: 0px !important;
-        }
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding-bottom: 0px !important;
+            margin-bottom: 0px !important;
+          }
       states:
         - arm_away
         - arm_night
@@ -29,32 +31,34 @@ card:
         type: vertical-stack
         cards:
           - type: entity
-            style: |
-              ha-card{
-                border: 0px;
-                box-shadow: unset;
-                padding-bottom: 0px !important;
-                margin-bottom: 0px !important;
-                padding-top: 0px !important;
-                margin-top: 0px !important;
-              }
-              ha-card div.info{
-                padding-bottom: 0px;
-              }
+            card_mod:
+              style: |
+                ha-card{
+                  border: 0px;
+                  box-shadow: unset;
+                  padding-bottom: 0px !important;
+                  margin-bottom: 0px !important;
+                  padding-top: 0px !important;
+                  margin-top: 0px !important;
+                }
+                ha-card div.info{
+                  padding-bottom: 0px;
+                }
             entity: !secret aarlo_control_panel
             name: Arlo
             icon: 'mdi:cctv'
           - type: entities
-            style: |
-              ha-card{
-                border: 0px;
-                box-shadow: unset;
-                padding-top: 0px !important;
-                margin-top: 0px !important;
-              }
-              ha-card div.card-content{
-                padding-top: 0px;
-              }
+            card_mod:
+              style: |
+                ha-card{
+                  border: 0px;
+                  box-shadow: unset;
+                  padding-top: 0px !important;
+                  margin-top: 0px !important;
+                }
+                ha-card div.card-content{
+                  padding-top: 0px;
+                }
             entities:
               - type: 'custom:paper-buttons-row'
                 buttons:

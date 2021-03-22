@@ -5,10 +5,12 @@ entire home. It's used on all mobile devices and a tablet mounted on the Kitchen
 wall.
 
 Lovelace mode is set to `storage` to allow for easy experimentation and
-prototyping via the UI. The only drawback is that custom Javascript modules are
-thus also managed through the UI and not included as part of the YAML
-configuration in this repository. Below is an overview of the currently loaded
-custom Javascript modules.
+prototyping via the UI. The only drawback is that custom Javascript modules and
+custom CSS are thus also managed through the UI and not included as part of the
+YAML configuration in this repository.
+
+Below is an overview of the currently loaded custom Javascript modules and
+custom CSS.
 
 ## Javascript modules
 
@@ -19,3 +21,7 @@ custom Javascript modules.
 - `mini-graph-card-bundle.js?v=0.11.0-dev.4`
 - `paper-buttons-row.js?v=0.5.0`
 - `simple-thermostat.js?v=0.42.0`
+
+## Custom CSS
+
+- [`📄 /www/lovelace-home.css`](/www/lovelace-home.css)
