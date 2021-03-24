@@ -27,3 +27,4 @@ openclose_all:
     - binary_sensor.openclose_8
     - binary_sensor.openclose_14
     - binary_sensor.openclose_15
+    - binary_sensor.openclose_34

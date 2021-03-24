@@ -8,6 +8,15 @@
     from: 'off'
     to: 'on'
   condition:
+  # Only act if the alarm is disarmed or there's someone asleep at home (i.e.
+  # when it might be helpful for the lights to turn on). Turning them on in
+  # other situations could cause the camera night vision feed to (temporarily)
+  # over-expose, reducing the effectiveness of the cameras...
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state:
+      - disarmed
+      - armed_night
   - condition: not
     conditions:
     - condition: state
@@ -65,7 +74,7 @@
   mode: parallel
   max: 2
   max_exceeded: silent
-- alias: 💡 | 🚪 Garden lights on (kitchen / garden door open)
+- alias: 💡 | 🚪 Garden lights on (kitchen door / back gate open)
   description: ''
   trigger:
   - platform: state
@@ -74,8 +83,17 @@
     - binary_sensor.openclose_34
     from: 'off'
     to: 'on'
+    # Slight delay to prevent "checking if the door is locked" (by attempting to
+    # open it) from triggering the Garden lights...
     for: '00:00:03'
   condition:
+  # Again, only under "normal" circumstances – the alarm automations also
+  # control the Garden lights
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state:
+      - disarmed
+      - armed_night
   - condition: not
     conditions:
     - condition: state

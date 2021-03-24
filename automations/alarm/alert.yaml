@@ -150,7 +150,23 @@
           - light.spot_3_kitchen
     default: []
   mode: single
-- alias: 🚨 | 📱 Send notification (alarm pending)
+- alias: 🚨 | 💡 Garden lights on (alarm pending)
+  trigger:
+  - platform: state
+    entity_id: alarm_control_panel.home_alarm
+    to: pending
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+  action:
+  - service: hue.hue_activate_scene
+    data:
+      group_name: Garden
+      scene_name: Active
+- alias: 🚨 | 📱 Notify alarm pending
   description: ''
   trigger:
   - platform: state
@@ -161,12 +177,23 @@
   - service: script.persistent_notification_all_devices
     data:
       tag: home_alarm
-      title: Home Alarm pending!
+      title: 🚨 Home Alarm pending!
+      # The list of sensors includes doors/windows that were already open.
+      # Filtering out those is more trouble than it's worth...
       message: >-
-        The Home Alarm just got activated!
-        If not promptly disarmed it will trigger...
+        The Home Alarm just got triggered!
+        If not promptly disarmed, the alarm will sound...<br><br>
+        One of the following sensor(s) triggered the alarm:
+        <ul>
+          <li>
+            {{-
+              (expand('group.openclose_all') + expand('group.motion_all'))  |
+                selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
+              -}}
+          </li>
+        </ul>
   mode: single
-- alias: 🚨 | 📱 Send notification (alarm triggered)
+- alias: 🚨 | 📱 Notify alarm sounding
   description: ''
   trigger:
   - platform: state
@@ -179,9 +206,9 @@
       # Separate tag – dismissing this from the Lovelace UI will *not*
       # auto-dismiss it from any of the other devices
       tag: home_alarm_triggered
-      title: Home Alarm triggered!
+      title: 🚨 Home Alarm sounding!
       message: >-
-        The Home Alarm just got triggered!
+        The Home Alarm is sounding – there's someone in the house!
   mode: single
 # Toggle "input_boolean.active_alarm_state" to "true" when the alarm goes to
 # "pending" and keep it that way until the alarm is actively disarmed. Indicates

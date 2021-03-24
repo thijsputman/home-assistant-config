@@ -74,9 +74,14 @@
 
 ## Alarm
 
-- [ ] Flash the colour lamps/lights bulbs in the Living Room red while the alarm
-      is activated; also, check if the siren's light actually flashes when the
-      alarm is sounding
+- [ ] ~~Flash the colour lamps/lights bulbs in the Living Room red while the
+      alarm is activated;~~ also, check if the siren's light actually flashes
+      when the alarm is sounding
+  - Flashing the lights serves little purpose – better idea: Get a second Zigbee
+    siren (reduces the likelihood of them getting disabled in event of an
+    emergency) and have a look at
+    [dresden-elektronik/deconz-rest-plugin#3232](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/3232#issuecomment-688145449)
+    on how to properly control them through deCONZ
 - [ ] Currently Arlo's cameras are automatically armed daily at 22:30. Make this
       contingent on the state of the lights in the back garden. When we're
       sitting outside late in Summer, don't arm Arlo (or at least not until the

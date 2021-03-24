@@ -4,3 +4,13 @@ motion_bathroom:
   entities:
     - binary_sensor.presence_68
     - binary_sensor.presence_71
+motion_all:
+  name: All motion sensors
+  icon: mdi:home-variant-outline
+  entities:
+    - binary_sensor.presence_50
+    - binary_sensor.presence_53
+    - binary_sensor.presence_60
+    - binary_sensor.presence_63
+    - binary_sensor.presence_68
+    - binary_sensor.presence_71
