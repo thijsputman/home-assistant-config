@@ -5,6 +5,9 @@ homeassistant:
   allowlist_external_dirs:
     - /config/var
 
+system_log:
+  fire_event: true
+
 recorder:
   db_url: sqlite:////nvme/home-assistant_v2.db
   exclude:

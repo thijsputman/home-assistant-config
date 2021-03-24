@@ -118,3 +118,34 @@
         {{ trigger.to_state.state }}-state for
         {{ relative_time(trigger.to_state.last_changed) }}.
   mode: single
+# The Recorder's SQLite-database is on a separate NVMe USB-drive that – although
+# generally stable – occasionally disconnects. It reconnects right away and the
+# filesystem is automatically remounted, but Docker doesn't take very kindly to
+# this: All containers using the volume need to be stopped and only then (once
+# they're all down) restarted for the volume to become accessible again...
+# The Raspberry Pi 4 is quite picky where it comes to its USB-drives: The one
+# I'm currently using has historically been stable (not 100% though, which is
+# why it's not the boot-volume). Recently I've discovered that – given the right
+# atmospheric conditions – touching it causes a static shock which reconnects
+# the drive... ⚡
+- alias: 📱 Notify on Recorder-component failure (System Log)
+  trigger:
+    platform: event
+    event_type: system_log_event
+    event_data:
+      level: ERROR
+      source: homeassistant.components.recorder
+  condition: []
+  action:
+  - service: script.persistent_notification_my_devices
+    data:
+      tag: system_general
+      title: 💽 Recorder-component failure!
+      message: >-
+        The recorder-component failed with the folllowing error:
+        <br><br>
+        {{ trigger.event.data.message }}
+  # Throttle automation so only one notification is generated every 10 minutes
+  - delay: 600
+  mode: single
+  max_exceeded: silent
