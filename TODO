@@ -38,7 +38,6 @@
     the template sensor)
 - [ ] Reload ping sensors one minute after restarting Home Assistant – they bug
       out quite often after a restart...
-- [ ] Add notification on Synology disk-failure
 
 ## Lovelace
 
