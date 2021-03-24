@@ -1,4 +1,4 @@
-- alias: 📱 Notify on drive status-change (Synology DMS)
+- alias: 📱 Notify on drive status-change (Synology DSM)
   description: ''
   trigger:
   - platform: state
