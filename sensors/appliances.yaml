@@ -198,12 +198,14 @@
       # and will thus accumulate a bit more than we substract here (i.e. it
       # counts the same peak in usage longer than the Xiaomi-plug does). See the
       # comment at "sensor.power_dishwasher_actual" for more details.
-      # And then, the Blitzwolf-plug takes a couple minutes to report its first
-      # consumption data-point after Home Assistant start. To prevent a downward
-      # spike after every HA restart, wait with the compution until the value
-      # is actually available.
+      # Finally, if either of the two sensors isn't reporting data, don't do
+      # any calculations – this prevents creating spikes (either upward or
+      # downward) that mess with graphing the delta.
       value_template: >-
-        {%- if states('sensor.consumption_87_actual')|float > 0.0 -%}
+        {%-
+          if states('sensor.consumption_87_actual')|float > 0 and
+            states('sensor.consumption_58')|float > 0
+        -%}
           {{
             states('sensor.consumption_87_actual')|float -
             states('sensor.consumption_58')|float
