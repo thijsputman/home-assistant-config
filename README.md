@@ -6,8 +6,9 @@ The _live_ configuration of my personal Home Assistant instance.
 
 1. [`📄 TODO`](./TODO)
 2. [`📄 lovelace/README.md`](./lovelace/README.md)
-3. [`📄 docs/PRIVACY.md`](./docs/PRIVACY.md)
-4. [`📄 docs/deCONZ.md`](./docs/deCONZ.md)
+3. [`📄 extras/README.md`](./extras/README.md)
+4. [`📄 docs/PRIVACY.md`](./docs/PRIVACY.md)
+5. [`📄 docs/deCONZ.md`](./docs/deCONZ.md)
 
 ## License
 

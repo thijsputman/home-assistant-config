@@ -1,0 +1,6 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+set -eo pipefail
+
+exec s6-setuidgid femon /femon/femon.sh "$MQTT_BROKER"

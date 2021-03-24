@@ -1,0 +1,8 @@
+#!/bin/bash
+# shellcheck shell=bash
+
+set -euo pipefail
+
+if [ "$1" -gt "0" ] ; then
+  s6-svscanctl -t /var/run/s6/services 2> /dev/null
+fi

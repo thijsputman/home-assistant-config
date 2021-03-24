@@ -1,0 +1,19 @@
+#!/usr/bin/with-contenv bash
+# shellcheck shell=bash
+
+set -eo pipefail
+
+gid=""
+uid=""
+
+if [ -n "$PGID" ] ; then gid="yes" ; fi
+if [ -n "$PUID" ] ; then uid="yes" ; fi
+
+if ! getent group femon > /dev/null 2>&1; then
+  addgroup --quiet ${gid:+ --gid "$PGID"} femon
+fi
+
+if ! id femon > /dev/null 2>&1 ; then
+  adduser --disabled-login --disabled-password --no-create-home --gecos "" \
+    --quiet ${uid:+ --uid "$PUID"} --ingroup femon femon
+fi
