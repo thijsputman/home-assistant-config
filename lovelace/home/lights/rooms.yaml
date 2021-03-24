@@ -64,7 +64,6 @@ entities:
             service_data:
               group_name: Kitchen
               scene_name: Bright (custom)
-  - entity: light.hallway
   - entity: light.garden
   - type: 'custom:paper-buttons-row'
     buttons:
@@ -75,13 +74,14 @@ entities:
       - name: Bright
         icon: 'mdi:track-light'
   - entity: light.bedroom
+  - entity: light.attic
+  - entity: light.hallway
+  - entity: light.front_back_door
   - entity: light.guestroom
   - entity: light.wardrobe
   - entity: light.bathroom
   - entity: light.toilet
   - entity: light.basement
-  - entity: light.attic
-  - entity: light.front_back_door
 title: Lights
 state_color: false
 show_header_toggle: false
