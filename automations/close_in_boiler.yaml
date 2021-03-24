@@ -74,45 +74,40 @@
     data: {}
     entity_id: switch.smart_plug_9
   mode: single
-- alias: 🌡️ | ⏰ Close-in boiler on (housekeeper comes when everyone away)
+- alias: 🌡️ | 🧹 Close-in boiler on (housekeeper comes when everyone away)
   description: ''
-  # Using an input_datetime to store on which day of the week the housekeeper
-  # comes – compared against sensor.date (which changes daily at 00:00)
   trigger:
-  - platform: template
-    value_template: >-
-      {{
-        (
-          state_attr("input_datetime.housekeeper_pre_arrival", "timestamp") |
-            timestamp_custom("%w")
-        ) == (states("sensor.date") | as_timestamp | timestamp_custom("%w"))
-      }}
+  - platform: state
+    entity_id: input_boolean.housekeeper_present
+    from: 'off'
+    to: 'on'
   condition:
   - condition: state
     entity_id: switch.smart_plug_9
-    state: "off"
+    state: 'off'
   - condition: state
     entity_id: group.family
     state: not_home
   action:
-  # Use the same input_datetime to store at what time the housekeeper comes
-  # (i.e. for how much to delay after 00:00)
-  - delay: >-
-      state_attr("input_datetime.housekeeper_pre_arrival", "timestamp") |
-        timestamp_custom("%H:%M")
-  # Only continue if the plug is still "off" (someone might've come home in the
-  # meantime)
-  - condition: state
-    entity_id: switch.smart_plug_9
-    state: "off"
   - service: switch.turn_on
     data: {}
     entity_id: switch.smart_plug_9
-  - delay: "03:00:00"
-  # Only continue if still no-one is home
+  mode: single
+- alias: 🌡️ | 🧹 Close-in boiler off (housekeeper leaves when everyone away)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.housekeeper_present
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: switch.smart_plug_9
+    state: 'on'
   - condition: state
     entity_id: group.family
     state: not_home
+  action:
   - service: switch.turn_off
     data: {}
     entity_id: switch.smart_plug_9

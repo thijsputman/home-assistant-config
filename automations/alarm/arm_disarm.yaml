@@ -52,3 +52,36 @@
       code: !secret alarm_code
     entity_id: alarm_control_panel.home_alarm
   mode: single
+- alias: 🚨 | 🧹 Alarm disarm (housekeeper comes when everyone away)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.housekeeper_present
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state: armed_away
+  action:
+  - service: alarm_control_panel.alarm_disarm
+    data:
+      code: !secret alarm_code
+    entity_id: alarm_control_panel.home_alarm
+  mode: single
+- alias: 🚨 | 🧹 Alarm arm away (housekeeper leaves when everyone away)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.housekeeper_present
+    from: 'on'
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: group.family
+    state: not_home
+  action:
+  - service: alarm_control_panel.alarm_arm_away
+    entity_id: alarm_control_panel.home_alarm
+    data: {}
+  mode: single
