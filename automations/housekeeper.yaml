@@ -16,8 +16,10 @@
   # Use the same input_datetime to store at what time the housekeeper comes
   # (i.e. for how much to delay after 00:00)
   - delay: >-
-      state_attr("input_datetime.housekeeper_pre_arrival", "timestamp") |
-        timestamp_custom("%H:%M")
+      {{
+        state_attr("input_datetime.housekeeper_pre_arrival", "timestamp") |
+          timestamp_custom("%H:%M")
+      }}
   - service: input_boolean.turn_on
     data:
       entity_id: input_boolean.housekeeper_present
