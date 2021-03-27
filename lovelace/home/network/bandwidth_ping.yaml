@@ -29,6 +29,7 @@ card:
       hours_to_show: 8
       decimals: 1
       logarithmic: true
+      lower_bound: 0
       show:
         labels: hover
         fill: fade

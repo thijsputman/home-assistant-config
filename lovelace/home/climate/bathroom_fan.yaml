@@ -25,6 +25,10 @@ card:
       hour24: true
       hours_to_show: 4
       points_per_hour: 12
+      lower_bound: ~-5
+      upper_bound: ~10
+      lower_bound_secondary: ~30
+      upper_bound_secondary: ~80
       cache: true
       color_thresholds:
         - value: 50
@@ -45,10 +49,10 @@ card:
           color: var(--secondary-text-color)
           show_points: false
           show_fill: false
-          y_axis: secondary
         - entity: sensor.humidity_25
           name: Humidity (%)
           show_points: false
+          y_axis: secondary
     - type: button
       card_mod:
         style:

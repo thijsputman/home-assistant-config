@@ -63,9 +63,10 @@ card:
           }
       name: 8-hour trend
       hour24: true
-      decimals: 0
+      decimals: 1
       points_per_hour: 6
       hours_to_show: 8
+      lower_bound: 0
       aggregate_func: max
       show:
         labels: hover

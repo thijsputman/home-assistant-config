@@ -41,9 +41,6 @@
 
 ## Lovelace
 
-- [ ] Some of the `mini-graph-card`-graphs have inconsistent decimal places in
-      their legends (probably because of illconfigured state-maps?)
-
 ## tado°
 
 - [ ] It appears the "Off" state/`hvac_action` clears the setpoint temperature.

@@ -48,7 +48,7 @@ card:
           name: Kitchen
           show_points: false
           show_fill: false
-        - color: gray
+        - color: dimgray
           entity: sensor.time_of_day_numeric
           name: Night
           show_line: false
@@ -56,7 +56,7 @@ card:
           show_legend: false
           y_axis: secondary
           smoothing: false
-        - color: gray
+        - color: dimgray
           entity: input_boolean.everyone_asleep
           name: Night
           show_line: false
@@ -106,7 +106,7 @@ card:
           name: Basement
           show_points: false
           show_fill: false
-        - color: gray
+        - color: dimgray
           entity: sensor.time_of_day_numeric
           name: Night
           show_line: false
@@ -114,7 +114,7 @@ card:
           show_legend: false
           y_axis: secondary
           smoothing: false
-        - color: gray
+        - color: dimgray
           entity: input_boolean.everyone_asleep
           name: Night
           show_line: false

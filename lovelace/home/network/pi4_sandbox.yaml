@@ -46,6 +46,9 @@ card:
       hour24: true
       hours_to_show: 24
       points_per_hour: 2
+      lower_bound: 0
+      lower_bound_secondary: 0
+      upper_bound_secondary: ~6
       cache: true
       show:
         labels: hover
