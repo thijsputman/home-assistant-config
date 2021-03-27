@@ -19,8 +19,10 @@ views:
             entities:
               - entity: binary_sensor.fire_81
                 name: Smoke
+              - entity: binary_sensor.water_82
+                name: Kitchen
               - entity: binary_sensor.water_59
-                name: Water (Attic)
+                name: Attic
             show_state: false
       - type: vertical-stack
         cards:

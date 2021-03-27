@@ -1,7 +1,9 @@
 - alias: 🤯/💧 | 📱 Send notification (water detected)
   trigger:
   - platform: state
-    entity_id: binary_sensor.water_59
+    entity_id:
+      - binary_sensor.water_59
+      - binary_sensor.water_82
     from: "off"
     to: "on"
   condition: []
@@ -16,9 +18,12 @@
 - alias: 🤯/💧 | 🔊 Sound the alarm (water detected when someone home)
   trigger:
   - platform: state
-    entity_id: binary_sensor.water_59
+    entity_id:
+      - binary_sensor.water_59
+      - binary_sensor.water_82
     from: "off"
     to: "on"
+    for: "00:01:00"
   condition:
   - condition: state
     entity_id: group.family
@@ -30,14 +35,10 @@
       sequence:
         - service: switch.turn_on
           entity_id: switch.warning_device_8
-        - delay: 3
+        - delay: 2
         - service: switch.turn_off
           entity_id: switch.warning_device_8
-        # Stop if the water sensor clears
-        - condition: state
-          entity_id: binary_sensor.water_59
-          state: "on"
-        - delay: 12
+        - delay: 13
   mode: single
 - alias: 🤯/🔥 | 📱 Send notification (smoke detected)
   trigger:
