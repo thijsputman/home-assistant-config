@@ -43,9 +43,9 @@
 
 ## tado°
 
-- [ ] It appears the "Off" state/`hvac_action` clears the setpoint temperature.
-      Check if the Attic thermostat automations properly cope with that. Also,
-      make the Attic thermostat follow the on/off state of the main thermostat
+- [ ] The "Off" state/`hvac_action` clears the setpoint temperature. Check if
+      the Attic thermostat automations properly cope with that. Also, make the
+      Attic thermostat follow the on/off state of the main thermostat
       (functionally not needed, mainly for consistency)
 - [x] ~~Create several "backstops" (controlled via HomeKit) to ensure heating is
       properly controlled when there is no access to the online Tado service~~
@@ -56,6 +56,7 @@
 
 - [ ] For Summer: Garden light automatic off at 22:30 should only happen if
       light state has not been modified manually (i.e. we're sitting outside)
+- [ ] For Summer: Switch outside lights on earlier and switch them off later
 - [ ] The transition from "lights off at dawn" to "daytime lights on when its
       dark during the day" is not optimal yet. At the moment I'm delaying the
       latter by 10 seconds to prevent it from interfering with the former, there
@@ -79,9 +80,10 @@
     [dresden-elektronik/deconz-rest-plugin#3232](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/3232#issuecomment-688145449)
     on how to properly control them through deCONZ
 - [ ] Currently Arlo's cameras are automatically armed daily at 22:30. Make this
-      contingent on the state of the lights in the back garden. When we're
-      sitting outside late in Summer, don't arm Arlo (or at least not until the
-      garden lights go off)
+      contingent on the state of the lights in the back garden (and/or the
+      Kitchen door). When we're sitting outside late in Summer, don't arm Arlo
+      (or at least not until the garden lights go off / Kitchen door remains
+      closed for a while)
 - [ ] Perhaps use the "Template Alarm Control Panel" instead of the current
       setup with a set of automations? Unsure whether that would really make
       thing easier to understand though...
