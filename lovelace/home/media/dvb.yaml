@@ -1,0 +1,17 @@
+type: 'custom:mini-graph-card'
+name: DVB-T reception (past 10 days)
+icon: 'mdi:signal-cellular-2'
+hour24: true
+decimals: 0
+points_per_hour: 0.25
+hours_to_show: 240
+lower_bound: ~40
+entities:
+  - entity: sensor.dvb_t_signal_strength
+    name: signal-strength
+    show_points: false
+    show_fill: false
+  - entity: sensor.dvb_t_signal_to_noise_ratio
+    name: signal-to-noise ratio
+    show_points: false
+    show_fill: false

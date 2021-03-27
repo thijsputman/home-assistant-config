@@ -174,22 +174,7 @@ views:
     icon: 'mdi:filmstrip'
     badges: []
     cards:
-      - type: media-control
-        entity: media_player.nvidia_shield_tv
-      - type: 'custom:mini-graph-card'
-        hours_to_show: 240
-        group_by: date
-        name: NVIDIA Shield TV hours watched (10 day trend)
-        hour24: true
-        lower_bound: 0
-        aggregate_func: max
-        decimals: 1
-        show:
-          graph: bar
-          labels: true
-          state: false
-        entities:
-          - entity: sensor.nvidia_shield_tv_playing_today
-            unit: h
+      - !include home/media/shield_tv.yaml
       - type: media-control
         entity: media_player.pi0_speaker_bedroom
+      - !include home/media/dvb.yaml
