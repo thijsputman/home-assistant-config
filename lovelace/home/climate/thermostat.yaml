@@ -21,21 +21,15 @@ card:
           ha-card header{
             padding-bottom: 0px !important;
           }
-      title: null
+          ha-card section.body{
+            padding-bottom: 0px !important;
+          }
       entity: climate.tado_smart_thermostat
       hide:
+        setpoint: true
         state: true
         temperature: true
       control: []
-      sensors:
-        - entity: sensor.tado_living_room_heating
-          name: heating
-        - entity: sensor.tado_attic_heating
-          name: heating – Attic
-        - entity: climate.tado_smart_radiator_attic
-          name: setpoint – Attic
-          attribute: temperature
-          unit: °C
       faults:
         - entity: climate.tado_smart_radiator_attic
           icon: 'mdi:home-roof'
@@ -54,7 +48,40 @@ card:
           hide_inactive: true
       name: tado°
     - type: conditional
-      title: null
+      conditions:
+        - entity: sensor.tado_smart_thermostat_mode
+          state: 'heat'
+      card:
+        type: 'custom:simple-thermostat'
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              box-shadow: unset;
+              padding-top: 0px !important;
+              padding-bottom: 0px !important;
+              margin-top: 0px !important;
+              margin-bottom: 0px !important;
+            }
+            ha-card section.body{
+              padding-bottom: 0px !important;
+            }
+        entity: climate.tado_smart_thermostat
+        show_header: false
+        hide:
+          state: true
+          temperature: true
+        control: []
+        sensors:
+          - entity: sensor.tado_living_room_heating
+            name: heating
+          - entity: sensor.tado_attic_heating
+            name: heating – Attic
+          - entity: climate.tado_smart_radiator_attic
+            name: setpoint – Attic
+            attribute: temperature
+            unit: °C
+    - type: conditional
       conditions:
         - entity: !secret tado_ib1_serial
           state: 'on'
