@@ -1,24 +1,72 @@
-type: 'custom:mini-graph-card'
-name: Solar irradiance (past 48h)
-hour24: true
-hours_to_show: 48
-points_per_hour: 2
-cache: true
-show:
-  labels: true
-  labels_secondary: false
-decimals: 1
-state_map:
-  - value: 'off'
-    label: '0.0'
-  - value: 'on'
-entities:
-  - entity: sensor.weewx_solar_irradiance
-    show_points: false
-  - color: gray
-    entity: sensor.time_of_day_numeric
-    name: Night
-    show_line: false
-    show_points: false
-    show_legend: false
-    y_axis: secondary
+type: 'custom:mod-card'
+card_mod:
+  style:
+    .: |
+      ha-card {
+        background: var(--llh-mod-card-background);
+        box-shadow: var(--llh-mod-card-box-shadow);
+      }
+    hui-vertical-stack-card$: |
+      mini-graph-card{
+        margin: 0px !important;
+      }
+report_size: 3
+card:
+  type: vertical-stack
+  cards:
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            border-radius: 0px;
+          }
+      name: Solar irradiance (past 24h & 10-day max)
+      hour24: true
+      hours_to_show: 24
+      points_per_hour: 4
+      lower_bound: 0
+      cache: true
+      show:
+        labels: true
+        labels_secondary: false
+      decimals: 1
+      entities:
+        - entity: sensor.weewx_solar_irradiance
+          show_points: false
+          show_fill: false
+        - color: dimgray
+          entity: sensor.time_of_day_numeric
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            margin: 0px !important;
+            padding: 8px 0px 0px 0px !important;
+            background-color: #E8E8E8;
+            border-radius: 0px;
+          }
+      hours_to_show: 240
+      group_by: date
+      hour24: true
+      aggregate_func: max
+      decimals: 1
+      height: 90
+      lower_bound: 0
+      show:
+        graph: bar
+        name: false
+        labels: true
+        state: false
+        icon: false
+      entities:
+        - entity: sensor.weewx_solar_irradiance
+          unit: W/m²

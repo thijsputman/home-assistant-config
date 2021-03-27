@@ -1,33 +1,80 @@
-type: 'custom:mini-graph-card'
-name: Temperature (48h trend)
-hour24: true
-hours_to_show: 48
-points_per_hour: 1
-cache: true
-show:
-  labels: true
-  labels_secondary: false
-decimals: 1
-state_map:
-  - value: 'off'
-  - value: 'on'
-entities:
-  - entity: sensor.weewx_outside_temperature
-    name: Garden
-    show_points: false
-    show_fill: false
-  - entity: sensor.weewx_outside_temperature_balcony
-    name: Balcony
-    show_points: false
-    show_fill: false
-  - entity: sensor.temperature_27
-    name: Shed
-    show_points: false
-    show_fill: false
-  - color: gray
-    entity: sensor.time_of_day_numeric
-    name: Night
-    show_line: false
-    show_points: false
-    show_legend: false
-    y_axis: secondary
+type: 'custom:mod-card'
+card_mod:
+  style:
+    .: |
+      ha-card {
+        background: var(--llh-mod-card-background);
+        box-shadow: var(--llh-mod-card-box-shadow);
+      }
+    hui-vertical-stack-card$: |
+      mini-graph-card{
+        margin: 0px !important;
+      }
+report_size: 3
+card:
+  type: vertical-stack
+  cards:
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            border-radius: 0px;
+          }
+      name: Temperature (past 48h & 10-day max)
+      hour24: true
+      hours_to_show: 48
+      points_per_hour: 1
+      cache: true
+      show:
+        labels: true
+        labels_secondary: false
+      decimals: 1
+      entities:
+        - entity: sensor.weewx_outside_temperature
+          name: Garden
+          show_points: false
+          show_fill: false
+        - entity: sensor.weewx_outside_temperature_balcony
+          name: Balcony
+          show_points: false
+          show_fill: false
+        - entity: sensor.temperature_27
+          name: Shed
+          show_points: false
+          show_fill: false
+        - color: dimgray
+          entity: sensor.time_of_day_numeric
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          smoothing: false
+          y_axis: secondary
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            margin: 0px !important;
+            padding: 8px 0px 0px 0px !important;
+            background-color: #E8E8E8;
+            border-radius: 0px;
+          }
+      hours_to_show: 240
+      group_by: date
+      hour24: true
+      aggregate_func: max
+      decimals: 1
+      height: 90
+      show:
+        graph: bar
+        name: false
+        labels: true
+        state: false
+        icon: false
+      entities:
+        - entity: sensor.weewx_outside_temperature
+          color: gray

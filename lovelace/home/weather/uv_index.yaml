@@ -1,0 +1,9 @@
+type: gauge
+entity: sensor.weewx_uv_index
+name: UV index
+min: 0
+max: 10
+severity:
+  green: 0
+  yellow: 4
+  red: 7

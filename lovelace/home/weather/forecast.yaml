@@ -1,0 +1,10 @@
+type: weather-forecast
+card_mod:
+  style: |
+    ha-card div.content {
+      display: none;
+    }
+    ha-card div.forecast {
+      padding-top: 0px !important;
+    }
+entity: !secret weather_home

@@ -66,3 +66,9 @@ sensor.binary_washing_machine:
   icon: mdi:washing-machine
 sensor.ds1815_1_minute_load:
   icon: mdi:chip
+sensor.weewx_wind_speed:
+  icon: mdi:compass
+sensor.weewx_solar_irradiance:
+  icon: mdi:blur-radial
+sensor.weewx_rain_hour:
+  icon: mdi:weather-rainy

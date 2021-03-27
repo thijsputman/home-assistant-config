@@ -100,7 +100,7 @@
 - platform: mqtt
   state_topic: 'weewx/UV'
   name: 'WeeWX UV index'
-  value_template: "{{ value | round(1) }}"
+  value_template: "{{ value | round(0) }}"
 - platform: mqtt
   state_topic: 'weewx/rain_cm'
   name: 'WeeWX rain'

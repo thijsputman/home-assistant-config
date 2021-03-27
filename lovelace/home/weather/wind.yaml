@@ -1,29 +1,81 @@
-type: 'custom:mini-graph-card'
-name: WeeWX wind (+48h trend)
-hour24: true
-hours_to_show: 48
-points_per_hour: 1
-cache: true
-show:
-  labels: true
-  labels_secondary: false
-decimals: 1
-state_map:
-  - value: 'off'
-    label: '0.0'
-  - value: 'on'
-entities:
-  - entity: sensor.weewx_wind_speed
-    name: Wind speed
-    show_points: false
-  - entity: sensor.weewx_wind_gust
-    name: Wind gust
-    show_points: false
-    aggregate_func: max
-  - color: gray
-    entity: sensor.time_of_day_numeric
-    name: Night
-    show_line: false
-    show_points: false
-    show_legend: false
-    y_axis: secondary
+type: 'custom:mod-card'
+card_mod:
+  style:
+    .: |
+      ha-card {
+        background: var(--llh-mod-card-background);
+        box-shadow: var(--llh-mod-card-box-shadow);
+      }
+    hui-vertical-stack-card$: |
+      mini-graph-card{
+        margin: 0px !important;
+      }
+report_size: 3
+card:
+  type: vertical-stack
+  cards:
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            border-radius: 0px;
+          }
+      name: Wind speed (past 48h & 10-day max)
+      hour24: true
+      hours_to_show: 48
+      points_per_hour: 1
+      lower_bound: 0
+      upper_bound: ~3
+      cache: true
+      show:
+        labels: true
+        labels_secondary: false
+      decimals: 1
+      entities:
+        - entity: sensor.weewx_wind_speed
+          name: speed
+          show_points: false
+          show_fill: false
+        - entity: sensor.weewx_wind_gust
+          name: gust – maximum
+          show_points: false
+          show_fill: false
+          aggregate_func: max
+        - color: dimgray
+          entity: sensor.time_of_day_numeric
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            margin: 0px !important;
+            padding: 8px 0px 0px 0px !important;
+            background-color: #E8E8E8;
+            border-radius: 0px;
+          }
+      hours_to_show: 240
+      group_by: date
+      hour24: true
+      aggregate_func: max
+      decimals: 1
+      height: 90
+      lower_bound: 0
+      upper_bound: ~3
+      show:
+        graph: bar
+        name: false
+        labels: true
+        state: false
+        icon: false
+      entities:
+        - entity: sensor.weewx_wind_gust
+          color: gray
+

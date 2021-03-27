@@ -142,16 +142,22 @@ views:
     icon: 'mdi:weather-partly-cloudy'
     badges: []
     cards:
-      - !include home/weather/temperature.yaml
-      - !include home/weather/pressure.yaml
-      - !include home/weather/humidity.yaml
-      - !include home/weather/wind.yaml
-      - !include home/weather/wind_direction.yaml
-      - !include home/weather/sun.yaml
-      - !include home/weather/rain.yaml
-      - !include home/weather/sun_history.yaml
-      - type: weather-forecast
-        entity: !secret weather_home
+      - type: vertical-stack
+        cards:
+          - !include home/weather/temperature.yaml
+          - !include home/weather/sun.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/weather/wind.yaml
+          - !include home/weather/rain.yaml
+      - type: vertical-stack
+        cards:
+          - type: horizontal-stack
+            cards:
+              - !include home/weather/wind_direction.yaml
+              - !include home/weather/uv_index.yaml
+          - !include home/weather/humidity_pressure.yaml
+          - !include home/weather/forecast.yaml
   # Chores
   - icon: 'mdi:broom'
     title: Chores
