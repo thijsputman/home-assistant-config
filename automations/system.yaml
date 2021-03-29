@@ -134,7 +134,7 @@
     event_type: system_log_event
     event_data:
       level: ERROR
-      source: homeassistant.components.recorder
+      name: homeassistant.components.recorder
   condition: []
   action:
   - service: script.persistent_notification_my_devices
