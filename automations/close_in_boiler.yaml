@@ -2,7 +2,7 @@
   description: ''
   trigger:
   - platform: time
-    at: "22:00"
+    at: "22:00:00"
   # Fallback: Switch off when everyone goes to sleep (might have been manually
   # switched on after 22:00, or we might have come home after 22:00)
   - platform: state

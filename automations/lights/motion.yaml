@@ -18,7 +18,7 @@
       entity_id: binary_sensor.presence_53
       from: 'on'
       to: 'off'
-      for: 00:02:00
+      for: '00:02:00'
     # If the scene for "Kitchen counter & cupboards" is still "Activity",
     # no changes were made to the lighting. We can safely restore the previous
     # scene for the "Kitchen" as a whole...

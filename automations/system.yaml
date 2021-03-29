@@ -49,7 +49,7 @@
       {{ result.sensors | join('</li><li>') }}
   trigger:
   - platform: time
-    at: "10:00"
+    at: "10:00:00"
   condition:
   # Only on Saturday if there are battery-levels below 20%
   - condition: template

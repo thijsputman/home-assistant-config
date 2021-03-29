@@ -2,7 +2,7 @@
   description: ''
   trigger:
   - platform: time
-    at: '22:30'
+    at: '22:30:00'
   # In case "Everyone asleep" occurs before 22:30
   - platform: state
     entity_id: alarm_control_panel.home_alarm

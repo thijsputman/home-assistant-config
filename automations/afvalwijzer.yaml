@@ -3,7 +3,7 @@
   trigger:
   # Remind at 21:00 the day _before_ pickup
   - platform: time
-    at: "21:00"
+    at: "21:00:00"
   condition:
   - condition: numeric_state
     entity_id: sensor.afvalwijzer_next_in_days
@@ -33,7 +33,7 @@
   trigger:
   # Remind at 09:30 on the day of pickup
   - platform: time
-    at: "09:30"
+    at: "09:30:00"
   condition:
   - condition: numeric_state
     entity_id: sensor.afvalwijzer_next_in_days
