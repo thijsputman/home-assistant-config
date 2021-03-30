@@ -13,7 +13,7 @@
       {%- else -%}
         false
       {%- endif -%}
-    for: "00:10:00"
+    for: "00:30:00"
   condition: []
   action:
   - service: script.persistent_notification_my_devices
