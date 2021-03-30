@@ -1,15 +1,20 @@
-- alias: 💡 | 🚪 Front / back door to maximum brightness (door open)
+# Front and Back door have almost identical automations. They are not folded
+# into a single automation as that would cause problems when both doors are
+# opened at the same time. Parrallelising the automation (to cope with both
+# doors opening at the same time) in turn causes problems with reverting the
+# light back to its original state (as restarting the automation for the same
+# door midway through causes it to always the detect the original state as
+# "on" – and thus never turning the light off again).
+- alias: 💡 | 🚪 Outside light to maximum brightness (Front door open)
   description: ''
   trigger:
   - platform: state
-    entity_id:
-    - binary_sensor.openclose_12
-    - binary_sensor.openclose_16
+    entity_id: binary_sensor.openclose_16
     from: 'off'
     to: 'on'
   condition:
   # Only act if the alarm is disarmed or there's someone asleep at home (i.e.
-  # when it might be helpful for the lights to turn on). Turning them on in
+  # when it might be helpful for the light to turn on). Turning them on in
   # other situations could cause the camera night vision feed to (temporarily)
   # over-expose, reducing the effectiveness of the cameras...
   - condition: state
@@ -23,56 +28,98 @@
       entity_id: sensor.time_of_day
       state: day
   action:
+  - variables:
+      light_state: >-
+        {{ states('light.hue_filament_bulb_1_2') }}
+      light_brightness: >-
+        {{ state_attr('light.hue_filament_bulb_1_2', 'brightness')|int }}
+  - service: light.turn_on
+    data:
+      brightness: 255
+      entity_id: light.hue_filament_bulb_1_2
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.openclose_16
+      to: 'off'
+  - delay: '00:00:30'
   - choose:
-    # Lights already on
     - conditions:
-      - condition: state
-        entity_id: light.front_back_door
-        state: 'on'
+      - condition: template
+        value_template: >-
+         {{ light_state == 'on' }}
       sequence:
       - service: light.turn_on
         data:
-          brightness: 255
-          entity_id: >-
-            {%- if trigger.entity_id == "binary_sensor.openclose_12" -%}
-              light.hue_filament_bulb_1
-            {%- else -%}
-              light.hue_filament_bulb_1_2
-            {%- endif -%}
-      - wait_for_trigger:
-        - platform: template
-          value_template: >-
-            {{ is_state(trigger.entity_id, 'off') }}
-      - delay: '00:00:30'
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Front & back door
-          scene_name: Evening
-    # Lights off
+          brightness: >-
+            {{ light_brightness }}
+        target:
+          entity_id: light.hue_filament_bulb_1_2
     - conditions:
-      - condition: state
-        entity_id: light.front_back_door
-        state: 'off'
+      - condition: template
+        value_template: >-
+         {{ light_state == 'off' }}
       sequence:
-      - service: light.turn_on
-        data:
-          brightness: 255
-          entity_id: >-
-            {%- if trigger.entity_id == "binary_sensor.openclose_12" -%}
-              light.hue_filament_bulb_1
-            {%- else -%}
-              light.hue_filament_bulb_1_2
-            {%- endif -%}
-      - wait_for_trigger:
-        - platform: template
-          value_template: >-
-            {{ is_state(trigger.entity_id, 'off') }}
-      - delay: '00:00:30'
       - service: light.turn_off
-        entity_id: light.front_back_door
+        target:
+          entity_id: light.hue_filament_bulb_1_2
     default: []
-  mode: parallel
-  max: 2
+  mode: single
+  max_exceeded: silent
+- alias: 💡 | 🚪 Outside light to maximum brightness (Back door open)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.openclose_12
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: alarm_control_panel.home_alarm
+    state:
+      - disarmed
+      - armed_night
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+  action:
+  - variables:
+      light_state: >-
+        {{ states('light.hue_filament_bulb_1') }}
+      light_brightness: >-
+        {{ state_attr('light.hue_filament_bulb_1', 'brightness')|int }}
+  - service: light.turn_on
+    data:
+      brightness: 255
+      entity_id: light.hue_filament_bulb_1
+  - wait_for_trigger:
+    - platform: state
+      entity_id: binary_sensor.openclose_12
+      to: 'off'
+  - delay: '00:00:30'
+  - choose:
+    - conditions:
+      - condition: template
+        value_template: >-
+         {{ light_state == 'on' }}
+      sequence:
+      - service: light.turn_on
+        data:
+          brightness: >-
+            {{ light_brightness }}
+        target:
+          entity_id: light.hue_filament_bulb_1
+    - conditions:
+      - condition: template
+        value_template: >-
+         {{ light_state == 'off' }}
+      sequence:
+      - service: light.turn_off
+        target:
+          entity_id: light.hue_filament_bulb_1
+    default: []
+  mode: single
   max_exceeded: silent
 - alias: 💡 | 🚪 Garden lights on (kitchen door / back gate open)
   description: ''
