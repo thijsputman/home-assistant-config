@@ -34,8 +34,6 @@
   - The Hue scene heuristics – might be more trouble than it's worth (unless
     this somehow enables the inputs for the heuristic to be stored outside of
     the template sensor)
-- [ ] Reload ping sensors one minute after restarting Home Assistant – they bug
-      out quite often after a restart...
 
 ## Lovelace
 
