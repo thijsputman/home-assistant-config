@@ -127,6 +127,7 @@
     below: 200
   action:
   - choose:
+    # Make the light a bit kinder on the eyes late at night
     - conditions:
       - condition: state
         entity_id: input_boolean.everyone_asleep
@@ -143,11 +144,15 @@
         brightness: 255
         kelvin: 2900
       entity_id: light.bathroom
-  # The "set" appears needed for is_state() to trigger on a state change of
-  # trigger.entity_id...
+  # Wait for _all_ motion sensors to clear – otherwise "race conditions" are
+  # possible where the lights goes off (because one sensor clears) and never
+  # come back on again (because the other sensor never clears due to
+  # ongoing motion and thus never retriggers the lights).
   - wait_template: >-
-      {% set sensor = trigger.entity_id %}
-      {{ is_state(sensor, 'off') }}
+      {{
+        is_state('binary_sensor.presence_68', 'off') and
+        is_state('binary_sensor.presence_71', 'off')
+      }}
   - delay: 150
   - service: light.turn_off
     data:
