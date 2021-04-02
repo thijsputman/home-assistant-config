@@ -35,6 +35,9 @@ card:
         top_status: false
         top_date: true
         play_direct: true
+        door: binary_sensor.openclose_16
+        door_bell: binary_sensor.vibration_43
+        light: light.hue_filament_bulb_1_2
       - type: 'custom:logbook-card'
         card_mod:
           style: |
