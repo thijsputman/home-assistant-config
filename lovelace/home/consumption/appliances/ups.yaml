@@ -1,0 +1,83 @@
+type: 'custom:mod-card'
+card_mod:
+  style: |
+    ha-card {
+      background: var(--llh-mod-card-background);
+      box-shadow: var(--llh-mod-card-box-shadow);
+    }
+report_size: 5
+card:
+  type: vertical-stack
+  cards:
+    - type: button
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding-bottom: 0px !important;
+            margin-bottom: 0px !important;
+          }
+          ha-card ha-icon{
+            color: var(--disabled-text-color);
+          }
+          ha-card ha-icon[data-state=Online]{
+            color: var(--success-color) !important;
+          }
+          ha-card span{
+            font-size: 1rem;
+            color: var(--paper-grey-500);
+          }
+      tap_action:
+        action: more-info
+      entity: sensor.ups_status
+      icon: mdi:nas
+      name: Back-UPS Pro 900
+      show_name: true
+      show_icon: true
+      show_state: false
+      icon_height: 48px
+    - type: entity
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+          }
+          ha-card div.header{
+            display: none;
+          }
+          ha-card div.info{
+            padding: 0px;
+            text-align: center;
+          }
+      entity: sensor.monthly_consumption_costs_ups
+      attribute: last_period
+      unit: € / month
+    - type: 'custom:mini-graph-card'
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding-top: 0px !important;
+            margin-top: 0px !important;
+          }
+      align_state: center
+      hours_to_show: 240
+      group_by: date
+      hour24: true
+      lower_bound: 0
+      height: 120
+      show:
+        name: false
+        icon: false
+        graph: bar
+        labels: false
+      entities:
+        - entity: sensor.ups_power
+          show_graph: false
+        - entity: sensor.consumption_ups
+          aggregate_func: delta
+          color: thistle
+          name: Power usage

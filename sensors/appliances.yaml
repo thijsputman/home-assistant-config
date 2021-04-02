@@ -235,7 +235,7 @@
           }}
     # All lights
     monthly_consumption_costs_lights_all:
-      friendly_name: Monthly costs  (All lights)
+      friendly_name: Monthly costs (All lights)
       unit_of_measurement: €
       # Use average of the two rates to approximate costs
       value_template: >-
@@ -251,6 +251,28 @@
           {{
             (
               (state_attr('sensor.monthly_consumption_lights_all',
+                  'last_period')|float *
+                (states('input_number.rate_energy_peak')|float +
+                states('input_number.rate_energy_offpeak')|float) / 2)
+            ) | round(2)
+          }}
+    monthly_consumption_costs_ups:
+      friendly_name: Monthly costs (Back-UPS Pro 900)
+      unit_of_measurement: €
+      # Use average of the two rates to approximate costs
+      value_template: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_ups')|float *
+              (states('input_number.rate_energy_peak')|float +
+              states('input_number.rate_energy_offpeak')|float) / 2)
+          ) | round(2)
+        }}
+      attribute_templates:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_ups',
                   'last_period')|float *
                 (states('input_number.rate_energy_peak')|float +
                 states('input_number.rate_energy_offpeak')|float) / 2)
