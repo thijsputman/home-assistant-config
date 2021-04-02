@@ -18,7 +18,8 @@
             'calamity_leak',
             'calamity_smoke',
             'trash',
-            'away'
+            'away',
+            'doorbell'
           ]
       }}
   action:

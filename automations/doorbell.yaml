@@ -16,3 +16,24 @@
         entity_id: light.attic
       - delay: '00:00:01'
   mode: single
+- alias: 📱 | 🚪 Notify all devices (doorbell rang; auto-dismissed)
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.vibration_43
+    from: 'off'
+    to: 'on'
+  condition: []
+  action:
+  - service: script.persistent_notification_all_devices
+    data:
+      tag: doorbell
+      title: 🚪 Someone's at the door!
+      message: >-
+        The doorbell just rang...
+  - delay: 120
+  # This also causes the notification to be dismissed from all devices
+  - service: persistent_notification.dismiss
+    data:
+      notification_id: doorbell
+  mode: single

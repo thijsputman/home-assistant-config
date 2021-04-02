@@ -10,8 +10,6 @@
 
 ## General
 
-- [ ] Further refine the doorbell sensor ~~and the "washing machine
-      done"-sensor~~ (based on creative usage of vibration sensors)
 - [ ] Move all icon customisations for sensors defined in YAML from
       `📄 customize.yaml` to their respective YAML files
 - [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
