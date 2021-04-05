@@ -98,7 +98,7 @@
   # light in the Attic was not switched on within 90 minutes)
   - condition: template
     value_template: >-
-      {{ wait.trigger == 'none' }}
+      {{ wait.trigger is none }}
   - service: climate.set_temperature
     data:
       temperature: 12.0
