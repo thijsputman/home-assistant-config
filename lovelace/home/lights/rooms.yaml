@@ -69,10 +69,22 @@ entities:
     buttons:
       - name: Ambiance
         icon: 'mdi:weather-night'
+        tap_action:
+          action: call-service
+          service: hue.hue_activate_scene
+          service_data:
+            group_name: Garden
+            scene_name: Ambiance
       - name: Summer night
         icon: 'mdi:glass-cocktail'
-      - name: Bright
+      - name: Active
         icon: 'mdi:track-light'
+        tap_action:
+          action: call-service
+          service: hue.hue_activate_scene
+          service_data:
+            group_name: Garden
+            scene_name: Active
   - entity: light.bedroom
   - entity: light.attic
   - entity: light.hallway
