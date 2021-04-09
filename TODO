@@ -34,6 +34,18 @@
   - The Hue scene heuristics – might be more trouble than it's worth (unless
     this somehow enables the inputs for the heuristic to be stored outside of
     the template sensor)
+- [ ] As of
+      [Home Assistant 2021.4](https://www.home-assistant.io/blog/2021/04/07/release-20214/)
+      it shouldn't be necessary anymore to reload the ping sensors upon restart
+      – the
+      [underlying issue](https://github.com/home-assistant/core/pull/43869) has
+      been addressed. Automation disabled for now; fingers crossed...
+- [ ] See where
+      [**trigger-based template sensors**](https://www.home-assistant.io/blog/2021/04/07/release-20214/)
+      can/should be used.
+  - The `state_attr('sensor.xxx', 'last_reset').today().day|int` constructs
+    (i.e. hacks 😉) in [`📄 sensors/dsmr.yaml`](./sensors/dsmr.yaml) appear to
+    be great candidates at first sight...
 
 ## Lovelace
 

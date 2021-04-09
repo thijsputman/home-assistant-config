@@ -1,4 +1,27 @@
-default_config:
+# Replace default_config with it constituent parts (minus the ones already
+# specified further down in this file).
+# There's one more omission (and the reason for things to be split up): dhcp.
+# As of Home Assistant version 2021.4 this integration causes an error when
+# starting (probably because we're not running as root). I'm guessing this
+# never worked to begin with (and I can live without DHCP discovery) so for now
+# simply disable the "DHCP Discovery" integration...
+cloud:
+counter:
+frontend:
+logbook:
+map:
+media_source:
+mobile_app:
+my:
+person:
+ssdp:
+sun:
+system_health:
+tag:
+updater:
+webhook:
+zeroconf:
+zone:
 
 homeassistant:
   customize: !include customize.yaml
