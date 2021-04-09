@@ -102,6 +102,7 @@ influxdb:
       - sensor.power_86_actual # Washing machine
       - sensor.power_dishwasher_actual
       - sensor.power_lights_all
+      - sensor.ups_power
 
 # MQTT
 mqtt:
