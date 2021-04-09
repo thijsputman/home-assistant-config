@@ -55,7 +55,11 @@ card:
           }
       hour24: true
       hours_to_show: 8
-      points_per_hour: 5
+      points_per_hour: 10
+      aggregate_func: max
+      logarithmic: true
+      lower_bound: 0
+      upper_bound: ~600
       cache: true
       icon: 'mdi:speedometer'
       show:
