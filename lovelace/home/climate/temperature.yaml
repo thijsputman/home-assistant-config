@@ -17,6 +17,7 @@ card:
             box-shadow: unset;
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
+            border-radius: 0px;
           }
       title: null
       name: Temperature (past 48h)

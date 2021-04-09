@@ -1,10 +1,15 @@
 type: 'custom:mod-card'
 card_mod:
-  style: |
-    ha-card {
-      background: var(--llh-mod-card-background);
-      box-shadow: var(--llh-mod-card-box-shadow);
-    }
+  style:
+    .: |
+      ha-card {
+        background: var(--llh-mod-card-background);
+        box-shadow: var(--llh-mod-card-box-shadow);
+      }
+    hui-vertical-stack-card$: |
+      simple-thermostat, hui-conditional-card{
+        margin: 0px !important;
+      }
 report_size: 5
 card:
   type: vertical-stack
@@ -16,37 +21,37 @@ card:
             border: 0px;
             box-shadow: unset;
             padding-bottom: 0px !important;
-            margin-bottom: 0px !important;
           }
           ha-card header{
             padding-bottom: 0px !important;
           }
           ha-card section.body{
-            padding-bottom: 0px !important;
+            display: none;
           }
       entity: climate.tado_smart_thermostat
       hide:
         setpoint: true
         state: true
         temperature: true
-      control: []
-      faults:
-        - entity: climate.tado_smart_radiator_attic
-          icon: 'mdi:home-roof'
-          hide_inactive: false
-        - entity: !secret tado_ru1_serial
-          icon: 'mdi:battery-20'
-          hide_inactive: true
-        - entity: !secret tado_va1_serial
-          icon: 'mdi:battery-20'
-          hide_inactive: true
-        - entity: binary_sensor.living_room_open_window
-          icon: 'mdi:window-closed'
-          hide_inactive: true
-        - entity: binary_sensor.tado_attic_open_window
-          icon: 'mdi:window-closed'
-          hide_inactive: true
-      name: tado°
+      control: false
+      header:
+        name: tado°
+        faults:
+          - entity: climate.tado_smart_radiator_attic
+            icon: 'mdi:home-roof'
+            hide_inactive: false
+          - entity: !secret tado_ru1_serial
+            icon: 'mdi:battery-20'
+            hide_inactive: true
+          - entity: !secret tado_va1_serial
+            icon: 'mdi:battery-20'
+            hide_inactive: true
+          - entity: binary_sensor.living_room_open_window
+            icon: 'mdi:window-closed'
+            hide_inactive: true
+          - entity: binary_sensor.tado_attic_open_window
+            icon: 'mdi:window-closed'
+            hide_inactive: true
     - type: conditional
       conditions:
         - entity: sensor.tado_smart_thermostat_mode
@@ -60,18 +65,23 @@ card:
               box-shadow: unset;
               padding-top: 0px !important;
               padding-bottom: 0px !important;
-              margin-top: 0px !important;
-              margin-bottom: 0px !important;
             }
             ha-card section.body{
               padding-bottom: 0px !important;
             }
+            ha-card section.body div.sensors{
+              grid-template-columns: max-content auto;
+            }
+            ha-card section.body div.sensors div.sensor-heading{
+              width: 90%;
+              text-align: right;
+            }
         entity: climate.tado_smart_thermostat
-        show_header: false
+        header: false
         hide:
           state: true
           temperature: true
-        control: []
+        control: false
         sensors:
           - entity: sensor.tado_living_room_heating
             name: heating
@@ -93,13 +103,12 @@ card:
               border: 0px;
               box-shadow: unset;
               padding-top: 0px !important;
-              margin-top: 0px !important;
             }
-            ha-card .body{
+            ha-card section.body{
               display: none;
             }
         entity: climate.tado_living_room
-        show_header: false
+        header: false
         hide:
           setpoint: true
           temperature: true
