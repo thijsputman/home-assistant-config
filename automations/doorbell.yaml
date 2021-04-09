@@ -1,4 +1,5 @@
 - alias: 💡 | 🚪 Blink Attic lights (doorbell rang)
+  id: e08720ba-f27a-4308-aeef-275c606872b6
   description: ''
   trigger:
   - platform: state
@@ -17,6 +18,7 @@
       - delay: '00:00:01'
   mode: single
 - alias: 📱 | 🚪 Notify all devices (doorbell rang; auto-dismissed)
+  id: dd5d2646-26e3-4c71-aa3c-b7f49151606e
   description: ''
   trigger:
   - platform: state

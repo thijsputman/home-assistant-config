@@ -1,4 +1,5 @@
 - alias: 💤 | 💡 Everyone at home asleep (all lights off)
+  id: cdec9ae5-d391-4826-a957-36fb823a73a7
   description: ''
   trigger:
   - platform: state
@@ -22,6 +23,7 @@
     entity_id: input_boolean.everyone_asleep
   mode: single
 - alias: 💤 | ⏰ Everyone at home awake (daily at «wakeup» time)
+  id: dfe729c9-436a-4fdb-8970-b68492d9a1a2
   description: ''
   trigger:
   - platform: time
@@ -39,6 +41,7 @@
     entity_id: input_boolean.everyone_asleep
   mode: single
 - alias: 💤 Set next «wakeup» (everyone awake)
+  id: 01d828d8-da3e-432c-8beb-0f20392d2f8e
   description: ''
   trigger:
   - platform: state
@@ -81,6 +84,7 @@
       entity_id: input_boolean.wakeup_alarm_mute
   mode: single
 - alias: 💤 Set «wakeup light start» time («wakeup» time change)
+  id: 2067fdfb-bad3-40fb-aa7d-d35430dd5b78
   description: ''
   trigger:
   - platform: state
@@ -97,6 +101,7 @@
     entity_id: input_datetime.wakeup_light_start
   mode: single
 - alias: 💤 | 🔊 Wakeup alarm bedroom (daily at «wakeup» time)
+  id: 4f9e08f9-b352-4945-b788-215e301ef883
   # N.B. This automation's name is used in the next automation!
   description: ''
   trigger:
@@ -128,6 +133,7 @@
       - delay: '00:00:15'
   mode: single
 - alias: 💤 | 🕹️ Snooze wakeup alarm (Bedroom Smart Switches)
+  id: 3c49fa1c-db0a-44ea-8fb3-8e57c515e310
   description: ''
   trigger:
   # Bedside Smart Switches

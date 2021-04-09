@@ -1,4 +1,5 @@
 - alias: 🌦️ | 📱/🔊 Announce when it is raining (windows open)
+  id: 4dd59c72-309a-441a-b97c-07a69c6898da
   description: ''
   trigger:
   - platform: numeric_state

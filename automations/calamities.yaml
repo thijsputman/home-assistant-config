@@ -1,4 +1,5 @@
 - alias: 🤯/💧 | 📱 Send notification (water detected)
+  id: e604c349-9733-4d0c-bb6f-199dd62f1004
   trigger:
   - platform: state
     entity_id:
@@ -16,6 +17,7 @@
         {{ trigger.to_state.attributes.friendly_name }} detected water!
   mode: single
 - alias: 🤯/💧 | 🔊 Sound the alarm (water detected when someone home)
+  id: 761dc98c-6444-4782-8295-26dd8caaad59
   trigger:
   - platform: state
     entity_id:
@@ -41,6 +43,7 @@
         - delay: 13
   mode: single
 - alias: 🤯/🔥 | 📱 Send notification (smoke detected)
+  id: 1166dfdf-0375-4834-aa52-188c78d3bbdd
   trigger:
   - platform: state
     entity_id: binary_sensor.fire_81
@@ -56,6 +59,7 @@
         {{ trigger.to_state.attributes.friendly_name }} detected smoke!
   mode: single
 - alias: 🤯/🔥 | 🔊 Sound the alarm (smoke detected)
+  id: 3e33958b-6f90-4612-afd0-d0078e054e92
   trigger:
   - platform: state
     entity_id: binary_sensor.fire_81

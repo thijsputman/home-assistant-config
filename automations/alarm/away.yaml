@@ -1,4 +1,5 @@
 - alias: 🚨 | 📱 Notify on doors/windows left open ("Armed away")
+  id: c3684211-bceb-4256-8238-077f21798da1
   trigger:
   - platform: state
     entity_id: alarm_control_panel.home_alarm
@@ -26,6 +27,7 @@
 # not well-positioned for intruder detection. Still, if no-one is home, there's
 # no harm in making them trigger the alarm...
 - alias: 🚨 Trigger alarm (motion detected; "Armed away")
+  id: 358bd339-33e4-4c0a-a92e-0682346e48a1
   trigger:
   - platform: state
     entity_id:
@@ -47,6 +49,7 @@
     entity_id: alarm_control_panel.home_alarm
   mode: single
 - alias: 🚨 | 📱 Notify when back gate opened ("Armed away")
+  id: b1825172-d7ab-4114-8c4d-6030c6bae7b6
   trigger:
   - platform: state
     entity_id: binary_sensor.openclose_34
@@ -65,6 +68,7 @@
         The back gate was just opened!
         There could be someone in the garden; check the camera feed...
 - alias: 🚨 | 💡 Lights on when back gate opened ("Armed away")
+  id: 9684f5d2-8d26-429f-bb08-aa5deeb23c50
   trigger:
   - platform: state
     entity_id: binary_sensor.openclose_34

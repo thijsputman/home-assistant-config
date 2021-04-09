@@ -1,4 +1,5 @@
 - alias: 💡 | ⏰ Outside lights on (daily at civil dusk)
+  id: 8fa0a6d4-f80a-4312-8669-9f5525bbf3d5
   description: ''
   trigger:
   - platform: state
@@ -17,6 +18,7 @@
       scene_name: Evening
   mode: single
 - alias: 💡 | ⏰ Inside lights on (daily just before sunset)
+  id: 0ca01a00-8847-41f1-b852-70f4c4a49275
   description: ''
   trigger:
   - platform: state
@@ -90,6 +92,7 @@
     default: []
   mode: single
 - alias: 💡 | ⏰ Outside lights off (daily at 22:30)
+  id: 99711cfd-e1c7-47d8-83af-94876e126b6c
   description: ''
   trigger:
   - platform: time

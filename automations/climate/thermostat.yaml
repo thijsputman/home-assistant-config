@@ -4,6 +4,7 @@
 # automations are mainly concerned with switching the "Away" mode on and off
 # and some exceptional scheduling conditions.
 - alias: 🌡️ | ✈️ tado° to "Away" mode (everyone away)
+  id: 7dd16eef-43de-458c-9231-145260a5bea8
   description: ''
   trigger:
   - platform: state
@@ -19,6 +20,7 @@
     entity_id: climate.tado_living_room
   mode: single
 - alias: 🌡️ | ✈️ tado° to "Home" mode (someone home)
+  id: e9f167c4-5f85-4eb3-810b-942edd2c5f0f
   description: ''
   trigger:
   - platform: state
@@ -38,6 +40,7 @@
 # we go to bed before that time, the heating will be switched on again later in
 # the evening...
 - alias: 🌡️ | 💤 Lower thermostat (everyone asleep)
+  id: 00e26ec6-b41d-4978-96bb-52225fa26721
   description: ''
   trigger:
   - platform: state

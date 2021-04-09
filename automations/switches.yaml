@@ -1,4 +1,5 @@
 - alias: 🕹️ Fireplace toggle (Magic Cube)
+  id: fa8b26c2-5a32-4a64-a90a-c546465fef54
   description: ''
   trigger:
   - device_id: 7053d7e589bf4a4496cff59a24b7c83c
@@ -13,6 +14,7 @@
     service: input_boolean.toggle
   mode: single
 - alias: 🕹️ Ensuite maximum brightness (Magic Cube)
+  id: 0c5d2b27-0900-42d8-9b1e-8a412185cb34
   description: ''
   trigger:
   - device_id: 7053d7e589bf4a4496cff59a24b7c83c

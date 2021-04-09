@@ -1,4 +1,5 @@
 - alias: 🌡️ | 💡 Attic heating on (Attic lights on)
+  id: e5978d8a-cfec-4b8d-a78d-03e973de84ae
   description: ''
   trigger:
   - platform: state
@@ -21,6 +22,7 @@
     entity_id: climate.tado_smart_radiator_attic
   mode: single
 - alias: 🌡️ | 🤖 Attic heating on (keep on while lights are on)
+  id: 4e9442c0-9b22-441a-9f3c-13fee3cedd52
   description: ''
   # This is primarily to prevent the tado°-schedule from switching the Attic
   # heating off on weekdays at 19:00 (while the lights is still on). Manual
@@ -48,6 +50,7 @@
     entity_id: climate.tado_smart_radiator_attic
   mode: single
 - alias: 🌡️ | 💡 Attic heating off (Attic lights off)
+  id: 19c32aa8-2c41-4026-ba1a-798a34a2bf6b
   description: ''
   trigger:
   - platform: state
@@ -63,6 +66,7 @@
     entity_id: climate.tado_smart_radiator_attic
   mode: single
 - alias: 🌡️ | ⏰ Attic heating off (weekdays when lights remain off)
+  id: fc16d0c4-d9ea-48da-ad28-ca9f83065f5d
   description: ''
   trigger:
   - platform: time
@@ -105,6 +109,7 @@
     entity_id: climate.tado_smart_radiator_attic
   mode: single
 - alias: 🌡️ | ✈️ Attic heating off (tado° from Away- to Home-mode)
+  id: d8587843-f45f-48cc-811a-e7dbf346a31f
   description: ''
   trigger:
   # When tado° transitions from Away- to Home-mode, it restores all schedules
@@ -131,6 +136,7 @@
     entity_id: climate.tado_smart_radiator_attic
   mode: single
 - alias: 🌡️ | 🤖 Attic heating off (Living room thermostat off)
+  id: 529a20b2-7b28-4cf7-84c3-72c5d851d853
   description: ''
   trigger:
   # Mainly intended as a fail-safe to ensure the Attic radiator (which can

@@ -1,4 +1,5 @@
 - alias: 💡 | 💤 Wakeup light bedroom (daily at «wakeup light start» time)
+  id: 8dfa00b1-9749-4b77-b0c9-7eceaf146bf6
   description: ''
   trigger:
   - platform: time

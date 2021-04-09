@@ -1,4 +1,5 @@
 - alias: 🚧 | 🧹 Housekeeper present
+  id: 22862b80-0db9-41a1-8ab0-86bd72278540
   description: ''
   # Using an input_datetime to store on which day of the week the housekeeper
   # comes – compared against sensor.date (which changes daily at 00:00)

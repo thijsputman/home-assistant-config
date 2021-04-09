@@ -1,4 +1,5 @@
 - alias: 📹 | ⏰ Arm Arlo (daily at 22:30)
+  id: 093a7fa4-2045-4c7e-a8fb-2ff211c44213
   description: ''
   trigger:
   - platform: time
@@ -19,6 +20,7 @@
     data: {}
   mode: single
 - alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
+  id: 6fcafedb-78df-4fa4-a7ac-80aec0750cd1
   description: ''
   trigger:
   - platform: state
@@ -31,6 +33,7 @@
     data: {}
   mode: single
 - alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
+  id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
   description: ''
   trigger:
   - platform: state
@@ -43,6 +46,7 @@
     entity_id: !secret aarlo_control_panel
   mode: single
 - alias: 📹 | ⏳ Pause Arlo (timer started)
+  id: ed2ae249-369f-4503-9122-21a5e49e1c21
   description: ''
   trigger:
   - platform: event
@@ -70,6 +74,7 @@
       data: {}
   mode: single
 - alias: 📹 | ⏳ Resume Arlo (timer ended)
+  id: 71bb747a-25c5-416a-a98d-66c33789a702
   description: ''
   trigger:
   - platform: event
@@ -85,6 +90,7 @@
     data: {}
   mode: single
 - alias: 📹 | ⏰ Arlo snapshot (every 2 hours)
+  id: 769a4449-f68b-4403-a09b-87b81cbe1581
   description: ''
   trigger:
   - platform: time_pattern
@@ -107,6 +113,7 @@
     - camera.aarlo_front
   mode: single
 - alias: 📹 | ⏰ Arlo store daily garden snapshot (at dawn and dusk)
+  id: e56ad77e-9f8e-43f7-9fe6-6b2678a86df6
   description: ''
   trigger:
   - platform: state

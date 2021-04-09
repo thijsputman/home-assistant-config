@@ -1,4 +1,5 @@
 - alias: 🌡️ | 🤖 Turn on shed electric heater (< 6ºC)
+  id: cf042b69-8fe6-4649-a67c-6a72507e6e7a
   description: ''
   trigger:
   - platform: numeric_state
@@ -12,6 +13,7 @@
     entity_id: switch.smart_plug_5
   mode: single
 - alias: 🌡️ | 🤖 Turn off shed electric heater (> 8ºC)
+  id: 7cead7de-f1ab-4063-9233-cc4e8147260c
   description: ''
   trigger:
   - platform: numeric_state
@@ -28,6 +30,7 @@
     entity_id: switch.smart_plug_5
   mode: single
 - alias: 🌡️ | ⏰ Turn off shed electric heater (after 2 hours)
+  id: b7f7997a-cb1d-45cb-a061-e6ee6d61abbc
   description: ''
   trigger:
   # In case Home Assistant or deCONZ restarts, the switch transitions from "on"

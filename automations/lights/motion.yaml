@@ -1,4 +1,5 @@
 - alias: 💡 | 👋 Kitchen counter & cupboards toggle (motion detected)
+  id: ff4ddb05-91d8-431d-9226-b51e0bbd9b36
   description: ''
   trigger:
   - platform: state
@@ -51,6 +52,7 @@
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Toilet light toggle (motion detected)
+  id: e884ea40-fdf9-4069-ad27-4e09d8a45e2e
   trigger:
   - platform: state
     entity_id: binary_sensor.presence_60
@@ -76,6 +78,7 @@
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Basement light toggle (motion detected)
+  id: 7a1ebf52-c69e-4bf5-8670-0b32bba52600
   description: ''
   use_blueprint:
     path: homeassistant/motion_light.yaml
@@ -85,6 +88,7 @@
         entity_id: light.basement
       no_motion_wait: 60
 - alias: 💡 | 👋 Wardrobe light toggle (motion detected)
+  id: f30e4af7-6b31-4062-8f12-25fde6ae3577
   description: ''
   trigger:
   - platform: state
@@ -112,6 +116,7 @@
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Bathroom light toggle (motion detected)
+  id: 63b00f23-043a-4d8b-9974-03a7e850e897
   trigger:
   - platform: state
     entity_id: binary_sensor.presence_68

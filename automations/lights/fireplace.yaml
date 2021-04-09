@@ -1,4 +1,5 @@
 - alias: 💡 | 🤖 Fireplace toggle (input boolean)
+  id: e885702e-c8fb-4720-84f7-07aa9f13855b
   description: ''
   trigger:
   - entity_id: input_boolean.fireplace
@@ -23,6 +24,7 @@
     default: []
   mode: single
 - alias: 💡 | 🤖/⏰ Fireplace off (Living room lights off / daily at 02:00)
+  id: 84653754-190c-4571-85e8-e5eca37e81a9
   description: ''
   trigger:
   - platform: state

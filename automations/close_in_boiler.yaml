@@ -1,4 +1,5 @@
 - alias: 🌡️ | ⏰ Close-in boiler off (daily after 22:00)
+  id: 264239fc-ba04-45f0-aae1-e0ce05493332
   description: ''
   trigger:
   - platform: time
@@ -39,6 +40,7 @@
     entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | ✈️ Close-in boiler off (everyone away)
+  id: ca6fb857-6ff7-4ac7-b960-4e527d9897a2
   description: ''
   trigger:
   - platform: state
@@ -55,6 +57,7 @@
     entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | 💤/✈️ Close-in boiler on (everyone awake / someone home)
+  id: f4cda301-822a-4737-a047-587118c5964e
   description: ''
   trigger:
   - platform: state
@@ -75,6 +78,7 @@
     entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | 🧹 Close-in boiler on (housekeeper comes when everyone away)
+  id: 343f7cd2-0d2e-4ba0-9c93-c7da76a150e1
   description: ''
   trigger:
   - platform: state
@@ -94,6 +98,7 @@
     entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | 🧹 Close-in boiler off (housekeeper leaves when everyone away)
+  id: a127ff85-054e-4b15-8e00-5c849a5a4ed3
   description: ''
   trigger:
   - platform: state
@@ -113,6 +118,7 @@
     entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | ⏰ Close-in boiler Legionella protection (twice-weekly when everyone away)
+  id: 19d9594e-6bea-4854-b5b1-19bd07dfe33c
   description: ''
   trigger:
   - platform: time

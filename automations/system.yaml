@@ -1,4 +1,5 @@
 - alias: 🚧 | 📱 Clear dismissed persistent notification (all devices; whitelisted only)
+  id: 9fdbe6f0-1c59-437c-b34b-b1d17fb5889c
   description: ''
   trigger:
   - platform: event
@@ -31,6 +32,7 @@
           {{ trigger.event.data.service_data.notification_id }}
   mode: single
 - alias: 📱 Sensor low battery notification (🔋 < 20%)
+  id: bf5935e5-b716-4bfd-8949-71b01b4f484f
   variables:
     # Exclude mobile devices
     exclude:
@@ -65,6 +67,7 @@
         <ul><li>{{sensors}}</li><ul>
   mode: single
 - alias: 📱 Notify on integration failure (unknown/unavailable-state)
+  id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12
   description: ''
   variables:
     # Entities that require Internet-connectivity to function
@@ -130,6 +133,7 @@
 # atmospheric conditions – touching it causes a static shock which reconnects
 # the drive... ⚡
 - alias: 📱 Notify on Recorder-component failure (System Log)
+  id: 28b00ed1-a3b0-4d7f-97bc-b1faf3b446d1
   trigger:
     platform: event
     event_type: system_log_event
@@ -153,6 +157,7 @@
 # Ping sensors appear to not always properly initialise after Home Assistant
 # (re)starts – reload them 60 seconds after HA start to work around the issue...
 - alias: 🚧 Reload ping sensors (60 seconds after Home Assistant start)
+  id: 43aaba53-4815-452e-a62b-22ea58189902
   trigger:
     - platform: homeassistant
       event: start

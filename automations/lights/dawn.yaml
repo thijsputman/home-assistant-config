@@ -1,4 +1,5 @@
 - alias: 💡 | ⏰ Inside lights on (when dark at «wakeup» time)
+  id: 4ad4a1ef-cc9c-4193-b212-f7dbfa20cd72
   description: ''
   trigger:
   - platform: time
@@ -50,6 +51,7 @@
     default: []
   mode: single
 - alias: 💡 | ⏰ Inside lights off (daily just after dawn)
+  id: 314514eb-0cce-4519-833d-40300537a27b
   description: ''
   trigger:
   - platform: state

@@ -1,4 +1,5 @@
 - alias: 📱 | 🧹 Notify on Neato D7 docking-failure
+  id: 3a327d1c-422a-496a-8dd4-b3700fdb41e1
   trigger:
   - platform: template
     value_template: >-

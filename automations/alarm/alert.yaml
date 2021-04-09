@@ -1,4 +1,5 @@
 - alias: 🚨 Trigger alarm (door / window opened)
+  id: cb55dcf5-9182-482c-9d3a-ce14387709b5
   description: ''
   trigger:
   - platform: state
@@ -37,6 +38,7 @@
     entity_id: alarm_control_panel.home_alarm
   mode: single
 - alias: 🚨 | 🔊 Sound the alarm (alarm triggered)
+  id: 714cfa44-bce7-41f8-be78-9891769fef74
   description: ''
   trigger:
   - platform: state
@@ -48,6 +50,7 @@
     entity_id: switch.warning_device_8
   mode: single
 - alias: 🚨 | 🔊 Stop sounding the alarm (alarm trigger ended)
+  id: 06b3864d-3f70-45d7-96fa-6c30fa2576c2
   description: ''
   trigger:
   - platform: state
@@ -59,6 +62,7 @@
     entity_id: switch.warning_device_8
   mode: single
 - alias: 🚨 | 🕹️ Mute/unmute the alarm (Bedroom Smart Switches)
+  id: 830121ea-907f-4234-be81-b4acce05c1bc
   description: ''
   trigger:
   # Bedside Smart Switches
@@ -99,6 +103,7 @@
     default: []
   mode: single
 - alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)
+  id: 45a353ab-e5c4-459c-a2ca-ac0d6a5e3aa8
   description: ''
   trigger:
   - platform: state
@@ -116,6 +121,7 @@
     entity_id: light.bedroom
   mode: single
 - alias: 🚨 | 💡 Flash lights (pending alarm; front or back door open)
+  id: 4416cb36-8291-41ae-8c62-7a246fdc9d2d
   description: ''
   trigger:
   - platform: state
@@ -151,6 +157,7 @@
     default: []
   mode: single
 - alias: 🚨 | 💡 Garden lights on (alarm pending)
+  id: af18c5c4-4619-485f-8ff0-97ce63c7e42f
   trigger:
   - platform: state
     entity_id: alarm_control_panel.home_alarm
@@ -167,6 +174,7 @@
       group_name: Garden
       scene_name: Active
 - alias: 🚨 | 📱 Notify alarm pending
+  id: 601cb512-c43b-4155-b58f-122441d49d22
   description: ''
   trigger:
   - platform: state
@@ -194,6 +202,7 @@
         </ul>
   mode: single
 - alias: 🚨 | 📱 Notify alarm sounding
+  id: 05a2188b-8940-4311-adfb-bea75a792000
   description: ''
   trigger:
   - platform: state
@@ -215,6 +224,7 @@
 # the home is an active alarm state – mainly used to hide semi-sensitive
 # information from a tech-savvy burglar trying to use the Lovelace dashboard.
 - alias: 🚧 | 🚨 Active alarm state
+  id: 879803ab-6748-4785-81bc-0e6fd41b3b41
   description: ''
   trigger:
   - platform: state

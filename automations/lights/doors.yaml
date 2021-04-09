@@ -6,6 +6,7 @@
 # door midway through causes it to always the detect the original state as
 # "on" – and thus never turning the light off again).
 - alias: 💡 | 🚪 Outside light to maximum brightness (Front door open)
+  id: 78c89018-504b-4ff1-8aa1-fbebc14206e9
   description: ''
   trigger:
   - platform: state
@@ -66,6 +67,7 @@
   mode: single
   max_exceeded: silent
 - alias: 💡 | 🚪 Outside light to maximum brightness (Back door open)
+  id: ffff8c6f-9dbd-4791-8c32-766e1570811e
   description: ''
   trigger:
   - platform: state
@@ -122,6 +124,7 @@
   mode: single
   max_exceeded: silent
 - alias: 💡 | 🚪 Garden lights on (kitchen door / back gate open)
+  id: cd0a0eac-d482-4add-ba9f-28e63fae0d26
   description: ''
   trigger:
   - platform: state

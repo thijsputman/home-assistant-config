@@ -16,6 +16,7 @@
 # have to be put in place to handle this "off-on" scenario.
 
 - alias: 🚧 | 💡 Store Hue scene (Kitchen)
+  id: 1ddb2a9f-92c3-4256-8895-877140e107ae
   description: ''
   trigger:
     - platform: state
@@ -145,6 +146,7 @@
   mode: single
   max_exceeded: silent
 - alias: 🚧 | 💡 Store Hue scene (Kitchen counter & cupboards)
+  id: 70e552dd-84cf-41d5-aa44-a9371345d284
   description: ''
   trigger:
     - platform: state
@@ -231,6 +233,7 @@
   mode: single
   max_exceeded: silent
 - alias: 🚧 | 💡 Store Hue scene (Living room)
+  id: 79b3c280-8f55-4189-8f22-aa8c2f806f22
   description: ''
   trigger:
     - platform: state
