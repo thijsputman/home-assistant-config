@@ -28,12 +28,10 @@
     actually useful given the above considerations; remove the ones that are
     not...
 - [ ] Some of the automation/helper-combinations can be replaced with template
-      sensors – mainly those that effectively are nothing more than a set of
-      operations on the state of one or more existing sensors:
+      entities/sensors – mainly those that effectively are nothing more than a
+      set of operations on the state of one or more existing sensors:
   - ✔ Time of Day / Nighttime
-  - The Hue scene heuristics – might be more trouble than it's worth (unless
-    this somehow enables the inputs for the heuristic to be stored outside of
-    the template sensor)
+  - The Hue scene heuristics
 - [ ] As of
       [Home Assistant 2021.4](https://www.home-assistant.io/blog/2021/04/07/release-20214/)
       it shouldn't be necessary anymore to reload the ping sensors upon restart
@@ -46,6 +44,10 @@
   - The `state_attr('sensor.xxx', 'last_reset').today().day|int` constructs
     (i.e. hacks 😉) in [`📄 sensors/dsmr.yaml`](./sensors/dsmr.yaml) appear to
     be great candidates at first sight...
+  - Some of the binary sensors indicating device activity (e.g. those for the
+    dishwasher and dryer) could be triggered with a slight delay (or with more
+    elaborate conditions) to ensure a short "pauses" in their cleaning cycle
+    don't incorrectly toggle the sensor off...
 
 ## Lovelace
 
