@@ -73,9 +73,9 @@ card:
         graph: bar
         labels: false
       entities:
-        - entity: sensor.power_dishwasher_actual
+        - entity: sensor.power_88_actual
           show_graph: false
-        - entity: sensor.consumption_dishwasher_actual
+        - entity: sensor.consumption_87_actual
           aggregate_func: delta
           color: thistle
           name: Power usage

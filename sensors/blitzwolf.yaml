@@ -15,18 +15,16 @@
 
 - platform: template
   sensors:
+    # Power 88 / Consumption 87 (Dishwasher)
     power_88_actual:
       friendly_name: Power 88 [actual]
       unit_of_measurement: W
-      # When idle, the value floats between 0 and 5 Watts – this rather large
-      # range is caused by the connected "smart" power strip pulling a tiny bit
-      # of power (< 1 Watt) which appears to be amplified by the measurement
-      # error in the Blitzwolf plug.
+      # When idle, the value floats between 0 and 1 Watts
       value_template: >-
         {%- if states('sensor.power_88') in ['unknown', 'unavailable'] -%}
           {{ states('sensor.power_88') }}
-        {%- elif states('sensor.power_88')|float <= 5 -%}
-          {{ 0|float }}
+        {%- elif states('sensor.power_88')|int <= 1 -%}
+          {{ 0|int }}
         {%- else -%}
           {{
             (states('sensor.power_88')|float * 0.88)|round(0)
@@ -49,6 +47,7 @@
             (states('sensor.consumption_87')|float * 0.88)|round(2)
           }}
         {%- endif -%}
+    # Power 86 / Consumption 85 (Washing machine)
     power_86_actual:
       friendly_name: Power 86 [actual]
       unit_of_measurement: W
@@ -56,8 +55,8 @@
       value_template: >-
         {%- if states('sensor.power_86') in ['unknown', 'unavailable'] -%}
           {{ states('sensor.power_86') }}
-        {%- elif states('sensor.power_86')|float <= 1 -%}
-          {{ 0|float }}
+        {%- elif states('sensor.power_86')|int <= 1 -%}
+          {{ 0|int }}
         {%- else -%}
           {{
             (states('sensor.power_86')|float * 0.88)|round(0)

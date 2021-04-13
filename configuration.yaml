@@ -78,7 +78,7 @@ influxdb:
       - sensor.power_57 # Close-in boiler (Kitchen)
       - sensor.power_83 # Dryer
       - sensor.power_86_actual # Washing machine
-      - sensor.power_dishwasher_actual
+      - sensor.power_88_actual # Dishwasher
       - sensor.power_lights_all
       - sensor.ups_power
 
