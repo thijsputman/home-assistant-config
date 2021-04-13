@@ -4,17 +4,14 @@
   - platform: template
     value_template: >-
       {%-
-        if (
-          states('sensor.neato_d7_battery')|int <
-          state_attr('vacuum.neato_d7', 'battery_level_at_clean_end')|int
-        ) and
-        states('vacuum.neato_d7') != 'cleaning'
+        if states('sensor.neato_d7_battery')|int < 95 and
+          states('vacuum.neato_d7') != 'cleaning'
       -%}
         true
       {%- else -%}
         false
       {%- endif -%}
-    for: "00:30:00"
+    for: "01:00:00"
   condition: []
   action:
   - service: script.persistent_notification_my_devices
