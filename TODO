@@ -98,5 +98,3 @@
 - [ ] Set a basic Arlo schedule in the Arlo app (on every night, off in the
       morning) so it doesn't fully depend on Home Assistant; ensure the
       automations cope with the Arlo changing states outside of their control
-- [ ] Implement the new "Saving Media"-functionality from version `0.7.1` of
-      `hass-aarlo`

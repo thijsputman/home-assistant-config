@@ -4,6 +4,7 @@ homeassistant:
   customize: !include customize.yaml
   allowlist_external_dirs:
     - /config/var
+    - /nvme/var
 
 system_log:
   fire_event: true
@@ -173,6 +174,7 @@ aarlo:
   user_agent: linux
   tfa_source: push
   tfa_type: PUSH
+  save_media_to: /nvme/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
 
 alarm_control_panel:
   - platform: aarlo
