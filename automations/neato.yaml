@@ -1,17 +1,14 @@
 - alias: 📱 | 🧹 Notify on Neato D7 docking-failure
   id: 3a327d1c-422a-496a-8dd4-b3700fdb41e1
   trigger:
-  - platform: template
-    value_template: >-
-      {%-
-        if states('sensor.neato_d7_battery')|int < 95 and
-          states('vacuum.neato_d7') != 'cleaning'
-      -%}
-        true
-      {%- else -%}
-        false
-      {%- endif -%}
-    for: "01:00:00"
+  # It appears this is the most reliable way to detect whether Neato didn't dock
+  # properly. Making it smarter (e.g. by relying on the state Neato reports)
+  # doesn't work (as the reported state not always reflects reality – Neato can
+  # be driving around the Living room while its state indicates it's "docked").
+  - platform: numeric_state
+    entity_id: sensor.neato_d7_battery
+    below: 95
+    for: "03:00:00"
   condition: []
   action:
   - service: script.persistent_notification_my_devices
@@ -20,5 +17,4 @@
       title: 🧹 Neato D7 failed to dock!
       message: >-
         {{ trigger.to_state.attributes.friendly_name }} battery-level has been
-        below "battery-level at clean end" for
-        {{ relative_time(trigger.to_state.last_changed) }}.
+        below 95% for more than three hours...
