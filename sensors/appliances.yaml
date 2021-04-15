@@ -116,10 +116,11 @@
     binary_dishwasher:
       friendly_name: Dishwasher
       device_class: power
+      # Dryer's idle/standby consumption is 3 Watt
       value_template: >-
         {%- if states('sensor.power_88_actual') in ['unknown', 'unavailable'] -%}
           {{ states('sensor.power_88_actual') }}
-        {%- elif states('sensor.power_88_actual')|float > 0 -%}
+        {%- elif states('sensor.power_88_actual')|float > 3 -%}
           on
         {%- else -%}
           off

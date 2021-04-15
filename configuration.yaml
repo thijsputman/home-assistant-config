@@ -19,6 +19,8 @@ recorder:
       - sensor.monthly_gas
       - sensor.monthly_energy
       - sensor.ups_nominal_real_power
+      - sensor.power_86 # Raw measurement (see *_actual)
+      - sensor.power_88 # ↑
     entity_globs:
       - sensor.dd_wrt_*_total_octets
       - sensor.dd_wrt_*_bps
