@@ -127,10 +127,10 @@
       sequence:
       - service: media_player.play_media
         data:
-          media_content_type: audio/ogg
-          media_content_id: file:/var/lib/mopidy/media/Gnome.ogg
+          media_content_type: audio/mpeg
+          media_content_id: file:/var/lib/mopidy/media/4nsekecn.mp3
         entity_id: media_player.pi0_speaker_bedroom
-      - delay: '00:00:15'
+      - delay: '00:00:20'
   mode: single
 - alias: 💤 | 🕹️ Snooze wakeup alarm (Bedroom Smart Switches)
   id: 3c49fa1c-db0a-44ea-8fb3-8e57c515e310
