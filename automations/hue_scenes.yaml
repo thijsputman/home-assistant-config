@@ -59,6 +59,16 @@
             value: >-
               {{ states('input_select.hue_scene_kitchen') }}
     - choose:
+      # <Off>
+      - conditions:
+        - condition: state
+          entity_id: light.kitchen
+          state: 'off'
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: <Off>
+          entity_id: input_select.hue_scene_kitchen
       # Daytime
       - conditions:
         - condition: numeric_state
@@ -127,16 +137,6 @@
           data:
             option: Bright (custom)
           entity_id: input_select.hue_scene_kitchen
-      # <Off>
-      - conditions:
-        - condition: state
-          entity_id: light.kitchen
-          state: 'off'
-        sequence:
-        - service: input_select.select_option
-          data:
-            option: <Off>
-          entity_id: input_select.hue_scene_kitchen
       # <Unknown>
       default:
         - service: input_select.select_option
@@ -169,6 +169,16 @@
             value: >-
               {{ states('input_select.hue_scene_kitchen_counter_cupboards') }}
     - choose:
+      # <Off>
+      - conditions:
+        - condition: state
+          entity_id: light.kitchen_counter_cupboards
+          state: 'off'
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: <Off>
+          entity_id: input_select.hue_scene_kitchen_counter_cupboards
       # Activity
       - conditions:
         - condition: numeric_state
@@ -214,16 +224,6 @@
           data:
             option: Activity
           entity_id: input_select.hue_scene_kitchen_counter_cupboards
-      # <Off>
-      - conditions:
-        - condition: state
-          entity_id: light.kitchen_counter_cupboards
-          state: 'off'
-        sequence:
-        - service: input_select.select_option
-          data:
-            option: <Off>
-          entity_id: input_select.hue_scene_kitchen_counter_cupboards
       # <Unknown>
       default:
         - service: input_select.select_option
@@ -256,6 +256,16 @@
             value: >-
               {{ states('input_select.hue_scene_living_room') }}
     - choose:
+      # <Off>
+      - conditions:
+        - condition: state
+          entity_id: light.living_room
+          state: 'off'
+        sequence:
+        - service: input_select.select_option
+          data:
+            option: <Off>
+          entity_id: input_select.hue_scene_living_room
       # Daytime
       - conditions:
         - condition: numeric_state
@@ -340,16 +350,6 @@
         - service: input_select.select_option
           data:
             option: Active
-          entity_id: input_select.hue_scene_living_room
-      # <Off>
-      - conditions:
-        - condition: state
-          entity_id: light.living_room
-          state: 'off'
-        sequence:
-        - service: input_select.select_option
-          data:
-            option: <Off>
           entity_id: input_select.hue_scene_living_room
       # <Unknown>
       default:
