@@ -89,6 +89,8 @@
     emergency) and have a look at
     [dresden-elektronik/deconz-rest-plugin#3232](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/3232#issuecomment-688145449)
     on how to properly control them through deCONZ
+- [ ] Test the alarm sirens every first Monday of the month at 12:00 (to
+      coincide with the Dutch national alarm siren test)
 - [ ] Currently Arlo's cameras are automatically armed daily at 22:30. Make this
       contingent on the state of the lights in the back garden (and/or the
       Kitchen door). When we're sitting outside late in Summer, don't arm Arlo
