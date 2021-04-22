@@ -84,6 +84,15 @@
       controller) is up and running (see
       [dresden-elektronik/deconz-rest-plugin#1137](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/1137))
       – appears to require an update of the Aqara smart-relay firmware...
+- [ ] Use a timer helper to temporarily disable the motion-sensing automation in
+      the Attic hallway when the lights are manually switched on (to prevent
+      them from going off too quickly again)
+- [ ] Failure mode for Bathroom motion-sensing automation: If the light-level
+      falls below its threshold while a motion sensors remains triggered, the
+      light will never come on (as the automation doesn't restart until the
+      motion sensor clears and retriggers). Instead of using a (preemptive)
+      condition, use a waiting-loop that continuously (i.e. every 30 seconds)
+      evaluates the conditions
 
 ## Alarm
 
