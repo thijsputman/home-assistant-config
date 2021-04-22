@@ -1,3 +1,2 @@
 *.yaml linguist-detectable=true
 *.yaml linguist-language=YAML
-*.rest linguist-language=HTTP
