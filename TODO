@@ -48,6 +48,8 @@
     dishwasher and dryer) could be triggered with a slight delay (or with more
     elaborate conditions) to ensure a short "pauses" in their cleaning cycle
     don't incorrectly toggle the sensor off...
+- [ ] Use a YAML-linter to enforce (amongst others) consistent indentation and
+      quoting
 
 ## Lovelace
 
