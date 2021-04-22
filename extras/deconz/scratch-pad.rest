@@ -1,0 +1,49 @@
+@baseUrl = {{$dotenv DECONZ_BASEURL}}
+@key = {{$dotenv DECONZ_KEY}}
+
+### List sensors
+GET {{baseUrl}}/{{key}}/sensors
+### List lights
+GET {{baseUrl}}/{{key}}/lights
+### List groups
+GET {{baseUrl}}/{{key}}/groups
+
+
+# Link Attic dimmer-switch and Aqara smart-relay (WIP – see TODO.md)
+###
+# @name getGroup
+GET {{baseUrl}}/{{key}}/sensors/97
+###
+@groupId = {{getGroup.response.body.$.config.group}}
+GET {{baseUrl}}/{{key}}/groups/{{groupId}}
+### Add smart-relay lights (ID 14 & 16) to group
+PUT {{baseUrl}}/{{key}}/groups/{{groupId}}
+content-type: application/json
+
+{
+  "lights": [ "14", "16" ]
+}
+
+
+# IAS tests (Heiman alarm light ID 8 & 13 – see TODO.md)
+###
+GET {{baseUrl}}/{{key}}/lights/8
+###
+GET {{baseUrl}}/{{key}}/lights/13
+
+### Blink the siren for 60 seconds
+PUT {{baseUrl}}/{{key}}/lights/8/state
+
+{
+  "alert": "blink",
+  "ontime": 60
+}
+
+### Sound (and blink) the siren for 10 seconds
+# @note
+PUT {{baseUrl}}/{{key}}/lights/8/state
+
+{
+  "alert": "lselect",
+  "ontime": 10
+}

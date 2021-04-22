@@ -18,4 +18,4 @@
 /groups/private.yaml
 /lovelace/home/security/occupancy.yaml
 
-/deCONZ.rest
+.env

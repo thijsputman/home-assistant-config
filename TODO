@@ -78,6 +78,12 @@
 - [ ] Let the occupancy simulation toggle `input_boolean.everyone_asleep` when
       it switches off all lights (easiest way to keep consistent behaviour). Do
       ensure this doesn't conflict with the alarm settings
+- [ ] Use "Light Group" instead of regular groups for grouping lights
+- [ ] Link the Attic dimmer switch to the Aqara smart-relay using a Zigbee group
+      such that the switch works regardless of whether deCONZ (i.e. the Zigbee
+      controller) is up and running (see
+      [dresden-elektronik/deconz-rest-plugin#1137](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/1137))
+      – appears to require an update of the Aqara smart-relay firmware...
 
 ## Alarm
 
@@ -88,6 +94,8 @@
     siren (reduces the likelihood of them getting disabled in event of an
     emergency) and have a look at
     [dresden-elektronik/deconz-rest-plugin#3232](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/3232#issuecomment-688145449)
+    and
+    [dresden-elektronik/deconz-rest-plugin#4432](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/4432#issuecomment-782841021)
     on how to properly control them through deCONZ
 - [ ] Test the alarm sirens every first Monday of the month at 12:00 (to
       coincide with the Dutch national alarm siren test)
