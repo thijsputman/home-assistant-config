@@ -39,3 +39,22 @@
     data:
       notification_id: doorbell
   mode: single
+- alias: 📹 | 🚪 Arlo snapshot (doorbell rang)
+  id: dbfbeeab-04a2-404f-8771-5109ec19f729
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.vibration_43
+    from: 'off'
+    to: 'on'
+  condition:
+  - condition: not
+    conditions:
+    - condition: state
+      entity_id: camera.aarlo_front
+      state: recording
+  action:
+  - service: aarlo.camera_request_snapshot
+    data: {}
+    entity_id: camera.aarlo_front
+  mode: single
