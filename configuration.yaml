@@ -1,5 +1,8 @@
 default_config:
 
+cloud:
+  alexa: !include alexa.yaml
+
 homeassistant:
   customize: !include customize.yaml
   allowlist_external_dirs:
