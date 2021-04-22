@@ -176,7 +176,10 @@
     entity_id: binary_sensor.presence_92
     from: "off"
     to: "on"
-  condition: []
+  condition:
+  - condition: state
+    entity_id: timer.attic_hallway_motion_pause
+    state: idle
   action:
   - choose:
     # Upstairs
@@ -208,6 +211,9 @@
         is_state('binary_sensor.presence_92', 'off')
       }}
   - delay: 60
+  - condition: state
+    entity_id: timer.attic_hallway_motion_pause
+    state: idle
   - service: light.turn_off
     data:
       entity_id: light.attic_hallway

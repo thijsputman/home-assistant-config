@@ -13,6 +13,58 @@
     - service: light.turn_on
       target:
         entity_id: light.attic_hallway
+    - service: timer.start
+      data: {}
+      target:
+        entity_id: timer.attic_hallway_motion_pause
+- alias: 💡 | 🕹️ Cycle through Attic hallway gangs (Dimmer Switch)
+  id: 1d18a07f-cd2b-49ac-bcd8-ab48089558c9
+  description: ''
+  mode: single
+  trigger:
+    - device_id: c7a32fb1be6494d32caafb27134fee28
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: dim_up
+    - device_id: c7a32fb1be6494d32caafb27134fee28
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: dim_down
+  condition:
+    - condition: state
+      entity_id: light.attic_hallway
+      state: 'on'
+  action:
+  - choose:
+    - conditions:
+        - condition: state
+          entity_id:
+            - light.smart_relay_3
+            - light.smart_relay_4
+          state: 'on'
+      sequence:
+        - service: light.turn_off
+          target:
+            entity_id: light.smart_relay_3
+    - conditions:
+        - condition: state
+          entity_id: light.smart_relay_4
+          state: 'on'
+      sequence:
+        - service: light.turn_off
+          target:
+            entity_id: light.smart_relay_4
+        - service: light.turn_on
+          target:
+            entity_id: light.smart_relay_3
+    default:
+      - service: light.turn_on
+        target:
+          entity_id:
+            - light.smart_relay_3
+            - light.smart_relay_4
 - alias: 💡 | 🕹️ Turn off Attic hallway lights (Dimmer Switch)
   id: d248cca1-d887-40b2-966a-5bbc2ebd84dd
   description: ''
@@ -23,6 +75,24 @@
       platform: device
       type: remote_button_short_press
       subtype: turn_off
+  condition: []
+  action:
+    - service: timer.cancel
+      data: {}
+      target:
+        entity_id: timer.attic_hallway_motion_pause
+    - service: light.turn_off
+      target:
+        entity_id: light.attic_hallway
+- alias: 💡 | ⏳ Turn off Attic hallway lights (timer finished)
+  id: b4a35562-ea3c-4e01-9d4e-ee0f3fead943
+  description: ''
+  mode: single
+  trigger:
+    - platform: event
+      event_type: timer.finished
+      event_data:
+        entity_id: timer.attic_hallway_motion_pause
   condition: []
   action:
     - service: light.turn_off
