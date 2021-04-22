@@ -84,6 +84,7 @@ influxdb:
       - sensor.power_83 # Dryer
       - sensor.power_86_actual # Washing machine
       - sensor.power_88_actual # Dishwasher
+      - sensor.power_99 # Airco (Attic)
       - sensor.power_lights_all
       - sensor.ups_power
 
@@ -157,6 +158,9 @@ utility_meter:
     cycle: monthly
   monthly_consumption_dishwasher:
     source: sensor.consumption_87_actual
+    cycle: monthly
+  monthly_consumption_airco_attic:
+    source: sensor.consumption_100
     cycle: monthly
   monthly_consumption_lights_all:
     source: sensor.consumption_lights_all

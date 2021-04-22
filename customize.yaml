@@ -72,3 +72,5 @@ sensor.weewx_solar_irradiance:
   icon: mdi:blur-radial
 sensor.weewx_rain_hour:
   icon: mdi:weather-rainy
+sensor.binary_airco_attic:
+  icon: mdi:hvac

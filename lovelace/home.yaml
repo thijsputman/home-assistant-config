@@ -125,6 +125,7 @@ views:
           - !include home/consumption/appliances/dishwasher.yaml
           - !include home/consumption/appliances/lights.yaml
           - !include home/consumption/appliances/ups.yaml
+          - !include home/consumption/appliances/airco_attic.yaml
         columns: 2
         square: false
   # Network
