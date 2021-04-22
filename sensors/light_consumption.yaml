@@ -1,16 +1,19 @@
 # Estimate power consumption of all lights
 #
-# Made possible by the fact that (nearly) all lights in the house are Hue-based.
-# Enumerates all lights that are turned on (and not a Hue-group, nor a Zigbee
-# device erroneously identifying itself as a light). Provides an estimate that
-# probably overshoots usage a bit (to keep things simple, light intensity is not
-# factored in and lights are only roughly grouped).
+# Made possible by the fact that all lights in the house are Hue-/Zigbee-based.
+# Enumerates all lights that are turned on (and not a Hue-group nor a Home
+# Assistant Light Group). Provides an estimate that probably overshoots usage a
+# bit (to keep things simple, light intensity is not factored in and lights are
+# only roughly grouped).
 #
 # Lights are grouped as follows:
+#   0.  Zigbee entities that are not actually lights (no-op).
 #   1.  Light-strips, assumed to be all 2 meters in length and using 50% of
 #       their 24 Watt rating
 #   2.  The Ensuite ceiling light (which contains 6 individual bulbs), assumed
 #       to be using 50% of its 36 Watt rating
+#   3.  One of the Aqara smart-relay "gangs" in the Attic hallway connected to
+#       three 3.5 Watt LED spots and one 18 Watt LEDtube, roughly 28 Watt.
 #   3.  All other lights (ranging from 6 to 9 Watt), assumed to be using 6 Watt
 #       each
 #
@@ -27,10 +30,17 @@
         {%- set result = namespace(watt=0) -%}
         {%- for light in states.light |
           selectattr('attributes.is_hue_group', 'undefined') |
-          selectattr('state', 'eq', 'on') |
-          selectattr('attributes.supported_features', 'gt', 0)
+          selectattr('attributes.entity_id', 'undefined') |
+          selectattr('state', 'eq', 'on')
         -%}
           {%- if light.entity_id in
+            [
+              'light.range_extender_2',
+              'light.smart_relay_1',
+              'light.smart_relay_2'
+            ]
+          -%}
+          {%- elif light.entity_id in
             [
               'light.hue_lightstrip_plus_1_2',
               'light.hue_lightstrip_plus_1_3',
@@ -42,6 +52,8 @@
             {%- set result.watt = result.watt + 12 -%}
           {%- elif light.entity_id == 'light.hue_white_light_1' -%}
             {%- set result.watt = result.watt + 18 -%}
+          {%- elif light.entity_id == 'light.smart_relay_4' -%}
+            {%- set result.watt = result.watt + 28 -%}
           {%- else -%}
             {%- set result.watt = result.watt + 6 -%}
           {%- endif -%}
