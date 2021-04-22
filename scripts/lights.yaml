@@ -49,14 +49,18 @@ lights_out:
       transition: 10
       entity_id:
       - light.hallway
-  # Occasionally, lights don't turn off properly (which causes "everyone asleep"
-  # to not trigger) – turn them off again in an attempt to mitigate
-  - service: light.turn_off
-    data: {}
-    entity_id:
-    - light.kitchen
-    - light.living_room
-    - light.attic
-    - light.guestroom
+  # Occasionally, lights don't turn off properly (or actually they do, but then
+  # come back on a minute later 😕). This causes "Everyone asleep" to not
+  # trigger. Here we ensure all lights are *really* off. Repeated twice: Once
+  # to ensures all lights are off, twice to ensure none of the lights came back
+  # on erroneously...
+  - repeat:
+      count: 2
+      sequence:
+        - delay: 120
+        - service: light.turn_off
+          data: {}
+          target:
+            entity_id: group.light_inside_rooms
   mode: single
   icon: mdi:lightbulb-group-off
