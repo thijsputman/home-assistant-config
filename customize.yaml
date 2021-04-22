@@ -39,7 +39,7 @@ sensor.daily_energy:
 sensor.monthly_energy:
   icon: mdi:counter
 light.basement:
-  icon: mdi:stairs
+  icon: mdi:package-variant
 sensor.pi4_memory_used_percentage:
   icon: mdi:memory
 binary_sensor.nintendo_switch_ping:
@@ -72,5 +72,7 @@ sensor.weewx_solar_irradiance:
   icon: mdi:blur-radial
 sensor.weewx_rain_hour:
   icon: mdi:weather-rainy
+light.attic_hallway:
+  icon: mdi:stairs
 sensor.binary_airco_attic:
   icon: mdi:hvac

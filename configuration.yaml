@@ -225,6 +225,13 @@ binary_sensor:
     count: 2
     scan_interval: 20
 
+light:
+  - platform: group
+    name: Attic hallway
+    entities:
+      - light.smart_relay_3
+      - light.smart_relay_4
+
 switch:
   - platform: aarlo
     siren: true

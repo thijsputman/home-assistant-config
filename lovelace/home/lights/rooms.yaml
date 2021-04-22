@@ -94,6 +94,8 @@ entities:
   - entity: light.bathroom
   - entity: light.toilet
   - entity: light.basement
+  - entity: light.attic_hallway
+    name: Attic – Hallway
 title: Lights
 state_color: false
 show_header_toggle: false

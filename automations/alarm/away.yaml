@@ -37,6 +37,8 @@
       - binary_sensor.presence_63
       - binary_sensor.presence_68
       - binary_sensor.presence_71
+      - binary_sensor.presence_91
+      - binary_sensor.presence_92
     from: 'off'
     to: 'on'
   condition:

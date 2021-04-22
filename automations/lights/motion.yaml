@@ -165,3 +165,51 @@
       transition: 30
   mode: restart
   max_exceeded: silent
+- alias: 💡 | 👋 Attic hallway light toggle (motion detected)
+  id: 6eb9fb1b-c177-4e11-986c-d6cfec41454a
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.presence_91
+    from: "off"
+    to: "on"
+  - platform: state
+    entity_id: binary_sensor.presence_92
+    from: "off"
+    to: "on"
+  condition: []
+  action:
+  - choose:
+    # Upstairs
+    - conditions:
+      - condition: template
+        value_template: >-
+          {{ trigger.entity_id == 'binary_sensor.presence_91' }}
+      sequence:
+      - service: light.turn_on
+        data:
+          entity_id: light.smart_relay_4
+    # Downstairs
+    - conditions:
+      - condition: template
+        value_template: >-
+          {{ trigger.entity_id == 'binary_sensor.presence_92' }}
+      sequence:
+      - service: light.turn_on
+        data:
+          entity_id: light.smart_relay_3
+    default:
+    - service: light.turn_on
+      data:
+        entity_id: light.attic_hallway
+  # Wait for _all_ motion sensors to clear
+  - wait_template: >-
+      {{
+        is_state('binary_sensor.presence_91', 'off') and
+        is_state('binary_sensor.presence_92', 'off')
+      }}
+  - delay: 60
+  - service: light.turn_off
+    data:
+      entity_id: light.attic_hallway
+  mode: restart
+  max_exceeded: silent
