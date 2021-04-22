@@ -20,5 +20,5 @@
     data:
       message: >-
         Motion detected at the
-          {{ trigger.to_state.attributes.attributes.friendly_name }}.
+          {{ trigger.to_state.attributes.friendly_name }}.
   mode: single
