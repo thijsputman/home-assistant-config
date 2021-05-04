@@ -50,6 +50,9 @@
     don't incorrectly toggle the sensor off...
 - [ ] Use a YAML-linter to enforce (amongst others) consistent indentation and
       quoting
+  - ✔ Enable Prettier "format on save" in VS Code
+  - Automatically run Prettier _and_ `yamllint` (for the non-formatting/semantic
+    stuff) across the entire codebase to enforce compliance
 
 ## Lovelace
 
@@ -68,7 +71,7 @@
 
 - [ ] For Summer: Garden light automatic off at 22:30 should only happen if
       light state has not been modified manually (i.e. we're sitting outside)
-- [ ] For Summer: Switch outside lights on earlier and switch them off later
+- [ ] For Summer: Switch outside lights ~~on earlier and switch them~~ off later
 - [ ] The transition from "lights off at dawn" to "daytime lights on when its
       dark during the day" is not optimal yet. At the moment I'm delaying the
       latter by 10 seconds to prevent it from interfering with the former, there
@@ -112,9 +115,11 @@
       Kitchen door). When we're sitting outside late in Summer, don't arm Arlo
       (or at least not until the garden lights go off / Kitchen door remains
       closed for a while)
-- [ ] Perhaps use the "Template Alarm Control Panel" instead of the current
-      setup with a set of automations? Unsure whether that would really make
-      thing easier to understand though...
-- [ ] Set a basic Arlo schedule in the Arlo app (on every night, off in the
+- [x] ~~Set a basic Arlo schedule in the Arlo app (on every night, off in the
       morning) so it doesn't fully depend on Home Assistant; ensure the
-      automations cope with the Arlo changing states outside of their control
+      automations cope with the Arlo changing states outside of their control~~
+  - There does not appear to be a nice way to achieve this. Could (ab)use the
+    "schedule"-mode in Arlo, but that would prevent the state in the Arlo-app
+    from mapping properly to Aarlo/Home Assistant...
+- [ ] Use "Arm Home" instead of "Arm Night" at 22:30 – only arm the front door
+      at 22:30; arm the rest of the cameras when we go to sleep / are away
