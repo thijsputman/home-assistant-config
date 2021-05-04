@@ -130,14 +130,14 @@
     - service: light.turn_off
       entity_id: light.living_room
   mode: single
-- alias: 💡 | ⛅ Hallway (downstairs) lights on during daytime (☀️ < 10 lux)
+- alias: 💡 | ⛅ Hallway (downstairs) lights on during daytime (☀️ < 40 lux)
   id: 1815106e-2684-4397-8fe8-73711ca6e7b5
   description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_48
       for: "00:01:00"
-      below: 10
+      below: 40
     - platform: state
       entity_id: sensor.time_of_day
       from: dawn
@@ -152,7 +152,7 @@
       state: day
     - condition: numeric_state
       entity_id: sensor.lightlevel_48
-      below: 10
+      below: 40
     - condition: state
       entity_id: light.hue_filament_bulb_1_4
       state: "off"
@@ -162,20 +162,20 @@
   action:
     - service: light.turn_on
       data:
-        brightness_pct: 33
+        brightness_pct: 66
       target:
         entity_id:
           - light.hue_filament_bulb_1_4
           - light.hue_filament_bulb_1_5
   mode: single
-- alias: 💡 | ⛅ Hallway (downstairs) lights off during daytime (☀️ > 12 lux)
+- alias: 💡 | ⛅ Hallway (downstairs) lights off during daytime (☀️ > 60 lux)
   id: 9b941157-f359-4d69-a19c-eaa242f6faf3
   description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_48
       for: "00:01:00"
-      above: 12
+      above: 60
   condition:
     - condition: state
       entity_id: sensor.time_of_day
@@ -193,14 +193,14 @@
           - light.hue_filament_bulb_1_4
           - light.hue_filament_bulb_1_5
   mode: single
-- alias: 💡 | ⛅ Hallway (upstairs) lights on during daytime (☀️ < 45 lux)
+- alias: 💡 | ⛅ Hallway (upstairs) lights on during daytime (☀️ < 30 lux)
   id: 6fcf79b7-be12-4990-b2dd-21d8a85b4987
   description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_upstairs_hallway
       for: "00:01:00"
-      below: 45
+      below: 30
     - platform: state
       entity_id: sensor.time_of_day
       from: dawn
@@ -215,14 +215,14 @@
       state: day
     - condition: numeric_state
       entity_id: sensor.lightlevel_upstairs_hallway
-      below: 45
+      below: 30
     - condition: state
       entity_id: light.upstairs_hallway
       state: "off"
   action:
     - service: light.turn_on
       data:
-        brightness_pct: 45
+        brightness_pct: 50
       target:
         entity_id: light.upstairs_hallway
   mode: single
