@@ -34,5 +34,7 @@ chmod +x .git/hooks/pre-commit
 
 This repository is licensed under a
 [Creative Commons Zero v1.0 Universal license](./LICENSE), except for the
-contents of the [`📁 docs/`](./docs) folder which is licensed under a
-[Creative Commons Attribution Share Alike 4.0 International license](./docs/LICENSE).
+contents of the [`📁 docs/`](./docs) and the [`📁 extras/`](./extras) folders
+which are licensed under a
+[Creative Commons Attribution Share Alike 4.0 International license](./docs/LICENSE)
+and a [BSD-3-Clause license](./extras/LICENSE) respectively.
