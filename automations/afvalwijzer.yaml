@@ -1,52 +1,52 @@
 - alias: 📱 | ⏰ Trash reminder (Black and Green bins)
   id: 992518b0-4f2f-4a35-b262-c882d6330996
-  description: ''
+  description: ""
   trigger:
-  # Remind at 21:00 the day _before_ pickup
-  - platform: time
-    at: "21:00:00"
+    # Remind at 21:00 the day _before_ pickup
+    - platform: time
+      at: "21:00:00"
   condition:
-  - condition: numeric_state
-    entity_id: sensor.afvalwijzer_next_in_days
-    below: 2
-    above: 0
-  - condition: state
-    entity_id: sensor.afvalwijzer_next_item
-    state:
-      - restafval
-      - gft
+    - condition: numeric_state
+      entity_id: sensor.afvalwijzer_next_in_days
+      below: 2
+      above: 0
+    - condition: state
+      entity_id: sensor.afvalwijzer_next_item
+      state:
+        - restafval
+        - gft
   action:
-  - service: script.persistent_notification_all_devices
-    data:
-      tag: trash
-      title: Trash reminder
-      message: >-
-        Don't forget to put the
-          {%- if is_state('sensor.afvalwijzer_next_item', 'restafval')
-            %} Black bin
-          {%- elif is_state('sensor.afvalwijzer_next_item', 'gft')
-            %} Green bin
-          {%- endif
-        %} outside!
+    - service: script.persistent_notification_all_devices
+      data:
+        tag: trash
+        title: Trash reminder
+        message: >-
+          Don't forget to put the
+            {%- if is_state('sensor.afvalwijzer_next_item', 'restafval')
+              %} Black bin
+            {%- elif is_state('sensor.afvalwijzer_next_item', 'gft')
+              %} Green bin
+            {%- endif
+          %} outside!
   mode: single
 - alias: 📱 | ⏰ Trash reminder (Paper)
   id: 1f0e4981-921e-426f-a77d-05a1e6b8f478
-  description: ''
+  description: ""
   trigger:
-  # Remind at 09:30 on the day of pickup
-  - platform: time
-    at: "09:30:00"
+    # Remind at 09:30 on the day of pickup
+    - platform: time
+      at: "09:30:00"
   condition:
-  - condition: numeric_state
-    entity_id: sensor.afvalwijzer_next_in_days
-    below: 1
-  - condition: state
-    entity_id: sensor.afvalwijzer_next_item
-    state: papier
+    - condition: numeric_state
+      entity_id: sensor.afvalwijzer_next_in_days
+      below: 1
+    - condition: state
+      entity_id: sensor.afvalwijzer_next_item
+      state: papier
   action:
-  - service: script.persistent_notification_all_devices
-    data:
-      tag: trash
-      title: Trash reminder
-      message: Don't forget to put the paper outside!
+    - service: script.persistent_notification_all_devices
+      data:
+        tag: trash
+        title: Trash reminder
+        message: Don't forget to put the paper outside!
   mode: single

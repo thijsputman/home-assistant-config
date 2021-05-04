@@ -1,66 +1,66 @@
 lights_out:
   alias: Lights out
   sequence:
-  - service: light.turn_off
-    data: {}
-    entity_id:
-    - light.living_room
-    - light.attic
-    - light.guestroom
-  # Script is generally triggered from the Kitchen – provide a nice fade out
-  # while leaving the room...
-  - service: light.turn_off
-    data:
-      transition: 30
+    - service: light.turn_off
+      data: {}
       entity_id:
-      - light.kitchen
-  - delay: "00:05:00"
-  # Lower Hallway brightness one minute prior to switching it off
-  - service: light.turn_on
-    data:
-      brightness_step_pct: -25
-      entity_id:
-      - light.hallway
-  - delay: "00:01:00"
-  # If there's no motion in the Bathroom and Wardrobe, switch them off too
-  # (otherwise they'll naturally go off after their motion timeouts – this is
-  # purely gold plating... ;)
-  - wait_template: >-
-      {{
-        is_state('group.motion_bathroom', 'off') and
-        is_state('binary_sensor.presence_63', 'off')
-      }}
-    timeout: "00:00:01"
-  - choose:
-    - conditions:
-      - condition: template
-        value_template: >-
-          {{ wait.completed }}
-      sequence:
-      - service: light.turn_off
-        data:
-          transition: 10
-          entity_id:
-          - light.bathroom
-          - light.wardrobe
-    default: []
-  - service: light.turn_off
-    data:
-      transition: 10
-      entity_id:
-      - light.hallway
-  # Occasionally, lights don't turn off properly (or actually they do, but then
-  # come back on a minute later 😕). This causes "Everyone asleep" to not
-  # trigger. Here we ensure all lights are *really* off. Repeated twice: Once
-  # to ensures all lights are off, twice to ensure none of the lights came back
-  # on erroneously...
-  - repeat:
-      count: 2
-      sequence:
-        - delay: 120
-        - service: light.turn_off
-          data: {}
-          target:
-            entity_id: group.light_inside_rooms
+        - light.living_room
+        - light.attic
+        - light.guestroom
+    # Script is generally triggered from the Kitchen – provide a nice fade out
+    # while leaving the room...
+    - service: light.turn_off
+      data:
+        transition: 30
+        entity_id:
+          - light.kitchen
+    - delay: "00:05:00"
+    # Lower Hallway brightness one minute prior to switching it off
+    - service: light.turn_on
+      data:
+        brightness_step_pct: -25
+        entity_id:
+          - light.hallway
+    - delay: "00:01:00"
+    # If there's no motion in the Bathroom and Wardrobe, switch them off too
+    # (otherwise they'll naturally go off after their motion timeouts – this is
+    # purely gold plating... ;)
+    - wait_template: >-
+        {{
+          is_state('group.motion_bathroom', 'off') and
+          is_state('binary_sensor.presence_63', 'off')
+        }}
+      timeout: "00:00:01"
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ wait.completed }}
+          sequence:
+            - service: light.turn_off
+              data:
+                transition: 10
+                entity_id:
+                  - light.bathroom
+                  - light.wardrobe
+      default: []
+    - service: light.turn_off
+      data:
+        transition: 10
+        entity_id:
+          - light.hallway
+    # Occasionally, lights don't turn off properly (or actually they do, but then
+    # come back on a minute later 😕). This causes "Everyone asleep" to not
+    # trigger. Here we ensure all lights are *really* off. Repeated twice: Once
+    # to ensures all lights are off, twice to ensure none of the lights came back
+    # on erroneously...
+    - repeat:
+        count: 2
+        sequence:
+          - delay: 120
+          - service: light.turn_off
+            data: {}
+            target:
+              entity_id: group.light_inside_rooms
   mode: single
   icon: mdi:lightbulb-group-off

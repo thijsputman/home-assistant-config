@@ -1,24 +1,24 @@
 - alias: 🌪️ | ⏰ Guestroom fan on (daily at 05:00)
   id: 2a990efe-22b8-47cf-8266-e0b6e8d5ae62
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: '05:00:00'
+    - platform: time
+      at: "05:00:00"
   condition: []
   action:
-  - service: switch.turn_on
-    data: {}
-    entity_id: switch.on_off_plug_in_unit_4
+    - service: switch.turn_on
+      data: {}
+      entity_id: switch.on_off_plug_in_unit_4
   mode: single
 - alias: 🌪️ | ⏰ Guestroom fan off (daily at 07:00)
   id: 8e479cf6-0fc3-4ba4-a718-15785b478794
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: '07:00:00'
+    - platform: time
+      at: "07:00:00"
   condition: []
   action:
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.on_off_plug_in_unit_4
+    - service: switch.turn_off
+      data: {}
+      entity_id: switch.on_off_plug_in_unit_4
   mode: single

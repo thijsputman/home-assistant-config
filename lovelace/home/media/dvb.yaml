@@ -1,6 +1,6 @@
-type: 'custom:mini-graph-card'
+type: custom:mini-graph-card
 name: DVB-T reception (past 10 days)
-icon: 'mdi:signal-cellular-2'
+icon: mdi:signal-cellular-2
 hour24: true
 decimals: 0
 points_per_hour: 0.25

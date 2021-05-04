@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style: |
     ha-card {
@@ -55,7 +55,7 @@ card:
                 }
       entities:
         - entity: sensor.ds1815_drive_1_status
-          icon: 'mdi:harddisk'
+          icon: mdi:harddisk
           card_mod:
             style:
               state-badge$ ha-icon$: |
@@ -68,7 +68,7 @@ card:
                   content: "1"
                 }
         - entity: sensor.ds1815_drive_2_status
-          icon: 'mdi:harddisk'
+          icon: mdi:harddisk
           card_mod:
             style:
               state-badge$ ha-icon$: |
@@ -81,7 +81,7 @@ card:
                   content: "2"
                 }
         - entity: sensor.ds1815_drive_3_status
-          icon: 'mdi:harddisk'
+          icon: mdi:harddisk
           card_mod:
             style:
               state-badge$ ha-icon$: |
@@ -94,7 +94,7 @@ card:
                   content: "3"
                 }
         - entity: sensor.ds1815_drive_4_status
-          icon: 'mdi:harddisk'
+          icon: mdi:harddisk
           card_mod:
             style:
               state-badge$ ha-icon$: |
@@ -107,7 +107,7 @@ card:
                   content: "4"
                 }
         - entity: sensor.ds1815_drive_5_status
-          icon: 'mdi:harddisk'
+          icon: mdi:harddisk
           card_mod:
             style:
               state-badge$ ha-icon$: |
@@ -120,7 +120,7 @@ card:
                   content: "5"
                 }
         - entity: sensor.ds1815_drive_6_status
-          icon: 'mdi:harddisk'
+          icon: mdi:harddisk
           card_mod:
             style:
               state-badge$ ha-icon$: |
@@ -133,7 +133,7 @@ card:
                   content: "6"
                 }
         - entity: sensor.ds1815_drive_7_status
-          icon: 'mdi:harddisk'
+          icon: mdi:harddisk
           card_mod:
             style:
               state-badge$ ha-icon$: |
@@ -146,7 +146,7 @@ card:
                   content: "7"
                 }
         - entity: sensor.ds1815_drive_8_status
-          icon: 'mdi:harddisk'
+          icon: mdi:harddisk
           card_mod:
             style:
               state-badge$ ha-icon$: |

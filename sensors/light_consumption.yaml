@@ -28,7 +28,6 @@
     power_lights_all:
       friendly_name: Power (all lights)
       unit_of_measurement: W
-      # prettier-ignore
       value_template: >-
         {%- set result = namespace(watt=0.0) -%}
         {%- for light in states.light |

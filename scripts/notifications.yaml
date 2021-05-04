@@ -1,58 +1,58 @@
 tts_p20:
   alias: TTS P20HD
   sequence:
-  - service: notify.mobile_app_p20hd_eea
-    data:
-      message: TTS
-      title: >-
-        {{ message }}
+    - service: notify.mobile_app_p20hd_eea
       data:
-        channel: alarm_stream
+        message: TTS
+        title: >-
+          {{ message }}
+        data:
+          channel: alarm_stream
   mode: single
   icon: mdi:text-to-speech
 persistent_notification_all_devices:
   alias: Persistent notification (all devices)
   sequence:
-  - service: notify.all_devices
-    data:
-      title: >-
-        {{ title }}
-      message: >-
-        {{ message }}
+    - service: notify.all_devices
       data:
-        tag: >-
+        title: >-
+          {{ title }}
+        message: >-
+          {{ message }}
+        data:
+          tag: >-
+            {{ tag }}
+          clickAction: lovelace-home
+    - service: persistent_notification.create
+      data:
+        title: >-
+          {{ title }}
+        message: >-
+          {{ message }}
+        notification_id: >-
           {{ tag }}
-        clickAction: lovelace-home
-  - service: persistent_notification.create
-    data:
-      title: >-
-        {{ title }}
-      message: >-
-        {{ message }}
-      notification_id: >-
-        {{ tag }}
   mode: single
   icon: mdi:message-plus-outline
 persistent_notification_my_devices:
   alias: Persistent notification (my devices)
   sequence:
-  - service: notify.mobile_app_gm1913
-    data:
-      title: >-
-        {{ title }}
-      message: >-
-        {{ message }}
+    - service: notify.mobile_app_gm1913
       data:
-        tag: >-
+        title: >-
+          {{ title }}
+        message: >-
+          {{ message }}
+        data:
+          tag: >-
+            {{ tag }}
+          clickAction: lovelace-home
+    - service: persistent_notification.create
+      data:
+        title: >-
+          {{ title }}
+        message: >-
+          {{ message }}
+        notification_id: >-
           {{ tag }}
-        clickAction: lovelace-home
-  - service: persistent_notification.create
-    data:
-      title: >-
-        {{ title }}
-      message: >-
-        {{ message }}
-      notification_id: >-
-        {{ tag }}
   mode: single
   icon: mdi:message-plus-outline

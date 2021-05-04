@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style:
     .: |
@@ -14,7 +14,7 @@ report_size: 5
 card:
   type: vertical-stack
   cards:
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -23,7 +23,7 @@ card:
             border-radius: 0px;
           }
       name: Internet bandwidth & ping (past 8h)
-      icon: 'mdi:wan'
+      icon: mdi:wan
       hour24: true
       points_per_hour: 8
       aggregate_func: max
@@ -42,7 +42,7 @@ card:
         - entity: sensor.dd_wrt_1_wan_out_mbps
           name: Upload (Mbps)
           show_points: false
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -63,7 +63,7 @@ card:
       lower_bound: 0
       upper_bound: ~600
       cache: true
-      icon: 'mdi:speedometer'
+      icon: mdi:speedometer
       show:
         labels: hover
         name: false
@@ -71,6 +71,6 @@ card:
       decimals: 1
       entities:
         - entity: sensor.google_dns_roundtrip_time
-          color: '#E74C3C'
+          color: "#E74C3C"
           show_points: false
           show_fill: false

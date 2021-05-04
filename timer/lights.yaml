@@ -1,4 +1,4 @@
 attic_hallway_motion_pause:
   name: Attic hallway motion-detection pause
-  icon: 'mdi:timer-outline'
+  icon: mdi:timer-outline
   duration: "00:30:00"

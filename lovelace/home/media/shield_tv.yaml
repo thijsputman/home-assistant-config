@@ -2,7 +2,7 @@ type: vertical-stack
 cards:
   - type: media-control
     entity: media_player.nvidia_shield_tv
-  - type: 'custom:mini-graph-card'
+  - type: custom:mini-graph-card
     hours_to_show: 240
     group_by: date
     name: NVIDIA Shield TV hours watched (10 day trend)

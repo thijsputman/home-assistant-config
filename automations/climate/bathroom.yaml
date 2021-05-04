@@ -1,43 +1,43 @@
 - alias: 🌪️ | 🤖 Bathroom fan on (Δ💧 > 3%/min)
   id: 80c4a53f-223b-4dd9-95f5-b29c51ed6ffa
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.humidity_change_bathroom
-    above: 3.0
+    - platform: numeric_state
+      entity_id: sensor.humidity_change_bathroom
+      above: 3.0
   condition: []
   action:
-  # Only act if humidity in the Bathroom is too high (and also prevent errant
-  # spikes in the derivative from triggering the automation). Only wait for the
-  # relative humidity to reach 60% if we're starting out below 60% (otherwise
-  # we'll erroneously wait and abort).
-  - choose:
-    - conditions:
-      - condition: numeric_state
-        entity_id: sensor.humidity_25
-        below: 60.0
-      sequence:
-      - wait_for_trigger:
-        - platform: numeric_state
-          entity_id: sensor.humidity_25
-          above: 60.0
-        timeout: '00:05:00'
-        continue_on_timeout: false
-    default: []
-  - service: light.turn_on
-    data:
-      entity_id: light.smart_relay_1
+    # Only act if humidity in the Bathroom is too high (and also prevent errant
+    # spikes in the derivative from triggering the automation). Only wait for the
+    # relative humidity to reach 60% if we're starting out below 60% (otherwise
+    # we'll erroneously wait and abort).
+    - choose:
+        - conditions:
+            - condition: numeric_state
+              entity_id: sensor.humidity_25
+              below: 60.0
+          sequence:
+            - wait_for_trigger:
+                - platform: numeric_state
+                  entity_id: sensor.humidity_25
+                  above: 60.0
+              timeout: "00:05:00"
+              continue_on_timeout: false
+      default: []
+    - service: light.turn_on
+      data:
+        entity_id: light.smart_relay_1
 - alias: 🌪️ | 🤖 Bathroom fan off (Δ💧 < 0.5%/min; 20 minute rundown)
   id: 150bbec5-df6a-4d4b-9452-262f24ca47a7
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.humidity_change_bathroom
-    # We're not interested in the direction of change – just its reduction
-    value_template: >-
-      {{ state.state|float|abs }}
-    below: 0.5
-    for: "00:40:00"
+    - platform: numeric_state
+      entity_id: sensor.humidity_change_bathroom
+      # We're not interested in the direction of change – just its reduction
+      value_template: >-
+        {{ state.state|float|abs }}
+      below: 0.5
+      for: "00:40:00"
   condition: []
   action:
-  - service: light.turn_off
-    data:
-      entity_id: light.smart_relay_1
+    - service: light.turn_off
+      data:
+        entity_id: light.smart_relay_1

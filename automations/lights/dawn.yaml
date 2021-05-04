@@ -1,69 +1,69 @@
 - alias: 💡 | ⏰ Inside lights on (when dark at «wakeup» time)
   id: 4ad4a1ef-cc9c-4193-b212-f7dbfa20cd72
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: input_datetime.wakeup
+    - platform: time
+      at: input_datetime.wakeup
   condition:
-  - condition: or
-    conditions:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: night
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: dawn
     - condition: state
-      entity_id: sensor.time_of_day
-      state: night
-    - condition: state
-      entity_id: sensor.time_of_day
-      state: dawn
-  - condition: state
-    entity_id: timer.wakeup_grace_time
-    state: idle
+      entity_id: timer.wakeup_grace_time
+      state: idle
   action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.living_room
-        state: 'off'
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Living room
-          scene_name: Ambiance
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.kitchen
-        state: 'off'
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          scene_name: Ambiance
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.hallway
-        state: 'off'
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Hallway
-          scene_name: Evening
-    default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.living_room
+              state: "off"
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Living room
+                scene_name: Ambiance
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.kitchen
+              state: "off"
+          sequence:
+            - service: script.hue_activate_scene_kitchen
+              data:
+                scene_name: Ambiance
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.hallway
+              state: "off"
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Hallway
+                scene_name: Evening
+      default: []
   mode: single
 - alias: 💡 | ⏰ Inside lights off (daily just after dawn)
   id: 314514eb-0cce-4519-833d-40300537a27b
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: dawn
-    to: day
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
   condition: []
   action:
-  - service: light.turn_off
-    data: {}
-    entity_id:
-    - light.living_room
-    - light.kitchen
-    - light.hallway
+    - service: light.turn_off
+      data: {}
+      entity_id:
+        - light.living_room
+        - light.kitchen
+        - light.hallway
   mode: single

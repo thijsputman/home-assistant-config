@@ -1,283 +1,283 @@
 - alias: 🚨 Trigger alarm (door / window opened)
   id: cb55dcf5-9182-482c-9d3a-ce14387709b5
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    # Not using groups of sensors – They will trigger "off" → "on" if one of
-    # their members transitions from "unavailable" → "on", which leads to false
-    # alarms...
-    # Furthermore, listing the individual entities is relevant as some
-    # doors/windows might intentionally be left open – using a group would
-    # obscure all further state transitions.
-    entity_id:
-    - binary_sensor.openclose_12
-    - binary_sensor.openclose_16
-    - binary_sensor.openclose_17
-    - binary_sensor.openclose_33
-    - binary_sensor.openclose_36
-    - binary_sensor.openclose_18
-    - binary_sensor.openclose_19
-    - binary_sensor.openclose_20
-    - binary_sensor.openclose_8
-    - binary_sensor.openclose_14
-    - binary_sensor.openclose_15
-    from: 'off'
-    to: 'on'
+    - platform: state
+      # Not using groups of sensors – They will trigger "off" → "on" if one of
+      # their members transitions from "unavailable" → "on", which leads to false
+      # alarms...
+      # Furthermore, listing the individual entities is relevant as some
+      # doors/windows might intentionally be left open – using a group would
+      # obscure all further state transitions.
+      entity_id:
+        - binary_sensor.openclose_12
+        - binary_sensor.openclose_16
+        - binary_sensor.openclose_17
+        - binary_sensor.openclose_33
+        - binary_sensor.openclose_36
+        - binary_sensor.openclose_18
+        - binary_sensor.openclose_19
+        - binary_sensor.openclose_20
+        - binary_sensor.openclose_8
+        - binary_sensor.openclose_14
+        - binary_sensor.openclose_15
+      from: "off"
+      to: "on"
   condition:
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: alarm_control_panel.home_alarm
-      state: armed_away
-    - condition: state
-      entity_id: alarm_control_panel.home_alarm
-      state: armed_night
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_night
   action:
-  - service: alarm_control_panel.alarm_trigger
-    data: {}
-    entity_id: alarm_control_panel.home_alarm
+    - service: alarm_control_panel.alarm_trigger
+      data: {}
+      entity_id: alarm_control_panel.home_alarm
   mode: single
 - alias: 🚨 | 🔊 Sound the alarm (alarm triggered)
   id: 714cfa44-bce7-41f8-be78-9891769fef74
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: triggered
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: triggered
   condition: []
   action:
-  - service: switch.turn_on
-    entity_id: switch.warning_device_8
+    - service: switch.turn_on
+      entity_id: switch.warning_device_8
   mode: single
 - alias: 🚨 | 🔊 Stop sounding the alarm (alarm trigger ended)
   id: 06b3864d-3f70-45d7-96fa-6c30fa2576c2
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    from: triggered
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: triggered
   condition: []
   action:
-  - service: switch.turn_off
-    entity_id: switch.warning_device_8
+    - service: switch.turn_off
+      entity_id: switch.warning_device_8
   mode: single
 - alias: 🚨 | 🕹️ Mute/unmute the alarm (Bedroom Smart Switches)
   id: 830121ea-907f-4234-be81-b4acce05c1bc
-  description: ''
+  description: ""
   trigger:
-  # Bedside Smart Switches
-  - device_id: da1237666189a9a364fa383795ba532d
-    domain: deconz
-    platform: device
-    type: remote_button_short_press
-    subtype: turn_on
-  - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
-    domain: deconz
-    platform: device
-    type: remote_button_short_press
-    subtype: turn_on
+    # Bedside Smart Switches
+    - device_id: da1237666189a9a364fa383795ba532d
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
   condition:
-  # Only act if the "Home Alarm" is triggered _and_ someone is home
-  - condition: state
-    entity_id: alarm_control_panel.home_alarm
-    state: triggered
-  - condition: state
-    entity_id: group.family
-    state: home
+    # Only act if the "Home Alarm" is triggered _and_ someone is home
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: triggered
+    - condition: state
+      entity_id: group.family
+      state: home
   action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: switch.warning_device_8
-        state: 'on'
-      sequence:
-      - service: switch.turn_off
-        entity_id: switch.warning_device_8
-    - conditions:
-      - condition: state
-        entity_id: switch.warning_device_8
-        state: 'off'
-      sequence:
-      - service: switch.turn_on
-        entity_id: switch.warning_device_8
-    default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: switch.warning_device_8
+              state: "on"
+          sequence:
+            - service: switch.turn_off
+              entity_id: switch.warning_device_8
+        - conditions:
+            - condition: state
+              entity_id: switch.warning_device_8
+              state: "off"
+          sequence:
+            - service: switch.turn_on
+              entity_id: switch.warning_device_8
+      default: []
   mode: single
 - alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)
   id: 45a353ab-e5c4-459c-a2ca-ac0d6a5e3aa8
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: triggered
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: triggered
   condition:
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: 'on'
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "on"
   action:
-  - service: light.turn_on
-    data:
-      brightness: 255
-      kelvin: 6500
-    entity_id: light.bedroom
+    - service: light.turn_on
+      data:
+        brightness: 255
+        kelvin: 6500
+      entity_id: light.bedroom
   mode: single
 - alias: 🚨 | 💡 Flash lights (pending alarm; front or back door open)
   id: 4416cb36-8291-41ae-8c62-7a246fdc9d2d
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: pending
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: pending
   condition: []
   action:
-  - choose:
-    - conditions:
-      # Front door
-      - condition: state
-        entity_id: binary_sensor.openclose_16
-        state: "on"
-      sequence:
-      - service: light.turn_on
-        data:
-          flash: long
-          entity_id:
-          - light.hue_filament_bulb_1_5
-          - light.hue_filament_bulb_1_4
-    - conditions:
-      # Back door
-      - condition: state
-        entity_id: binary_sensor.openclose_12
-        state: "on"
-      sequence:
-      - service: light.turn_on
-        data:
-          flash: long
-          entity_id:
-          - light.spot_4_kitchen_garden_side
-          - light.spot_3_kitchen
-    default: []
+    - choose:
+        - conditions:
+            # Front door
+            - condition: state
+              entity_id: binary_sensor.openclose_16
+              state: "on"
+          sequence:
+            - service: light.turn_on
+              data:
+                flash: long
+                entity_id:
+                  - light.hue_filament_bulb_1_5
+                  - light.hue_filament_bulb_1_4
+        - conditions:
+            # Back door
+            - condition: state
+              entity_id: binary_sensor.openclose_12
+              state: "on"
+          sequence:
+            - service: light.turn_on
+              data:
+                flash: long
+                entity_id:
+                  - light.spot_4_kitchen_garden_side
+                  - light.spot_3_kitchen
+      default: []
   mode: single
 - alias: 🚨 | 💡 Garden lights on (alarm pending)
   id: af18c5c4-4619-485f-8ff0-97ce63c7e42f
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: pending
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: pending
   condition:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: sensor.time_of_day
-      state: day
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
   action:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Garden
-      scene_name: Active
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Garden
+        scene_name: Active
 - alias: 🚨 | 📱 Notify on alarm pending
   id: 601cb512-c43b-4155-b58f-122441d49d22
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: pending
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: pending
   condition: []
   action:
-  - service: script.persistent_notification_all_devices
-    data:
-      tag: home_alarm
-      title: 🚨 Home Alarm pending!
-      # The list of sensors includes doors/windows that were already open.
-      # Filtering out those is more trouble than it's worth...
-      message: >-
-        The Home Alarm just got triggered!
-        If not promptly disarmed, the alarm will sound...<br><br>
-        One of the following sensor(s) triggered the alarm:
-        <ul>
-          <li>
-            {{-
-              (expand('group.openclose_all') + expand('group.motion_all'))  |
-                selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
-              -}}
-          </li>
-        </ul>
+    - service: script.persistent_notification_all_devices
+      data:
+        tag: home_alarm
+        title: 🚨 Home Alarm pending!
+        # The list of sensors includes doors/windows that were already open.
+        # Filtering out those is more trouble than it's worth...
+        message: >-
+          The Home Alarm just got triggered!
+          If not promptly disarmed, the alarm will sound...<br><br>
+          One of the following sensor(s) triggered the alarm:
+          <ul>
+            <li>
+              {{-
+                (expand('group.openclose_all') + expand('group.motion_all'))  |
+                  selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
+                -}}
+            </li>
+          </ul>
   mode: single
 - alias: 🚨 | 📱 Notify on alarm sounding
   id: 05a2188b-8940-4311-adfb-bea75a792000
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: triggered
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: triggered
   condition: []
   action:
-  - service: script.persistent_notification_all_devices
-    data:
-      # Separate tag – dismissing this from the Lovelace UI will *not*
-      # auto-dismiss it from any of the other devices
-      tag: home_alarm_triggered
-      title: 🚨 Home Alarm sounding!
-      message: >-
-        The Home Alarm is sounding – there's someone in the house!
+    - service: script.persistent_notification_all_devices
+      data:
+        # Separate tag – dismissing this from the Lovelace UI will *not*
+        # auto-dismiss it from any of the other devices
+        tag: home_alarm_triggered
+        title: 🚨 Home Alarm sounding!
+        message: >-
+          The Home Alarm is sounding – there's someone in the house!
   mode: single
 - alias: 🚨 | 📱 Notify on alarm disarmed
   id: d06c2a3e-f1a7-41c2-9bf3-d29c6c352c93
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    from:
-      - pending
-      - triggered
-    to:
-      - disarmed
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from:
+        - pending
+        - triggered
+      to:
+        - disarmed
   condition: []
   action:
-  - service: script.persistent_notification_my_devices
-    data:
-      tag: home_alarm
-      title: 🚨 Home Alarm disarmed
-      message: >-
-        The Home Alarm just got disarmed
-        {%- if trigger is defined and
-            trigger.to_state.context.user_id is defined -%}
-          {%- set persons = states.person | selectattr(
-            'attributes.user_id', 'eq', trigger.to_state.context.user_id
-          ) | list -%}
-          {%- if persons | count == 1
-            %} by {{ persons[0].attributes.friendly_name }}
-          {%- endif -%}
-        {%- endif -%}.
+    - service: script.persistent_notification_my_devices
+      data:
+        tag: home_alarm
+        title: 🚨 Home Alarm disarmed
+        message: >-
+          The Home Alarm just got disarmed
+          {%- if trigger is defined and
+              trigger.to_state.context.user_id is defined -%}
+            {%- set persons = states.person | selectattr(
+              'attributes.user_id', 'eq', trigger.to_state.context.user_id
+            ) | list -%}
+            {%- if persons | count == 1
+              %} by {{ persons[0].attributes.friendly_name }}
+            {%- endif -%}
+          {%- endif -%}.
 # Toggle "input_boolean.active_alarm_state" to "true" when the alarm goes to
 # "pending" and keep it that way until the alarm is actively disarmed. Indicates
 # the home is an active alarm state – mainly used to hide semi-sensitive
 # information from a tech-savvy burglar trying to use the Lovelace dashboard.
 - alias: 🚧 | 🚨 Active alarm state
   id: 879803ab-6748-4785-81bc-0e6fd41b3b41
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to:
-      - pending
-      - disarmed
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - pending
+        - disarmed
   condition: []
   action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: alarm_control_panel.home_alarm
-        state: pending
-      sequence:
-      - service: input_boolean.turn_on
-        data:
-          entity_id: input_boolean.active_alarm_state
-    - conditions:
-      - condition: state
-        entity_id: alarm_control_panel.home_alarm
-        state: disarmed
-      sequence:
-      - service: input_boolean.turn_off
-        data:
-          entity_id: input_boolean.active_alarm_state
-    default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: alarm_control_panel.home_alarm
+              state: pending
+          sequence:
+            - service: input_boolean.turn_on
+              data:
+                entity_id: input_boolean.active_alarm_state
+        - conditions:
+            - condition: state
+              entity_id: alarm_control_panel.home_alarm
+              state: disarmed
+          sequence:
+            - service: input_boolean.turn_off
+              data:
+                entity_id: input_boolean.active_alarm_state
+      default: []
   mode: single

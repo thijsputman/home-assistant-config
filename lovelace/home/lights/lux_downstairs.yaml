@@ -1,4 +1,4 @@
-type: 'custom:mini-graph-card'
+type: custom:mini-graph-card
 name: Brightness (past 48h)
 hour24: true
 hours_to_show: 48

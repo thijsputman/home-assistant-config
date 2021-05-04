@@ -4,55 +4,55 @@
   sensors:
     # Thermostat (Living Room)
     tado_smart_thermostat_temperature:
-      friendly_name: "tado° Smart Thermostat temperature"
-      unit_of_measurement: '°C'
+      friendly_name: tado° Smart Thermostat temperature
+      unit_of_measurement: °C
       device_class: temperature
       value_template: >-
         {{ state_attr('climate.tado_smart_thermostat', 'current_temperature') }}
     tado_smart_thermostat_setpoint:
-      friendly_name: "tado° Smart Thermostat setpoint"
-      unit_of_measurement: '°C'
+      friendly_name: tado° Smart Thermostat setpoint
+      unit_of_measurement: °C
       device_class: temperature
       value_template: >-
         {{ state_attr('climate.tado_smart_thermostat', 'temperature') }}
     tado_smart_thermostat_humidity:
-      friendly_name: "tado° Smart Thermostat humidity"
-      unit_of_measurement: '%'
+      friendly_name: tado° Smart Thermostat humidity
+      unit_of_measurement: "%"
       device_class: humidity
       value_template: >-
         {{ state_attr('climate.tado_smart_thermostat', 'current_humidity') }}
     tado_smart_thermostat_mode:
-      friendly_name: "tado° Smart Thermostat mode"
+      friendly_name: tado° Smart Thermostat mode
       value_template: >-
         {{ states('climate.tado_smart_thermostat') }}
     tado_smart_thermostat_action:
-      friendly_name: "tado° Smart Thermostat action"
+      friendly_name: tado° Smart Thermostat action
       value_template: >-
         {{ state_attr('climate.tado_smart_thermostat', 'hvac_action') }}
     # Smart Radiator (Attic)
     tado_smart_radiator_attic_temperature:
-      friendly_name: "tado° Smart Radiator (Attic) temperature"
-      unit_of_measurement: '°C'
+      friendly_name: tado° Smart Radiator (Attic) temperature
+      unit_of_measurement: °C
       device_class: temperature
       value_template: >-
         {{ state_attr('climate.tado_smart_radiator_attic', 'current_temperature') }}
     tado_smart_radiator_attic_setpoint:
-      friendly_name: "tado° Smart Radiator (Attic) setpoint"
-      unit_of_measurement: '°C'
+      friendly_name: tado° Smart Radiator (Attic) setpoint
+      unit_of_measurement: °C
       device_class: temperature
       value_template: >-
         {{ state_attr('climate.tado_smart_radiator_attic', 'temperature') }}
     tado_smart_radiator_attic_humidity:
-      friendly_name: "tado° Smart Radiator (Attic) humidity"
-      unit_of_measurement: '%'
+      friendly_name: tado° Smart Radiator (Attic) humidity
+      unit_of_measurement: "%"
       device_class: humidity
       value_template: >-
         {{ state_attr('climate.tado_smart_radiator_attic', 'current_humidity') }}
     tado_smart_radiator_attic_mode:
-      friendly_name: "tado° Smart Radiator (Attic) mode"
+      friendly_name: tado° Smart Radiator (Attic) mode
       value_template: >-
         {{ states('climate.tado_smart_radiator_attic') }}
     tado_smart_radiator_attic_action:
-      friendly_name: "tado° Smart Radiator (Attic) action"
+      friendly_name: tado° Smart Radiator (Attic) action
       value_template: >-
         {{ state_attr('climate.tado_smart_radiator_attic', 'hvac_action') }}

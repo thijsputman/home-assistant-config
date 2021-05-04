@@ -1,4 +1,4 @@
-type: "custom:mod-card"
+type: custom:mod-card
 card_mod:
   style: |
     ha-card {
@@ -48,7 +48,7 @@ card:
                 }
             entity: !secret aarlo_control_panel
             name: Arlo
-            icon: "mdi:cctv"
+            icon: mdi:cctv
           - type: entities
             card_mod:
               style:
@@ -70,10 +70,10 @@ card:
                     padding: 0px !important;
                   }
             entities:
-              - type: "custom:paper-buttons-row"
+              - type: custom:paper-buttons-row
                 buttons:
                   - name: – night
-                    icon: "mdi:cctv"
+                    icon: mdi:cctv
                     tap_action:
                       action: call-service
                       service: alarm_control_panel.alarm_arm_night
@@ -92,14 +92,14 @@ card:
                       service_data:
                         entity_id: !secret aarlo_control_panel
                   - name: Disarm
-                    icon: "mdi:close-circle"
+                    icon: mdi:close-circle
                     tap_action:
                       action: call-service
                       service: alarm_control_panel.alarm_disarm
                       service_data:
                         entity_id: !secret aarlo_control_panel
                   - entity: timer.aarlo_pause
-                    icon: "mdi:timer-outline"
+                    icon: mdi:timer-outline
                     name: 15 min
                     tap_action:
                       action: call-service

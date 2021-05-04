@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style:
     .: |
@@ -14,7 +14,7 @@ report_size: 3
 card:
   type: vertical-stack
   cards:
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -50,7 +50,7 @@ card:
           show_points: false
           show_legend: false
           y_axis: secondary
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -78,4 +78,3 @@ card:
       entities:
         - entity: sensor.weewx_wind_gust
           color: gray
-

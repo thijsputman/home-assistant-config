@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style:
     .: |
@@ -14,7 +14,7 @@ report_size: 3
 card:
   type: vertical-stack
   cards:
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -43,7 +43,7 @@ card:
           show_points: false
           show_fill: false
           y_axis: secondary
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -61,9 +61,9 @@ card:
       cache: true
       color_thresholds:
         - value: 995
-          color: '#3498DB'
+          color: "#3498DB"
         - value: 1025
-          color: '#FDD93C'
+          color: "#FDD93C"
       show:
         labels: false
         legend: false

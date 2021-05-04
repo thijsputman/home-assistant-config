@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style: |
     ha-card {
@@ -9,7 +9,7 @@ report_size: 2
 card:
   type: vertical-stack
   cards:
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -29,8 +29,8 @@ card:
         labels: true
         labels_secondary: false
       state_map:
-        - value: 'off'
-        - value: 'on'
+        - value: "off"
+        - value: "on"
       decimals: 1
       entities:
         - entity: sensor.tado_smart_thermostat_temperature
@@ -65,7 +65,7 @@ card:
           show_legend: false
           y_axis: secondary
           smoothing: false
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -87,8 +87,8 @@ card:
         labels: true
         labels_secondary: false
       state_map:
-        - value: 'off'
-        - value: 'on'
+        - value: "off"
+        - value: "on"
       decimals: 1
       entities:
         - entity: sensor.temperature_24

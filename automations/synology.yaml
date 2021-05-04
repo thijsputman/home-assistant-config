@@ -1,25 +1,25 @@
 - alias: 📱 Notify on drive status-change (Synology DSM)
   id: 61293aa4-55ee-4b25-a79e-92787fd18e05
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id:
-    - sensor.ds1815_drive_1_status
-    - sensor.ds1815_drive_2_status
-    - sensor.ds1815_drive_3_status
-    - sensor.ds1815_drive_4_status
-    - sensor.ds1815_drive_5_status
-    - sensor.ds1815_drive_6_status
-    - sensor.ds1815_drive_7_status
-    - sensor.ds1815_drive_8_status
-    from: 'normal'
+    - platform: state
+      entity_id:
+        - sensor.ds1815_drive_1_status
+        - sensor.ds1815_drive_2_status
+        - sensor.ds1815_drive_3_status
+        - sensor.ds1815_drive_4_status
+        - sensor.ds1815_drive_5_status
+        - sensor.ds1815_drive_6_status
+        - sensor.ds1815_drive_7_status
+        - sensor.ds1815_drive_8_status
+      from: normal
   condition: []
   action:
-  - service: script.persistent_notification_my_devices
-    data:
-      tag: system_general
-      title: 💽 Synology drive status-change
-      message: >-
-        {{ trigger.to_state.attributes.friendly_name }} just changed from
-        "{{ trigger.from_state.state }}" to "{{ trigger.to_state.state }}"...
+    - service: script.persistent_notification_my_devices
+      data:
+        tag: system_general
+        title: 💽 Synology drive status-change
+        message: >-
+          {{ trigger.to_state.attributes.friendly_name }} just changed from
+          "{{ trigger.from_state.state }}" to "{{ trigger.to_state.state }}"...
   mode: single

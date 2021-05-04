@@ -11,4 +11,4 @@ cards:
     show_icon: true
     show_name: false
     icon_height: 48px
-    icon: 'mdi:volume-off'
+    icon: mdi:volume-off

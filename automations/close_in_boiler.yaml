@@ -1,147 +1,147 @@
 - alias: 🌡️ | ⏰ Close-in boiler off (daily after 22:00)
   id: 264239fc-ba04-45f0-aae1-e0ce05493332
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: "22:00:00"
-  # Fallback: Switch off when everyone goes to sleep (might have been manually
-  # switched on after 22:00, or we might have come home after 22:00)
-  - platform: state
-    entity_id: input_boolean.everyone_asleep
-    from: 'off'
-    to: 'on'
+    - platform: time
+      at: "22:00:00"
+    # Fallback: Switch off when everyone goes to sleep (might have been manually
+    # switched on after 22:00, or we might have come home after 22:00)
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "off"
+      to: "on"
   condition:
-  - condition: state
-    entity_id: switch.smart_plug_9
-    state: "on"
+    - condition: state
+      entity_id: switch.smart_plug_9
+      state: "on"
   action:
-  # First, wait for the next heating-cycle to start (cycle-time ± 75 minutes /
-  # on-demand when warm water is used)
-  - wait_for_trigger:
-    - platform: numeric_state
-      entity_id: sensor.power_57
-      above: 1000
-      for: "00:00:10"
-    timeout: "03:00:00"
-    continue_on_timeout: false
-  # Then, wait for the boiler to become inactive for a while (i.e. heating-cycle
-  # completed / no warm water being used) – this way, we always switch off the
-  # boiler when it's full of warm water, ensuring warm water remains available
-  # until approximately midnight...
-  - wait_for_trigger:
-    - platform: numeric_state
-      entity_id: sensor.power_57
-      below: 50
-      for: "00:15:00"
-    timeout: "01:30:00"
-    continue_on_timeout: false
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.smart_plug_9
+    # First, wait for the next heating-cycle to start (cycle-time ± 75 minutes /
+    # on-demand when warm water is used)
+    - wait_for_trigger:
+        - platform: numeric_state
+          entity_id: sensor.power_57
+          above: 1000
+          for: "00:00:10"
+      timeout: "03:00:00"
+      continue_on_timeout: false
+    # Then, wait for the boiler to become inactive for a while (i.e. heating-cycle
+    # completed / no warm water being used) – this way, we always switch off the
+    # boiler when it's full of warm water, ensuring warm water remains available
+    # until approximately midnight...
+    - wait_for_trigger:
+        - platform: numeric_state
+          entity_id: sensor.power_57
+          below: 50
+          for: "00:15:00"
+      timeout: "01:30:00"
+      continue_on_timeout: false
+    - service: switch.turn_off
+      data: {}
+      entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | ✈️ Close-in boiler off (everyone away)
   id: ca6fb857-6ff7-4ac7-b960-4e527d9897a2
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: group.family
-    from: home
-    to: not_home
+    - platform: state
+      entity_id: group.family
+      from: home
+      to: not_home
   condition:
-  - condition: state
-    entity_id: switch.smart_plug_9
-    state: "on"
+    - condition: state
+      entity_id: switch.smart_plug_9
+      state: "on"
   action:
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.smart_plug_9
+    - service: switch.turn_off
+      data: {}
+      entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | 💤/✈️ Close-in boiler on (everyone awake / someone home)
   id: f4cda301-822a-4737-a047-587118c5964e
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: input_boolean.everyone_asleep
-    from: "on"
-    to: "off"
-  - platform: state
-    entity_id: group.family
-    from: not_home
-    to: home
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
+    - platform: state
+      entity_id: group.family
+      from: not_home
+      to: home
   condition:
-  - condition: state
-    entity_id: switch.smart_plug_9
-    state: "off"
+    - condition: state
+      entity_id: switch.smart_plug_9
+      state: "off"
   action:
-  - service: switch.turn_on
-    data: {}
-    entity_id: switch.smart_plug_9
+    - service: switch.turn_on
+      data: {}
+      entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | 🧹 Close-in boiler on (housekeeper comes when everyone away)
   id: 343f7cd2-0d2e-4ba0-9c93-c7da76a150e1
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: input_boolean.housekeeper_present
-    from: 'off'
-    to: 'on'
+    - platform: state
+      entity_id: input_boolean.housekeeper_present
+      from: "off"
+      to: "on"
   condition:
-  - condition: state
-    entity_id: switch.smart_plug_9
-    state: 'off'
-  - condition: state
-    entity_id: group.family
-    state: not_home
+    - condition: state
+      entity_id: switch.smart_plug_9
+      state: "off"
+    - condition: state
+      entity_id: group.family
+      state: not_home
   action:
-  - service: switch.turn_on
-    data: {}
-    entity_id: switch.smart_plug_9
+    - service: switch.turn_on
+      data: {}
+      entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | 🧹 Close-in boiler off (housekeeper leaves when everyone away)
   id: a127ff85-054e-4b15-8e00-5c849a5a4ed3
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: input_boolean.housekeeper_present
-    from: 'on'
-    to: 'off'
+    - platform: state
+      entity_id: input_boolean.housekeeper_present
+      from: "on"
+      to: "off"
   condition:
-  - condition: state
-    entity_id: switch.smart_plug_9
-    state: 'on'
-  - condition: state
-    entity_id: group.family
-    state: not_home
+    - condition: state
+      entity_id: switch.smart_plug_9
+      state: "on"
+    - condition: state
+      entity_id: group.family
+      state: not_home
   action:
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.smart_plug_9
+    - service: switch.turn_off
+      data: {}
+      entity_id: switch.smart_plug_9
   mode: single
 - alias: 🌡️ | ⏰ Close-in boiler Legionella protection (twice-weekly when everyone away)
   id: 19d9594e-6bea-4854-b5b1-19bd07dfe33c
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: "02:00:00"
+    - platform: time
+      at: "02:00:00"
   condition:
-  # On Tuesdays and Saturdays (i.e. twice-weekly)
-  - condition: template
-    value_template: >-
-      {{ now().isoweekday() in [2, 6] }}
-  - condition: state
-    entity_id: switch.smart_plug_9
-    state: "off"
-  - condition: state
-    entity_id: group.family
-    state: not_home
+    # On Tuesdays and Saturdays (i.e. twice-weekly)
+    - condition: template
+      value_template: >-
+        {{ now().isoweekday() in [2, 6] }}
+    - condition: state
+      entity_id: switch.smart_plug_9
+      state: "off"
+    - condition: state
+      entity_id: group.family
+      state: not_home
   action:
-  # Toggle on for three hours (i.e. at least two heating cycles) – this should
-  # heat the water sufficiently to prevent a Legionella hazard
-  - service: switch.turn_on
-    data: {}
-    entity_id: switch.smart_plug_9
-  - delay: "03:00:00"
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.smart_plug_9
+    # Toggle on for three hours (i.e. at least two heating cycles) – this should
+    # heat the water sufficiently to prevent a Legionella hazard
+    - service: switch.turn_on
+      data: {}
+      entity_id: switch.smart_plug_9
+    - delay: "03:00:00"
+    - service: switch.turn_off
+      data: {}
+      entity_id: switch.smart_plug_9
   mode: single

@@ -1,44 +1,44 @@
 - alias: 🚧 | 📱 Clear dismissed persistent notification (all devices; whitelisted only)
   id: 9fdbe6f0-1c59-437c-b34b-b1d17fb5889c
-  description: ''
+  description: ""
   trigger:
-  - platform: event
-    event_type: call_service
-    event_data:
-      domain: persistent_notification
-      service: dismiss
+    - platform: event
+      event_type: call_service
+      event_data:
+        domain: persistent_notification
+        service: dismiss
   condition:
-  - condition: template
-    value_template: >-
-      {{
-        trigger.event.data.service_data.notification_id in
-          [
-            'raining',
-            'home_alarm',
-            'system_general',
-            'calamity_leak',
-            'calamity_smoke',
-            'trash',
-            'away',
-            'doorbell'
-          ]
-      }}
+    - condition: template
+      value_template: >-
+        {{
+          trigger.event.data.service_data.notification_id in
+            [
+              'raining',
+              'home_alarm',
+              'system_general',
+              'calamity_leak',
+              'calamity_smoke',
+              'trash',
+              'away',
+              'doorbell'
+            ]
+        }}
   action:
-  - service: notify.all_devices
-    data:
-      message: clear_notification
+    - service: notify.all_devices
       data:
-        tag: >-
-          {{ trigger.event.data.service_data.notification_id }}
+        message: clear_notification
+        data:
+          tag: >-
+            {{ trigger.event.data.service_data.notification_id }}
   mode: single
 - alias: 📱 Sensor low battery notification (🔋 < 20%)
   id: bf5935e5-b716-4bfd-8949-71b01b4f484f
   variables:
     # Exclude mobile devices
     exclude:
-    - sensor.p20hd_eea_battery_level
-    - sensor.sm_g930f_battery_level
-    - sensor.gm1913_battery_level
+      - sensor.p20hd_eea_battery_level
+      - sensor.sm_g930f_battery_level
+      - sensor.gm1913_battery_level
     # Courtesy of https://gist.github.com/sbyx/1f6f434f0903b872b84c4302637d0890
     sensors: >-
       {% set result = namespace(sensors=[]) %}
@@ -51,24 +51,24 @@
       {% endfor %}
       {{ result.sensors | join('</li><li>') }}
   trigger:
-  - platform: time
-    at: "10:00:00"
+    - platform: time
+      at: "10:00:00"
   condition:
-  # Only on Saturday if there are battery-levels below 20%
-  - condition: template
-    value_template: >-
-      {{ now().isoweekday() == 6 and sensors != '' }}
+    # Only on Saturday if there are battery-levels below 20%
+    - condition: template
+      value_template: >-
+        {{ now().isoweekday() == 6 and sensors != '' }}
   action:
-  - service: script.persistent_notification_my_devices
-    data:
-      tag: system_general
-      title: Low sensor battery
-      message: >-
-        <ul><li>{{sensors}}</li><ul>
+    - service: script.persistent_notification_my_devices
+      data:
+        tag: system_general
+        title: Low sensor battery
+        message: >-
+          <ul><li>{{sensors}}</li><ul>
   mode: single
 - alias: 📱 Notify on integration failure (unknown/unavailable-state)
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12
-  description: ''
+  description: ""
   variables:
     # Entities that require Internet-connectivity to function
     online:
@@ -77,50 +77,50 @@
       - vacuum.neato_d7
       - switch.pi_hole
   trigger:
-  - platform: state
-    entity_id:
-    - sensor.power_consumption
-    - sensor.weewx_outside_temperature
-    - sensor.weewx_outside_temperature_balcony
-    - light.range_extender_2 # deCONZ
-    - sensor.hue_dimmer_switch_1_battery_level
-    - !secret tado_ib1_serial
-    - climate.tado_smart_thermostat
-    - !secret aarlo_connected_sensor
-    - vacuum.neato_d7
-    - switch.pi_hole
-    - binary_sensor.ds1815_security_status
-    to:
-    - "unknown"
-    - "unavailable"
-    for: "00:10:00"
-  # Gas consumption updates once per hour
-  - platform: state
-    entity_id: sensor.gas_consumption
-    to:
-    - "unknown"
-    - "unavailable"
-    for: "01:00:00"
+    - platform: state
+      entity_id:
+        - sensor.power_consumption
+        - sensor.weewx_outside_temperature
+        - sensor.weewx_outside_temperature_balcony
+        - light.range_extender_2 # deCONZ
+        - sensor.hue_dimmer_switch_1_battery_level
+        - !secret tado_ib1_serial
+        - climate.tado_smart_thermostat
+        - !secret aarlo_connected_sensor
+        - vacuum.neato_d7
+        - switch.pi_hole
+        - binary_sensor.ds1815_security_status
+      to:
+        - unknown
+        - unavailable
+      for: "00:10:00"
+    # Gas consumption updates once per hour
+    - platform: state
+      entity_id: sensor.gas_consumption
+      to:
+        - unknown
+        - unavailable
+      for: "01:00:00"
   condition:
-  # We should either be online (i.e. the Remote UI is connected), or the entity
-  # in question should _not_ require Internet-connectivity to function
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: binary_sensor.remote_ui
-      state:  "on"
-    - condition: template
-      value_template: >-
-        {{ not trigger.entity_id in online }}
+    # We should either be online (i.e. the Remote UI is connected), or the entity
+    # in question should _not_ require Internet-connectivity to function
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.remote_ui
+          state: "on"
+        - condition: template
+          value_template: >-
+            {{ not trigger.entity_id in online }}
   action:
-  - service: script.persistent_notification_my_devices
-    data:
-      tag: system_general
-      title: Potential integration failure
-      message: >-
-        {{ trigger.to_state.attributes.friendly_name }} has been in an
-        {{ trigger.to_state.state }}-state for
-        {{ relative_time(trigger.to_state.last_changed) }}.
+    - service: script.persistent_notification_my_devices
+      data:
+        tag: system_general
+        title: Potential integration failure
+        message: >-
+          {{ trigger.to_state.attributes.friendly_name }} has been in an
+          {{ trigger.to_state.state }}-state for
+          {{ relative_time(trigger.to_state.last_changed) }}.
   mode: single
 # The Recorder's SQLite-database is on a separate NVMe USB-drive that – although
 # generally stable – occasionally disconnects. It reconnects right away and the
@@ -142,16 +142,16 @@
       name: homeassistant.components.recorder
   condition: []
   action:
-  - service: script.persistent_notification_my_devices
-    data:
-      tag: system_general
-      title: 💽 Recorder-component failure!
-      message: >-
-        The recorder-component failed with the folllowing error:
-        <br><br>
-        {{ trigger.event.data.message }}
-  # Throttle automation so only one notification is generated every 10 minutes
-  - delay: 600
+    - service: script.persistent_notification_my_devices
+      data:
+        tag: system_general
+        title: 💽 Recorder-component failure!
+        message: >-
+          The recorder-component failed with the folllowing error:
+          <br><br>
+          {{ trigger.event.data.message }}
+    # Throttle automation so only one notification is generated every 10 minutes
+    - delay: 600
   mode: single
   max_exceeded: silent
 # Ping sensors appear to not always properly initialise after Home Assistant
@@ -162,6 +162,6 @@
     - platform: homeassistant
       event: start
   action:
-  - delay: 60
-  - service: ping.reload
-    data: {}
+    - delay: 60
+    - service: ping.reload
+      data: {}

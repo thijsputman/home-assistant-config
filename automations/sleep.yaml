@@ -1,171 +1,171 @@
 - alias: 💤 | 💡 Everyone at home asleep (all lights off)
   id: cdec9ae5-d391-4826-a957-36fb823a73a7
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    from: "on"
-    to: "off"
-    for: "00:20:00"
-    entity_id: group.light_inside_rooms
+    - platform: state
+      from: "on"
+      to: "off"
+      for: "00:20:00"
+      entity_id: group.light_inside_rooms
   condition:
-  - condition: state
-    entity_id: group.light_inside_rooms
-    state: "off"
-  - condition: state
-    entity_id: group.family
-    state: home
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: night
+    - condition: state
+      entity_id: group.light_inside_rooms
+      state: "off"
+    - condition: state
+      entity_id: group.family
+      state: home
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: night
   action:
-  - service: input_boolean.turn_on
-    data: {}
-    entity_id: input_boolean.everyone_asleep
+    - service: input_boolean.turn_on
+      data: {}
+      entity_id: input_boolean.everyone_asleep
   mode: single
 - alias: 💤 | ⏰ Everyone at home awake (daily at «wakeup» time)
   id: dfe729c9-436a-4fdb-8970-b68492d9a1a2
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: input_datetime.wakeup
+    - platform: time
+      at: input_datetime.wakeup
   condition:
-  - condition: state
-    entity_id: group.family
-    state: home
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: "on"
+    - condition: state
+      entity_id: group.family
+      state: home
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "on"
   action:
-  - service: input_boolean.turn_off
-    data: {}
-    entity_id: input_boolean.everyone_asleep
+    - service: input_boolean.turn_off
+      data: {}
+      entity_id: input_boolean.everyone_asleep
   mode: single
 - alias: 💤 Set next «wakeup» (everyone awake)
   id: 01d828d8-da3e-432c-8beb-0f20392d2f8e
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: input_boolean.everyone_asleep
-    from: 'on'
-    to: 'off'
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
   condition: []
   action:
-  - service: timer.start
-    data: {}
-    entity_id: timer.wakeup_grace_time
-  - choose:
-    - conditions:
-      - condition: time
-        weekday:
-        - fri
-        - sat
-      sequence:
-      - service: input_datetime.set_datetime
-        data:
-          time: '09:00:00'
-        entity_id: input_datetime.wakeup
-    - conditions:
-      - condition: time
-        weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - sun
-      sequence:
-      - service: input_datetime.set_datetime
-        data:
-          time: '08:00:00'
-        entity_id: input_datetime.wakeup
-    default: []
-  # Unmute the wakeup alarm
-  - service: input_boolean.turn_off
-    data:
-      entity_id: input_boolean.wakeup_alarm_mute
+    - service: timer.start
+      data: {}
+      entity_id: timer.wakeup_grace_time
+    - choose:
+        - conditions:
+            - condition: time
+              weekday:
+                - fri
+                - sat
+          sequence:
+            - service: input_datetime.set_datetime
+              data:
+                time: "09:00:00"
+              entity_id: input_datetime.wakeup
+        - conditions:
+            - condition: time
+              weekday:
+                - mon
+                - tue
+                - wed
+                - thu
+                - sun
+          sequence:
+            - service: input_datetime.set_datetime
+              data:
+                time: "08:00:00"
+              entity_id: input_datetime.wakeup
+      default: []
+    # Unmute the wakeup alarm
+    - service: input_boolean.turn_off
+      data:
+        entity_id: input_boolean.wakeup_alarm_mute
   mode: single
 - alias: 💤 Set «wakeup light start» time («wakeup» time change)
   id: 2067fdfb-bad3-40fb-aa7d-d35430dd5b78
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: input_datetime.wakeup
+    - platform: state
+      entity_id: input_datetime.wakeup
   condition: []
   action:
-  - service: input_datetime.set_datetime
-    data:
-      time: >-
-        {{
-          (state_attr('input_datetime.wakeup', 'timestamp') | int - 1200) |
-            timestamp_custom('%H:%M:%S', false)
-        }}
-    entity_id: input_datetime.wakeup_light_start
+    - service: input_datetime.set_datetime
+      data:
+        time: >-
+          {{
+            (state_attr('input_datetime.wakeup', 'timestamp') | int - 1200) |
+              timestamp_custom('%H:%M:%S', false)
+          }}
+      entity_id: input_datetime.wakeup_light_start
   mode: single
 - alias: 💤 | 🔊 Wakeup alarm bedroom (daily at «wakeup» time)
   id: 4f9e08f9-b352-4945-b788-215e301ef883
   # N.B. This automation's name is used in the next automation!
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: input_datetime.wakeup
+    - platform: time
+      at: input_datetime.wakeup
   condition:
-  - condition: state
-    state: home
-    entity_id: group.family
-  - condition: state
-    entity_id: timer.wakeup_grace_time
-    state: idle
-  - condition: state
-    entity_id: input_boolean.wakeup_alarm_mute
-    state: 'off'
+    - condition: state
+      state: home
+      entity_id: group.family
+    - condition: state
+      entity_id: timer.wakeup_grace_time
+      state: idle
+    - condition: state
+      entity_id: input_boolean.wakeup_alarm_mute
+      state: "off"
   action:
-  - service: media_player.volume_set
-    data:
-      entity_id: media_player.pi0_speaker_bedroom
-      volume_level: 0.45
-  - repeat:
-      count: 4
-      sequence:
-      - service: media_player.play_media
-        data:
-          media_content_type: audio/mpeg
-          media_content_id: file:/var/lib/mopidy/media/4nsekecn.mp3
+    - service: media_player.volume_set
+      data:
         entity_id: media_player.pi0_speaker_bedroom
-      - delay: '00:00:20'
+        volume_level: 0.45
+    - repeat:
+        count: 4
+        sequence:
+          - service: media_player.play_media
+            data:
+              media_content_type: audio/mpeg
+              media_content_id: file:/var/lib/mopidy/media/4nsekecn.mp3
+            entity_id: media_player.pi0_speaker_bedroom
+          - delay: "00:00:20"
   mode: single
 - alias: 💤 | 🕹️ Snooze wakeup alarm (Bedroom Smart Switches)
   id: 3c49fa1c-db0a-44ea-8fb3-8e57c515e310
-  description: ''
+  description: ""
   trigger:
-  # Bedside Smart Switches
-  - device_id: da1237666189a9a364fa383795ba532d
-    domain: deconz
-    platform: device
-    type: remote_button_short_press
-    subtype: turn_on
-  - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
-    domain: deconz
-    platform: device
-    type: remote_button_short_press
-    subtype: turn_on
+    # Bedside Smart Switches
+    - device_id: da1237666189a9a364fa383795ba532d
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
   condition:
-  # Only act if the wakeup alarm is sounding (i.e. in the ±90 seconds after its
-  # automation started)
-  - condition: template
-    value_template: >-
-      {{
-        (as_timestamp(now())|int - as_timestamp(
-          state_attr('automation.wakeup_alarm_bedroom_daily_at_wakeup_time',
-            'last_triggered')
-        ) | int(0) ) <= 90
-      }}
+    # Only act if the wakeup alarm is sounding (i.e. in the ±90 seconds after its
+    # automation started)
+    - condition: template
+      value_template: >-
+        {{
+          (as_timestamp(now())|int - as_timestamp(
+            state_attr('automation.wakeup_alarm_bedroom_daily_at_wakeup_time',
+              'last_triggered')
+          ) | int(0) ) <= 90
+        }}
   action:
-  - service: automation.turn_off
-    data: {}
-    entity_id: automation.wakeup_alarm_bedroom_daily_at_wakeup_time
-  - service: automation.turn_on
-    data: {}
-    entity_id: automation.wakeup_alarm_bedroom_daily_at_wakeup_time
-  - service: media_player.media_stop
-    data: {}
-    entity_id: media_player.pi0_speaker_bedroom
+    - service: automation.turn_off
+      data: {}
+      entity_id: automation.wakeup_alarm_bedroom_daily_at_wakeup_time
+    - service: automation.turn_on
+      data: {}
+      entity_id: automation.wakeup_alarm_bedroom_daily_at_wakeup_time
+    - service: media_player.media_stop
+      data: {}
+      entity_id: media_player.pi0_speaker_bedroom
   mode: single

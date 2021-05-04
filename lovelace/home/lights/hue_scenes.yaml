@@ -8,7 +8,7 @@ cards:
     show_state: true
     show_icon: true
     icon_height: 36px
-    icon: 'mdi:pot-steam'
+    icon: mdi:pot-steam
     hold_action:
       action: none
   - type: button
@@ -20,7 +20,7 @@ cards:
     show_name: false
     show_state: true
     icon_height: 36px
-    icon: 'mdi:water-pump'
+    icon: mdi:water-pump
   - type: button
     tap_action:
       action: more-info
@@ -30,5 +30,5 @@ cards:
     hold_action:
       action: none
     icon_height: 36px
-    icon: 'mdi:sofa'
+    icon: mdi:sofa
 square: false

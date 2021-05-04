@@ -1,138 +1,140 @@
 - alias: 📹 | ⏰ Arm Arlo (daily at 22:30)
   id: 093a7fa4-2045-4c7e-a8fb-2ff211c44213
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: '22:30:00'
-  # In case "Everyone asleep" occurs before 22:30
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: armed_night
+    - platform: time
+      at: "22:30:00"
+    # In case "Everyone asleep" occurs before 22:30
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_night
   condition:
-  # Only act if Arlo is currently disarmed (to prevent unintentionally toggling
-  # from armed "Away" to armed "Night")
-  - condition: state
-    entity_id: !secret aarlo_control_panel
-    state: "disarmed"
+    # Only act if Arlo is currently disarmed (to prevent unintentionally toggling
+    # from armed "Away" to armed "Night")
+    - condition: state
+      entity_id: !secret aarlo_control_panel
+      state: disarmed
   action:
-  - service: alarm_control_panel.alarm_arm_night
-    entity_id: !secret aarlo_control_panel
-    data: {}
-  mode: single
-- alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
-  id: 6fcafedb-78df-4fa4-a7ac-80aec0750cd1
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: armed_away
-  condition: []
-  action:
-  - service: alarm_control_panel.alarm_arm_away
-    entity_id: !secret aarlo_control_panel
-    data: {}
-  mode: single
-- alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
-  id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
-  description: ''
-  trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: disarmed
-  condition: []
-  action:
-  - service: alarm_control_panel.alarm_disarm
-    data: {}
-    entity_id: !secret aarlo_control_panel
-  mode: single
-- alias: 📹 | ⏳ Pause Arlo (timer started)
-  id: ed2ae249-369f-4503-9122-21a5e49e1c21
-  description: ''
-  trigger:
-  - platform: event
-    event_type:
-    - timer.started
-    - timer.restarted
-    event_data:
-      entity_id: timer.aarlo_pause
-  condition: []
-  action:
-  - choose:
-    - conditions:
-      - condition: not
-        conditions:
-        - condition: state
-          entity_id: !secret aarlo_control_panel
-          state: armed_night
-      sequence:
-      - service: timer.cancel
-        data:
-          entity_id: timer.aarlo_pause
-    default:
-    - service: alarm_control_panel.alarm_disarm
+    - service: alarm_control_panel.alarm_arm_night
       entity_id: !secret aarlo_control_panel
       data: {}
   mode: single
-- alias: 📹 | ⏳ Resume Arlo (timer ended)
-  id: 71bb747a-25c5-416a-a98d-66c33789a702
-  description: ''
+- alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
+  id: 6fcafedb-78df-4fa4-a7ac-80aec0750cd1
+  description: ""
   trigger:
-  - platform: event
-    event_type:
-    - timer.finished
-    - timer.paused
-    event_data:
-      entity_id: timer.aarlo_pause
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_away
   condition: []
   action:
-  - service: alarm_control_panel.alarm_arm_night
-    entity_id: !secret aarlo_control_panel
-    data: {}
+    - service: alarm_control_panel.alarm_arm_away
+      entity_id: !secret aarlo_control_panel
+      data: {}
+  mode: single
+- alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
+  id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: disarmed
+  condition: []
+  action:
+    - service: alarm_control_panel.alarm_disarm
+      data: {}
+      entity_id: !secret aarlo_control_panel
+  mode: single
+- alias: 📹 | ⏳ Pause Arlo (timer started)
+  id: ed2ae249-369f-4503-9122-21a5e49e1c21
+  description: ""
+  trigger:
+    - platform: event
+      event_type:
+        - timer.started
+        - timer.restarted
+      event_data:
+        entity_id: timer.aarlo_pause
+  condition: []
+  action:
+    - choose:
+        - conditions:
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: !secret aarlo_control_panel
+                  state: armed_night
+          sequence:
+            - service: timer.cancel
+              data:
+                entity_id: timer.aarlo_pause
+      default:
+        - service: alarm_control_panel.alarm_disarm
+          entity_id: !secret aarlo_control_panel
+          data: {}
+  mode: single
+- alias: 📹 | ⏳ Resume Arlo (timer ended)
+  id: 71bb747a-25c5-416a-a98d-66c33789a702
+  description: ""
+  trigger:
+    - platform: event
+      event_type:
+        - timer.finished
+        - timer.paused
+      event_data:
+        entity_id: timer.aarlo_pause
+  condition: []
+  action:
+    - service: alarm_control_panel.alarm_arm_night
+      entity_id: !secret aarlo_control_panel
+      data: {}
   mode: single
 - alias: 📹 | ⏰ Arlo snapshot (every 2 hours)
   id: 769a4449-f68b-4403-a09b-87b81cbe1581
-  description: ''
+  description: ""
   trigger:
-  - platform: time_pattern
-    hours: /2
-    minutes: 0
-    seconds: '0'
+    - platform: time_pattern
+      hours: /2
+      minutes: 0
+      seconds: 0
   condition:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id:
-      - camera.aarlo_back
-      - camera.aarlo_front
-      state: recording
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id:
+            - camera.aarlo_back
+            - camera.aarlo_front
+          state: recording
   action:
-  - service: aarlo.camera_request_snapshot
-    data: {}
-    entity_id:
-    - camera.aarlo_back
-    - camera.aarlo_front
+    - service: aarlo.camera_request_snapshot
+      data: {}
+      entity_id:
+        - camera.aarlo_back
+        - camera.aarlo_front
   mode: single
 - alias: 📹 | ⏰ Arlo store daily garden snapshot (at dawn and dusk)
   id: e56ad77e-9f8e-43f7-9fe6-6b2678a86df6
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: dawn
-    to: day
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: day
-    to: dusk
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
   condition:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: camera.aarlo_back
-      state: recording
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: camera.aarlo_back
+          state: recording
   action:
-  - service: aarlo.camera_request_snapshot_to_file
-    data:
-      filename: "/config/var/aarlo/back-{{ now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') }}.jpg"
-    entity_id: camera.aarlo_back
+    - service: aarlo.camera_request_snapshot_to_file
+      data:
+        filename: >-
+          /config/var/aarlo/back-
+            {{- now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') -}}.jpg
+      entity_id: camera.aarlo_back
   mode: single

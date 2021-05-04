@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style: |
     ha-card {
@@ -10,11 +10,11 @@ card:
   type: conditional
   conditions:
     - entity: binary_sensor.aarlo_connected_back
-      state: 'on'
+      state: "on"
   card:
     type: vertical-stack
     cards:
-      - type: 'custom:aarlo-glance'
+      - type: custom:aarlo-glance
         card_mod:
           style: |
             ha-card {
@@ -38,7 +38,7 @@ card:
         door: binary_sensor.openclose_12
         door2: binary_sensor.openclose_34
         light: light.hue_filament_bulb_1
-      - type: 'custom:logbook-card'
+      - type: custom:logbook-card
         card_mod:
           style: |
             ha-card{
@@ -71,7 +71,7 @@ card:
         max_items: 10
         collapse: 1
         hiddenState:
-          - 'off'
+          - "off"
           - unknown
         show:
           state: false

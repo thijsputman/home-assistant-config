@@ -1,50 +1,50 @@
 - alias: 💡 | 🤖 Fireplace toggle (input boolean)
   id: e885702e-c8fb-4720-84f7-07aa9f13855b
-  description: ''
+  description: ""
   trigger:
-  - entity_id: input_boolean.fireplace
-    platform: state
+    - entity_id: input_boolean.fireplace
+      platform: state
   condition: []
   action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.fireplace
-        state: 'on'
-      sequence:
-      - service: rest_command.fireplace_start
-        data: {}
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.fireplace
-        state: 'off'
-      sequence:
-      - service: rest_command.fireplace_stop
-        data: {}
-    default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.fireplace
+              state: "on"
+          sequence:
+            - service: rest_command.fireplace_start
+              data: {}
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.fireplace
+              state: "off"
+          sequence:
+            - service: rest_command.fireplace_stop
+              data: {}
+      default: []
   mode: single
 - alias: 💡 | 🤖/⏰ Fireplace off (Living room lights off / daily at 02:00)
   id: 84653754-190c-4571-85e8-e5eca37e81a9
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: light.living_room
-    from: 'on'
-    to: 'off'
-  - platform: time
-    at: '02:00:00'
+    - platform: state
+      entity_id: light.living_room
+      from: "on"
+      to: "off"
+    - platform: time
+      at: "02:00:00"
   condition:
-  - condition: state
-    entity_id: input_boolean.fireplace
-    state: 'on'
+    - condition: state
+      entity_id: input_boolean.fireplace
+      state: "on"
   action:
-  - data: {}
-    entity_id: input_boolean.fireplace
-    service: input_boolean.turn_off
-  - delay: '00:00:30'
-  - service: light.turn_off
-    data: {}
-    entity_id:
-    - light.fireplace_1_living_room
-    - light.fireplace_2_living_room
+    - data: {}
+      entity_id: input_boolean.fireplace
+      service: input_boolean.turn_off
+    - delay: "00:00:30"
+    - service: light.turn_off
+      data: {}
+      entity_id:
+        - light.fireplace_1_living_room
+        - light.fireplace_2_living_room
   mode: single

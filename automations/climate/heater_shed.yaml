@@ -1,49 +1,49 @@
 - alias: 🌡️ | 🤖 Turn on shed electric heater (< 6ºC)
   id: cf042b69-8fe6-4649-a67c-6a72507e6e7a
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.temperature_27
-    below: 6
-    for: '00:10:00'
+    - platform: numeric_state
+      entity_id: sensor.temperature_27
+      below: 6
+      for: "00:10:00"
   condition: []
   action:
-  - service: switch.turn_on
-    data: {}
-    entity_id: switch.smart_plug_5
+    - service: switch.turn_on
+      data: {}
+      entity_id: switch.smart_plug_5
   mode: single
 - alias: 🌡️ | 🤖 Turn off shed electric heater (> 8ºC)
   id: 7cead7de-f1ab-4063-9233-cc4e8147260c
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.temperature_27
-    for: '00:10:00'
-    above: 8
+    - platform: numeric_state
+      entity_id: sensor.temperature_27
+      for: "00:10:00"
+      above: 8
   condition:
-  - condition: state
-    entity_id: switch.smart_plug_5
-    state: 'on'
+    - condition: state
+      entity_id: switch.smart_plug_5
+      state: "on"
   action:
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.smart_plug_5
+    - service: switch.turn_off
+      data: {}
+      entity_id: switch.smart_plug_5
   mode: single
 - alias: 🌡️ | ⏰ Turn off shed electric heater (after 2 hours)
   id: b7f7997a-cb1d-45cb-a061-e6ee6d61abbc
-  description: ''
+  description: ""
   trigger:
-  # In case Home Assistant or deCONZ restarts, the switch transitions from "on"
-  # to "unavailable" back to "on" – omission of the "from"-state here is
-  # intentional in the hopes it ensures the switch doesn't stay on indefinetely
-  # (but instead restarts its timer).
-  - platform: state
-    entity_id: switch.smart_plug_5
-    to: 'on'
-    for: '02:00:00'
+    # In case Home Assistant or deCONZ restarts, the switch transitions from "on"
+    # to "unavailable" back to "on" – omission of the "from"-state here is
+    # intentional in the hopes it ensures the switch doesn't stay on indefinetely
+    # (but instead restarts its timer).
+    - platform: state
+      entity_id: switch.smart_plug_5
+      to: "on"
+      for: "02:00:00"
   condition: []
   action:
-  - service: switch.turn_off
-    data: {}
-    entity_id: switch.smart_plug_5
+    - service: switch.turn_off
+      data: {}
+      entity_id: switch.smart_plug_5
   mode: single

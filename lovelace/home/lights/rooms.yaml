@@ -3,45 +3,45 @@ entities:
   - entity: light.living_room
     extend_paper_buttons_row:
       buttons:
-        - icon: 'mdi:floor-lamp'
+        - icon: mdi:floor-lamp
           tap_action:
             action: call-service
             service: hue.hue_activate_scene
             service_data:
               group_name: Living room
               scene_name: Ambiance
-        - icon: 'mdi:lightbulb-on-outline'
+        - icon: mdi:lightbulb-on-outline
           tap_action:
             action: call-service
             service: hue.hue_activate_scene
             service_data:
               group_name: Living room
               scene_name: Active
-        - icon: 'mdi:movie'
+        - icon: mdi:movie
           tap_action:
             action: call-service
             service: hue.hue_activate_scene
             service_data:
               group_name: Living room
               scene_name: Movie (ambiance)
-  - type: 'custom:paper-buttons-row'
+  - type: custom:paper-buttons-row
     buttons:
       - name: Ambiance
-        icon: 'mdi:floor-lamp'
+        icon: mdi:floor-lamp
         tap_action:
           action: call-service
           service: script.hue_activate_scene_living_room_kitchen
           service_data:
             scene_name: Ambiance
       - name: Active
-        icon: 'mdi:lightbulb-on-outline'
+        icon: mdi:lightbulb-on-outline
         tap_action:
           action: call-service
           service: script.hue_activate_scene_living_room_kitchen
           service_data:
             scene_name: Active
       - name: Movie
-        icon: 'mdi:movie'
+        icon: mdi:movie
         tap_action:
           action: call-service
           service: script.hue_activate_scene_living_room_kitchen
@@ -50,14 +50,14 @@ entities:
   - entity: light.kitchen
     extend_paper_buttons_row:
       buttons:
-        - icon: 'mdi:floor-lamp'
+        - icon: mdi:floor-lamp
           tap_action:
             action: call-service
             service: hue.hue_activate_scene
             service_data:
               group_name: Kitchen
               scene_name: Ambiance
-        - icon: 'mdi:lightbulb-on-outline'
+        - icon: mdi:lightbulb-on-outline
           tap_action:
             action: call-service
             service: hue.hue_activate_scene
@@ -65,10 +65,10 @@ entities:
               group_name: Kitchen
               scene_name: Bright (custom)
   - entity: light.garden
-  - type: 'custom:paper-buttons-row'
+  - type: custom:paper-buttons-row
     buttons:
       - name: Ambiance
-        icon: 'mdi:weather-night'
+        icon: mdi:weather-night
         tap_action:
           action: call-service
           service: hue.hue_activate_scene
@@ -76,9 +76,9 @@ entities:
             group_name: Garden
             scene_name: Ambiance
       - name: Summer night
-        icon: 'mdi:glass-cocktail'
+        icon: mdi:glass-cocktail
       - name: Active
-        icon: 'mdi:track-light'
+        icon: mdi:track-light
         tap_action:
           action: call-service
           service: hue.hue_activate_scene

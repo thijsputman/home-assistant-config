@@ -1,4 +1,4 @@
-type: 'custom:compass-card'
+type: custom:compass-card
 indicator_sensors:
   - sensor: sensor.weewx_wind_direction_filtered
     indicator:

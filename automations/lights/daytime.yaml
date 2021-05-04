@@ -1,248 +1,248 @@
 - alias: 💡 | ⛅ Kitchen lights on during daytime (☀️ < 80 lux)
   id: 5b3387c6-763b-47da-b938-1eaefcd0ffd1
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.lightlevel_47
-    for: "00:01:00"
-    below: 80
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: dawn
-    to: day
-    for: "00:00:10"
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_47
+      for: "00:01:00"
+      below: 80
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+      for: "00:00:10"
   condition:
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: "off"
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: day
-  - condition: numeric_state
-    entity_id: sensor.lightlevel_47
-    below: 80
-  - condition: or
-    conditions:
     - condition: state
-      entity_id: light.kitchen
-      state: 'off'
-    - condition: and
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_47
+      below: 80
+    - condition: or
       conditions:
-      - condition: state
-        entity_id: input_select.hue_scene_kitchen_counter_cupboards
-        state: Activity
-      - condition: state
-        entity_id: input_select.hue_scene_kitchen
-        state: <Off>
+        - condition: state
+          entity_id: light.kitchen
+          state: "off"
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: input_select.hue_scene_kitchen_counter_cupboards
+              state: Activity
+            - condition: state
+              entity_id: input_select.hue_scene_kitchen
+              state: <Off>
   action:
-  - choose:
-    # If the Kitchen counter & cupboards lights are on, leave those on
-    - conditions:
-      - condition: state
-        entity_id: input_select.hue_scene_kitchen_counter_cupboards
-        state: Activity
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          scene_name: Daytime
-      - service: script.hue_activate_scene_kitchen_counter_cupboards
-        data:
-          scene_name: Activity
-    default:
-    - service: script.hue_activate_scene_kitchen
-      data:
-        scene_name: Daytime
+    - choose:
+        # If the Kitchen counter & cupboards lights are on, leave those on
+        - conditions:
+            - condition: state
+              entity_id: input_select.hue_scene_kitchen_counter_cupboards
+              state: Activity
+          sequence:
+            - service: script.hue_activate_scene_kitchen
+              data:
+                scene_name: Daytime
+            - service: script.hue_activate_scene_kitchen_counter_cupboards
+              data:
+                scene_name: Activity
+      default:
+        - service: script.hue_activate_scene_kitchen
+          data:
+            scene_name: Daytime
   mode: single
 - alias: 💡 | ⛅ Kitchen lights off during daytime (☀️ > 90 lux)
   id: 2c48592e-2d8b-42f1-880b-44183ffc442a
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.lightlevel_47
-    for: "00:01:00"
-    above: 90
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_47
+      for: "00:01:00"
+      above: 90
   condition:
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: day
-  - condition: state
-    entity_id: input_select.hue_scene_kitchen
-    state: Daytime
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: state
+      entity_id: input_select.hue_scene_kitchen
+      state: Daytime
   action:
-  - service: light.turn_off
-    entity_id: light.kitchen
+    - service: light.turn_off
+      entity_id: light.kitchen
   mode: single
 - alias: 💡 | ⛅ Living room lights on during daytime (☀️ < 25 lux)
   id: 05a5eb32-be80-4130-a561-d21015851ae8
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.lightlevel_46
-    for: "00:01:00"
-    below: 25
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: dawn
-    to: day
-    for: "00:00:10"
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_46
+      for: "00:01:00"
+      below: 25
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+      for: "00:00:10"
   condition:
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: "off"
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: day
-  - condition: numeric_state
-    entity_id: sensor.lightlevel_46
-    below: 30
-  - condition: state
-    entity_id: light.living_room
-    state: "off"
-  # Don't act if either the TV or the Switch is in-use
-  - condition: state
-    entity_id: media_player.nvidia_shield_tv
-    state: "off"
-  - condition: state
-    entity_id: binary_sensor.nintendo_switch_ping
-    state: "off"
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_46
+      below: 30
+    - condition: state
+      entity_id: light.living_room
+      state: "off"
+    # Don't act if either the TV or the Switch is in-use
+    - condition: state
+      entity_id: media_player.nvidia_shield_tv
+      state: "off"
+    - condition: state
+      entity_id: binary_sensor.nintendo_switch_ping
+      state: "off"
   action:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Living room
-      scene_name: Daytime
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Daytime
   mode: single
 - alias: 💡 | ⛅ Living room lights off during daytime (☀️ > 30 lux)
   id: 21a8d2ce-746d-460a-9c65-b9ddf4f1b3b1
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.lightlevel_46
-    for: "00:01:00"
-    above: 30
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_46
+      for: "00:01:00"
+      above: 30
   condition:
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: day
-  - condition: state
-    entity_id: input_select.hue_scene_living_room
-    state: Daytime
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: state
+      entity_id: input_select.hue_scene_living_room
+      state: Daytime
   action:
-  - service: light.turn_off
-    entity_id: light.living_room
+    - service: light.turn_off
+      entity_id: light.living_room
   mode: single
 - alias: 💡 | ⛅ Hallway (downstairs) lights on during daytime (☀️ < 10 lux)
   id: 1815106e-2684-4397-8fe8-73711ca6e7b5
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.lightlevel_48
-    for: "00:01:00"
-    below: 10
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: dawn
-    to: day
-    for: "00:00:10"
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_48
+      for: "00:01:00"
+      below: 10
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+      for: "00:00:10"
   condition:
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: "off"
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: day
-  - condition: numeric_state
-    entity_id: sensor.lightlevel_48
-    below: 10
-  - condition: state
-    entity_id: light.hue_filament_bulb_1_4
-    state: "off"
-  - condition: state
-    entity_id: light.hue_filament_bulb_1_5
-    state: "off"
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_48
+      below: 10
+    - condition: state
+      entity_id: light.hue_filament_bulb_1_4
+      state: "off"
+    - condition: state
+      entity_id: light.hue_filament_bulb_1_5
+      state: "off"
   action:
-  - service: light.turn_on
-    data:
-      brightness_pct: 33
-    target:
-      entity_id:
-        - light.hue_filament_bulb_1_4
-        - light.hue_filament_bulb_1_5
+    - service: light.turn_on
+      data:
+        brightness_pct: 33
+      target:
+        entity_id:
+          - light.hue_filament_bulb_1_4
+          - light.hue_filament_bulb_1_5
   mode: single
 - alias: 💡 | ⛅ Hallway (downstairs) lights off during daytime (☀️ > 12 lux)
   id: 9b941157-f359-4d69-a19c-eaa242f6faf3
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.lightlevel_48
-    for: "00:01:00"
-    above: 12
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_48
+      for: "00:01:00"
+      above: 12
   condition:
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: day
-  - condition: state
-    entity_id: light.hue_filament_bulb_1_4
-    state: "on"
-  - condition: state
-    entity_id: light.hue_filament_bulb_1_5
-    state: "on"
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: state
+      entity_id: light.hue_filament_bulb_1_4
+      state: "on"
+    - condition: state
+      entity_id: light.hue_filament_bulb_1_5
+      state: "on"
   action:
-  - service: light.turn_off
-    target:
-      entity_id:
-        - light.hue_filament_bulb_1_4
-        - light.hue_filament_bulb_1_5
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.hue_filament_bulb_1_4
+          - light.hue_filament_bulb_1_5
   mode: single
 - alias: 💡 | ⛅ Hallway (upstairs) lights on during daytime (☀️ < 45 lux)
   id: 6fcf79b7-be12-4990-b2dd-21d8a85b4987
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.lightlevel_upstairs_hallway
-    for: "00:01:00"
-    below: 45
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: dawn
-    to: day
-    for: "00:00:10"
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_upstairs_hallway
+      for: "00:01:00"
+      below: 45
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+      for: "00:00:10"
   condition:
-  - condition: state
-    entity_id: input_boolean.everyone_asleep
-    state: "off"
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: day
-  - condition: numeric_state
-    entity_id: sensor.lightlevel_upstairs_hallway
-    below: 45
-  - condition: state
-    entity_id: light.upstairs_hallway
-    state: "off"
-  action:
-  - service: light.turn_on
-    data:
-      brightness_pct: 45
-    target:
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_upstairs_hallway
+      below: 45
+    - condition: state
       entity_id: light.upstairs_hallway
+      state: "off"
+  action:
+    - service: light.turn_on
+      data:
+        brightness_pct: 45
+      target:
+        entity_id: light.upstairs_hallway
   mode: single
 - alias: 💡 | ⛅ Hallway (upstairs) lights off during daytime (☀️ > 50 lux)
   id: 14585406-3c8d-4c76-902a-af71e509e95d
-  description: ''
+  description: ""
   trigger:
-  - platform: numeric_state
-    entity_id: sensor.lightlevel_upstairs_hallway
-    for: "00:01:00"
-    above: 50
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_upstairs_hallway
+      for: "00:01:00"
+      above: 50
   condition:
-  - condition: state
-    entity_id: sensor.time_of_day
-    state: day
-  - condition: state
-    entity_id: light.upstairs_hallway
-    state: "on"
-  action:
-  - service: light.turn_off
-    target:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: state
       entity_id: light.upstairs_hallway
+      state: "on"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.upstairs_hallway
   mode: single

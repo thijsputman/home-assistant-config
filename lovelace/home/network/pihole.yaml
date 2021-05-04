@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style:
     .: |
@@ -28,7 +28,7 @@ card:
           name: Ads blocked last 24h
         - entity: sensor.pi_hole_dns_unique_clients
           name: Active devices on network
-          icon: 'mdi:devices'
+          icon: mdi:devices
       footer:
         type: graph
         entity: sensor.pi_hole_dns_unique_clients
@@ -58,7 +58,7 @@ card:
               font-variant-position: super;
               content: "(︎30s)";
             }
-      icon: 'mdi:pi-hole'
+      icon: mdi:pi-hole
       show_name: false
       icon_height: 60px
       tap_action:
@@ -66,4 +66,4 @@ card:
         service: pi_hole.disable
         service_data:
           entity_id: switch.pi_hole
-          duration: '00:00:30'
+          duration: "00:00:30"

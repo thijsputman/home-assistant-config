@@ -1,60 +1,60 @@
 - alias: 💡 | 🚪 Blink Attic lights (doorbell rang)
   id: e08720ba-f27a-4308-aeef-275c606872b6
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: binary_sensor.vibration_43
-    from: 'off'
-    to: 'on'
+    - platform: state
+      entity_id: binary_sensor.vibration_43
+      from: "off"
+      to: "on"
   condition: []
   action:
-  - repeat:
-      count: 2
-      sequence:
-      - service: light.turn_on
-        data:
-          flash: short
-        entity_id: light.attic
-      - delay: '00:00:01'
+    - repeat:
+        count: 2
+        sequence:
+          - service: light.turn_on
+            data:
+              flash: short
+            entity_id: light.attic
+          - delay: "00:00:01"
   mode: single
 - alias: 📱 | 🚪 Notify all devices (doorbell rang; auto-dismissed)
   id: dd5d2646-26e3-4c71-aa3c-b7f49151606e
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: binary_sensor.vibration_43
-    from: 'off'
-    to: 'on'
+    - platform: state
+      entity_id: binary_sensor.vibration_43
+      from: "off"
+      to: "on"
   condition: []
   action:
-  - service: script.persistent_notification_all_devices
-    data:
-      tag: doorbell
-      title: 🚪 Someone's at the door!
-      message: >-
-        The doorbell just rang...
-  - delay: 120
-  # This also causes the notification to be dismissed from all devices
-  - service: persistent_notification.dismiss
-    data:
-      notification_id: doorbell
+    - service: script.persistent_notification_all_devices
+      data:
+        tag: doorbell
+        title: 🚪 Someone's at the door!
+        message: >-
+          The doorbell just rang...
+    - delay: 120
+    # This also causes the notification to be dismissed from all devices
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: doorbell
   mode: single
 - alias: 📹 | 🚪 Arlo snapshot (doorbell rang)
   id: dbfbeeab-04a2-404f-8771-5109ec19f729
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: binary_sensor.vibration_43
-    from: 'off'
-    to: 'on'
+    - platform: state
+      entity_id: binary_sensor.vibration_43
+      from: "off"
+      to: "on"
   condition:
-  - condition: not
-    conditions:
-    - condition: state
-      entity_id: camera.aarlo_front
-      state: recording
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: camera.aarlo_front
+          state: recording
   action:
-  - service: aarlo.camera_request_snapshot
-    data: {}
-    entity_id: camera.aarlo_front
+    - service: aarlo.camera_request_snapshot
+      data: {}
+      entity_id: camera.aarlo_front
   mode: single

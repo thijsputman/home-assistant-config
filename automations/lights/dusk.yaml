@@ -1,122 +1,122 @@
 - alias: 💡 | ⏰ Outside lights on (daily at civil dusk)
   id: 8fa0a6d4-f80a-4312-8669-9f5525bbf3d5
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: dusk
-    to: night
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dusk
+      to: night
   condition: []
   action:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Garden
-      scene_name: Ambiance
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Front & back door
-      scene_name: Evening
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Garden
+        scene_name: Ambiance
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Front & back door
+        scene_name: Evening
   mode: single
 - alias: 💡 | ⏰ Inside lights on (daily just before sunset)
   id: 0ca01a00-8847-41f1-b852-70f4c4a49275
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: sensor.time_of_day
-    from: day
-    to: dusk
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
   condition: []
   action:
-  - choose:
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: light.living_room
-          state: 'off'
-        - condition: state
-          entity_id: input_select.hue_scene_living_room
-          state: Daytime
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Living room
-          scene_name: Ambiance
-    default: []
-  - choose:
-    - conditions:
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: light.kitchen
-          state: 'off'
-        - condition: state
-          entity_id: input_select.hue_scene_kitchen
-          state: Daytime
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          scene_name: Ambiance
-    default: []
-  - choose:
-    - conditions:
-      # Act if _any_ of the lights in the Hallway is off (the daytime
-      # automations toggle individual lights – unlike the other rooms)
-      - condition: or
-        conditions:
-        - condition: state
-          entity_id: light.upstairs_hallway
-          state: 'off'
-        - condition: state
-          entity_id: light.hue_filament_bulb_1_4
-          state: 'off'
-        - condition: state
-          entity_id: light.hue_filament_bulb_1_5
-          state: 'off'
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Hallway
-          scene_name: Evening
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.guestroom
-        state: 'off'
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Guestroom
-          scene_name: Evening
-    default: []
+    - choose:
+        - conditions:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: light.living_room
+                  state: "off"
+                - condition: state
+                  entity_id: input_select.hue_scene_living_room
+                  state: Daytime
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Living room
+                scene_name: Ambiance
+      default: []
+    - choose:
+        - conditions:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: light.kitchen
+                  state: "off"
+                - condition: state
+                  entity_id: input_select.hue_scene_kitchen
+                  state: Daytime
+          sequence:
+            - service: script.hue_activate_scene_kitchen
+              data:
+                scene_name: Ambiance
+      default: []
+    - choose:
+        - conditions:
+            # Act if _any_ of the lights in the Hallway is off (the daytime
+            # automations toggle individual lights – unlike the other rooms)
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: light.upstairs_hallway
+                  state: "off"
+                - condition: state
+                  entity_id: light.hue_filament_bulb_1_4
+                  state: "off"
+                - condition: state
+                  entity_id: light.hue_filament_bulb_1_5
+                  state: "off"
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Hallway
+                scene_name: Evening
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.guestroom
+              state: "off"
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Guestroom
+                scene_name: Evening
+      default: []
   mode: single
 - alias: 💡 | ⏰ Outside lights off (daily at 22:30)
   id: 99711cfd-e1c7-47d8-83af-94876e126b6c
-  description: ''
+  description: ""
   trigger:
-  - platform: time
-    at: '22:30:00'
+    - platform: time
+      at: "22:30:00"
   condition: []
   action:
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.garden
-        state: 'on'
-      sequence:
-      - service: light.turn_off
-        data: {}
-        entity_id: light.garden
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.front_back_door
-        state: 'on'
-      sequence:
-      - service: light.turn_off
-        data: {}
-        entity_id: light.front_back_door
-    default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.garden
+              state: "on"
+          sequence:
+            - service: light.turn_off
+              data: {}
+              entity_id: light.garden
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.front_back_door
+              state: "on"
+          sequence:
+            - service: light.turn_off
+              data: {}
+              entity_id: light.front_back_door
+      default: []
   mode: single

@@ -6,8 +6,8 @@
           states('sensor.ds1815_cpu_load_average_1_min')|float |
             multiply(25) | round(1)
         }}
-      unit_of_measurement: '%'
-      friendly_name: 'ds1815 1-minute load'
+      unit_of_measurement: "%"
+      friendly_name: ds1815 1-minute load
     ups_power:
       value_template: >
         {{
@@ -16,9 +16,9 @@
               states('sensor.ups_load')|float / 100
           ) | round(0)
         }}
-      unit_of_measurement: 'W'
+      unit_of_measurement: W
       device_class: power
-      friendly_name: 'Back-UPS Pro 900 Power usage'
+      friendly_name: Back-UPS Pro 900 Power usage
     ups_battery_runtime_minutes:
       value_template: >
         {{
@@ -26,8 +26,8 @@
             states('sensor.ups_battery_runtime')|float / 60
           ) | round(0)
         }}
-      unit_of_measurement: 'min'
-      friendly_name: 'Back-UPS Pro 900 Battery Runtime (minutes)'
+      unit_of_measurement: min
+      friendly_name: Back-UPS Pro 900 Battery Runtime (minutes)
 - platform: integration
   source: sensor.ups_power
   name: consumption_ups

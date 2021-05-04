@@ -1,6 +1,6 @@
 type: vertical-stack
 cards:
-  - type: 'custom:mini-graph-card'
+  - type: custom:mini-graph-card
     name: Gas usage (past 48h)
     hour24: true
     hours_to_show: 48
@@ -11,18 +11,18 @@ cards:
       labels: true
       labels_secondary: false
     state_map:
-      - value: 'off'
-        label: '0.000'
-      - value: 'on'
-        label: '1.000'
+      - value: "off"
+        label: "0.000"
+      - value: "on"
+        label: "1.000"
     decimals: 3
     color_thresholds:
       - value: 0
-        color: '#f39c12'
+        color: "#f39c12"
       - value: 0.6
-        color: '#d35400'
+        color: "#d35400"
       - value: 1.2
-        color: '#c0392b'
+        color: "#c0392b"
     entities:
       - entity: sensor.hourly_gas_consumption
         name: Change rate
@@ -43,7 +43,7 @@ cards:
         show_legend: false
         y_axis: secondary
         smoothing: false
-  - type: 'custom:mini-graph-card'
+  - type: custom:mini-graph-card
     hours_to_show: 240
     group_by: date
     name: Daily gas usage (past 10 days)
@@ -64,7 +64,7 @@ cards:
         color: thistle
   - type: horizontal-stack
     cards:
-      - type: 'custom:mod-card'
+      - type: custom:mod-card
         card_mod:
           style: |
             ha-card {
@@ -93,7 +93,7 @@ cards:
                   }
               entity: sensor.daily_gas_costs
               name: Today
-              icon: 'mdi:cash'
+              icon: mdi:cash
             - type: entity
               card_mod:
                 style: |
@@ -114,7 +114,7 @@ cards:
               entity: sensor.monthly_gas_costs_daily_average
               unit: € / day
               name: This month
-              icon: 'mdi:cash'
+              icon: mdi:cash
             - type: entity
               card_mod:
                 style: |
@@ -159,7 +159,7 @@ cards:
               unit: m³
           columns: 1
           square: false
-      - type: 'custom:mod-card'
+      - type: custom:mod-card
         card_mod:
           style: |
             ha-card {
@@ -190,7 +190,7 @@ cards:
               attribute: last_period
               unit: €
               name: Yesterday
-              icon: 'mdi:cash'
+              icon: mdi:cash
             - type: entity
               card_mod:
                 style: |
@@ -212,7 +212,7 @@ cards:
               attribute: last_period
               unit: € / day
               name: Last month
-              icon: 'mdi:cash'
+              icon: mdi:cash
             - type: entity
               card_mod:
                 style: |

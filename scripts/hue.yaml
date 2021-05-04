@@ -5,46 +5,45 @@ hue_activate_scene_kitchen:
   alias: Hue activate scene – Kitchen
   icon: mdi:lightbulb-group-outline
   sequence:
-  - repeat:
-      count: 2
-      sequence:
-        - service: hue.hue_activate_scene
-          data:
-            group_name: Kitchen
-            scene_name: >-
-              {{ scene_name }}
-        - delay: 1
+    - repeat:
+        count: 2
+        sequence:
+          - service: hue.hue_activate_scene
+            data:
+              group_name: Kitchen
+              scene_name: >-
+                {{ scene_name }}
+          - delay: 1
   mode: single
 hue_activate_scene_kitchen_counter_cupboards:
   alias: Hue activate scene – Kitchen counter & cupboards
   icon: mdi:lightbulb-group-outline
   sequence:
-  - repeat:
-      count: 2
-      sequence:
-        - service: hue.hue_activate_scene
-          data:
-            group_name: Kitchen counter & cupboards
-            scene_name: >-
-              {{ scene_name }}
-        - delay: 1
+    - repeat:
+        count: 2
+        sequence:
+          - service: hue.hue_activate_scene
+            data:
+              group_name: Kitchen counter & cupboards
+              scene_name: >-
+                {{ scene_name }}
+          - delay: 1
   mode: single
 hue_activate_scene_living_room_kitchen:
   alias: Hue activate scene – Living room & Kitchen
   icon: mdi:lightbulb-group-outline
   sequence:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Living room
-      scene_name: >-
-        {{ scene_name }}
-  - service: script.hue_activate_scene_kitchen
-    data:
-      scene_name: >-
-        {% if scene_name == 'Active' %}
-          Bright (custom)
-        {% else %}
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: >-
           {{ scene_name }}
-        {% endif %}
+    - service: script.hue_activate_scene_kitchen
+      data:
+        scene_name: >-
+          {% if scene_name == 'Active' %}
+            Bright (custom)
+          {% else %}
+            {{ scene_name }}
+          {% endif %}
   mode: single
-

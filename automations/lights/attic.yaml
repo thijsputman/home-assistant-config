@@ -1,6 +1,6 @@
 - alias: 💡 | 🕹️ Turn on Attic hallway lights (Dimmer Switch)
   id: 26a80c46-4ba4-4721-b650-6b0fccf034ef
-  description: ''
+  description: ""
   mode: single
   trigger:
     - device_id: c7a32fb1be6494d32caafb27134fee28
@@ -19,7 +19,7 @@
         entity_id: timer.attic_hallway_motion_pause
 - alias: 💡 | 🕹️ Cycle through Attic hallway gangs (Dimmer Switch)
   id: 1d18a07f-cd2b-49ac-bcd8-ab48089558c9
-  description: ''
+  description: ""
   mode: single
   trigger:
     - device_id: c7a32fb1be6494d32caafb27134fee28
@@ -35,39 +35,39 @@
   condition:
     - condition: state
       entity_id: light.attic_hallway
-      state: 'on'
+      state: "on"
   action:
-  - choose:
-    - conditions:
-        - condition: state
-          entity_id:
-            - light.smart_relay_3
-            - light.smart_relay_4
-          state: 'on'
-      sequence:
-        - service: light.turn_off
-          target:
-            entity_id: light.smart_relay_3
-    - conditions:
-        - condition: state
-          entity_id: light.smart_relay_4
-          state: 'on'
-      sequence:
-        - service: light.turn_off
-          target:
-            entity_id: light.smart_relay_4
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id:
+                - light.smart_relay_3
+                - light.smart_relay_4
+              state: "on"
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id: light.smart_relay_3
+        - conditions:
+            - condition: state
+              entity_id: light.smart_relay_4
+              state: "on"
+          sequence:
+            - service: light.turn_off
+              target:
+                entity_id: light.smart_relay_4
+            - service: light.turn_on
+              target:
+                entity_id: light.smart_relay_3
+      default:
         - service: light.turn_on
           target:
-            entity_id: light.smart_relay_3
-    default:
-      - service: light.turn_on
-        target:
-          entity_id:
-            - light.smart_relay_3
-            - light.smart_relay_4
+            entity_id:
+              - light.smart_relay_3
+              - light.smart_relay_4
 - alias: 💡 | 🕹️ Turn off Attic hallway lights (Dimmer Switch)
   id: d248cca1-d887-40b2-966a-5bbc2ebd84dd
-  description: ''
+  description: ""
   mode: single
   trigger:
     - device_id: c7a32fb1be6494d32caafb27134fee28
@@ -86,7 +86,7 @@
         entity_id: light.attic_hallway
 - alias: 💡 | ⏳ Turn off Attic hallway lights (timer finished)
   id: b4a35562-ea3c-4e01-9d4e-ee0f3fead943
-  description: ''
+  description: ""
   mode: single
   trigger:
     - platform: event

@@ -1,118 +1,118 @@
 - alias: 🚨 | 📱 Notify on doors/windows left open ("Armed away")
   id: c3684211-bceb-4256-8238-077f21798da1
   trigger:
-  - platform: state
-    entity_id: alarm_control_panel.home_alarm
-    to: armed_away
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_away
   condition:
-  - condition: state
-    entity_id: group.openclose_all
-    state: 'on'
+    - condition: state
+      entity_id: group.openclose_all
+      state: "on"
   action:
-  - service: script.persistent_notification_all_devices
-    data:
-      tag: away
-      title: 🚪 Doors and/or windows left open!
-      message: >-
-        The following doors and/or windows are still open:
-        <ul>
-          <li>
-            {{-
-              expand('group.openclose_all') |
-                selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
-              -}}
-          </li>
-        </ul>
+    - service: script.persistent_notification_all_devices
+      data:
+        tag: away
+        title: 🚪 Doors and/or windows left open!
+        message: >-
+          The following doors and/or windows are still open:
+          <ul>
+            <li>
+              {{-
+                expand('group.openclose_all') |
+                  selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
+                -}}
+            </li>
+          </ul>
 # Presence (i.e. motion) sensors are used to turn on lights – the sensors are
 # not well-positioned for intruder detection. Still, if no-one is home, there's
 # no harm in making them trigger the alarm...
 - alias: 🚨 Trigger alarm (motion detected; "Armed away")
   id: 358bd339-33e4-4c0a-a92e-0682346e48a1
   trigger:
-  - platform: state
-    entity_id:
-      - binary_sensor.presence_50
-      - binary_sensor.presence_53
-      - binary_sensor.presence_60
-      - binary_sensor.presence_63
-      - binary_sensor.presence_68
-      - binary_sensor.presence_71
-      - binary_sensor.presence_91
-      - binary_sensor.presence_92
-    from: 'off'
-    to: 'on'
+    - platform: state
+      entity_id:
+        - binary_sensor.presence_50
+        - binary_sensor.presence_53
+        - binary_sensor.presence_60
+        - binary_sensor.presence_63
+        - binary_sensor.presence_68
+        - binary_sensor.presence_71
+        - binary_sensor.presence_91
+        - binary_sensor.presence_92
+      from: "off"
+      to: "on"
   condition:
-  - condition: state
-    entity_id: alarm_control_panel.home_alarm
-    state: armed_away
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
   action:
-  - service: alarm_control_panel.alarm_trigger
-    data: {}
-    entity_id: alarm_control_panel.home_alarm
+    - service: alarm_control_panel.alarm_trigger
+      data: {}
+      entity_id: alarm_control_panel.home_alarm
   mode: single
 - alias: 🚨 | 📱 Notify when back gate opened ("Armed away")
   id: b1825172-d7ab-4114-8c4d-6030c6bae7b6
   trigger:
-  - platform: state
-    entity_id: binary_sensor.openclose_34
-    from: 'off'
-    to: 'on'
+    - platform: state
+      entity_id: binary_sensor.openclose_34
+      from: "off"
+      to: "on"
   condition:
-  - condition: state
-    entity_id: alarm_control_panel.home_alarm
-    state: armed_away
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
   action:
-  - service: script.persistent_notification_all_devices
-    data:
-      tag: away
-      title: 🚨 Back gate opened!
-      message: >-
-        The back gate was just opened!
-        There could be someone in the garden; check the camera feed...
+    - service: script.persistent_notification_all_devices
+      data:
+        tag: away
+        title: 🚨 Back gate opened!
+        message: >-
+          The back gate was just opened!
+          There could be someone in the garden; check the camera feed...
 - alias: 🚨 | 💡 Lights on when back gate opened ("Armed away")
   id: 9684f5d2-8d26-429f-bb08-aa5deeb23c50
   trigger:
-  - platform: state
-    entity_id: binary_sensor.openclose_34
-    from: 'off'
-    to: 'on'
+    - platform: state
+      entity_id: binary_sensor.openclose_34
+      from: "off"
+      to: "on"
   condition:
-  - condition: not
-    conditions:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
     - condition: state
-      entity_id: sensor.time_of_day
-      state: day
-  - condition: state
-    entity_id: alarm_control_panel.home_alarm
-    state: armed_away
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
   action:
-  # Stagger the lights to give the appearance of someone manually switching them
-  # on...
-  - delay: 2
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Garden
-      scene_name: Active
-  - delay: 5
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.kitchen
-        state: 'off'
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          scene_name: Bright (custom)
-    default: []
-  - delay: 1
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.living_room
-        state: 'off'
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Living room
-          scene_name: Active
-    default: []
+    # Stagger the lights to give the appearance of someone manually switching them
+    # on...
+    - delay: 2
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Garden
+        scene_name: Active
+    - delay: 5
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.kitchen
+              state: "off"
+          sequence:
+            - service: script.hue_activate_scene_kitchen
+              data:
+                scene_name: Bright (custom)
+      default: []
+    - delay: 1
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.living_room
+              state: "off"
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Living room
+                scene_name: Active
+      default: []

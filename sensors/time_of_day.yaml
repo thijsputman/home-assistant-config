@@ -1,7 +1,7 @@
 - platform: template
   sensors:
     time_of_day:
-      friendly_name: "Time of Day"
+      friendly_name: Time of Day
       icon_template: mdi:theme-light-dark
       value_template: >-
         {%- if
@@ -21,7 +21,7 @@
           {%- endif -%}
         {%- endif -%}
     time_of_day_numeric:
-      friendly_name: "Time of Day (numeric)"
+      friendly_name: Time of Day (numeric)
       icon_template: mdi:theme-light-dark
       value_template: >-
         {%- if states('sensor.time_of_day') == 'day' -%}

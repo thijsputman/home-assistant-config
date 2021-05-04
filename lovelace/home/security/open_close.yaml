@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style: |
     ha-card {
@@ -25,11 +25,11 @@ card:
       title: Entryways
       entities:
         - entity: binary_sensor.openclose_16
-          icon: 'mdi:door-closed'
+          icon: mdi:door-closed
           show_last_changed: true
         - entity: binary_sensor.openclose_34
           name: Back gate
-          icon: 'mdi:door-closed'
+          icon: mdi:door-closed
           show_last_changed: true
       show_state: false
       state_color: true
@@ -60,11 +60,11 @@ card:
       entities:
         - entity: binary_sensor.openclose_12
           name: Kitchen
-          icon: 'mdi:door-closed'
+          icon: mdi:door-closed
           show_last_changed: true
         - entity: binary_sensor.openclose_36
           name: Kitchen
-          icon: 'mdi:window-closed'
+          icon: mdi:window-closed
           show_last_changed: true
         - entity: group.openclose_living_room
           name: Living room
@@ -89,11 +89,11 @@ card:
           show_last_changed: true
         - entity: binary_sensor.openclose_17
           name: Bathroom
-          icon: 'mdi:window-closed'
+          icon: mdi:window-closed
           show_last_changed: true
         - entity: binary_sensor.openclose_33
           name: Attic
-          icon: 'mdi:window-closed'
+          icon: mdi:window-closed
           show_last_changed: true
       show_state: false
       state_color: true

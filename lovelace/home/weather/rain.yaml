@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style:
     .: |
@@ -14,7 +14,7 @@ report_size: 3
 card:
   type: vertical-stack
   cards:
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -37,7 +37,7 @@ card:
         - entity: sensor.weewx_rain_hour
           show_points: false
           show_fill: false
-          color: '#3498DB'
+          color: "#3498DB"
         - color: dimgray
           entity: sensor.time_of_day_numeric
           name: Night
@@ -45,7 +45,7 @@ card:
           show_points: false
           show_legend: false
           y_axis: secondary
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -71,4 +71,4 @@ card:
         icon: false
       entities:
         - entity: sensor.weewx_rain_hour
-          color: '#3498DB'
+          color: "#3498DB"

@@ -2,16 +2,16 @@ openclose_bedroom:
   name: Bedroom (door & windows)
   icon: mdi:window-open-variant
   entities:
-     - binary_sensor.openclose_18
-     - binary_sensor.openclose_19
-     - binary_sensor.openclose_20
+    - binary_sensor.openclose_18
+    - binary_sensor.openclose_19
+    - binary_sensor.openclose_20
 openclose_living_room:
   name: Living room (door & windows)
   icon: mdi:window-open-variant
   entities:
-     - binary_sensor.openclose_8
-     - binary_sensor.openclose_14
-     - binary_sensor.openclose_15
+    - binary_sensor.openclose_8
+    - binary_sensor.openclose_14
+    - binary_sensor.openclose_15
 openclose_all:
   name: All doors & windows
   icon: mdi:home-variant-outline

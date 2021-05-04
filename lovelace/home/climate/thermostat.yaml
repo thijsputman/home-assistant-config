@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style:
     .: |
@@ -14,7 +14,7 @@ report_size: 5
 card:
   type: vertical-stack
   cards:
-    - type: 'custom:simple-thermostat'
+    - type: custom:simple-thermostat
       card_mod:
         style: |
           ha-card {
@@ -38,26 +38,26 @@ card:
         name: tado°
         faults:
           - entity: climate.tado_smart_radiator_attic
-            icon: 'mdi:home-roof'
+            icon: mdi:home-roof
             hide_inactive: false
           - entity: !secret tado_ru1_serial
-            icon: 'mdi:battery-20'
+            icon: mdi:battery-20
             hide_inactive: true
           - entity: !secret tado_va1_serial
-            icon: 'mdi:battery-20'
+            icon: mdi:battery-20
             hide_inactive: true
           - entity: binary_sensor.living_room_open_window
-            icon: 'mdi:window-closed'
+            icon: mdi:window-closed
             hide_inactive: true
           - entity: binary_sensor.tado_attic_open_window
-            icon: 'mdi:window-closed'
+            icon: mdi:window-closed
             hide_inactive: true
     - type: conditional
       conditions:
         - entity: sensor.tado_smart_thermostat_mode
-          state: 'heat'
+          state: heat
       card:
-        type: 'custom:simple-thermostat'
+        type: custom:simple-thermostat
         card_mod:
           style: |
             ha-card {
@@ -94,9 +94,9 @@ card:
     - type: conditional
       conditions:
         - entity: !secret tado_ib1_serial
-          state: 'on'
+          state: "on"
       card:
-        type: 'custom:simple-thermostat'
+        type: custom:simple-thermostat
         card_mod:
           style: |
             ha-card{
@@ -117,14 +117,14 @@ card:
           preset:
             home:
               name: false
-              icon: 'mdi:home-outline'
+              icon: mdi:home-outline
             away:
               name: false
-              icon: 'mdi:car-side'
+              icon: mdi:car-side
           hvac:
             auto:
               name: false
             heat:
               name: false
-            'off':
+            "off":
               name: false

@@ -1,14 +1,14 @@
 - platform: mqtt
-  state_topic: 'femon/signal'
-  name: 'DVB-T signal-strength'
-  unit_of_measurement: '%'
+  state_topic: femon/signal
+  name: DVB-T signal-strength
+  unit_of_measurement: "%"
   icon: mdi:signal-cellular-2
   value_template: >-
     {{ value | round(0) }}
 - platform: mqtt
-  state_topic: 'femon/snr'
-  name: 'DVB-T signal-to-noise ratio'
-  unit_of_measurement: '%'
+  state_topic: femon/snr
+  name: DVB-T signal-to-noise ratio
+  unit_of_measurement: "%"
   icon: mdi:signal-cellular-2
   value_template: >-
     {{ value | round(0) }}

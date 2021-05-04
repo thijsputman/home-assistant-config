@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style:
     .: |
@@ -38,7 +38,7 @@ card:
                 :host::after{
                   content: "1"
                 }
-          icon: 'mdi:router-wireless'
+          icon: mdi:router-wireless
         - entity: sensor.dd_wrt_2_1_minute_load
           card_mod:
             style:
@@ -46,15 +46,15 @@ card:
                 :host::after{
                   content: "2"
                 }
-          icon: 'mdi:router-wireless'
+          icon: mdi:router-wireless
         - entity: sensor.pi_hole_1_minute_load
-          icon: 'mdi:pi-hole'
+          icon: mdi:pi-hole
       show_name: false
       show_icon: true
       show_state: true
       state_color: false
       columns: 3
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {

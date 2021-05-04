@@ -1,78 +1,90 @@
 - platform: mqtt
-  state_topic: 'weewx/outTemp_C'
-  name: 'WeeWX outside temperature'
-  unit_of_measurement: '°C'
+  state_topic: weewx/outTemp_C
+  name: WeeWX outside temperature
+  unit_of_measurement: °C
   device_class: temperature
-  value_template: "{{ value | round(1) }}"
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/extraTemp1_C'
-  name: 'WeeWX outside temperature (Balcony)'
-  unit_of_measurement: '°C'
+  state_topic: weewx/extraTemp1_C
+  name: WeeWX outside temperature (Balcony)
+  unit_of_measurement: °C
   device_class: temperature
-  value_template: "{{ value | round(1) }}"
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/dewpoint_C'
-  name: 'WeeWX outside dewpoint'
-  unit_of_measurement: '°C'
+  state_topic: weewx/dewpoint_C
+  name: WeeWX outside dewpoint
+  unit_of_measurement: °C
   device_class: temperature
-  value_template: "{{ value | round(1) }}"
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/heatindex_C'
-  name: 'WeeWX heat index'
-  unit_of_measurement: '°C'
+  state_topic: weewx/heatindex_C
+  name: WeeWX heat index
+  unit_of_measurement: °C
   device_class: temperature
-  value_template: "{{ value | round(1) }}"
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/windchill_C'
-  name: 'WeeWX wind chill'
-  unit_of_measurement: '°C'
+  state_topic: weewx/windchill_C
+  name: WeeWX wind chill
+  unit_of_measurement: °C
   device_class: temperature
-  value_template: "{{ value | round(1) }}"
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/pressure_mbar'
-  name: 'WeeWX outside pressure'
-  unit_of_measurement: 'mbar'
+  state_topic: weewx/pressure_mbar
+  name: WeeWX outside pressure
+  unit_of_measurement: mbar
   device_class: pressure
-  value_template: "{{ value | round(1) }}"
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/outHumidity'
-  name: 'WeeWX outside humidity'
-  unit_of_measurement: '%'
+  state_topic: weewx/outHumidity
+  name: WeeWX outside humidity
+  unit_of_measurement: "%"
   device_class: humidity
-  value_template: "{{ value | round(1) }}"
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/extraHumid1'
-  name: 'WeeWX outside humidity (Balcony)'
-  unit_of_measurement: '%'
+  state_topic: weewx/extraHumid1
+  name: WeeWX outside humidity (Balcony)
+  unit_of_measurement: "%"
   device_class: humidity
-  value_template: "{{ value | round(1) }}"
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/windSpeed_kph'
-  name: 'WeeWX wind speed '
-  unit_of_measurement: 'm/s'
-  value_template: "{{ (value | float / 3.6) | round(2) }}"
+  state_topic: weewx/windSpeed_kph
+  name: WeeWX wind speed
+  unit_of_measurement: m/s
+  value_template: >-
+    {{ (value | float / 3.6) | round(2) }}
 - platform: mqtt
-  state_topic: 'weewx/windGust_kph'
-  name: 'WeeWX wind gust '
-  unit_of_measurement: 'm/s'
-  value_template: "{{ (value | float / 3.6) | round(2) }}"
+  state_topic: weewx/windGust_kph
+  name: WeeWX wind gust
+  unit_of_measurement: m/s
+  value_template: >-
+    {{ (value | float / 3.6) | round(2) }}
 - platform: mqtt
-  state_topic: 'weewx/beaufort_count'
-  name: 'WeeWX wind speed (beaufort)'
-  unit_of_measurement: 'Bft'
-  value_template: "{{ value | round(0) }}"
+  state_topic: weewx/beaufort_count
+  name: WeeWX wind speed (beaufort)
+  unit_of_measurement: Bft
+  value_template: >-
+    {{ value | round(0) }}
 - platform: mqtt
-  state_topic: 'weewx/windDir'
-  name: 'WeeWX wind direction'
-  unit_of_measurement: '°'
-  value_template: "{{ value | round(0) }}"
+  state_topic: weewx/windDir
+  name: WeeWX wind direction
+  unit_of_measurement: °
+  value_template: >-
+    {{ value | round(0) }}
 # Due to the placement of the weather station, the wind direction is rather
 # jittery. The below filter smooths out the measurements as bit. It's using a
 # moving average instead of low-pass filter as the input time series is
 # "unevenly spaced" (i.e. measurements come in as the wind direction changes,
 # not at a regular interval).
 - platform: filter
-  name: "WeeWX wind direction (filtered)"
+  name: WeeWX wind direction (filtered)
   entity_id: sensor.weewx_wind_direction
   filters:
     - filter: time_simple_moving_average
@@ -80,12 +92,13 @@
       window_size: "00:30:00"
       precision: 0
 - platform: mqtt
-  state_topic: 'weewx/windGustDir'
-  name: 'WeeWX wind gust direction'
-  unit_of_measurement: '°'
-  value_template: "{{ value | round(0) }}"
+  state_topic: weewx/windGustDir
+  name: WeeWX wind gust direction
+  unit_of_measurement: °
+  value_template: >-
+    {{ value | round(0) }}
 - platform: filter
-  name: "WeeWX wind gust direction (filtered)"
+  name: WeeWX wind gust direction (filtered)
   entity_id: sensor.weewx_wind_gust_direction
   filters:
     - filter: time_simple_moving_average
@@ -93,31 +106,37 @@
       window_size: "00:10:00"
       precision: 0
 - platform: mqtt
-  state_topic: 'weewx/radiation_Wpm2'
-  name: 'WeeWX solar irradiance'
-  unit_of_measurement: 'W/m²'
-  value_template: "{{ value | round(1) }}"
+  state_topic: weewx/radiation_Wpm2
+  name: WeeWX solar irradiance
+  unit_of_measurement: W/m²
+  value_template: >-
+    {{ value | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/UV'
-  name: 'WeeWX UV index'
-  value_template: "{{ value | round(0) }}"
+  state_topic: weewx/UV
+  name: WeeWX UV index
+  value_template: >-
+    {{ value | round(0) }}
 - platform: mqtt
-  state_topic: 'weewx/rain_cm'
-  name: 'WeeWX rain'
-  unit_of_measurement: 'mm'
-  value_template: "{{ (value | float * 10) | round(1) }}"
+  state_topic: weewx/rain_cm
+  name: WeeWX rain
+  unit_of_measurement: mm
+  value_template: >-
+    {{ (value | float * 10) | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/hourRain_cm'
-  name: 'WeeWX rain (hour)'
-  unit_of_measurement: 'mm'
-  value_template: "{{ (value | float * 10) | round(1) }}"
+  state_topic: weewx/hourRain_cm
+  name: WeeWX rain (hour)
+  unit_of_measurement: mm
+  value_template: >-
+    {{ (value | float * 10) | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/rainRate_cm_per_hour'
-  name: 'WeeWX rain rate (hour)'
-  unit_of_measurement: 'mm/h'
-  value_template: "{{ (value | float * 10) | round(1) }}"
+  state_topic: weewx/rainRate_cm_per_hour
+  name: WeeWX rain rate (hour)
+  unit_of_measurement: mm/h
+  value_template: >-
+    {{ (value | float * 10) | round(1) }}
 - platform: mqtt
-  state_topic: 'weewx/ET_cm'
-  name: 'WeeWX evapotranspiration'
-  unit_of_measurement: 'mm'
-  value_template: "{{ (value | float * 10) | round(4) }}"
+  state_topic: weewx/ET_cm
+  name: WeeWX evapotranspiration
+  unit_of_measurement: mm
+  value_template: >-
+    {{ (value | float * 10) | round(4) }}

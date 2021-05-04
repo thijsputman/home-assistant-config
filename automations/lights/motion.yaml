@@ -1,85 +1,85 @@
 - alias: 💡 | 👋 Kitchen counter & cupboards toggle (motion detected)
   id: ff4ddb05-91d8-431d-9226-b51e0bbd9b36
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: binary_sensor.presence_53
-    from: 'off'
-    to: 'on'
-  condition:
-  - condition: numeric_state
-    entity_id: sensor.lightlevel_55
-    below: 200
-  action:
-  - service: script.hue_activate_scene_kitchen_counter_cupboards
-    data:
-      scene_name: Activity
-  - wait_for_trigger:
     - platform: state
       entity_id: binary_sensor.presence_53
-      from: 'on'
-      to: 'off'
-      for: '00:02:00'
-    # If the scene for "Kitchen counter & cupboards" is still "Activity",
-    # no changes were made to the lighting. We can safely restore the previous
-    # scene for the "Kitchen" as a whole...
-  - condition: state
-    entity_id: input_select.hue_scene_kitchen_counter_cupboards
-    state:  Activity
-  - choose:
-    - conditions:
-        - condition: template
-          value_template: >-
-            {{  not is_state('input_select.hue_scene_kitchen', '<Off>') and
-                not is_state('input_select.hue_scene_kitchen', '<Unknown>') }}
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          # This works because changing "Kitchen counter & cupboards"
-          # doesn't actually change the "Kitchen" scene (it retains its
-          # state even though some of its lights changed). We can simply
-          # re-apply the already active scene.
-          scene_name: >-
-            {{ states('input_select.hue_scene_kitchen') }}
-    - conditions:
-        - condition: template
-          value_template: >-
-            {{ is_state('input_select.hue_scene_kitchen', '<Off>') }}
-      sequence:
-      - service: light.turn_off
-        data:
-          entity_id: light.kitchen
+      from: "off"
+      to: "on"
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_55
+      below: 200
+  action:
+    - service: script.hue_activate_scene_kitchen_counter_cupboards
+      data:
+        scene_name: Activity
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.presence_53
+          from: "on"
+          to: "off"
+          for: "00:02:00"
+      # If the scene for "Kitchen counter & cupboards" is still "Activity",
+      # no changes were made to the lighting. We can safely restore the previous
+      # scene for the "Kitchen" as a whole...
+    - condition: state
+      entity_id: input_select.hue_scene_kitchen_counter_cupboards
+      state: Activity
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{  not is_state('input_select.hue_scene_kitchen', '<Off>') and
+                    not is_state('input_select.hue_scene_kitchen', '<Unknown>') }}
+          sequence:
+            - service: script.hue_activate_scene_kitchen
+              data:
+                # This works because changing "Kitchen counter & cupboards"
+                # doesn't actually change the "Kitchen" scene (it retains its
+                # state even though some of its lights changed). We can simply
+                # re-apply the already active scene.
+                scene_name: >-
+                  {{ states('input_select.hue_scene_kitchen') }}
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ is_state('input_select.hue_scene_kitchen', '<Off>') }}
+          sequence:
+            - service: light.turn_off
+              data:
+                entity_id: light.kitchen
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Toilet light toggle (motion detected)
   id: e884ea40-fdf9-4069-ad27-4e09d8a45e2e
   trigger:
-  - platform: state
-    entity_id: binary_sensor.presence_60
-    from: "off"
-    to: "on"
-  condition: []
-  action:
-  - service: light.turn_on
-    data:
-      brightness: 255
-      kelvin: 4500
-    entity_id: light.toilet
-  - wait_for_trigger:
     - platform: state
       entity_id: binary_sensor.presence_60
-      from: "on"
-      to: "off"
-  - delay: 270
-  - service: light.turn_off
-    data:
+      from: "off"
+      to: "on"
+  condition: []
+  action:
+    - service: light.turn_on
+      data:
+        brightness: 255
+        kelvin: 4500
       entity_id: light.toilet
-      transition: 30
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.presence_60
+          from: "on"
+          to: "off"
+    - delay: 270
+    - service: light.turn_off
+      data:
+        entity_id: light.toilet
+        transition: 30
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Basement light toggle (motion detected)
   id: 7a1ebf52-c69e-4bf5-8670-0b32bba52600
-  description: ''
+  description: ""
   use_blueprint:
     path: homeassistant/motion_light.yaml
     input:
@@ -89,133 +89,133 @@
       no_motion_wait: 60
 - alias: 💡 | 👋 Wardrobe light toggle (motion detected)
   id: f30e4af7-6b31-4062-8f12-25fde6ae3577
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: binary_sensor.presence_63
-    from: "off"
-    to: "on"
-  condition:
-  - condition: numeric_state
-    entity_id: sensor.lightlevel_65
-    below: 50
-  action:
-  - service: light.turn_on
-    data:
-      brightness: 255
-      kelvin: 2900
-    entity_id: light.wardrobe
-  - wait_for_trigger:
     - platform: state
       entity_id: binary_sensor.presence_63
-      from: "on"
-      to: "off"
-  - delay: 120
-  - service: light.turn_off
-    entity_id: light.wardrobe
+      from: "off"
+      to: "on"
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_65
+      below: 50
+  action:
+    - service: light.turn_on
+      data:
+        brightness: 255
+        kelvin: 2900
+      entity_id: light.wardrobe
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.presence_63
+          from: "on"
+          to: "off"
+    - delay: 120
+    - service: light.turn_off
+      entity_id: light.wardrobe
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Bathroom light toggle (motion detected)
   id: 63b00f23-043a-4d8b-9974-03a7e850e897
   trigger:
-  - platform: state
-    entity_id: binary_sensor.presence_68
-    from: "off"
-    to: "on"
-  - platform: state
-    entity_id: binary_sensor.presence_71
-    from: "off"
-    to: "on"
+    - platform: state
+      entity_id: binary_sensor.presence_68
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.presence_71
+      from: "off"
+      to: "on"
   condition:
-  - condition: numeric_state
-    entity_id: sensor.lightlevel_bathroom
-    below: 200
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_bathroom
+      below: 200
   action:
-  - choose:
-    # Make the light a bit kinder on the eyes late at night
-    - conditions:
-      - condition: state
-        entity_id: input_boolean.everyone_asleep
-        state: 'on'
-      sequence:
-      - service: light.turn_on
-        data:
-          brightness: 60
-          kelvin: 2200
-        entity_id: light.bathroom
-    default:
-    - service: light.turn_on
+    - choose:
+        # Make the light a bit kinder on the eyes late at night
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.everyone_asleep
+              state: "on"
+          sequence:
+            - service: light.turn_on
+              data:
+                brightness: 60
+                kelvin: 2200
+              entity_id: light.bathroom
+      default:
+        - service: light.turn_on
+          data:
+            brightness: 255
+            kelvin: 2900
+          entity_id: light.bathroom
+    # Wait for _all_ motion sensors to clear – otherwise "race conditions" are
+    # possible where the lights goes off (because one sensor clears) and never
+    # come back on again (because the other sensor never clears due to
+    # ongoing motion and thus never retriggers the lights).
+    - wait_template: >-
+        {{
+          is_state('binary_sensor.presence_68', 'off') and
+          is_state('binary_sensor.presence_71', 'off')
+        }}
+    - delay: 150
+    - service: light.turn_off
       data:
-        brightness: 255
-        kelvin: 2900
-      entity_id: light.bathroom
-  # Wait for _all_ motion sensors to clear – otherwise "race conditions" are
-  # possible where the lights goes off (because one sensor clears) and never
-  # come back on again (because the other sensor never clears due to
-  # ongoing motion and thus never retriggers the lights).
-  - wait_template: >-
-      {{
-        is_state('binary_sensor.presence_68', 'off') and
-        is_state('binary_sensor.presence_71', 'off')
-      }}
-  - delay: 150
-  - service: light.turn_off
-    data:
-      entity_id: light.bathroom
-      transition: 30
+        entity_id: light.bathroom
+        transition: 30
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Attic hallway light toggle (motion detected)
   id: 6eb9fb1b-c177-4e11-986c-d6cfec41454a
   trigger:
-  - platform: state
-    entity_id: binary_sensor.presence_91
-    from: "off"
-    to: "on"
-  - platform: state
-    entity_id: binary_sensor.presence_92
-    from: "off"
-    to: "on"
+    - platform: state
+      entity_id: binary_sensor.presence_91
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: binary_sensor.presence_92
+      from: "off"
+      to: "on"
   condition:
-  - condition: state
-    entity_id: timer.attic_hallway_motion_pause
-    state: idle
+    - condition: state
+      entity_id: timer.attic_hallway_motion_pause
+      state: idle
   action:
-  - choose:
-    # Upstairs
-    - conditions:
-      - condition: template
-        value_template: >-
-          {{ trigger.entity_id == 'binary_sensor.presence_91' }}
-      sequence:
-      - service: light.turn_on
-        data:
-          entity_id: light.smart_relay_4
-    # Downstairs
-    - conditions:
-      - condition: template
-        value_template: >-
-          {{ trigger.entity_id == 'binary_sensor.presence_92' }}
-      sequence:
-      - service: light.turn_on
-        data:
-          entity_id: light.smart_relay_3
-    default:
-    - service: light.turn_on
+    - choose:
+        # Upstairs
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ trigger.entity_id == 'binary_sensor.presence_91' }}
+          sequence:
+            - service: light.turn_on
+              data:
+                entity_id: light.smart_relay_4
+        # Downstairs
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ trigger.entity_id == 'binary_sensor.presence_92' }}
+          sequence:
+            - service: light.turn_on
+              data:
+                entity_id: light.smart_relay_3
+      default:
+        - service: light.turn_on
+          data:
+            entity_id: light.attic_hallway
+    # Wait for _all_ motion sensors to clear
+    - wait_template: >-
+        {{
+          is_state('binary_sensor.presence_91', 'off') and
+          is_state('binary_sensor.presence_92', 'off')
+        }}
+    - delay: 60
+    - condition: state
+      entity_id: timer.attic_hallway_motion_pause
+      state: idle
+    - service: light.turn_off
       data:
         entity_id: light.attic_hallway
-  # Wait for _all_ motion sensors to clear
-  - wait_template: >-
-      {{
-        is_state('binary_sensor.presence_91', 'off') and
-        is_state('binary_sensor.presence_92', 'off')
-      }}
-  - delay: 60
-  - condition: state
-    entity_id: timer.attic_hallway_motion_pause
-    state: idle
-  - service: light.turn_off
-    data:
-      entity_id: light.attic_hallway
   mode: restart
   max_exceeded: silent

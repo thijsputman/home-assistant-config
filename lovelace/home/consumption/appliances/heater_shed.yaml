@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style: |
     ha-card {
@@ -47,7 +47,7 @@ card:
       entity: sensor.monthly_consumption_costs_heater_shed
       attribute: last_period
       unit: € / month
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {

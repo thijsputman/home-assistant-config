@@ -1,179 +1,179 @@
 - alias: 💡 | 📺 Dim lights (Shield TV playing)
   id: c136b7ec-1a71-49d3-b000-efddfcd4b433
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: standby
-    to: playing
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: paused
-    to: playing
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: idle
-    to: playing
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: standby
+      to: playing
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: paused
+      to: playing
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: idle
+      to: playing
   condition:
-  # Only act if Living room lights are on
-  - condition: state
-    entity_id: light.living_room
-    state: 'on'
+    # Only act if Living room lights are on
+    - condition: state
+      entity_id: light.living_room
+      state: "on"
   action:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Living room
-      scene_name: Movie
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.kitchen
-        state: 'on'
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          scene_name: Movie
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.hallway
-        state: 'on'
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Hallway
-          scene_name: Movie
-    default: []
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Movie
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.kitchen
+              state: "on"
+          sequence:
+            - service: script.hue_activate_scene_kitchen
+              data:
+                scene_name: Movie
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.hallway
+              state: "on"
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Hallway
+                scene_name: Movie
+      default: []
   mode: single
 - alias: 💡 | 📺 Restore lights (Shield TV on/paused)
   id: 586f5ad1-0c79-4213-820d-9e6ed587d540
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: playing
-    to: paused
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: playing
-    to: standby
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: playing
-    to: idle
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: 'off'
-    to: standby
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: 'off'
-    to: idle
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: 'off'
-    to: paused
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: playing
+      to: paused
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: playing
+      to: standby
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: playing
+      to: idle
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: "off"
+      to: standby
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: "off"
+      to: idle
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: "off"
+      to: paused
   condition:
-  # Only act if Living room lights are on _and_ it's not daytime. They daytime-
-  # condition is the easiest way to prevent turning the lights back on when it's
-  # not needed (as it's most likely light enough during the day).
-  # The "light on"-condition might seem counter-intuitive, but even when playing
-  # some lights in the Living room remain on. As _all_ Shield TV automations are
-  # conditional on the lights being on, the Shield TV alone can never turn the
-  # lights on if they weren't on to begin with.
-  # This is the cleanest way (i.e. dependent only on the state of the Living
-  # room lights) to prevent the Shield TV from turning on the lights if it wakes
-  # up unattended at the night...
-  - condition: state
-    entity_id: light.living_room
-    state: 'on'
-  - condition: not
-    conditions:
+    # Only act if Living room lights are on _and_ it's not daytime. They daytime-
+    # condition is the easiest way to prevent turning the lights back on when it's
+    # not needed (as it's most likely light enough during the day).
+    # The "light on"-condition might seem counter-intuitive, but even when playing
+    # some lights in the Living room remain on. As _all_ Shield TV automations are
+    # conditional on the lights being on, the Shield TV alone can never turn the
+    # lights on if they weren't on to begin with.
+    # This is the cleanest way (i.e. dependent only on the state of the Living
+    # room lights) to prevent the Shield TV from turning on the lights if it wakes
+    # up unattended at the night...
     - condition: state
-      entity_id: sensor.time_of_day
-      state: day
+      entity_id: light.living_room
+      state: "on"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
   action:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Living room
-      scene_name: Movie (ambiance)
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.kitchen
-        state: 'on'
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          scene_name: Ambiance
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.hallway
-        state: 'on'
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Hallway
-          scene_name: Evening
-    default: []
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Movie (ambiance)
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.kitchen
+              state: "on"
+          sequence:
+            - service: script.hue_activate_scene_kitchen
+              data:
+                scene_name: Ambiance
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.hallway
+              state: "on"
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Hallway
+                scene_name: Evening
+      default: []
   mode: single
 - alias: 💡 | 📺 Restore lights (Shield TV off)
   id: 42a90454-8626-47c7-9f83-fb8d7ded0453
-  description: ''
+  description: ""
   trigger:
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: standby
-    to: 'off'
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: playing
-    to: 'off'
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: paused
-    to: 'off'
-  - platform: state
-    entity_id: media_player.nvidia_shield_tv
-    from: idle
-    to: 'off'
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: standby
+      to: "off"
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: playing
+      to: "off"
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: paused
+      to: "off"
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: idle
+      to: "off"
   condition:
-  # Only act if Living room lights are on _and_ it's not daytime
-  - condition: state
-    entity_id: light.living_room
-    state: 'on'
-  - condition: not
-    conditions:
+    # Only act if Living room lights are on _and_ it's not daytime
     - condition: state
-      entity_id: sensor.time_of_day
-      state: day
+      entity_id: light.living_room
+      state: "on"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
   action:
-  - service: hue.hue_activate_scene
-    data:
-      group_name: Living room
-      scene_name: Ambiance
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.kitchen
-        state: 'on'
-      sequence:
-      - service: script.hue_activate_scene_kitchen
-        data:
-          scene_name: Ambiance
-    default: []
-  - choose:
-    - conditions:
-      - condition: state
-        entity_id: light.hallway
-        state: 'on'
-      sequence:
-      - service: hue.hue_activate_scene
-        data:
-          group_name: Hallway
-          scene_name: Evening
-    default: []
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Ambiance
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.kitchen
+              state: "on"
+          sequence:
+            - service: script.hue_activate_scene_kitchen
+              data:
+                scene_name: Ambiance
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: light.hallway
+              state: "on"
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Hallway
+                scene_name: Evening
+      default: []
   mode: single

@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style: |
     ha-card {
@@ -25,8 +25,8 @@ card:
         entity: sensor.afvalwijzer_restafval
         attribute: days_until_collection_date
         unit: days
-        name: 'Next pick-up: Black bin'
-        icon: 'mdi:recycle'
+        name: "Next pick-up: Black bin"
+        icon: mdi:recycle
     - type: conditional
       conditions:
         - entity: sensor.afvalwijzer_next_item
@@ -44,8 +44,8 @@ card:
         entity: sensor.afvalwijzer_gft
         attribute: days_until_collection_date
         unit: days
-        name: 'Next pick-up: Green bin'
-        icon: 'mdi:food-apple-outline'
+        name: "Next pick-up: Green bin"
+        icon: mdi:food-apple-outline
     - type: conditional
       conditions:
         - entity: sensor.afvalwijzer_next_item
@@ -63,8 +63,8 @@ card:
         entity: sensor.afvalwijzer_papier
         attribute: days_until_collection_date
         unit: days
-        name: 'Next pick-up: Paper'
-        icon: 'mdi:newspaper-variant-multiple-outline'
+        name: "Next pick-up: Paper"
+        icon: mdi:newspaper-variant-multiple-outline
     - type: glance
       card_mod:
         style: |
@@ -77,13 +77,13 @@ card:
       entities:
         - entity: sensor.afvalwijzer_restafval
           name: Black bin
-          icon: 'mdi:recycle'
+          icon: mdi:recycle
         - entity: sensor.afvalwijzer_gft
           name: Green bin
-          icon: 'mdi:food-apple-outline'
+          icon: mdi:food-apple-outline
         - entity: sensor.afvalwijzer_papier
           name: Paper
-          icon: 'mdi:newspaper-variant-multiple-outline'
+          icon: mdi:newspaper-variant-multiple-outline
       show_state: true
       show_icon: true
       show_name: true

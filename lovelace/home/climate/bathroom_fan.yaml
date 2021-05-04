@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style:
     .: |
@@ -14,7 +14,7 @@ report_size: 5
 card:
   type: vertical-stack
   cards:
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -32,9 +32,9 @@ card:
       cache: true
       color_thresholds:
         - value: 50
-          color: '#3498DB'
+          color: "#3498DB"
         - value: 90
-          color: '#E74C3C'
+          color: "#E74C3C"
       show:
         labels: hover
         labels_secondary: hover
@@ -45,7 +45,7 @@ card:
           show_graph: false
         - entity: sensor.humidity_change_bathroom
           name: Δ-humidity (%/min)
-          unit: '%/min'
+          unit: "%/min"
           color: var(--secondary-text-color)
           show_points: false
           show_fill: false

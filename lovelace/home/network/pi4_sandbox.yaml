@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: custom:mod-card
 card_mod:
   style: |
     ha-card {
@@ -33,7 +33,7 @@ card:
       show_state: true
       state_color: false
       columns: 4
-    - type: 'custom:mini-graph-card'
+    - type: custom:mini-graph-card
       card_mod:
         style: |
           ha-card {
@@ -72,4 +72,4 @@ card:
           show_points: false
           show_fill: false
           y_axis: secondary
-          color: '#3498db'
+          color: "#3498db"
