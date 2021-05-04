@@ -1,16 +1,14 @@
-type: picture-glance
-style: |
-  ha-card{
-    min-height: 300px !important;
-    background-color: #333D4A;
-  }
-title: Neato (downstairs)
-entities:
-  - entity: sensor.neato_d7_battery
-  - entity: vacuum.neato_d7
-camera_image: camera.neato_d7_cleaning_map
-entity: vacuum.neato_d7
-tap_action:
-  action: more-info
-hold_action:
-  action: none
+type: vertical-stack
+cards:
+  - type: custom:vacuum-card
+    style: |
+      ha-card .preview{
+        background-color: #333D4A;
+      }
+    entity: vacuum.neato_d7
+    map: camera.neato_d7_cleaning_map
+    stats:
+      default:
+        - attribute: clean_area
+          unit: m²
+          subtitle: Cleaning area
