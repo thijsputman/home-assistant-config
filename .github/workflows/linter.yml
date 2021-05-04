@@ -13,8 +13,12 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-      - name: Lint codebase
+      - name: Lint with Prettier
         run: |
           npx prettier --check .
-          pip3 install --user yamllint
-          yamllint .
+      - name: Install yamllint
+        run: |
+          pip3 install yamllint
+      - name: Lint with yamllint
+        run: |
+          yamllint --format github .
