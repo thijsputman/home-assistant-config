@@ -1,6 +1,8 @@
+proseWrap: always
 overrides:
   - files:
       - "*.yaml"
     options:
-      # Ensure Prettier doesn't butcher Jinja2 (i.e. multiline strings)
+      # Ensure Prettier doesn't mess with Jinja2 (i.e. multiline strings in the
+      # Home Assistant YAML files)
       proseWrap: preserve

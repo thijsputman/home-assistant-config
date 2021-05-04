@@ -1,8 +1,16 @@
+# yamllint configuration for use with Home Assistant YAML-files. All formatting
+# related rules are disabled – this is left to Prettier instead.
+#
+# This configuration is explicitly scoped to *only* include YAML-files that
+# belong to Home Assistant (i.e. non-HA files are intentionally excluded).
+
 yaml-files:
   - "*.yaml"
 
 ignore: |
+  /.*
   /.cloud
+  /.github
   /.storage
   /blueprints
   /custom_components

@@ -48,11 +48,6 @@
     dishwasher and dryer) could be triggered with a slight delay (or with more
     elaborate conditions) to ensure a short "pauses" in their cleaning cycle
     don't incorrectly toggle the sensor off...
-- [ ] Use a YAML-linter to enforce (amongst others) consistent indentation and
-      quoting
-  - ✔ Enable Prettier "format on save" in VS Code
-  - Automatically run Prettier _and_ `yamllint` (for the non-formatting/semantic
-    stuff) across the entire codebase to enforce compliance
 
 ## Lovelace
 
