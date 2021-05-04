@@ -1,49 +1,59 @@
 # Arlo
 - platform: aarlo
   monitored_conditions:
-  - total_cameras
-  - last_capture
-  - recent_activity
-  - captured_today
-  - battery_level
-  - signal_strength
+    - total_cameras
+    - last_capture
+    - recent_activity
+    - captured_today
+    - battery_level
+    - signal_strength
 
 # Media
 - platform: history_stats
   name: NVIDIA Shield TV playing (today)
   entity_id: media_player.nvidia_shield_tv
-  state: 'playing'
-  start: '{{ now().replace(hour=0).replace(minute=0).replace(second=0) }}'
-  end: '{{ now() }}'
+  state: playing
+  start: >-
+    {{
+      now().replace(hour=0).replace(minute=0).replace(second=0)
+    }}
+  end: >-
+    {{
+      now()
+    }}
 
 # Google DNS
 - platform: template
   sensors:
     google_dns_roundtrip_time:
-      value_template: "{{ state_attr('binary_sensor.google_dns_ping', 'round_trip_time_avg') }}"
-      friendly_name: 'Google DNS roundtrip time'
-      unit_of_measurement: 'ms'
+      value_template: >-
+        {{
+          state_attr('binary_sensor.google_dns_ping', 'round_trip_time_avg')
+        }}
+      friendly_name: Google DNS roundtrip time
+      unit_of_measurement: ms
 
 # DD-WRT-1
 - platform: snmp
-  name: 'DD-WRT-1 1-minute load'
+  name: DD-WRT-1 1-minute load
   host: dd-wrt-1.sgraastra
   baseoid: 1.3.6.1.4.1.2021.10.1.3.1
   version: 2c
   accept_errors: true
-  unit_of_measurement: '%'
-  value_template: '{{ value | multiply(50) | round(1) }}'
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value | multiply(50) | round(1) }}
 - platform: snmp
-  name: 'DD-WRT-1 WAN in (total octets)'
+  name: DD-WRT-1 WAN in (total octets)
   host: dd-wrt-1.sgraastra
   baseoid: 1.3.6.1.2.1.2.2.1.10.5
-  version: '2c'
+  version: 2c
   accept_errors: true
 - platform: snmp
-  name: 'DD-WRT-1 WAN out (total octets)'
+  name: DD-WRT-1 WAN out (total octets)
   host: dd-wrt-1.sgraastra
   baseoid: 1.3.6.1.2.1.2.2.1.16.5
-  version: '2c'
+  version: 2c
   accept_errors: true
 - platform: derivative
   source: sensor.dd_wrt_1_wan_in_total_octets
@@ -58,30 +68,46 @@
 - platform: template
   sensors:
     dd_wrt_1_wan_in_mbps:
-      value_template:  "{{ [((states('sensor.dd_wrt_1_wan_in_bps')|float*8)/1000000)|round(2),0]|max }}"
-      unit_of_measurement: 'Mbps'
-      friendly_name: 'DD-WRT-1 WAN in (Mbps)'
+      value_template: >-
+        {{
+          [(
+            (
+              states('sensor.dd_wrt_1_wan_in_bps')|float*8
+            ) / 1000000
+          )|round(2),0]|max
+        }}
+      unit_of_measurement: Mbps
+      friendly_name: DD-WRT-1 WAN in (Mbps)
     dd_wrt_1_wan_out_mbps:
-      value_template:  "{{ [((states('sensor.dd_wrt_1_wan_out_bps')|float*8)/1000000)|round(2),0]|max }}"
-      unit_of_measurement: 'Mbps'
-      friendly_name: 'DD-WRT-1 WAN out (Mbps)'
+      value_template: >-
+        {{
+          [(
+            (
+              states('sensor.dd_wrt_1_wan_out_bps')|float*8
+            ) / 1000000
+          )|round(2),0]|max
+        }}
+      unit_of_measurement: Mbps
+      friendly_name: DD-WRT-1 WAN out (Mbps)
 
 # DD-WRT-2
 - platform: snmp
-  name: 'DD-WRT-2 1-minute load'
+  name: DD-WRT-2 1-minute load
   host: dd-wrt-2.sgraastra
   baseoid: 1.3.6.1.4.1.2021.10.1.3.1
   version: 2c
   accept_errors: true
-  unit_of_measurement: '%'
-  value_template: '{{ value | multiply(50) | round(1) }}'
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value | multiply(50) | round(1) }}
 
 # Pi-hole
 - platform: snmp
-  name: 'Pi-hole 1-minute load'
+  name: Pi-hole 1-minute load
   host: pi-hole.sgraastra
   baseoid: 1.3.6.1.4.1.2021.10.1.3.1
   version: 2c
   accept_errors: true
-  unit_of_measurement: '%'
-  value_template: '{{ value | multiply(100) | round(1) }}'
+  unit_of_measurement: "%"
+  value_template: >-
+    {{ value | multiply(100) | round(1) }}

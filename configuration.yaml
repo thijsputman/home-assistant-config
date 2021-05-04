@@ -1,4 +1,4 @@
-default_config:
+default_config: # yamllint disable-line rule:empty-values
 
 cloud:
   alexa: !include alexa.yaml
@@ -54,7 +54,7 @@ lovelace:
     lovelace-home:
       mode: yaml
       title: !secret lovelace_street_name
-      icon: 'mdi:home-roof'
+      icon: mdi:home-roof
       show_in_sidebar: true
       filename: lovelace/home.yaml
 
@@ -192,7 +192,7 @@ alarm_control_panel:
     home_mode_name: Home
     night_mode_name: Night
   - platform: manual
-    name: "Home Alarm"
+    name: Home Alarm
     code: !secret alarm_code
     code_arm_required: false
     arming_time: 0
@@ -210,19 +210,19 @@ binary_sensor:
   # Arlo
   - platform: aarlo
     monitored_conditions:
-    - motion
-    - sound
-    - connectivity
+      - motion
+      - sound
+      - connectivity
   # Google DNS (ping)
   - platform: ping
     host: 8.8.8.8
-    name: 'Google DNS (ping)'
+    name: Google DNS (ping)
     count: 4
     scan_interval: 60
   # Nintendo Switch (ping)
   - platform: ping
     host: !secret nintendo_switch_hostname
-    name: 'Nintendo Switch (ping)'
+    name: Nintendo Switch (ping)
     count: 2
     scan_interval: 20
 
@@ -250,12 +250,12 @@ media_player:
     host: nvidia-shield-tv.sgraastra
     exclude_unnamed_apps: true
     apps:
-      com.nvidia.shield.remote: "Shield TV"
-      com.nvidia.geforcenow: "GeForce NOW"
-      com.google.android.tv: "Live Channels"
+      com.nvidia.shield.remote: Shield TV
+      com.nvidia.geforcenow: GeForce NOW
+      com.google.android.tv: Live Channels
     state_detection_rules:
-      'com.nvidia.shield.remote':
-        - 'standby'
+      com.nvidia.shield.remote:
+        - standby
   # Pi0 speaker (Bedroom)
   - platform: mpd
     name: Pi0 speaker (Bedroom)
@@ -264,9 +264,9 @@ media_player:
 # Fireplace
 rest_command:
   fireplace_start:
-    url: 'http://pi4.sgraastra:9000/hooks/fireplace-start'
+    url: http://pi4.sgraastra:9000/hooks/fireplace-start
   fireplace_stop:
-    url: 'http://pi4.sgraastra:9000/hooks/fireplace-stop'
+    url: http://pi4.sgraastra:9000/hooks/fireplace-stop
 
 notify:
   - name: All devices
