@@ -1,0 +1,6 @@
+/.cloud
+/.storage
+/blueprints/automation/homeassistant
+/custom_components
+/www/custom-jsm
+/known_devices.yaml

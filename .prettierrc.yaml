@@ -1,1 +1,6 @@
-proseWrap: always
+overrides:
+  - files:
+      - "*.yaml"
+    options:
+      # Ensure Prettier doesn't butcher Jinja2 (i.e. multiline strings)
+      proseWrap: preserve

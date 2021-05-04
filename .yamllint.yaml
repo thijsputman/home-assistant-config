@@ -35,5 +35,9 @@ rules:
     forbid-explicit-octal: true
   quoted-strings:
     required: only-when-needed
+    extra-required:
+      # Force the 24-hour clock format (e.g. 09:30:00) to be quoted even though
+      # it's not strictly necessary from a YAML perspective.
+      - ^[0-9]{2}:[0-9]{2}(:[0-9]{2})?$
   trailing-spaces: disable
   truthy: enable
