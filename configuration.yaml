@@ -188,7 +188,8 @@ aarlo:
 alarm_control_panel:
   - platform: aarlo
     away_mode_name: Armed
-    home_mode_name: Disarmed
+    disarmed_mode_name: Disarmed
+    home_mode_name: Home
     night_mode_name: Night
   - platform: manual
     name: "Home Alarm"

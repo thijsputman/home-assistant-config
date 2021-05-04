@@ -1,4 +1,4 @@
-type: 'custom:mod-card'
+type: "custom:mod-card"
 card_mod:
   style: |
     ha-card {
@@ -26,7 +26,9 @@ card:
     - type: conditional
       conditions:
         - entity: input_boolean.active_alarm_state
-          state: 'off'
+          state: "off"
+        - entity: !secret aarlo_connected_sensor
+          state: "on"
       card:
         type: vertical-stack
         cards:
@@ -46,24 +48,32 @@ card:
                 }
             entity: !secret aarlo_control_panel
             name: Arlo
-            icon: 'mdi:cctv'
+            icon: "mdi:cctv"
           - type: entities
             card_mod:
-              style: |
-                ha-card{
-                  border: 0px;
-                  box-shadow: unset;
-                  padding-top: 0px !important;
-                  margin-top: 0px !important;
-                }
-                ha-card div.card-content{
-                  padding-top: 0px;
-                }
+              style:
+                .: |
+                  ha-card{
+                    border: 0px;
+                    box-shadow: unset;
+                    padding-top: 0px !important;
+                    margin-top: 0px !important;
+                  }
+                  ha-card div.card-content{
+                    padding-top: 0px;
+                  }
+                paper-buttons-row$: |
+                  paper-button:nth-child(-n+3){
+                    padding: 0px !important;
+                  }
+                  paper-button:nth-child(-n+3) span{
+                    padding: 0px !important;
+                  }
             entities:
-              - type: 'custom:paper-buttons-row'
+              - type: "custom:paper-buttons-row"
                 buttons:
                   - name: – night
-                    icon: 'mdi:cctv'
+                    icon: "mdi:cctv"
                     tap_action:
                       action: call-service
                       service: alarm_control_panel.alarm_arm_night
@@ -75,15 +85,21 @@ card:
                       service: alarm_control_panel.alarm_arm_away
                       service_data:
                         entity_id: !secret aarlo_control_panel
+                  - name: / home
+                    tap_action:
+                      action: call-service
+                      service: alarm_control_panel.alarm_arm_home
+                      service_data:
+                        entity_id: !secret aarlo_control_panel
                   - name: Disarm
-                    icon: 'mdi:close-circle'
+                    icon: "mdi:close-circle"
                     tap_action:
                       action: call-service
                       service: alarm_control_panel.alarm_disarm
                       service_data:
                         entity_id: !secret aarlo_control_panel
                   - entity: timer.aarlo_pause
-                    icon: 'mdi:timer-outline'
+                    icon: "mdi:timer-outline"
                     name: 15 min
                     tap_action:
                       action: call-service
