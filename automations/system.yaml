@@ -154,14 +154,3 @@
     - delay: 600
   mode: single
   max_exceeded: silent
-# Ping sensors appear to not always properly initialise after Home Assistant
-# (re)starts – reload them 60 seconds after HA start to work around the issue...
-- alias: 🚧 Reload ping sensors (60 seconds after Home Assistant start)
-  id: 43aaba53-4815-452e-a62b-22ea58189902
-  trigger:
-    - platform: homeassistant
-      event: start
-  action:
-    - delay: 60
-    - service: ping.reload
-      data: {}

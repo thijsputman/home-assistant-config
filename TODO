@@ -32,12 +32,6 @@
       set of operations on the state of one or more existing sensors:
   - ✔ Time of Day / Nighttime
   - The Hue scene heuristics
-- [ ] As of
-      [Home Assistant 2021.4](https://www.home-assistant.io/blog/2021/04/07/release-20214/)
-      it shouldn't be necessary anymore to reload the ping sensors upon restart
-      – the
-      [underlying issue](https://github.com/home-assistant/core/pull/43869) has
-      been addressed. Automation disabled for now; fingers crossed...
 - [ ] See where
       [**trigger-based template sensors**](https://www.home-assistant.io/blog/2021/04/07/release-20214/)
       can/should be used.
