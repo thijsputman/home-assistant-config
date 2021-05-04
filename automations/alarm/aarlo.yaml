@@ -1,21 +1,17 @@
-- alias: 📹 | ⏰ Arm Arlo (daily at 22:30)
+- alias: 📹 | ⏰ Arm Arlo "Armed Home" (daily at 22:30)
   id: 093a7fa4-2045-4c7e-a8fb-2ff211c44213
   description: ""
   trigger:
     - platform: time
       at: "22:30:00"
-    # In case "Everyone asleep" occurs before 22:30
-    - platform: state
-      entity_id: alarm_control_panel.home_alarm
-      to: armed_night
   condition:
-    # Only act if Arlo is currently disarmed (to prevent unintentionally toggling
-    # from armed "Away" to armed "Night")
+    # Only act if Arlo is currently disarmed (to prevent unintentionally
+    # toggling from armed "Night" or "Away" to armed "Home")
     - condition: state
       entity_id: !secret aarlo_control_panel
       state: disarmed
   action:
-    - service: alarm_control_panel.alarm_arm_night
+    - service: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
       data: {}
   mode: single
@@ -25,12 +21,25 @@
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
-      to: armed_away
+      to:
+        - armed_away
+        - armed_night
   condition: []
   action:
-    - service: alarm_control_panel.alarm_arm_away
-      entity_id: !secret aarlo_control_panel
-      data: {}
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: alarm_control_panel.home_alarm
+              state: armed_night
+          sequence:
+            - service: alarm_control_panel.alarm_arm_night
+              entity_id: !secret aarlo_control_panel
+              data: {}
+      # Armed "Away" is stricter than armed "Night", so we default to that...
+      default:
+        - service: alarm_control_panel.alarm_arm_away
+          entity_id: !secret aarlo_control_panel
+          data: {}
   mode: single
 - alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
   id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
@@ -45,7 +54,7 @@
       data: {}
       entity_id: !secret aarlo_control_panel
   mode: single
-- alias: 📹 | ⏳ Pause Arlo (timer started)
+- alias: 📹 | ⏳ Pause Arlo "Armed Home" (timer started)
   id: ed2ae249-369f-4503-9122-21a5e49e1c21
   description: ""
   trigger:
@@ -63,7 +72,7 @@
               conditions:
                 - condition: state
                   entity_id: !secret aarlo_control_panel
-                  state: armed_night
+                  state: armed_home
           sequence:
             - service: timer.cancel
               data:
@@ -73,7 +82,7 @@
           entity_id: !secret aarlo_control_panel
           data: {}
   mode: single
-- alias: 📹 | ⏳ Resume Arlo (timer ended)
+- alias: 📹 | ⏳ Resume Arlo "Armed Home" (timer ended)
   id: 71bb747a-25c5-416a-a98d-66c33789a702
   description: ""
   trigger:
@@ -83,9 +92,12 @@
         - timer.paused
       event_data:
         entity_id: timer.aarlo_pause
-  condition: []
+  condition:
+    - condition: state
+      entity_id: !secret aarlo_control_panel
+      state: disarmed
   action:
-    - service: alarm_control_panel.alarm_arm_night
+    - service: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
       data: {}
   mode: single

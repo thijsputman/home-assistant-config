@@ -18,10 +18,17 @@ card:
         card_mod:
           style: |
             ha-card {
-              border: 0px;
+              {%- if states('binary_sensor.aarlo_armed_front') == 'on' -%}
+                border: 3px solid var(--label-badge-red);
+              {%- else -%}
+                border: 3px solid var(--label-badge-green);
+              {%- endif -%}
               box-shadow: unset;
               padding-bottom: 0px !important;
               margin-bottom: 0px !important;
+            }
+            ha-card div.base-16x9 > img{
+              width: 101% !important;
             }
         entity: camera.aarlo_front
         name: Front garden

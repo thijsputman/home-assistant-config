@@ -1,0 +1,18 @@
+- platform: template
+  sensors:
+    aarlo_armed_front:
+      friendly_name: Armed Front
+      icon_template: mdi:cctv
+      value_template: >-
+        {{ states('sensor.aarlo_alarm_state') in
+            ['armed_home', 'armed_night', 'armed_away'] }}
+      availability_template: >-
+        {{ is_state('binary_sensor.aarlo_connected_front', 'on') }}
+    aarlo_armed_back:
+      friendly_name: Armed Back
+      icon_template: mdi:cctv
+      value_template: >-
+        {{ states('sensor.aarlo_alarm_state') in
+            [ 'armed_night', 'armed_away'] }}
+      availability_template: >-
+        {{ is_state('binary_sensor.aarlo_connected_back', 'on') }}

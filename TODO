@@ -44,10 +44,16 @@
   - The `state_attr('sensor.xxx', 'last_reset').today().day|int` constructs
     (i.e. hacks 😉) in [`📄 sensors/dsmr.yaml`](./sensors/dsmr.yaml) appear to
     be great candidates at first sight...
-  - Some of the binary sensors indicating device activity (e.g. those for the
+  - ~~Some of the binary sensors indicating device activity (e.g. those for the
     dishwasher and dryer) could be triggered with a slight delay (or with more
     elaborate conditions) to ensure a short "pauses" in their cleaning cycle
-    don't incorrectly toggle the sensor off...
+    don't incorrectly toggle the sensor off~~ More appropriate to use template
+    binary sensors – see below
+- [ ] Clean up `📄 sensors.yaml` (i.e., move its contents into the `📁 sensors`
+      folder). Do the same with the binary sensors (move them from
+      `📄 configuration.yaml` into `📁 sensors_binary`). There's a handful of
+      "regular" template sensors (`sensor.binary_...`) that should've been
+      implemented as template binary sensors – correct those
 
 ## Lovelace
 
@@ -105,16 +111,6 @@
     on how to properly control them through deCONZ
 - [ ] Test the alarm sirens every first Monday of the month at 12:00 (to
       coincide with the Dutch national alarm siren test)
-- [ ] Currently Arlo's cameras are automatically armed daily at 22:30. Make this
-      contingent on the state of the lights in the back garden (and/or the
-      Kitchen door). When we're sitting outside late in Summer, don't arm Arlo
-      (or at least not until the garden lights go off / Kitchen door remains
-      closed for a while)
-- [x] ~~Set a basic Arlo schedule in the Arlo app (on every night, off in the
-      morning) so it doesn't fully depend on Home Assistant; ensure the
-      automations cope with the Arlo changing states outside of their control~~
-  - There does not appear to be a nice way to achieve this. Could (ab)use the
-    "schedule"-mode in Arlo, but that would prevent the state in the Arlo-app
-    from mapping properly to Aarlo/Home Assistant...
-- [ ] Use "Arm Home" instead of "Arm Night" at 22:30 – only arm the front door
-      at 22:30; arm the rest of the cameras when we go to sleep / are away
+- [ ] Replace the notifications ("motion detected when away") from the Arlo-app
+      with "native" Home Assistant notifications (mainly beneficial if this
+      allows to include a snapshot directly in the notification)

@@ -7,6 +7,14 @@
     - captured_today
     - battery_level
     - signal_strength
+- platform: template
+  sensors:
+    # In order to not expose the name of the Arlo alarm control panel, we this
+    # intermediate sensor to expose its state towards other template (sensors)
+    aarlo_alarm_state:
+      friendly_name: Alarm State
+      icon_template: mdi:security
+      value_template: !secret aarlo_alarm_state
 
 # Media
 - platform: history_stats
