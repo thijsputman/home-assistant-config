@@ -59,7 +59,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_47
-      for: "00:01:00"
+      for: "00:10:00"
       above: 90
   condition:
     - condition: state
@@ -117,7 +117,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_46
-      for: "00:01:00"
+      for: "00:10:00"
       above: 30
   condition:
     - condition: state
@@ -162,7 +162,7 @@
   action:
     - service: light.turn_on
       data:
-        brightness_pct: 66
+        brightness_pct: 50
       target:
         entity_id:
           - light.hue_filament_bulb_1_4
@@ -174,7 +174,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_48
-      for: "00:01:00"
+      for: "00:10:00"
       above: 60
   condition:
     - condition: state
@@ -232,7 +232,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_upstairs_hallway
-      for: "00:01:00"
+      for: "00:10:00"
       above: 50
   condition:
     - condition: state
