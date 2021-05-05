@@ -5,7 +5,7 @@
     - platform: numeric_state
       entity_id: sensor.weewx_rain
       above: 0
-      for: "00:02:00"
+      for: "00:01:00"
   condition:
     - condition: or
       conditions:
@@ -38,7 +38,7 @@
     - service: script.persistent_notification_all_devices
       data:
         tag: raining
-        title: It is raining outside
+        title: ☔ It is raining outside
         message: >-
           It is raining outside, please close the
           {%- if is_state('binary_sensor.openclose_19', 'on') or
@@ -50,4 +50,47 @@
           {%- elif is_state('binary_sensor.openclose_23', 'on')
             %} attic window
           {%- endif -%}.
+  mode: single
+- alias: 🌦️ | 📱 Dismiss notification (rain stopped)
+  id: 0bfb45f6-5516-4f37-86f1-d7bb7af88e94
+  description: ""
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.weewx_rain
+      below: 0.1
+      for: "00:10:00"
+  condition: []
+  action:
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: raining
+  mode: single
+- alias: 🌦️ | 📱 Dismiss notification (windows closed)
+  id: dd524898-9606-4c30-b7dc-d061515ee6bc
+  description: ""
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.openclose_19
+        - binary_sensor.openclose_20
+        - binary_sensor.openclose_33
+      from: "on"
+      to: "off"
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.weewx_rain
+      above: 0
+    - condition: state
+      entity_id: binary_sensor.openclose_19
+      state: "off"
+    - condition: state
+      entity_id: binary_sensor.openclose_20
+      state: "off"
+    - condition: state
+      entity_id: binary_sensor.openclose_33
+      state: "off"
+  action:
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: raining
   mode: single
