@@ -95,6 +95,10 @@
       motion sensor clears and retriggers). Instead of using a (preemptive)
       condition, use a waiting-loop that continuously (i.e. every 30 seconds)
       evaluates the conditions
+- [ ] Failure mode for Living room Hue scene heuristic: When the brightness of
+      the Ensuite ceiling lamp is increased during the "Daytime" scene, the
+      detected scene does not change (most likely the overall change is too
+      small – might require a specific exception)
 
 ## Alarm
 
