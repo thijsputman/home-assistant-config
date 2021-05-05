@@ -20,6 +20,13 @@ card:
             ha-card {
               {%- if states('binary_sensor.aarlo_armed_front') == 'on' -%}
                 border: 3px solid var(--label-badge-red);
+              {%- elif
+                strptime(
+                  now().year ~ ' ' ~ states('sensor.aarlo_last_front'),
+                  '%Y %m-%d %H:%M'
+                ) + timedelta( days = 1 ) > now().today()
+              -%}
+                border: 3px solid var(--warning-color);
               {%- else -%}
                 border: 3px solid var(--label-badge-green);
               {%- endif -%}
