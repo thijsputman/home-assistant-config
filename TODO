@@ -48,6 +48,11 @@
       `📄 configuration.yaml` into `📁 sensors_binary`). There's a handful of
       "regular" template sensors (`sensor.binary_...`) that should've been
       implemented as template binary sensors – correct those
+- [ ] Create a "persistent notification" script (or parameter for the existing
+      script) that only sends notifications to devices in the house (often these
+      notifications are only relevant when someone is at home)
+- [ ] Experiment with "critical notifications" for the most
+      important/time-sensitive notifications
 
 ## Lovelace
 
