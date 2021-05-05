@@ -1,14 +1,72 @@
-type: vertical-stack
-cards:
-  - type: custom:vacuum-card
-    style: |
-      ha-card .preview{
-        background-color: #333D4A;
-      }
-    entity: vacuum.neato_d7
-    map: camera.neato_d7_cleaning_map
-    stats:
-      default:
-        - attribute: clean_area
-          unit: m²
-          subtitle: Cleaning area
+type: custom:vacuum-card
+style: |
+  ha-card{
+    --primary-color: var(--paper-item-icon-color);
+  }
+  ha-card .preview{
+    background-color: #333D4A;
+  }
+  ha-card img.map{
+    min-height: 300px;
+  }
+  ha-card .preview .metadata .status-text{
+    text-transform: lowercase;
+  }
+  ha-card .stats .stats-block:nth-child(1)::first-letter{
+    text-transform: capitalize;
+  }
+  ha-card .stats .stats-block:nth-child(1) .stats-subtitle::after{
+    content: " {{ relative_time(
+                    strptime(
+                      state_attr('vacuum.neato_d7', 'clean_stop'),
+                      '%Y-%m-%dT%H:%M:%SZ'
+                    )
+                  )
+                }} ago";
+  }
+entity: vacuum.neato_d7
+map: camera.neato_d7_cleaning_map
+stats:
+  default:
+    - attribute: launched_from
+      subtitle: last run
+    - attribute: clean_area
+      unit: m²
+      subtitle: cleaned area
+actions:
+  - name: Clean the Kitchen
+    service: neato.custom_cleaning
+    service_data:
+      entity_id: vacuum.neato_d7
+      mode: 2
+      navigation: 1
+      category: 4
+      zone: Kitchen
+    icon: "mdi:pot-steam"
+  - name: Clean the Lunch area
+    service: neato.custom_cleaning
+    service_data:
+      entity_id: vacuum.neato_d7
+      mode: 2
+      navigation: 1
+      category: 4
+      zone: Family room
+    icon: "mdi:silverware-fork-knife"
+  - name: Clean the Ensuite
+    service: neato.custom_cleaning
+    service_data:
+      entity_id: vacuum.neato_d7
+      mode: 2
+      navigation: 1
+      category: 4
+      zone: Dining room
+    icon: "mdi:vanity-light"
+  - name: Clean the Living room
+    service: neato.custom_cleaning
+    service_data:
+      entity_id: vacuum.neato_d7
+      mode: 2
+      navigation: 1
+      category: 4
+      zone: Living room
+    icon: "mdi:sofa"
