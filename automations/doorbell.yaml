@@ -17,7 +17,7 @@
             entity_id: light.attic
           - delay: "00:00:01"
   mode: single
-- alias: 📱 | 🚪 Notify all devices (doorbell rang; auto-dismissed)
+- alias: 📱 | 🚪 Notify devices at home (doorbell rang; auto-dismissed)
   id: dd5d2646-26e3-4c71-aa3c-b7f49151606e
   description: ""
   trigger:
@@ -31,7 +31,7 @@
       data:
         tag: doorbell
         criticalNotification: true
-        title: 🚪 Someone's at the door!
+        title: 🚪 Someone's at the front door!
         message: >-
           The doorbell just rang...
     - delay: 120
@@ -49,6 +49,7 @@
       from: "off"
       to: "on"
   condition:
+    # Don't disturb an active capture/recording-session
     - condition: not
       conditions:
         - condition: state
@@ -58,4 +59,37 @@
     - service: aarlo.camera_request_snapshot
       data: {}
       entity_id: camera.aarlo_front
+  mode: single
+- alias: 📱 | 🚪 Send Arlo capture (camera active when doorbell rang)
+  id: a811aa28-9084-4158-87b4-a063e9b8358c
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.vibration_43
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: camera.aarlo_front
+      # These states only occur when the camera is armed/active (so this
+      # automation never conflicts with the preceding "snapshot" automation)
+      state:
+        - recording
+        - recently_active
+  action:
+    - wait_for_trigger:
+        - platform: event
+          event_type: aarlo_capture_updated
+      timeout: 60
+      # If no capture comes in within 60 seconds it was (most likely) already
+      # taken before the doorbell was rang...
+      continue_on_timeout: true
+    - service: script.persistent_notification_all_devices
+      data:
+        tag: doorbell
+        title: 🚪 Someone rang the doorbell...
+        message: >-
+          Arlo captured the situation:
+        image: >-
+          {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
   mode: single
