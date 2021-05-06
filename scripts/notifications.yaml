@@ -14,6 +14,12 @@ persistent_notification_all_devices:
   alias: Persistent notification (all devices)
   variables:
     clickAction: lovelace-home
+    lovelaceMessage: >-
+      {{ message }}
+      {% if image is defined %}
+
+        ![embedded image]({{ image }})
+      {% endif %}
     ttl: >-
       {% if criticalNotification is true %}
         0
@@ -34,6 +40,10 @@ persistent_notification_all_devices:
             {{ tag }}
           clickAction: >-
             {{ clickAction }}
+          image: >-
+            {% if image is defined %}
+              {{ image }}
+            {% endif %}
           ttl: >-
             {{ ttl }}
           priority: >-
@@ -43,7 +53,7 @@ persistent_notification_all_devices:
         title: >-
           {{ title }}
         message: >-
-          {{ message }}
+          {{ lovelaceMessage }}
         notification_id: >-
           {{ tag }}
   mode: single
@@ -52,6 +62,12 @@ persistent_notification_devices_at_home:
   alias: Persistent notification (devices at home)
   variables:
     clickAction: lovelace-home
+    lovelaceMessage: >-
+      {{ message }}
+      {% if image is defined %}
+
+        ![embedded image]({{ image }})
+      {% endif %}
     ttl: >-
       {% if criticalNotification is true %}
         0
@@ -78,6 +94,10 @@ persistent_notification_devices_at_home:
                     {{ tag }}
                   clickAction: >-
                     {{ clickAction }}
+                  image: >-
+                    {% if image is defined %}
+                      {{ image }}
+                    {% endif %}
                   ttl: >-
                     {{ ttl }}
                   priority: >-
@@ -100,6 +120,10 @@ persistent_notification_devices_at_home:
                     {{ tag }}
                   clickAction: >-
                     {{ clickAction }}
+                  image: >-
+                    {% if image is defined %}
+                      {{ image }}
+                    {% endif %}
                   ttl: >-
                     {{ ttl }}
                   priority: >-
@@ -110,7 +134,7 @@ persistent_notification_devices_at_home:
         title: >-
           {{ title }}
         message: >-
-          {{ message }}
+          {{ lovelaceMessage }}
         notification_id: >-
           {{ tag }}
   mode: single
@@ -119,6 +143,12 @@ persistent_notification_my_devices:
   alias: Persistent notification (my devices)
   variables:
     clickAction: lovelace-home
+    lovelaceMessage: >-
+      {{ message }}
+      {% if image is defined %}
+
+        ![embedded image]({{ image }})
+      {% endif %}
     ttl: >-
       {% if criticalNotification is true %}
         0
@@ -139,6 +169,10 @@ persistent_notification_my_devices:
             {{ tag }}
           clickAction: >-
             {{ clickAction }}
+          image: >-
+            {% if image is defined %}
+              {{ image }}
+            {% endif %}
           ttl: >-
             {{ ttl }}
           priority: >-
@@ -148,7 +182,7 @@ persistent_notification_my_devices:
         title: >-
           {{ title }}
         message: >-
-          {{ message }}
+          {{ lovelaceMessage }}
         notification_id: >-
           {{ tag }}
   mode: single
