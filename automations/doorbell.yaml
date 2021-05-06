@@ -27,9 +27,10 @@
       to: "on"
   condition: []
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.persistent_notification_devices_at_home
       data:
         tag: doorbell
+        criticalNotification: true
         title: 🚪 Someone's at the door!
         message: >-
           The doorbell just rang...

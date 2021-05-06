@@ -145,6 +145,7 @@
     - service: script.persistent_notification_my_devices
       data:
         tag: system_general
+        criticalNotification: true
         title: 💽 Recorder-component failure!
         message: >-
           The recorder-component failed with the folllowing error:

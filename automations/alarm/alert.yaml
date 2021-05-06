@@ -185,6 +185,7 @@
     - service: script.persistent_notification_all_devices
       data:
         tag: home_alarm
+        criticalNotification: true
         title: 🚨 Home Alarm pending!
         # The list of sensors includes doors/windows that were already open.
         # Filtering out those is more trouble than it's worth...
@@ -215,6 +216,7 @@
         # Separate tag – dismissing this from the Lovelace UI will *not*
         # auto-dismiss it from any of the other devices
         tag: home_alarm_triggered
+        criticalNotification: true
         title: 🚨 Home Alarm sounding!
         message: >-
           The Home Alarm is sounding – there's someone in the house!
@@ -235,6 +237,7 @@
     - service: script.persistent_notification_my_devices
       data:
         tag: home_alarm
+        criticalNotification: true
         title: 🚨 Home Alarm disarmed
         message: >-
           The Home Alarm just got disarmed

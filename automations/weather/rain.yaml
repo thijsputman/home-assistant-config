@@ -38,6 +38,7 @@
     - service: script.persistent_notification_all_devices
       data:
         tag: raining
+        criticalNotification: true
         title: ☔ It is raining outside
         message: >-
           It is raining outside, please close the

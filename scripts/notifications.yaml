@@ -12,6 +12,16 @@ tts_p20:
   icon: mdi:text-to-speech
 persistent_notification_all_devices:
   alias: Persistent notification (all devices)
+  variables:
+    clickAction: lovelace-home
+    ttl: >-
+      {% if criticalNotification is true %}
+        0
+      {% endif %}
+    priority: >-
+      {% if criticalNotification is true %}
+        high
+      {% endif %}
   sequence:
     - service: notify.all_devices
       data:
@@ -22,7 +32,12 @@ persistent_notification_all_devices:
         data:
           tag: >-
             {{ tag }}
-          clickAction: lovelace-home
+          clickAction: >-
+            {{ clickAction }}
+          ttl: >-
+            {{ ttl }}
+          priority: >-
+            {{ priority }}
     - service: persistent_notification.create
       data:
         title: >-
@@ -33,8 +48,85 @@ persistent_notification_all_devices:
           {{ tag }}
   mode: single
   icon: mdi:message-plus-outline
+persistent_notification_devices_at_home:
+  alias: Persistent notification (devices at home)
+  variables:
+    clickAction: lovelace-home
+    ttl: >-
+      {% if criticalNotification is true %}
+        0
+      {% endif %}
+    priority: >-
+      {% if criticalNotification is true %}
+        high
+      {% endif %}
+  sequence:
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: device_tracker.gm1913
+              state: home
+          sequence:
+            - service: notify.mobile_app_gm1913
+              data:
+                title: >-
+                  {{ title }}
+                message: >-
+                  {{ message }}
+                data:
+                  tag: >-
+                    {{ tag }}
+                  clickAction: >-
+                    {{ clickAction }}
+                  ttl: >-
+                    {{ ttl }}
+                  priority: >-
+                    {{ priority }}
+      default: []
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: device_tracker.sm_g930f
+              state: home
+          sequence:
+            - service: notify.mobile_app_sm_g930f
+              data:
+                title: >-
+                  {{ title }}
+                message: >-
+                  {{ message }}
+                data:
+                  tag: >-
+                    {{ tag }}
+                  clickAction: >-
+                    {{ clickAction }}
+                  ttl: >-
+                    {{ ttl }}
+                  priority: >-
+                    {{ priority }}
+      default: []
+    - service: persistent_notification.create
+      data:
+        title: >-
+          {{ title }}
+        message: >-
+          {{ message }}
+        notification_id: >-
+          {{ tag }}
+  mode: single
+  icon: mdi:message-processing-outline
 persistent_notification_my_devices:
   alias: Persistent notification (my devices)
+  variables:
+    clickAction: lovelace-home
+    ttl: >-
+      {% if criticalNotification is true %}
+        0
+      {% endif %}
+    priority: >-
+      {% if criticalNotification is true %}
+        high
+      {% endif %}
   sequence:
     - service: notify.mobile_app_gm1913
       data:
@@ -45,7 +137,12 @@ persistent_notification_my_devices:
         data:
           tag: >-
             {{ tag }}
-          clickAction: lovelace-home
+          clickAction: >-
+            {{ clickAction }}
+          ttl: >-
+            {{ ttl }}
+          priority: >-
+            {{ priority }}
     - service: persistent_notification.create
       data:
         title: >-
@@ -55,4 +152,4 @@ persistent_notification_my_devices:
         notification_id: >-
           {{ tag }}
   mode: single
-  icon: mdi:message-plus-outline
+  icon: mdi:message-outline

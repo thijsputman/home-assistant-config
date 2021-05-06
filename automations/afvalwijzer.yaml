@@ -19,7 +19,7 @@
     - service: script.persistent_notification_all_devices
       data:
         tag: trash
-        title: Trash reminder
+        title: ♻️ Trash reminder
         message: >-
           Don't forget to put the
             {%- if is_state('sensor.afvalwijzer_next_item', 'restafval')
@@ -47,6 +47,6 @@
     - service: script.persistent_notification_all_devices
       data:
         tag: trash
-        title: Trash reminder
+        title: 📦 Trash reminder
         message: Don't forget to put the paper outside!
   mode: single

@@ -12,6 +12,7 @@
     - service: script.persistent_notification_all_devices
       data:
         tag: away
+        criticalNotification: true
         title: 🚪 Doors and/or windows left open!
         message: >-
           The following doors and/or windows are still open:
@@ -65,6 +66,7 @@
     - service: script.persistent_notification_all_devices
       data:
         tag: away
+        criticalNotification: true
         title: 🚨 Back gate opened!
         message: >-
           The back gate was just opened!
