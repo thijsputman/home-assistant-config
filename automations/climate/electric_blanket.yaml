@@ -21,12 +21,17 @@
       entity_id: light.bedroom
       from: "on"
       to: "off"
+      for: "00:20:00"
+    # Also turn off when everyone is asleep (fail-safe)
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "off"
+      to: "on"
   condition:
     - condition: state
       entity_id: switch.on_off_plug_in_unit_3
       state: "on"
   action:
-    - delay: "00:20:00"
     - service: switch.turn_off
       data: {}
       entity_id: switch.on_off_plug_in_unit_3
@@ -35,10 +40,6 @@
   id: ba757313-c28b-4533-be3f-897d47e18c35
   description: ""
   trigger:
-    # In case Home Assistant or deCONZ restarts, the switch transitions from "on"
-    # to "unavailable" back to "on" – omission of the "from"-state here is
-    # intentional in the hopes it ensures the switch doesn't stay on indefinetely
-    # (but instead restarts its timer).
     - platform: state
       entity_id: switch.on_off_plug_in_unit_3
       to: "on"
