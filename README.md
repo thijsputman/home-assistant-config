@@ -1,5 +1,7 @@
 # Home Assistant Configuration
 
+[![Lint codebase](https://github.com/thijsputman/home-assistant-config/actions/workflows/linter.yml/badge.svg?branch=main)](https://github.com/thijsputman/home-assistant-config/actions/workflows/linter.yml)
+
 The _live_ configuration of my personal Home Assistant instance.
 
 ## Development
