@@ -52,6 +52,12 @@
       some notifications could/should be made sticky and/or persistent on the
       mobile devices; attachments/images might be helpful in places; change the
       click-action based on the notification context)
+- [ ] Use generic names for the mobile devices registered through the "Mobile
+      App" integration (`gm1913`, `sm_g930f` and `p20hd_eea`). Knowing the model
+      numbers of these devices allows one to deduce the vendor prefixes of their
+      WiFi and Bluetooth MAC addresses, which in turn _could_ be used to
+      pinpoint the exact location of the house (if the combination of the three
+      device types is unique enough – which it might).
 
 ## Lovelace
 
