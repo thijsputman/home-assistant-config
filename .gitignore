@@ -2,7 +2,7 @@
 /.aarlo
 /.cloud
 /.storage
-/blueprints/automation/homeassistant
+/blueprints/*/homeassistant
 /custom_components
 /deps
 /image
