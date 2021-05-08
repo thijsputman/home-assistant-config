@@ -101,14 +101,18 @@
       entity_id: !secret aarlo_control_panel
       data: {}
   mode: single
-- alias: 📹 | ⏰ Arlo snapshot (every 2 hours)
+- alias: 📹 | ⏰ Arlo snapshot (every 2 hours / Home Assistant start)
   id: 769a4449-f68b-4403-a09b-87b81cbe1581
   description: ""
+  variables:
+    aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
     - platform: time_pattern
       hours: /2
       minutes: 0
       seconds: 0
+    - platform: homeassistant
+      event: start
   condition:
     - condition: not
       conditions:
@@ -118,6 +122,13 @@
             - camera.aarlo_front
           state: recording
   action:
+    # Wait (up to 15 minutes) for Aarlo to be connected – to cope with transient
+    # connection failures and the fact that, at Home Assistant start, Aarlo
+    # might not yet be available/connected...
+    - wait_template: >-
+        {{ states(aarlo_connected_sensor) == 'on' }}
+      timeout: 900
+      continue_on_timeout: false
     - service: aarlo.camera_request_snapshot
       data: {}
       entity_id:
