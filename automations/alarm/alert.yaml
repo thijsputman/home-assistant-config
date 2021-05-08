@@ -234,9 +234,11 @@
         - disarmed
   condition: []
   action:
-    - service: script.persistent_notification_my_devices
+    - service: script.persistent_notification_all_devices
       data:
-        tag: home_alarm
+        # Separate tag – dismissing this from the Lovelace UI will *not*
+        # auto-dismiss it from any of the other devices
+        tag: home_alarm_disarmed
         criticalNotification: true
         title: 🚨 Home Alarm disarmed
         message: >-

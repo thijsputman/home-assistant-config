@@ -35,7 +35,7 @@
           {%- elif is_state('binary_sensor.openclose_23', 'on')
             %} attic window
           {%- endif -%}.
-    - service: script.persistent_notification_all_devices
+    - service: script.persistent_notification_devices_at_home
       data:
         tag: raining
         criticalNotification: true
