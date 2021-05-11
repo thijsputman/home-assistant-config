@@ -224,6 +224,7 @@ card:
             ha-card{
               border: 0px;
               box-shadow: unset;
+              --cool-color: var(--primary-color) !important;
             }
             ha-card section.body{
               display: none;
