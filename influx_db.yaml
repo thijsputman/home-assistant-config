@@ -1,0 +1,49 @@
+api_version: 2
+host: eu-central-1-1.aws.cloud2.influxdata.com
+token: !secret influxdb_token
+organization: !secret influxdb_organization
+bucket: home-assistant
+tags:
+  source: HA
+tags_attributes:
+  - friendly_name
+default_measurement: units
+include:
+  entities:
+    - sensor.power_consumption
+    - sensor.hourly_gas_consumption
+    - group.family
+    - sensor.time_of_day
+    # WeeWX
+    - sensor.weewx_outside_temperature
+    - sensor.weewx_solar_irradiance
+    - sensor.weewx_wind_speed
+    - sensor.weewx_rain
+    - sensor.weewx_outside_humidity
+    # tado°
+    - sensor.tado_smart_thermostat_temperature
+    - sensor.tado_smart_radiator_attic_temperature
+    - sensor.tado_smart_ac_control_attic_temperature
+    - sensor.tado_smart_thermostat_setpoint
+    - sensor.tado_smart_radiator_attic_setpoint
+    - sensor.tado_smart_ac_control_attic_setpoint
+    - sensor.tado_living_room_heating
+    - sensor.tado_attic_heating
+    - binary_sensor.tado_living_room_power
+    - binary_sensor.tado_attic_power
+    - binary_sensor.tado_attic_ac_power
+    # Appliances
+    - sensor.power_41 # Electric heater (Shed)
+    - sensor.power_57 # Close-in boiler (Kitchen)
+    - sensor.power_83 # Dryer
+    - sensor.power_86_actual # Washing machine
+    - sensor.power_88_actual # Dishwasher
+    - sensor.power_99 # Airco (Attic)
+    - sensor.power_lights_all
+    - sensor.ups_power
+component_config:
+  # Don't push entity_id-attribute (i.e. names of group members) for the
+  # family group; keeps the data in InfluxDB free of PII...
+  group.family:
+    ignore_attributes:
+      - entity_id
