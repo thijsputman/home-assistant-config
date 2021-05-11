@@ -21,7 +21,7 @@
         temperature: 21.0
       entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🌡️ | 🤖 Attic heating on (keep on while lights are on)
+- alias: 🌡️ | 🤖 Attic heating retain setpoint (while lights are on)
   id: 4e9442c0-9b22-441a-9f3c-13fee3cedd52
   description: ""
   # This is primarily to prevent the tado°-schedule from switching the Attic
@@ -58,7 +58,10 @@
       from: "on"
       to: "off"
       for: "00:05:00"
-  condition: []
+  condition:
+    - condition: state
+      entity_id: climate.tado_smart_radiator_attic
+      state: heat
   action:
     - service: climate.set_temperature
       data:
@@ -84,9 +87,10 @@
       entity_id: sensor.tado_smart_radiator_attic_setpoint
       above: 18.0
     - condition: state
-      entity_id: sensor.tado_smart_radiator_attic_mode
+      entity_id: climate.tado_smart_radiator_attic
       state: heat
-    # Don't continue if the Attic light is already switched on...
+    # Waiting for the lights to remain off only makes sense if the lights are
+    # off to begin with...
     - condition: state
       entity_id: light.attic
       state: "off"
@@ -98,8 +102,8 @@
           to: "on"
       timeout: "01:30:00"
       continue_on_timeout: true
-    # Only continue (i.e. switch the radiator off) if the timer expired (i.e. the
-    # light in the Attic was not switched on within 90 minutes)
+    # Only continue (i.e. switch the radiator off) if the timer expired (i.e.
+    # the light in the Attic was not switched on within 90 minutes)
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
@@ -127,7 +131,7 @@
       entity_id: sensor.tado_smart_radiator_attic_setpoint
       above: 18.0
     - condition: state
-      entity_id: sensor.tado_smart_radiator_attic_mode
+      entity_id: climate.tado_smart_radiator_attic
       state: heat
   action:
     - service: climate.set_temperature
@@ -135,7 +139,7 @@
         temperature: 12.0
       entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🌡️ | 🤖 Attic heating off (Living room thermostat off)
+- alias: 🌡️ | 🤖 Attic heating off (Living room thermostat lowered)
   id: 529a20b2-7b28-4cf7-84c3-72c5d851d853
   description: ""
   trigger:
@@ -150,11 +154,31 @@
       entity_id: sensor.tado_smart_radiator_attic_setpoint
       above: 18.0
     - condition: state
-      entity_id: sensor.tado_smart_radiator_attic_mode
+      entity_id: climate.tado_smart_radiator_attic
       state: heat
   action:
     - service: climate.set_temperature
       data:
         temperature: 12.0
       entity_id: climate.tado_smart_radiator_attic
+  mode: single
+# Keep the operation mode of the Attic thermostat in-sync with the main (i.e.
+# Living room) thermostat. This generally happens just twice per year (once in
+# Spring; once in Autumn) when the central heating gets switched on/off for the
+# season. Using the Tado integration to ensure the operation mode change
+# persists, which is not possible via HomeKit.
+- alias: 🌡️ | 🤖 Attic heating operation mode (follow Living room thermostat)
+  id: da50685d-7a61-470c-96d0-07c6ee84a53b
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: climate.tado_living_room
+  condition: []
+  action:
+    - service: climate.set_hvac_mode
+      data:
+        hvac_mode: >-
+          {{ trigger.to_state.state }}
+      target:
+        entity_id: climate.tado_attic
   mode: single
