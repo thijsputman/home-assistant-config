@@ -47,10 +47,7 @@ views:
     icon: mdi:home-thermometer
     badges: []
     cards:
-      - type: vertical-stack
-        cards:
-          - !include home/climate/thermostat.yaml
-          - !include home/climate/temperature.yaml
+      - !include home/climate/thermostat.yaml
       - type: vertical-stack
         cards:
           - type: grid
@@ -68,8 +65,11 @@ views:
                   action: toggle
                 entity: switch.on_off_plug_in_unit_4
           - !include home/climate/bathroom_fan.yaml
-      - type: weather-forecast
-        entity: !secret weather_home
+      - type: vertical-stack
+        cards:
+          - !include home/climate/temperature.yaml
+          - type: weather-forecast
+            entity: !secret weather_home
   # Lights
   - title: Lights
     path: lights

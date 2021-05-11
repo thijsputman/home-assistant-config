@@ -20,7 +20,7 @@ custom CSS.
 - `logbook-card.js?v=1.3.2`
 - `mini-graph-card-bundle.js?v=0.11.0-dev.4`
 - `paper-buttons-row.js?v=0.5.0`
-- `simple-thermostat.js?v=2.3.1`
+- `simple-thermostat.js?v=2.4.0`
 - `vacuum-card.js?v=1.21.2`
 
 ## Custom CSS

@@ -14,6 +14,40 @@ report_size: 5
 card:
   type: vertical-stack
   cards:
+    # tado° – preset mode
+    - type: conditional
+      conditions:
+        - entity: !secret tado_ib1_connection_state
+          state: "on"
+      card:
+        type: custom:simple-thermostat
+        card_mod:
+          style: |
+            ha-card{
+              border: 0px;
+              box-shadow: unset;
+              padding-top: 2px !important;
+              padding-bottom: 0px !important;
+            }
+            ha-card section.body{
+              display: none;
+            }
+        entity: climate.tado_living_room
+        header: false
+        hide:
+          setpoint: true
+          temperature: true
+          state: true
+        control:
+          preset:
+            _name: tado° – preset mode
+            home:
+              name: false
+              icon: mdi:home-outline
+            away:
+              name: false
+              icon: mdi:car-side
+    # central heating – header
     - type: custom:simple-thermostat
       card_mod:
         style: |
@@ -35,26 +69,30 @@ card:
         temperature: true
       control: false
       header:
-        name: tado°
+        name: central heating
+        icon:
+          "idle": mdi:radiator-disabled
+          heat: mdi:radiator
         faults:
           - entity: climate.tado_smart_radiator_attic
             icon: mdi:home-roof
             hide_inactive: false
-          - entity: !secret tado_ru1_serial
+          - entity: !secret tado_ru1_battery_state
             icon: mdi:battery-20
             hide_inactive: true
-          - entity: !secret tado_va1_serial
+          - entity: !secret tado_va1_battery_state
             icon: mdi:battery-20
             hide_inactive: true
-          - entity: binary_sensor.living_room_open_window
+          - entity: binary_sensor.tado_living_room_open_window
             icon: mdi:window-closed
             hide_inactive: true
           - entity: binary_sensor.tado_attic_open_window
             icon: mdi:window-closed
             hide_inactive: true
+    # central heating – temperature controls
     - type: conditional
       conditions:
-        - entity: sensor.tado_smart_thermostat_mode
+        - entity: climate.tado_smart_thermostat
           state: heat
       card:
         type: custom:simple-thermostat
@@ -91,9 +129,10 @@ card:
             name: setpoint – Attic
             attribute: temperature
             unit: °C
+    # central heating – operation mode
     - type: conditional
       conditions:
-        - entity: !secret tado_ib1_serial
+        - entity: !secret tado_ru1_connection_state
           state: "on"
       card:
         type: custom:simple-thermostat
@@ -102,7 +141,7 @@ card:
             ha-card{
               border: 0px;
               box-shadow: unset;
-              padding-top: 0px !important;
+              padding-bottom: 0px !important;
             }
             ha-card section.body{
               display: none;
@@ -114,13 +153,6 @@ card:
           temperature: true
           state: true
         control:
-          preset:
-            home:
-              name: false
-              icon: mdi:home-outline
-            away:
-              name: false
-              icon: mdi:car-side
           hvac:
             auto:
               name: false
@@ -128,3 +160,90 @@ card:
               name: false
             "off":
               name: false
+    # airco (Attic) – header
+    - type: custom:simple-thermostat
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding-bottom: 0px !important;
+          }
+          ha-card header{
+            padding-bottom: 0px !important;
+          }
+          ha-card section.body{
+            display: none;
+          }
+      entity: climate.tado_smart_ac_control_attic
+      hide:
+        setpoint: true
+        state: true
+        temperature: true
+      control: false
+      header:
+        name: airco – Attic
+        icon:
+          idle: mdi:snowflake-off
+          cooling: mdi:snowflake
+        faults:
+          - entity: binary_sensor.tado_attic_ac_open_window
+            icon: mdi:window-closed
+            hide_inactive: true
+    # airco (Attic) – temperature control
+    - type: conditional
+      conditions:
+        - entity: climate.tado_smart_ac_control_attic
+          state: cool
+      card:
+        type: custom:simple-thermostat
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              box-shadow: unset;
+              padding-bottom: 0px !important;
+            }
+        entity: climate.tado_smart_ac_control_attic
+        header: false
+        layout:
+          step: row
+        hide:
+          state: true
+          temperature: true
+        control: false
+    # airco (Attic) – operation mode
+    - type: conditional
+      conditions:
+        - entity: !secret tado_wr1_connection_state
+          state: "on"
+      card:
+        type: custom:simple-thermostat
+        card_mod:
+          style: |
+            ha-card{
+              border: 0px;
+              box-shadow: unset;
+            }
+            ha-card section.body{
+              display: none;
+            }
+        entity: climate.tado_attic_ac
+        header: false
+        hide:
+          setpoint: true
+          temperature: true
+          state: true
+        control:
+          hvac:
+            auto:
+              name: false
+            cool:
+              name: false
+            "off":
+              name: false
+            heat_cool: false
+            dry: false
+            fan_only: false
+          swing:
+            _hide_when_off: true

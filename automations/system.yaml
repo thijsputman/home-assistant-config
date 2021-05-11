@@ -72,7 +72,7 @@
   variables:
     # Entities that require Internet-connectivity to function
     online:
-      - !secret tado_ib1_serial
+      - !secret tado_ib1_connection_state
       - !secret aarlo_connected_sensor
       - vacuum.neato_d7
       - switch.pi_hole
@@ -84,7 +84,7 @@
         - sensor.weewx_outside_temperature_balcony
         - light.range_extender_2 # deCONZ
         - sensor.hue_dimmer_switch_1_battery_level
-        - !secret tado_ib1_serial
+        - !secret tado_ib1_connection_state
         - climate.tado_smart_thermostat
         - !secret aarlo_connected_sensor
         - vacuum.neato_d7
