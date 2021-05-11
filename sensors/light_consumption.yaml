@@ -41,7 +41,9 @@
               'light.smart_relay_2'
             ]
           -%}
-          {%- elif states(light.entity_id) == 'off' -%}
+          {%- elif states(light.entity_id) in
+            ['off', 'unknown', 'unavailable']
+          -%}
             {%- set result.watt = result.watt + 0.4 -%}
           {%- elif light.entity_id in
             [
