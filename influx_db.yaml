@@ -12,16 +12,26 @@ include:
   entities:
     - sensor.power_consumption
     - sensor.hourly_gas_consumption
-    - group.family
+    - group.family # occupancy
     - sensor.time_of_day
     # WeeWX
     - sensor.weewx_outside_temperature
+    - sensor.weewx_outside_temperature_balcony
     - sensor.weewx_solar_irradiance
     - sensor.weewx_wind_speed
     - sensor.weewx_rain
     - sensor.weewx_outside_humidity
+    # Temperatures
+    - sensor.temperature_3 # Attic
+    - sensor.temperature_9 # Bedroom
+    - sensor.temperature_21 # Kitchen
+    - sensor.temperature_24 # Bathroom
+    - sensor.temperature_27 # Shed
+    - sensor.temperature_30 # Hallway
+    - sensor.temperature_37 # Guestroom
+    - sensor.temperature_78 # Basement
     # tado°
-    - sensor.tado_smart_thermostat_temperature
+    - sensor.tado_smart_thermostat_temperature # Living room temperature
     - sensor.tado_smart_radiator_attic_temperature
     - sensor.tado_smart_ac_control_attic_temperature
     - sensor.tado_smart_thermostat_setpoint
@@ -47,3 +57,13 @@ component_config:
   group.family:
     ignore_attributes:
       - entity_id
+component_config_glob:
+  # Ignore the voltage, current and temperature measurements provided by the
+  # smart-plugs – there are better temperature measurements available; the
+  # voltage/current measurements are redundant (we know power and there's
+  # little doubt the grid provides a stable 230V).
+  "sensor.power_*":
+    ignore_attributes:
+      - voltage
+      - current
+      - temperature
