@@ -29,10 +29,11 @@
           {%- if is_state('binary_sensor.openclose_19', 'on') or
             is_state('binary_sensor.openclose_20', 'on')
               %} bedroom window
-              {%- if is_state('binary_sensor.openclose_23', 'on')
+              {%- if is_state('binary_sensor.openclose_33', 'on')
                 %} and the
               {%- endif -%}
-          {%- elif is_state('binary_sensor.openclose_23', 'on')
+          {%- endif -%}
+          {%- if is_state('binary_sensor.openclose_33', 'on')
             %} attic window
           {%- endif -%}.
     - service: script.persistent_notification_devices_at_home
@@ -45,10 +46,11 @@
           {%- if is_state('binary_sensor.openclose_19', 'on') or
             is_state('binary_sensor.openclose_20', 'on')
               %} bedroom window
-              {%- if is_state('binary_sensor.openclose_23', 'on')
+              {%- if is_state('binary_sensor.openclose_33', 'on')
                 %} and the
               {%- endif -%}
-          {%- elif is_state('binary_sensor.openclose_23', 'on')
+          {%- endif -%}
+          {%- if is_state('binary_sensor.openclose_33', 'on')
             %} attic window
           {%- endif -%}.
   mode: single

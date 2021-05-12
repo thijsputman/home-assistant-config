@@ -8,6 +8,8 @@ tts_p20:
           {{ message }}
         data:
           channel: alarm_stream
+          ttl: 0
+          priority: high
   mode: single
   icon: mdi:text-to-speech
 persistent_notification_all_devices:
