@@ -134,9 +134,30 @@
   unit_of_measurement: mm/h
   value_template: >-
     {{ (value | float * 10) | round(1) }}
+- platform: integration
+  source: sensor.weewx_rain_rate_hour
+  name: weewx_rain_total
+  round: 1
+  unit: mm
 - platform: mqtt
   state_topic: weewx/ET_cm
   name: WeeWX evapotranspiration
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(4) }}
+- platform: integration
+  source: sensor.weewx_evapotranspiration
+  name: weewx_evapotranspiration_total
+  round: 1
+  unit: mm
+- platform: template
+  sensors:
+    weewx_rain_netto:
+      value_template: >
+        {{ (
+              (states('sensor.weewx_rain_total')|float) -
+              (states('sensor.weewx_evapotranspiration_total')|float)
+            ) | round(1)
+        }}
+      unit_of_measurement: mm
+      friendly_name: WeeWX rain (netto)

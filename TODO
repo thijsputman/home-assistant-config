@@ -58,6 +58,10 @@
       WiFi and Bluetooth MAC addresses, which in turn _could_ be used to
       pinpoint the exact location of the house (if the combination of the three
       device types is unique enough – which it might).
+- [ ] Experiment with using the amount of rain and the (WeeWX calculated)
+      evapotranspiration to indicate whether the garden should be watered
+  - For now just graphing the daily delta between the two to get a bit of a
+    feeling on how the data moves
 
 ## Lovelace
 

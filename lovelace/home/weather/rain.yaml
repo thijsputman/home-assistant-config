@@ -59,7 +59,7 @@ card:
       hours_to_show: 240
       group_by: date
       hour24: true
-      aggregate_func: sum
+      aggregate_func: delta
       decimals: 1
       height: 90
       lower_bound: 0
@@ -70,5 +70,5 @@ card:
         state: false
         icon: false
       entities:
-        - entity: sensor.weewx_rain_hour
+        - entity: sensor.weewx_rain_total
           color: "#3498DB"
