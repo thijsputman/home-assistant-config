@@ -24,6 +24,24 @@
                 -}}
             </li>
           </ul>
+- alias: 🚨 | 📱 Notify on "Armed away"
+  id: e23e2cf8-502d-4e28-8758-9ab11b5fee14
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_away
+  condition:
+    - condition: state
+      entity_id: group.openclose_all
+      state: "off"
+  action:
+    - service: script.persistent_notification_all_devices
+      data:
+        tag: away
+        criticalNotification: true
+        title: 🛡️ Home alarm armed
+        message: >-
+          The Home alarm just changed into "Armed Away"-mode
 # Presence (i.e. motion) sensors are used to turn on lights – the sensors are
 # not well-positioned for intruder detection. Still, if no-one is home, there's
 # no harm in making them trigger the alarm...
@@ -88,8 +106,8 @@
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
   action:
-    # Stagger the lights to give the appearance of someone manually switching them
-    # on...
+    # Stagger the lights to give the appearance of someone manually switching
+    # them on...
     - delay: 2
     - service: hue.hue_activate_scene
       data:
