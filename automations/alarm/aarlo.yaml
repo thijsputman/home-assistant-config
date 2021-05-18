@@ -1,6 +1,8 @@
 - alias: 📹 | ⏰ Arm Arlo "Armed Home" (daily at 22:30)
   id: 093a7fa4-2045-4c7e-a8fb-2ff211c44213
   description: ""
+  variables:
+    aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
     - platform: time
       at: "22:30:00"
@@ -11,13 +13,22 @@
       entity_id: !secret aarlo_control_panel
       state: disarmed
   action:
+    # Wait (indefinitely) for Aarlo to be connected – this can lead to race
+    # conditions between this and the next two automations (which also wait
+    # indefinitely). It beats not waiting at all though (in which case
+    # connectivity issue at trigger time will surely cause the system to get
+    # stuck in the wrong state).
+    - wait_template: >-
+        {{ states(aarlo_connected_sensor) == 'on' }}
     - service: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
       data: {}
-  mode: single
+  mode: restart
 - alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
   id: 6fcafedb-78df-4fa4-a7ac-80aec0750cd1
   description: ""
+  variables:
+    aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
@@ -26,6 +37,9 @@
         - armed_night
   condition: []
   action:
+    # Wait (indefinitely) for Aarlo to be connected
+    - wait_template: >-
+        {{ states(aarlo_connected_sensor) == 'on' }}
     - choose:
         - conditions:
             - condition: state
@@ -40,20 +54,25 @@
         - service: alarm_control_panel.alarm_arm_away
           entity_id: !secret aarlo_control_panel
           data: {}
-  mode: single
+  mode: restart
 - alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
   id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
   description: ""
+  variables:
+    aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
       to: disarmed
   condition: []
   action:
+    # Wait (indefinitely) for Aarlo to be connected
+    - wait_template: >-
+        {{ states(aarlo_connected_sensor) == 'on' }}
     - service: alarm_control_panel.alarm_disarm
       data: {}
       entity_id: !secret aarlo_control_panel
-  mode: single
+  mode: restart
 - alias: 📹 | ⏳ Pause Arlo "Armed Home" (timer started)
   id: ed2ae249-369f-4503-9122-21a5e49e1c21
   description: ""
@@ -101,7 +120,7 @@
       entity_id: !secret aarlo_control_panel
       data: {}
   mode: single
-- alias: 📹 | ⏰ Arlo snapshot (every 2 hours / Home Assistant start)
+- alias: 📹 | ⏰/🤖 Arlo snapshot (every 2 hours / Home Assistant start; "Home Alarm" state)
   id: 769a4449-f68b-4403-a09b-87b81cbe1581
   description: ""
   variables:
@@ -113,6 +132,12 @@
       seconds: 0
     - platform: homeassistant
       event: start
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - disarmed
+        - armed_night
+        - armed_away
   condition:
     - condition: not
       conditions:
@@ -122,12 +147,11 @@
             - camera.aarlo_front
           state: recording
   action:
-    # Wait (up to 15 minutes) for Aarlo to be connected – to cope with transient
-    # connection failures and the fact that, at Home Assistant start, Aarlo
-    # might not yet be available/connected...
+    # Wait up to 5 minutes for Aarlo to be connected – to cope with the fact
+    # that, at Home Assistant start, Aarlo is probably not connected yet...
     - wait_template: >-
         {{ states(aarlo_connected_sensor) == 'on' }}
-      timeout: 900
+      timeout: 300
       continue_on_timeout: false
     - service: aarlo.camera_request_snapshot
       data: {}
