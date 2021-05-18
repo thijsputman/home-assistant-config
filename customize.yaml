@@ -42,8 +42,6 @@ light.basement:
   icon: mdi:package-variant
 sensor.pi4_memory_used_percentage:
   icon: mdi:memory
-binary_sensor.nintendo_switch_ping:
-  icon: mdi:nintendo-switch
 light.toilet:
   icon: mdi:paper-roll-outline
 sensor.pi4_sandbox_memory_available:

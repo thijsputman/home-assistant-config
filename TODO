@@ -14,10 +14,6 @@
       `📄 customize.yaml` to their respective YAML files
 - [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
       `light_x`, `openclose_y`, the other half already have sensible names)
-- [ ] Nintendo Switch on/off detection: This Switch comes online regularly for a
-      minute or so, which makes the current approach for controlling the Living
-      Room lights unusable. See if there's a(nother) way of handling this – for
-      now the automations are included, but disabled in the UI
 - [ ] State attributes store history too, so there's no need to create template
       sensors if they're purely used for graphing in dashboards
       (`mini-graph-card` can graph attributes) or in other automations (use a
@@ -62,6 +58,11 @@
       evapotranspiration to indicate whether the garden should be watered
   - For now just graphing the daily delta between the two to get a bit of a
     feeling on how the data moves
+- [ ] Add a power consumption sensor to the "multimedia outlet" in the Living
+      room to detect if the projector is on (in which case certain lighting
+      automation should be disabled) – as an addition to the Android TV based
+      automations (which work wonderfully, but only when the Shield TV is active
+      and not, for example, when the Nintendo Switch is being used)
 
 ## Lovelace
 

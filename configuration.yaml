@@ -192,12 +192,6 @@ binary_sensor:
     name: Google DNS (ping)
     count: 4
     scan_interval: 60
-  # Nintendo Switch (ping)
-  - platform: ping
-    host: !secret nintendo_switch_hostname
-    name: Nintendo Switch (ping)
-    count: 2
-    scan_interval: 20
 
 binary_sensor custom: !include_dir_merge_list sensors_binary/
 
