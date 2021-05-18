@@ -6,7 +6,7 @@
   accept_errors: true
   unit_of_measurement: "%"
   value_template: >-
-    {{ value | multiply(25) | round(1) }}"
+    {{ value | multiply(25) | round(1) }}
 - platform: snmp
   name: Pi4 CPU temperature
   host: pi4.sgraastra

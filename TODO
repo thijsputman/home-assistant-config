@@ -54,10 +54,16 @@
       WiFi and Bluetooth MAC addresses, which in turn _could_ be used to
       pinpoint the exact location of the house (if the combination of the three
       device types is unique enough – which it might).
+- [ ] Add a "Guest-mode" toggle to stop (most of) the automations that run when
+      no-one is at home from triggering
 - [ ] Experiment with using the amount of rain and the (WeeWX calculated)
       evapotranspiration to indicate whether the garden should be watered
   - For now just graphing the daily delta between the two to get a bit of a
     feeling on how the data moves
+- [ ] It could be nice to also track water consumption. See for example
+      <https://www.ztatz.nl/p1-monitor-watermeter/>
+  - Apart from tracking consumption, it could also serve as an (early) warning
+    in case of water leaks
 - [ ] Add a power consumption sensor to the "multimedia outlet" in the Living
       room to detect if the projector is on (in which case certain lighting
       automation should be disabled) – as an addition to the Android TV based
@@ -90,11 +96,6 @@
       it switches off all lights (easiest way to keep consistent behaviour). Do
       ensure this doesn't conflict with the alarm settings
 - [ ] Use "Light Group" instead of regular groups for grouping lights
-- [ ] Link the Attic dimmer switch to the Aqara smart-relay using a Zigbee group
-      such that the switch works regardless of whether deCONZ (i.e. the Zigbee
-      controller) is up and running (see
-      [dresden-elektronik/deconz-rest-plugin#1137](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/1137))
-      – appears to require an update of the Aqara smart-relay firmware...
 - [ ] Failure mode for Bathroom motion-sensing automation: If the light-level
       falls below its threshold while a motion sensors remains triggered, the
       light will never come on (as the automation doesn't restart until the
@@ -118,8 +119,15 @@
     and
     [dresden-elektronik/deconz-rest-plugin#4432](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/4432#issuecomment-782841021)
     on how to properly control them through deCONZ
+  - Sirens can be controlled on as lights via deCONZ/Home Assistant, but their
+    state is not tracked (see
+    <https://github.com/dresden-elektronik/deconz-rest-plugin/issues/4045>),
+    perhaps implement this manually (mainly for logging/debugging purposes)?
 - [ ] Test the alarm sirens every first Monday of the month at 12:00 (to
       coincide with the Dutch national alarm siren test)
 - [ ] Replace the notifications ("motion detected when away") from the Arlo-app
       with "native" Home Assistant notifications (mainly beneficial if this
       allows to include a snapshot directly in the notification)
+- [ ] The (Neato) robot vacuums trigger the motion sensors (and thus the alarm
+      when we're away 😳🤐) – add time-based excludes to specific motion sensors
+      to cope with this...

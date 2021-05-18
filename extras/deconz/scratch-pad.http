@@ -9,14 +9,25 @@ GET {{baseUrl}}/{{key}}/lights
 GET {{baseUrl}}/{{key}}/groups
 
 
-# Link Attic dimmer-switch and Aqara smart-relay (WIP – see TODO.md)
+# Link Attic Philips Hue dimmer-switch with Aqara relay (lumi.relay.c2acn01)
+#
+# Does not appear to work as intended: The below commands establish group
+# membership for the relay, but don't "stick". Once linked, the state of the
+# relays and the switch/group is properly tracked by deCONZ, but that doesn't
+# reflect their "physical" state. Only relay with ID 16 switches on (and it
+# stays on regardless of what state deCONZ is in).
+# The Aqara relay is at the latest firmware revision (checked via an Aqara M1S
+# Hub). Probably an issue with / bug in deCONZ? Parked for now...
+#
+# See <https://github.com/dresden-elektronik/deconz-rest-plugin/issues/1137>
+#
 ###
 # @name getGroup
 GET {{baseUrl}}/{{key}}/sensors/97
 ###
 @groupId = {{getGroup.response.body.$.config.group}}
 GET {{baseUrl}}/{{key}}/groups/{{groupId}}
-### Add smart-relay lights (ID 14 & 16) to group
+### Add smart-relay lights (ID 14 & 16) to the switch's group
 PUT {{baseUrl}}/{{key}}/groups/{{groupId}}
 content-type: application/json
 
