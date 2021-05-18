@@ -25,10 +25,16 @@ card:
       name: !secret lovelace_street_name
     - type: conditional
       conditions:
-        - entity: input_boolean.active_alarm_state
-          state: "off"
         - entity: !secret aarlo_connected_sensor
           state: "on"
+        # Hide Aarlo controls if the Home Alarm is either in "Armed Away"-mode
+        # or pending/triggered to prevent tampering with the cameras
+        - entity: alarm_control_panel.home_alarm
+          state_not: armed_away
+        - entity: alarm_control_panel.home_alarm
+          state_not: pending
+        - entity: alarm_control_panel.home_alarm
+          state_not: triggered
       card:
         type: vertical-stack
         cards:

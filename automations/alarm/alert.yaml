@@ -252,37 +252,3 @@
               %} by {{ persons[0].attributes.friendly_name }}
             {%- endif -%}
           {%- endif -%}.
-# Toggle "input_boolean.active_alarm_state" to "true" when the alarm goes to
-# "pending" and keep it that way until the alarm is actively disarmed. Indicates
-# the home is an active alarm state – mainly used to hide semi-sensitive
-# information from a tech-savvy burglar trying to use the Lovelace dashboard.
-- alias: 🚧 | 🚨 Active alarm state
-  id: 879803ab-6748-4785-81bc-0e6fd41b3b41
-  description: ""
-  trigger:
-    - platform: state
-      entity_id: alarm_control_panel.home_alarm
-      to:
-        - pending
-        - disarmed
-  condition: []
-  action:
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: alarm_control_panel.home_alarm
-              state: pending
-          sequence:
-            - service: input_boolean.turn_on
-              data:
-                entity_id: input_boolean.active_alarm_state
-        - conditions:
-            - condition: state
-              entity_id: alarm_control_panel.home_alarm
-              state: disarmed
-          sequence:
-            - service: input_boolean.turn_off
-              data:
-                entity_id: input_boolean.active_alarm_state
-      default: []
-  mode: single
