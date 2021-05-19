@@ -35,7 +35,7 @@
     - service: switch.turn_off
       data: {}
       entity_id: switch.on_off_plug_in_unit_3
-  mode: single
+  mode: restart
 - alias: 🌡️ | ⏰ Electric blanket off (after 2 hours)
   id: ba757313-c28b-4533-be3f-897d47e18c35
   description: ""

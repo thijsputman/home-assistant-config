@@ -159,6 +159,7 @@
         - camera.aarlo_back
         - camera.aarlo_front
   mode: single
+  max_exceeded: silent
 - alias: 📹 | ⏰ Arlo store daily garden snapshot (at dawn and dusk)
   id: e56ad77e-9f8e-43f7-9fe6-6b2678a86df6
   description: ""
