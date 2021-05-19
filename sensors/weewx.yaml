@@ -148,7 +148,7 @@
 - platform: integration
   source: sensor.weewx_evapotranspiration
   name: weewx_evapotranspiration_total
-  round: 1
+  round: 4
   unit: mm
 - platform: template
   sensors:

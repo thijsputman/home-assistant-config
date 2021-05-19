@@ -3,9 +3,8 @@
   description: ""
   trigger:
     - platform: numeric_state
-      entity_id: sensor.weewx_rain_hour
-      above: 0.25
-      for: "00:01:00"
+      entity_id: sensor.weewx_rain_rate_hour
+      above: 2.0
   condition:
     - condition: or
       conditions:
@@ -59,8 +58,8 @@
   description: ""
   trigger:
     - platform: numeric_state
-      entity_id: sensor.weewx_rain_hour
-      below: 0.25
+      entity_id: sensor.weewx_rain_rate_hour
+      below: 2.0
       for: "00:10:00"
   condition: []
   action:
