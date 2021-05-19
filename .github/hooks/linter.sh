@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 
-files=$(git diff --name-only --cached)
+files=$(git diff --name-only --cached | \
+  xargs -I{} sh -c 'test -f "{}" && echo "{}"')
 
 if [ -n "$files" ] ; then
 
