@@ -19,7 +19,7 @@ include:
     - sensor.weewx_outside_temperature_balcony
     - sensor.weewx_solar_irradiance
     - sensor.weewx_wind_speed
-    - sensor.weewx_rain_rate_hour
+    - sensor.weewx_rain_hour
     - sensor.weewx_outside_humidity
     # Temperatures
     - sensor.temperature_3 # Attic

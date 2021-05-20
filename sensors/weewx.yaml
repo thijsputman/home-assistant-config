@@ -135,7 +135,7 @@
   value_template: >-
     {{ (value | float * 10) | round(1) }}
 - platform: integration
-  source: sensor.weewx_rain_rate_hour
+  source: sensor.weewx_rain_hour
   name: weewx_rain_total
   round: 1
   unit: mm
