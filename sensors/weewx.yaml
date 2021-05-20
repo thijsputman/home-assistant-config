@@ -139,6 +139,7 @@
   name: weewx_rain_total
   round: 1
   unit: mm
+  unit_time: h
 - platform: mqtt
   state_topic: weewx/ET_cm
   name: WeeWX evapotranspiration
@@ -150,6 +151,7 @@
   name: weewx_evapotranspiration_total
   round: 4
   unit: mm
+  unit_time: min
 - platform: template
   sensors:
     weewx_rain_netto:

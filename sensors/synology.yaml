@@ -32,4 +32,5 @@
   source: sensor.ups_power
   name: consumption_ups
   unit_prefix: k
+  unit_time: h
   round: 3

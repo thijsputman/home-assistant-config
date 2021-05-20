@@ -68,4 +68,5 @@
   source: sensor.power_lights_all
   name: consumption_lights_all
   unit_prefix: k
+  unit_time: h
   round: 3
