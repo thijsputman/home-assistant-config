@@ -60,6 +60,8 @@
       evapotranspiration to indicate whether the garden should be watered
   - For now just graphing the daily delta between the two to get a bit of a
     feeling on how the data moves
+  - Added `sensor.weewx_rain_day` (the daily rain tally kept by WeeWX itself) to
+    compare against (i.e. validate the accuracy of) the integral calculation
 - [ ] It could be nice to also track water consumption. See for example
       <https://www.ztatz.nl/p1-monitor-watermeter/>
   - Apart from tracking consumption, it could also serve as an (early) warning
