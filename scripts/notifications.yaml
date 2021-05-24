@@ -12,15 +12,116 @@ tts_p20:
           priority: high
   mode: single
   icon: mdi:text-to-speech
-persistent_notification_all_devices:
-  alias: Persistent notification (all devices)
+persistent_notification:
+  alias: Persistent notification
+  description: >-
+    Create a persistent notification on both mobile devices and in the Lovelace
+    UI. Dismiss on mobile device dismisses in Lovelace; optionally the other way
+    way around too.
+  fields:
+    targetDevices:
+      description: Mobile device(s) to target
+      required: false
+      default: all
+      selector:
+        select:
+          options:
+            - all # All devices
+            - home # All devices currently at home
+            - my # Only my personal device(s)
+    title:
+      required: false
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    message:
+      required: true
+      selector:
+        text:
+          multiline: true
+    tag:
+      description: Replaces existing notification with the same tag
+      required: false
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    group:
+      description: Mobile devices – Grouping/threading of notifications
+      required: false
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    channel:
+      description: Mobile devices – Notification channel
+      required: false
+      default: General
+      selector:
+        select:
+          options:
+            - Critical
+            - Alert
+            - Notification
+            - Reminder
+            - General
+    importance:
+      description: Mobile devices – Notification channel importance
+      required: false
+      default: default
+      selector:
+        select:
+          options:
+            - high
+            - low
+            - min
+            - default
+    image:
+      required: false
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    lovelaceDismiss:
+      description: >-
+        Allow mobile device notification to be dismissed from Lovelace
+      required: false
+      default: true
+      selector:
+        boolean: # yamllint disable-line rule:empty-values
+    criticalNotification:
+      description: >-
+        Send "critical notification" (priority high; TTL 0) to the mobile
+        device(s)
+      required: false
+      default: false
+      selector:
+        boolean: # yamllint disable-line rule:empty-values
   variables:
-    clickAction: lovelace-home
+    # The below does not scale well beyond two devices...
+    targetService: >-
+      {% if targetDevices in ['home', 'my'] %}
+        {% if targetDevices == 'my' %}
+          notify.mobile_app_gm1913
+        {% elif targetDevices == 'home' %}
+          {%
+            if is_state('device_tracker.gm1913', 'home') and
+              is_state('device_tracker.sm_g930f', 'home')
+          %}
+            notify.all_devices
+          {% elif is_state('device_tracker.gm1913', 'home') %}
+            notify.mobile_app_gm1913
+          {% elif is_state('device_tracker.sm_g930f', 'home') %}
+            notify.mobile_app_sm_g930f
+          {% endif %}
+        {% endif %}
+      {% else %}
+        notify.all_devices
+      {% endif %}
     lovelaceMessage: >-
       {{ message }}
       {% if image is defined %}
 
         ![embedded image]({{ image }})
+      {% endif %}
+    lovelaceDismiss: >-
+      {% if lovelaceDismiss is not boolean %}
+        {{ true }}
+      {% else %}
+        {{ lovelaceDismiss }}
       {% endif %}
     ttl: >-
       {% if criticalNotification is true %}
@@ -31,17 +132,51 @@ persistent_notification_all_devices:
         high
       {% endif %}
   sequence:
-    - service: notify.all_devices
+    - variables:
+        # Used as both "tag" (for mobile devices) and "notification_id" (for
+        # Lovelace persistent notifications)
+        tag: >-
+          {% if tag is undefined %}
+            TAG_{{ context.id }}
+          {% else %}
+            {{ tag }}
+          {% endif %}
+    # Abort if targetDevices is "home" and no devices are at home
+    - condition: template
+      value_template: >-
+        {{
+          targetDevices != 'home' or (
+            targetDevices == 'home' and (
+              is_state('device_tracker.sm_g930f', 'home') or
+              is_state('device_tracker.gm1913', 'home')
+            )
+          )
+        }}
+    - service: >-
+        {{ targetService }}
       data:
         title: >-
-          {{ title }}
+          {% if title is defined %}
+            {{ title }}
+          {% endif %}
         message: >-
           {{ message }}
         data:
           tag: >-
             {{ tag }}
-          clickAction: >-
-            {{ clickAction }}
+          group: >-
+            {% if group is defined %}
+              {{ group }}
+            {% endif %}
+          channel: >-
+            {% if channel in ['Critical', 'Alert', 'Notification', 'Reminder'] %}
+              {{ channel }}
+            {% endif %}
+          importance: >-
+            {% if importance in ['high', 'low', 'min'] %}
+              {{ importance }}
+            {% endif %}
+          clickAction: lovelace-home
           image: >-
             {% if image is defined %}
               {{ image }}
@@ -50,6 +185,11 @@ persistent_notification_all_devices:
             {{ ttl }}
           priority: >-
             {{ priority }}
+          sticky: "true"
+          actions:
+            - action: >-
+                DISMISS_{{ context.id }}
+              title: Dismiss
     - service: persistent_notification.create
       data:
         title: >-
@@ -58,134 +198,77 @@ persistent_notification_all_devices:
           {{ lovelaceMessage }}
         notification_id: >-
           {{ tag }}
-  mode: single
-  icon: mdi:message-plus-outline
-persistent_notification_devices_at_home:
-  alias: Persistent notification (devices at home)
-  variables:
-    clickAction: lovelace-home
-    lovelaceMessage: >-
-      {{ message }}
-      {% if image is defined %}
-
-        ![embedded image]({{ image }})
-      {% endif %}
-    ttl: >-
-      {% if criticalNotification is true %}
-        0
-      {% endif %}
-    priority: >-
-      {% if criticalNotification is true %}
-        high
-      {% endif %}
-  sequence:
+    # Wait for notification actions to occur (up to 24 hours)
+    - wait_for_trigger:
+        # Dismissed from mobile device
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: >-
+              DISMISS_{{ context.id }}
+        # Dismissed from Lovelace
+        - platform: event
+          event_type: call_service
+          event_data:
+            domain: persistent_notification
+            service: dismiss
+            service_data:
+              # When lovelaceDismiss is disabled, this event should _never_
+              # trigger: It would end script execution and thus prevent the
+              # "mobile_app_notification_action"-trigger from firing and
+              # actually dismissing the notification on mobile.
+              notification_id: >-
+                {% if lovelaceDismiss is true %}
+                  {{ tag }}
+                {% else %}
+                  {{ tag }}_NO_DISMISS
+                {% endif %}
+        # Script called again with same tag (no-op; end this run)
+        - platform: event
+          event_type: call_service
+          event_data:
+            domain: script
+            service: persistent_notification
+            service_data:
+              tag: >-
+                {{ tag }}
+      timeout: "24:00:00"
+      continue_on_timeout: false
     - choose:
-        - conditions:
-            - condition: state
-              entity_id: device_tracker.gm1913
-              state: home
+        # Dismissed from mobile device
+        - conditions: >-
+            {{ wait.trigger.event.data.action == 'DISMISS_' ~ context.id }}
           sequence:
-            - service: notify.mobile_app_gm1913
+            # Remove persistent notification from Lovelace
+            - service: persistent_notification.dismiss
               data:
-                title: >-
-                  {{ title }}
-                message: >-
-                  {{ message }}
+                notification_id: >-
+                  {{ tag }}
+            # Notification is "sticky" on mobile, so we need to explicitly
+            # dismiss it from the mobile device(s) too...
+            - service: >-
+                {{ targetService }}
+              data:
+                message: clear_notification
                 data:
                   tag: >-
                     {{ tag }}
-                  clickAction: >-
-                    {{ clickAction }}
-                  image: >-
-                    {% if image is defined %}
-                      {{ image }}
-                    {% endif %}
-                  ttl: >-
-                    {{ ttl }}
-                  priority: >-
-                    {{ priority }}
-      default: []
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: device_tracker.sm_g930f
-              state: home
+        # Dismissed from Lovelace (only fired when lovelaceDismiss is enabled)
+        - conditions: >-
+            {{
+              wait.trigger.event.data.domain == "persistent_notification" and
+              wait.trigger.event.data.service == "dismiss" and
+              wait.trigger.event.data.service_data.notification_id == tag
+            }}
           sequence:
-            - service: notify.mobile_app_sm_g930f
+            # Dismiss notification from mobile device(s)
+            - service: >-
+                {{ targetService }}
               data:
-                title: >-
-                  {{ title }}
-                message: >-
-                  {{ message }}
+                message: clear_notification
                 data:
                   tag: >-
                     {{ tag }}
-                  clickAction: >-
-                    {{ clickAction }}
-                  image: >-
-                    {% if image is defined %}
-                      {{ image }}
-                    {% endif %}
-                  ttl: >-
-                    {{ ttl }}
-                  priority: >-
-                    {{ priority }}
-      default: []
-    - service: persistent_notification.create
-      data:
-        title: >-
-          {{ title }}
-        message: >-
-          {{ lovelaceMessage }}
-        notification_id: >-
-          {{ tag }}
-  mode: single
-  icon: mdi:message-processing-outline
-persistent_notification_my_devices:
-  alias: Persistent notification (my devices)
-  variables:
-    clickAction: lovelace-home
-    lovelaceMessage: >-
-      {{ message }}
-      {% if image is defined %}
-
-        ![embedded image]({{ image }})
-      {% endif %}
-    ttl: >-
-      {% if criticalNotification is true %}
-        0
-      {% endif %}
-    priority: >-
-      {% if criticalNotification is true %}
-        high
-      {% endif %}
-  sequence:
-    - service: notify.mobile_app_gm1913
-      data:
-        title: >-
-          {{ title }}
-        message: >-
-          {{ message }}
-        data:
-          tag: >-
-            {{ tag }}
-          clickAction: >-
-            {{ clickAction }}
-          image: >-
-            {% if image is defined %}
-              {{ image }}
-            {% endif %}
-          ttl: >-
-            {{ ttl }}
-          priority: >-
-            {{ priority }}
-    - service: persistent_notification.create
-      data:
-        title: >-
-          {{ title }}
-        message: >-
-          {{ lovelaceMessage }}
-        notification_id: >-
-          {{ tag }}
-  mode: single
+  mode: parallel
+  max: 50
   icon: mdi:message-outline

@@ -182,25 +182,29 @@
       to: pending
   condition: []
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: home_alarm
-        criticalNotification: true
-        title: 🚨 Home Alarm pending!
-        # The list of sensors includes doors/windows that were already open.
-        # Filtering out those is more trouble than it's worth...
-        message: >-
-          The Home Alarm just got triggered!
-          If not promptly disarmed, the alarm will sound...<br><br>
-          One of the following sensor(s) triggered the alarm:
-          <ul>
-            <li>
-              {{-
-                (expand('group.openclose_all') + expand('group.motion_all'))  |
-                  selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
-                -}}
-            </li>
-          </ul>
+        variables:
+          group: home alarm
+          channel: Alert
+          criticalNotification: true
+          title: 🚨 Home Alarm pending!
+          # The list of sensors includes doors/windows that were already open.
+          # Filtering out those is more trouble than it's worth...
+          message: >-
+            The Home Alarm just got triggered!
+            If not promptly disarmed, the alarm will sound...<br><br>
+            One of the following sensor(s) triggered the alarm:
+            <ul>
+              <li>
+                {{-
+                  (expand('group.openclose_all') + expand('group.motion_all'))  |
+                    selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
+                  -}}
+              </li>
+            </ul>
   mode: single
 - alias: 🚨 | 📱 Notify on alarm sounding
   id: 05a2188b-8940-4311-adfb-bea75a792000
@@ -211,15 +215,19 @@
       to: triggered
   condition: []
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        # Separate tag – dismissing this from the Lovelace UI will *not*
-        # auto-dismiss it from any of the other devices
-        tag: home_alarm_triggered
-        criticalNotification: true
-        title: 🚨 Home Alarm sounding!
-        message: >-
-          The Home Alarm is sounding – there's someone in the house!
+        variables:
+          group: home alarm
+          channel: Critical
+          importance: high
+          lovelaceDismiss: false
+          criticalNotification: true
+          title: 🚨 Home Alarm sounding!
+          message: >-
+            The Home Alarm is sounding – there's someone in the house!
   mode: single
 - alias: 🚨 | 📱 Notify on alarm disarmed
   id: d06c2a3e-f1a7-41c2-9bf3-d29c6c352c93
@@ -234,21 +242,24 @@
         - disarmed
   condition: []
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        # Separate tag – dismissing this from the Lovelace UI will *not*
-        # auto-dismiss it from any of the other devices
-        tag: home_alarm_disarmed
-        criticalNotification: true
-        title: 🚨 Home Alarm disarmed
-        message: >-
-          The Home Alarm just got disarmed
-          {%- if trigger is defined and
-              trigger.to_state.context.user_id is defined -%}
-            {%- set persons = states.person | selectattr(
-              'attributes.user_id', 'eq', trigger.to_state.context.user_id
-            ) | list -%}
-            {%- if persons | count == 1
-              %} by {{ persons[0].attributes.friendly_name }}
-            {%- endif -%}
-          {%- endif -%}.
+        variables:
+          group: home alarm
+          channel: Alert
+          lovelaceDismiss: false
+          criticalNotification: true
+          title: 🚨 Home Alarm disarmed
+          message: >-
+            The Home Alarm just got disarmed
+            {%- if trigger is defined and
+                trigger.to_state.context.user_id is defined -%}
+              {%- set persons = states.person | selectattr(
+                'attributes.user_id', 'eq', trigger.to_state.context.user_id
+              ) | list -%}
+              {%- if persons | count == 1
+                %} by {{ persons[0].attributes.friendly_name }}
+              {%- endif -%}
+            {%- endif -%}.

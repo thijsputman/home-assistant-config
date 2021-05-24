@@ -35,10 +35,16 @@
           {%- if is_state('binary_sensor.openclose_33', 'on')
             %} attic window
           {%- endif -%}.
-    - service: script.persistent_notification_devices_at_home
+    # Explicitly block any further runs of this automation while the
+    # notification is up (i.e. once a notification is up, no additional
+    # notifications are raised)
+    - service: script.persistent_notification
       data:
-        tag: raining
+        group: weather
+        channel: Alert
+        targetDevices: home
         criticalNotification: true
+        tag: rain
         title: ☔ It is raining outside
         message: >-
           It is raining outside, please close the
@@ -53,6 +59,7 @@
             %} attic window
           {%- endif -%}.
   mode: single
+  max_exceeded: silent
 - alias: 🌦️ | 📱 Dismiss notification (rain stopped)
   id: 0bfb45f6-5516-4f37-86f1-d7bb7af88e94
   description: ""
@@ -60,12 +67,12 @@
     - platform: numeric_state
       entity_id: sensor.weewx_rain_rate_hour
       below: 2.0
-      for: "00:10:00"
+      for: "00:20:00"
   condition: []
   action:
     - service: persistent_notification.dismiss
       data:
-        notification_id: raining
+        notification_id: rain
   mode: single
 - alias: 🌦️ | 📱 Dismiss notification (windows closed)
   id: dd524898-9606-4c30-b7dc-d061515ee6bc
@@ -94,5 +101,5 @@
   action:
     - service: persistent_notification.dismiss
       data:
-        notification_id: raining
+        notification_id: rain
   mode: single

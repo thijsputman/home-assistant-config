@@ -16,26 +16,31 @@
         - restafval
         - gft
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: trash
-        title: ♻️ Trash reminder
-        message: >-
-          Don't forget to put the
-            {%- if is_state('sensor.afvalwijzer_next_item', 'restafval')
-              %} Black bin
-            {%- elif is_state('sensor.afvalwijzer_next_item', 'gft')
-              %} Green bin
-            {%- endif
-          %} outside!
+        variables:
+          targetDevices: home
+          channel: Reminder
+          group: trash
+          title: ♻️ Trash reminder
+          message: >-
+            Don't forget to put the
+              {%- if is_state('sensor.afvalwijzer_next_item', 'restafval')
+                %} Black bin
+              {%- elif is_state('sensor.afvalwijzer_next_item', 'gft')
+                %} Green bin
+              {%- endif
+            %} outside!
   mode: single
 - alias: 📱 | ⏰ Trash reminder (Paper)
   id: 1f0e4981-921e-426f-a77d-05a1e6b8f478
   description: ""
   trigger:
-    # Remind at 09:30 on the day of pickup
+    # Remind at 08:30 on the day of pickup
     - platform: time
-      at: "09:30:00"
+      at: "08:30:00"
   condition:
     - condition: numeric_state
       entity_id: sensor.afvalwijzer_next_in_days
@@ -44,9 +49,14 @@
       entity_id: sensor.afvalwijzer_next_item
       state: papier
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: trash
-        title: 📦 Trash reminder
-        message: Don't forget to put the paper outside!
+        variables:
+          targetDevices: home
+          channel: Reminder
+          group: trash
+          title: 📦 Trash reminder
+          message: Don't forget to put the paper outside!
   mode: single

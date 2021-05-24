@@ -9,21 +9,25 @@
       entity_id: group.openclose_all
       state: "on"
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: away
-        criticalNotification: true
-        title: 🚪 Doors and/or windows left open!
-        message: >-
-          The following doors and/or windows are still open:
-          <ul>
-            <li>
-              {{-
-                expand('group.openclose_all') |
-                  selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
-                -}}
-            </li>
-          </ul>
+        variables:
+          group: home alarm
+          channel: Alert
+          criticalNotification: true
+          title: 🚪 Doors and/or windows left open!
+          message: >-
+            The following doors and/or windows are still open:
+            <ul>
+              <li>
+                {{-
+                  expand('group.openclose_all') |
+                    selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
+                  -}}
+              </li>
+            </ul>
 - alias: 🚨 | 📱 Notify on "Armed away"
   id: e23e2cf8-502d-4e28-8758-9ab11b5fee14
   trigger:
@@ -35,13 +39,51 @@
       entity_id: group.openclose_all
       state: "off"
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: away
-        criticalNotification: true
-        title: 🛡️ Home alarm armed
-        message: >-
-          The Home alarm just changed into "Armed Away"-mode
+        variables:
+          group: home alarm
+          channel: Notification
+          criticalNotification: true
+          title: 🛡️ Home alarm armed
+          message: >-
+            The Home alarm just changed into "Armed Away"-mode
+- alias: 🚨 | 📱 Notify on "Disarmed"
+  id: a78d71df-f5a9-49f1-a584-18d5260e88db
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: armed_away
+      to: disarmed
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Notification
+          criticalNotification: true
+          title: 🛡️ Home alarm disarmed
+          message: >-
+            The Home alarm just changed into "Disarmed"-mode
+            {%- set result = namespace(people=[]) -%}
+            {%- for person in expand('group.family') |
+                selectattr('state', '==', 'home') -%}
+                  {%- set result.people = result.people +
+                    [person.name | truncate(10, False, '', 0) ] -%}
+            {%- endfor -%}
+            {%- if result.people | length > 0 -%}
+              ; {{ result.people | join(' and ')
+              }} {% if result.people | length > 1 -%}
+                are home
+              {% else -%}
+                is home
+              {% endif %}
+            {% endif %}
 # Presence (i.e. motion) sensors are used to turn on lights – the sensors are
 # not well-positioned for intruder detection. Still, if no-one is home, there's
 # no harm in making them trigger the alarm...
@@ -81,14 +123,19 @@
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
   action:
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: away
-        criticalNotification: true
-        title: 🚨 Back gate opened!
-        message: >-
-          The back gate was just opened!
-          There could be someone in the garden; check the camera feed...
+        variables:
+          group: home alarm
+          channel: Alert
+          lovelaceDismiss: false
+          criticalNotification: true
+          title: 🚨 Back gate opened!
+          message: >-
+            The back gate was just opened!
+            There could be someone in the garden; check the camera feed...
 - alias: 🚨 | 💡 Lights on when back gate opened ("Armed away")
   id: 9684f5d2-8d26-429f-bb08-aa5deeb23c50
   trigger:

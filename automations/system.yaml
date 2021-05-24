@@ -1,36 +1,3 @@
-- alias: 🚧 | 📱 Clear dismissed persistent notification (all devices; whitelisted only)
-  id: 9fdbe6f0-1c59-437c-b34b-b1d17fb5889c
-  description: ""
-  trigger:
-    - platform: event
-      event_type: call_service
-      event_data:
-        domain: persistent_notification
-        service: dismiss
-  condition:
-    - condition: template
-      value_template: >-
-        {{
-          trigger.event.data.service_data.notification_id in
-            [
-              'raining',
-              'home_alarm',
-              'system_general',
-              'calamity_leak',
-              'calamity_smoke',
-              'trash',
-              'away',
-              'doorbell'
-            ]
-        }}
-  action:
-    - service: notify.all_devices
-      data:
-        message: clear_notification
-        data:
-          tag: >-
-            {{ trigger.event.data.service_data.notification_id }}
-  mode: single
 - alias: 📱 Sensor low battery notification (🔋 < 20%)
   id: bf5935e5-b716-4bfd-8949-71b01b4f484f
   variables:
@@ -59,12 +26,17 @@
       value_template: >-
         {{ now().isoweekday() == 6 and sensors != '' }}
   action:
-    - service: script.persistent_notification_my_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: system_general
-        title: Low sensor battery
-        message: >-
-          <ul><li>{{sensors}}</li><ul>
+        variables:
+          group: general
+          channel: Notification
+          targetDevices: my
+          title: 🔋 Low sensor battery
+          message: >-
+            <ul><li>{{sensors}}</li><ul>
   mode: single
 - alias: 📱 Notify on integration failure (unknown/unavailable-state)
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12
@@ -113,14 +85,19 @@
           value_template: >-
             {{ not trigger.entity_id in online }}
   action:
-    - service: script.persistent_notification_my_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: system_general
-        title: Potential integration failure
-        message: >-
-          {{ trigger.to_state.attributes.friendly_name }} has been in an
-          {{ trigger.to_state.state }}-state for
-          {{ relative_time(trigger.to_state.last_changed) }}.
+        variables:
+          group: general
+          channel: Notification
+          targetDevices: my
+          title: 💥 Potential integration failure
+          message: >-
+            {{ trigger.to_state.attributes.friendly_name }} has been in an
+            {{ trigger.to_state.state }}-state for
+            {{ relative_time(trigger.to_state.last_changed) }}.
   mode: single
 # The Recorder's SQLite-database is on a separate NVMe USB-drive that – although
 # generally stable – occasionally disconnects. It reconnects right away and the
@@ -142,16 +119,19 @@
       name: homeassistant.components.recorder
   condition: []
   action:
-    - service: script.persistent_notification_my_devices
+    # Explicitly block any further runs of this automation while the
+    # notification is up (i.e. once a notification is up, no additional
+    # notifications are raised)
+    - service: script.persistent_notification
       data:
-        tag: system_general
+        group: general
+        channel: Alert
+        targetDevices: my
         criticalNotification: true
         title: 💽 Recorder-component failure!
         message: >-
           The recorder-component failed with the folllowing error:
           <br><br>
           {{ trigger.event.data.message }}
-    # Throttle automation so only one notification is generated every 10 minutes
-    - delay: 600
   mode: single
   max_exceeded: silent

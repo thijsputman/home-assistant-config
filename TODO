@@ -26,7 +26,7 @@
 - [ ] Some of the automation/helper-combinations can be replaced with template
       entities/sensors – mainly those that effectively are nothing more than a
       set of operations on the state of one or more existing sensors:
-  - ✔ Time of Day / Nighttime
+  - ✔️ Time of Day / Nighttime
   - The Hue scene heuristics
 - [ ] See where
       [**trigger-based template sensors**](https://www.home-assistant.io/blog/2021/04/07/release-20214/)
@@ -44,10 +44,10 @@
       `📄 configuration.yaml` into `📁 sensors_binary`). There's a handful of
       "regular" template sensors (`sensor.binary_...`) that should've been
       implemented as template binary sensors – correct those
-- [ ] Further enhance the (Android) companion app notifications (use channels;
-      some notifications could/should be made sticky and/or persistent on the
-      mobile devices; attachments/images might be helpful in places; change the
-      click-action based on the notification context)
+- [ ] Further enhance the (Android) companion app notifications
+  - ✔️ Channels and grouping/threading
+  - ✔️ Support for attachments/images
+  - Change the click-action based on the notification context
 - [ ] Use generic names for the mobile devices registered through the "Mobile
       App" integration (`gm1913`, `sm_g930f` and `p20hd_eea`). Knowing the model
       numbers of these devices allows one to deduce the vendor prefixes of their

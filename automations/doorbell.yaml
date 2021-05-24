@@ -27,19 +27,33 @@
       to: "on"
   condition: []
   action:
-    - service: script.persistent_notification_devices_at_home
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: doorbell
-        criticalNotification: true
-        title: 🚪 Someone's at the front door!
-        message: >-
-          The doorbell just rang...
-    - delay: 120
-    # This also causes the notification to be dismissed from all devices
+        variables:
+          group: doorbell
+          channel: Alert
+          tag: doorbell
+          targetDevices: home
+          criticalNotification: true
+          title: 🚪 Someone's at the front door!
+          message: >-
+            The doorbell just rang...
+    # Auto-dismiss when front door opens or after 2 minutes
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.openclose_16
+          from: "off"
+          to: "on"
+      timeout: 120
+      continue_on_timeout: true
+    # Also causes the notification to be dismissed from all mobile devices
     - service: persistent_notification.dismiss
       data:
         notification_id: doorbell
   mode: single
+  max_exceeded: silent
 - alias: 📹 | 🚪 Arlo snapshot (doorbell rang)
   id: dbfbeeab-04a2-404f-8771-5109ec19f729
   description: ""
@@ -70,26 +84,29 @@
       to: "on"
   condition:
     - condition: state
-      entity_id: camera.aarlo_front
-      # These states only occur when the camera is armed/active (so this
-      # automation never conflicts with the preceding "snapshot" automation)
-      state:
-        - recording
-        - recently_active
+      entity_id:
+        - binary_sensor.aarlo_motion_front
+        - sensor.aarlo_recent_activity_front
+      state: "on"
   action:
     - wait_for_trigger:
         - platform: event
           event_type: aarlo_capture_updated
       timeout: 60
-      # If no capture comes in within 60 seconds it was (most likely) already
+      # If no capture comes in within 1 minute, it was (most likely) already
       # taken before the doorbell was rang...
       continue_on_timeout: true
-    - service: script.persistent_notification_all_devices
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
       data:
-        tag: doorbell
-        title: 🚪 Someone rang the doorbell...
-        message: >-
-          Arlo captured the situation:
-        image: >-
-          {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
+        variables:
+          group: doorbell
+          channel: Notification
+          criticalNotification: true
+          title: 🚪 Someone rang the doorbell...
+          message: >-
+            Arlo captured the situation:
+          image: >-
+            {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
   mode: single

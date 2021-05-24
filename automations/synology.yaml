@@ -15,11 +15,17 @@
       from: normal
   condition: []
   action:
-    - service: script.persistent_notification_my_devices
+    # Explicitly block any further runs of this automation while the
+    # notification is up (i.e. once a notification is up, no additional
+    # notifications are raised)
+    - service: script.persistent_notification
       data:
-        tag: system_general
+        group: general
+        channel: Notification
+        targetDevices: my
         title: 💽 Synology drive status-change
         message: >-
           {{ trigger.to_state.attributes.friendly_name }} just changed from
           "{{ trigger.from_state.state }}" to "{{ trigger.to_state.state }}"...
   mode: single
+  max_exceeded: silent

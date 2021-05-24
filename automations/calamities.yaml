@@ -9,13 +9,19 @@
       to: "on"
   condition: []
   action:
-    - service: script.persistent_notification_all_devices
+    # Explicitly block any further runs of this automation while the
+    # notification is up (i.e. once a notification is up, no additional
+    # notifications are raised)
+    - service: script.persistent_notification
       data:
-        tag: calamity_leak
+        group: calamity
+        channel: Alert
+        criticalNotification: true
         title: Leak detected!
         message: >-
           {{ trigger.to_state.attributes.friendly_name }} detected water!
   mode: single
+  max_exceeded: silent
 - alias: 🤯/💧 | 🔊 Sound the alarm (water detected when someone home)
   id: 761dc98c-6444-4782-8295-26dd8caaad59
   trigger:
@@ -51,13 +57,19 @@
       to: "on"
   condition: []
   action:
-    - service: script.persistent_notification_all_devices
+    # Explicitly block any further runs of this automation while the
+    # notification is up
+    - service: script.persistent_notification
       data:
-        tag: calamity_smoke
+        group: calamity
+        channel: Critical
+        importance: high
+        criticalNotification: true
         title: Smoke detected!
         message: >-
           {{ trigger.to_state.attributes.friendly_name }} detected smoke!
   mode: single
+  max_exceeded: silent
 - alias: 🤯/🔥 | 🔊 Sound the alarm (smoke detected)
   id: 3e33958b-6f90-4612-afd0-d0078e054e92
   trigger:
