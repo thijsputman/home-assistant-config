@@ -71,8 +71,14 @@
       automation should be disabled) – as an addition to the Android TV based
       automations (which work wonderfully, but only when the Shield TV is active
       and not, for example, when the Nintendo Switch is being used)
+- [ ] Enable the `retain`-attribute for all MQTT-topics (either by updating the
+      publishing logic, or by manually toggling the attribute on the MQTT server
+      itself?)
 
 ## Lovelace
+
+- [ ] Refine the wakeup alarm card: Clearer state indication and visually
+      combine the alarm time setting with the mute setting
 
 ## tado°
 
@@ -108,6 +114,10 @@
       the Ensuite ceiling lamp is increased during the "Daytime" scene, the
       detected scene does not change (most likely the overall change is too
       small – might require a specific exception)
+- [ ] When coming home late at night (i.e. all lights are off), switch on some
+      lights when the front/back door opens (conditional on home alarm disarmed
+      in the past few minutes)
+- [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
 
 ## Alarm
 
@@ -130,6 +140,12 @@
 - [ ] Replace the notifications ("motion detected when away") from the Arlo-app
       with "native" Home Assistant notifications (mainly beneficial if this
       allows to include a snapshot directly in the notification)
+  - For testing purposes currently implemented as "doorbell rang when
+    away"-notification
 - [ ] The (Neato) robot vacuums trigger the motion sensors (and thus the alarm
       when we're away 😳🤐) – add time-based excludes to specific motion sensors
       to cope with this...
+- [ ] Hold the `group.family` `not_home`-state a couple minutes before running
+      automations. Depending on where the car is parked / our destination, it's
+      possible we leave the home "geofence" and subsequently pass through it
+      again before actually leaving it...
