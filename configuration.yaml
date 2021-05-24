@@ -247,6 +247,8 @@ notify:
 sensor: !include sensors.yaml
 sensor custom: !include_dir_merge_list sensors/
 
+plant: !include plants.yaml
+
 group: !include_dir_merge_named groups/
 
 input_select: !include_dir_merge_named input/select/

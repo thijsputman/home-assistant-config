@@ -1,0 +1,45 @@
+# Bonsai (Living room)
+bonsai_living_room:
+  sensors:
+    moisture: sensor.miflora_bonsai_living_room_moisture
+    temperature: sensor.miflora_bonsai_living_room_temperature
+    conductivity: sensor.miflora_bonsai_living_room_conductivity
+    brightness: sensor.miflora_bonsai_living_room_light
+  min_moisture: 20
+  max_moisture: 60
+  min_conductivity: 350
+  max_conductivity: 2000
+  min_temperature: 10
+  max_temperature: 32
+  min_brightness: 1500
+  max_brightness: 30000
+# Calathea Insignis (Living room)
+calathea_living_room:
+  sensors:
+    moisture: sensor.miflora_calathea_living_room_moisture
+    temperature: sensor.miflora_calathea_living_room_temperature
+    conductivity: sensor.miflora_calathea_living_room_conductivity
+    brightness: sensor.miflora_calathea_living_room_light
+  min_moisture: 15
+  max_moisture: 65
+  min_conductivity: 350
+  max_conductivity: 1000
+  min_temperature: 12
+  max_temperature: 32
+  min_brightness: 800
+  max_brightness: 20000
+# Strelitzia Reginae (Attic)
+strelitzia_attic:
+  sensors:
+    moisture: sensor.miflora_strelitzia_attic_moisture
+    temperature: sensor.miflora_strelitzia_attic_temperature
+    conductivity: sensor.miflora_strelitzia_attic_conductivity
+    brightness: sensor.miflora_strelitzia_attic_light
+  min_moisture: 15
+  max_moisture: 60
+  min_conductivity: 350
+  max_conductivity: 1000
+  min_temperature: 5
+  max_temperature: 37
+  min_brightness: 2500
+  max_brightness: 30000
