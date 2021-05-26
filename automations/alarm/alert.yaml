@@ -120,7 +120,7 @@
         kelvin: 6500
       entity_id: light.bedroom
   mode: single
-- alias: 🚨 | 💡 Flash lights (pending alarm; front or back door open)
+- alias: 🚨 | 💡 Flash lights (pending alarm; Front / Kitchen door open)
   id: 4416cb36-8291-41ae-8c62-7a246fdc9d2d
   description: ""
   trigger:
@@ -143,7 +143,7 @@
                   - light.hue_filament_bulb_1_5
                   - light.hue_filament_bulb_1_4
         - conditions:
-            # Back door
+            # Kitchen door
             - condition: state
               entity_id: binary_sensor.openclose_12
               state: "on"

@@ -1,4 +1,4 @@
-# Front and Back door have almost identical automations. They are not folded
+# Front and Kitchen door have almost identical automations. They are not folded
 # into a single automation as that would cause problems when both doors are
 # opened at the same time. Parrallelising the automation (to cope with both
 # doors opening at the same time) in turn causes problems with reverting the
@@ -66,7 +66,7 @@
       default: []
   mode: single
   max_exceeded: silent
-- alias: 💡 | 🚪 Outside light to maximum brightness (Back door open)
+- alias: 💡 | 🚪 Outside light to maximum brightness (Kitchen door open)
   id: ffff8c6f-9dbd-4791-8c32-766e1570811e
   description: ""
   trigger:
@@ -123,7 +123,7 @@
       default: []
   mode: single
   max_exceeded: silent
-- alias: 💡 | 🚪 Garden lights on (kitchen door / back gate open)
+- alias: 💡 | 🚪 Garden lights on (Kitchen door / Back gate open)
   id: cd0a0eac-d482-4add-ba9f-28e63fae0d26
   description: ""
   trigger:
@@ -133,8 +133,8 @@
         - binary_sensor.openclose_34
       from: "off"
       to: "on"
-      # Slight delay to prevent "checking if the door is locked" (by attempting to
-      # open it) from triggering the Garden lights...
+      # Slight delay to prevent "checking if the door is locked" (by attempting
+      # to open it) from triggering the Garden lights...
       for: "00:00:03"
   condition:
     # Again, only under "normal" circumstances – the alarm automations also

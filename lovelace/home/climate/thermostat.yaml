@@ -39,6 +39,9 @@ card:
           temperature: true
           state: true
         control:
+          # N.B. It takes a bit of time for the (online) tado° integration to
+          # update its preset mode. So even though the preset mode changes just
+          # fine, its state will not be immediately reflected in the UI...
           preset:
             _name: tado° – preset mode
             home:

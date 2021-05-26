@@ -21,8 +21,7 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
-    - service: script.tts_p20
-      data:
+    - variables:
         message: >-
           It is raining outside, please close the
           {%- if is_state('binary_sensor.openclose_19', 'on') or
@@ -34,7 +33,11 @@
           {%- endif -%}
           {%- if is_state('binary_sensor.openclose_33', 'on')
             %} attic window
-          {%- endif -%}.
+            {%- endif -%}.
+    - service: script.tts_p20
+      data:
+        message: >-
+          {{ message }}
     # Explicitly block any further runs of this automation while the
     # notification is up (i.e. once a notification is up, no additional
     # notifications are raised)
@@ -47,17 +50,7 @@
         tag: rain
         title: ☔ It is raining outside
         message: >-
-          It is raining outside, please close the
-          {%- if is_state('binary_sensor.openclose_19', 'on') or
-            is_state('binary_sensor.openclose_20', 'on')
-              %} bedroom window
-              {%- if is_state('binary_sensor.openclose_33', 'on')
-                %} and the
-              {%- endif -%}
-          {%- endif -%}
-          {%- if is_state('binary_sensor.openclose_33', 'on')
-            %} attic window
-          {%- endif -%}.
+          {{ message }}
   mode: single
   max_exceeded: silent
 - alias: 🌦️ | 📱 Dismiss notification (rain stopped)
