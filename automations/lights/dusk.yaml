@@ -1,4 +1,5 @@
-- alias: 💡 | ⏰ Outside lights on (daily at civil dusk)
+# N.B. This automation's name is used later in the file!
+- alias: 💡 | ⏰ Garden lights on (daily at civil dusk)
   id: 8fa0a6d4-f80a-4312-8669-9f5525bbf3d5
   description: ""
   trigger:
@@ -6,16 +7,15 @@
       entity_id: sensor.time_of_day
       from: dusk
       to: night
-  condition: []
+  condition:
+    - condition: state
+      entity_id: light.garden
+      state: "off"
   action:
     - service: hue.hue_activate_scene
       data:
         group_name: Garden
         scene_name: Ambiance
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Front & back door
-        scene_name: Evening
   mode: single
 - alias: 💡 | ⏰ Inside lights on (daily just before sunset)
   id: 0ca01a00-8847-41f1-b852-70f4c4a49275
@@ -27,6 +27,7 @@
       to: dusk
   condition: []
   action:
+    # Living room
     - choose:
         - conditions:
             - condition: or
@@ -43,6 +44,7 @@
                 group_name: Living room
                 scene_name: Ambiance
       default: []
+    # Kitchen
     - choose:
         - conditions:
             - condition: or
@@ -58,13 +60,19 @@
               data:
                 scene_name: Ambiance
       default: []
-    # Turn on Hallway lights regardless of their state. The daytime light
+    # Hallway – turn on lights regardless of their state. The daytime light
     # automation most likely already switched them on; the below ensures they
     # don't get stuck at their – too high – daytime brightness level...
     - service: hue.hue_activate_scene
       data:
         group_name: Hallway
         scene_name: Evening
+    # Front and back (i.e. Kitchen) door
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Front & back door
+        scene_name: Evening
+    # Guestroom
     - choose:
         - conditions:
             - condition: state
@@ -77,32 +85,52 @@
                 scene_name: Evening
       default: []
   mode: single
-- alias: 💡 | ⏰ Outside lights off (daily at 22:30)
+- alias: 💡 | ⏰ Garden lights off (daily after 23:00)
   id: 99711cfd-e1c7-47d8-83af-94876e126b6c
   description: ""
   trigger:
     - platform: time
-      at: "22:30:00"
-  condition: []
+      at: "23:00:00"
+  condition:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.garden
+          state: "on"
+        - condition: state
+          entity_id: light.hue_filament_bulb_1 # Back door
+          state: "on"
   action:
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: light.garden
-              state: "on"
-          sequence:
-            - service: light.turn_off
-              data: {}
-              entity_id: light.garden
-      default: []
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: light.front_back_door
-              state: "on"
-          sequence:
-            - service: light.turn_off
-              data: {}
-              entity_id: light.front_back_door
-      default: []
+    # Garden lights should be on for at least 90 minutes – delay execution to
+    # achieve this based on when their "switch on"-automation ran...
+    - delay: >-
+        {% set ref = state_attr(
+            'automation.outside_lights_on_daily_at_civil_dusk', 'last_triggered'
+          ) | as_local
+        %}
+        {% set delta=1380-(ref.hour * 60 + ref.minute) %}
+        {% if delta >= 0 and delta < 90 %}
+          {{ (90 - delta) * 60 }}
+        {% else %}
+          0
+        {% endif %}
+    - service: light.turn_off
+      data: {}
+      entity_id:
+        - light.garden
+        - light.hue_filament_bulb_1 # Back door
   mode: single
+- alias: 💡 | ⏰ Front door light off (daily at 22:30)
+  id: dc5c6595-78d3-43c9-94ab-24ddd2a4073d
+  description: ""
+  trigger:
+    - platform: time
+      at: "22:30:00"
+  condition:
+    - condition: state
+      entity_id: light.hue_filament_bulb_1_2
+      state: "on"
+  action:
+    - service: light.turn_off
+      data: {}
+      entity_id: light.hue_filament_bulb_1_2

@@ -89,9 +89,8 @@
 
 ## Lights
 
-- [ ] For Summer: Garden light automatic off at 22:30 should only happen if
-      light state has not been modified manually (i.e. we're sitting outside)
-- [ ] For Summer: Switch outside lights ~~on earlier and switch them~~ off later
+- [ ] For Summer: Garden light automatic off should only happen if light state
+      has not been modified manually (i.e. we're sitting outside)
 - [ ] The transition from "lights off at dawn" to "daytime lights on when its
       dark during the day" is not optimal yet. At the moment I'm delaying the
       latter by 10 seconds to prevent it from interfering with the former, there
