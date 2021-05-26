@@ -47,6 +47,7 @@
       entity_id: group.family
       from: home
       to: not_home
+      for: "00:05:00"
   condition:
     - condition: state
       entity_id: switch.smart_plug_9

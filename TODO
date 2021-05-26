@@ -144,7 +144,3 @@
 - [ ] The (Neato) robot vacuums trigger the motion sensors (and thus the alarm
       when we're away 😳🤐) – add time-based excludes to specific motion sensors
       to cope with this...
-- [ ] Hold the `group.family` `not_home`-state a couple minutes before running
-      automations. Depending on where the car is parked / our destination, it's
-      possible we leave the home "geofence" and subsequently pass through it
-      again before actually leaving it...

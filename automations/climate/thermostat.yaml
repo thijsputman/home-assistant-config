@@ -11,7 +11,12 @@
       entity_id: group.family
       from: home
       to: not_home
-  condition: []
+      for: "00:05:00"
+  condition:
+    - condition: state
+      entity_id: climate.tado_living_room
+      attribute: preset_modes
+      state: home
   action:
     # Control tado° via the Tado integration (i.e. Internet)
     - service: climate.set_preset_mode
@@ -27,7 +32,11 @@
       entity_id: group.family
       from: not_home
       to: home
-  condition: []
+  condition:
+    - condition: state
+      entity_id: climate.tado_living_room
+      attribute: preset_modes
+      state: away
   action:
     # Control tado° via the Tado integration (i.e. Internet)
     - service: climate.set_preset_mode

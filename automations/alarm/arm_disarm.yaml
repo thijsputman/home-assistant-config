@@ -35,7 +35,13 @@
       entity_id: group.family
       from: home
       to: not_home
-  condition: []
+      for: "00:05:00"
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
   action:
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.home_alarm
@@ -49,7 +55,10 @@
       entity_id: group.family
       from: not_home
       to: home
-  condition: []
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
   action:
     - service: alarm_control_panel.alarm_disarm
       data:
