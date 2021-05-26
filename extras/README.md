@@ -6,3 +6,5 @@ Some extras I'm using in combination with my Home Assistant instance.
 - [`📁 femon`](./femon/) – DVB-T frontend signal monitor
 - [`📁 influxdb`](./influxdb/) – InfluxDB scratch-pad
 - [`📁 deconz`](./deconz/) – deCONZ REST commands scratch-pad
+- [`📁 bt-mqtt-gateway`](./bt-mqtt-gateway/) – Bluetooth-gateway (for a set of
+  Mi Flora devices)
