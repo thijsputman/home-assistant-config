@@ -6,7 +6,11 @@
       entity_id: input_boolean.everyone_asleep
       from: "off"
       to: "on"
-  condition: []
+  condition:
+    # Prevent overruling "Armed Away"
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
   action:
     - service: alarm_control_panel.alarm_arm_night
       entity_id: alarm_control_panel.home_alarm
@@ -20,7 +24,11 @@
       entity_id: input_boolean.everyone_asleep
       from: "on"
       to: "off"
-  condition: []
+  condition:
+    # Prevent overruling "Armed Away"
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_night
   action:
     - service: alarm_control_panel.alarm_disarm
       data:

@@ -1,4 +1,9 @@
-- alias: 💤 | 💡 Everyone at home asleep (all lights off)
+# Note that input_boolean.everyone_asleep is toggled regardless of presence
+# (i.e. it is also toggled when no-one is home). This keeps the overall setup
+# as simple as possible. In the limited number of cases where asleep/awake-
+# triggers should not cause things to happen when no-one is home, explicit
+# exceptions are put in place...
+- alias: 💤 | 💡 Everyone asleep (all lights off)
   id: cdec9ae5-d391-4826-a957-36fb823a73a7
   description: ""
   trigger:
@@ -12,9 +17,6 @@
       entity_id: group.light_inside_rooms
       state: "off"
     - condition: state
-      entity_id: group.family
-      state: home
-    - condition: state
       entity_id: sensor.time_of_day
       state: night
   action:
@@ -22,16 +24,13 @@
       data: {}
       entity_id: input_boolean.everyone_asleep
   mode: single
-- alias: 💤 | ⏰ Everyone at home awake (daily at «wakeup» time)
+- alias: 💤 | ⏰ Everyone awake (daily at «wakeup» time)
   id: dfe729c9-436a-4fdb-8970-b68492d9a1a2
   description: ""
   trigger:
     - platform: time
       at: input_datetime.wakeup
   condition:
-    - condition: state
-      entity_id: group.family
-      state: home
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "on"
@@ -158,6 +157,7 @@
           - service: media_player.play_media
             data:
               media_content_type: audio/mpeg
+              # cspell: disable-next-line
               media_content_id: file:/var/lib/mopidy/media/4nsekecn.mp3
             entity_id: media_player.pi0_speaker_bedroom
           - delay: "00:00:20"

@@ -99,9 +99,6 @@
       "Ambiance", trigger counter motion sensor, switch Kitchen to "Bright
       (Custom)" (while motion sensor is still active). After motion clears,
       Kitchen switches back to "Ambiance" instead of to "Bright (Custom")
-- [ ] Let the occupancy simulation toggle `input_boolean.everyone_asleep` when
-      it switches off all lights (easiest way to keep consistent behaviour). Do
-      ensure this doesn't conflict with the alarm settings
 - [ ] Use "Light Group" instead of regular groups for grouping lights
 - [ ] Failure mode for Bathroom motion-sensing automation: If the light-level
       falls below its threshold while a motion sensors remains triggered, the

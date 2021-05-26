@@ -73,6 +73,11 @@
     - condition: state
       entity_id: switch.smart_plug_9
       state: "off"
+    # Only act if someone is home (otherwise the "everyone asleep"-trigger
+    # would switch the boiler on even when no-one is home)
+    - condition: state
+      entity_id: group.family
+      state: home
   action:
     - service: switch.turn_on
       data: {}
