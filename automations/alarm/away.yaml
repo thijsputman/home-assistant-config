@@ -49,7 +49,7 @@
           criticalNotification: true
           title: 🛡️ Home alarm armed
           message: >-
-            The Home alarm just changed into "Armed Away"-mode
+            The Home alarm just changed into "Armed away"-mode
 - alias: 🚨 | 📱 Notify on "Disarmed"
   id: a78d71df-f5a9-49f1-a584-18d5260e88db
   trigger:
@@ -136,6 +136,11 @@
           message: >-
             The back gate was just opened!
             There could be someone in the garden; check the camera feed...
+            {% if states('sensor.time_of_day') != 'day' -%}
+              <br><br>As a precaution, the garden and downstairs lights might
+              have been automatically switched on – please check them after
+              resolving the incident...
+            {% endif %}
 - alias: 🚨 | 💡 Lights on when back gate opened ("Armed away")
   id: 9684f5d2-8d26-429f-bb08-aa5deeb23c50
   trigger:
@@ -183,3 +188,93 @@
                 group_name: Living room
                 scene_name: Active
       default: []
+    # To prevent the Garden lights from staying on unnecessarily, switch them
+    # off when it gets light outside – the inside lights will have already been
+    # switched off by a "regular" light automation at this point
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.time_of_day
+          from: dawn
+          to: day
+    - service: light.turn_off
+      data:
+        entity_id: light.garden
+- alias: 🚨 | 💡 Hallway and Kitchen lights on ("Armed away" → disarmed; door open)
+  id: 23900a05-e8bd-4296-a8fe-fdcaa53caedf
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: armed_away
+      to: disarmed
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.kitchen
+          state: "off"
+        - condition: state
+          entity_id: light.hallway
+          state: "off"
+  action:
+    # Wait five minutes for either the Front or Kitchen door to open – presence
+    # detection might have disarmed the alarm earlier than one would've done
+    # manually, so some extra slack is required...
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.openclose_16 # Front door
+            - binary_sensor.openclose_12 # Kitchen door
+          from: "off"
+          to: "on"
+      timeout: "00:05:00"
+      continue_on_timeout: false
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Evening
+    - service: script.hue_activate_scene_kitchen
+      data:
+        scene_name: Ambiance
+- alias: 🚨 | 💡 Hallway and Kitchen lights on ("Armed away" → pending → disarmed)
+  id: 84d125f9-e88c-4bce-81e7-6f08a04f5afe
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: armed_away
+      to: pending
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.kitchen
+          state: "off"
+        - condition: state
+          entity_id: light.hallway
+          state: "off"
+  action:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: alarm_control_panel.home_alarm
+          from: pending
+          to: disarmed
+      # Delay time for the pending → triggered transition is 30 seconds, so
+      # after 60 seconds it's safe to give up
+      timeout: 60
+      continue_on_timeout: false
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Evening
+    - service: script.hue_activate_scene_kitchen
+      data:
+        scene_name: Ambiance

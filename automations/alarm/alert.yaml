@@ -177,6 +177,25 @@
       data:
         group_name: Garden
         scene_name: Active
+    # To prevent the Garden lights from staying on unnecessarily, switch them
+    # off if the alarm is disarmed or when it gets light outside. Only do this
+    # if no-one is home (i.e. assuming a remote disarm) – if someone is home we
+    # assume this is done manually...
+    - wait_for_trigger:
+        - platform: state
+          entity_id: alarm_control_panel.home_alarm
+          to: disarmed
+        - platform: state
+          entity_id: sensor.time_of_day
+          from: dawn
+          to: day
+    - condition: state
+      entity_id: group.family
+      state: not_home
+    - service: light.turn_off
+      data:
+        entity_id: light.garden
+  mode: restart
 - alias: 🚨 | 📱 Notify on alarm pending
   id: 601cb512-c43b-4155-b58f-122441d49d22
   description: ""
@@ -267,3 +286,37 @@
                 %} by {{ persons[0].attributes.friendly_name }}
               {%- endif -%}
             {%- endif -%}.
+- alias: 🚨 | 💡 Lights on (triggered alarm disarmed)
+  id: 5132f575-5f3f-43e5-8720-8eddd8c66355
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: triggered
+      to: disarmed
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+    # Someone should be home _and_ have manually disarmed the alarm via the
+    # Lovelace UI – this prevents the lights from switching on if the alarm is
+    # disarmed remotely (and/or automatically)
+    - condition: state
+      entity_id: group.family
+      state: home
+    - condition: template
+      value_template: >-
+        {{ trigger.to_state.context.user_id is not none }}
+  action:
+    - service: script.hue_activate_scene_kitchen
+      data:
+        scene_name: Bright (custom)
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Active
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Bright

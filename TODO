@@ -110,9 +110,6 @@
       the Ensuite ceiling lamp is increased during the "Daytime" scene, the
       detected scene does not change (most likely the overall change is too
       small – might require a specific exception)
-- [ ] When coming home late at night (i.e. all lights are off), switch on some
-      lights when the front/back door opens (conditional on home alarm disarmed
-      in the past few minutes)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
 
 ## Alarm
