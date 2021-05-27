@@ -1,0 +1,221 @@
+# Heuristically track the Hue scene name based on the group's (i.e. Hue
+# room/zone) brightness, color_temp and/or xy_color.
+#
+# Note that when a Hue *zone* changes, the Hue *room(s)* it belongs to keep
+# reporting their previous state (i.e. some of their lights  changed, but the
+# Hue API doesn't report on these changes).
+# The inverse behaviour does _not_ apply to zones: Changing their containing
+# room(s) _does_ change the state of the zone.
+# This behaviour is utilised by the Kitchen-room, which is set up to track the
+# state of the Kitchen counter & cupboards-zone.
+#
+# Furthermore, if a zone change causes a room to transition from off to on, the
+# room *does* report a state change (namely, it will start reporting its last
+# active/on state). This causes the below heuristic to fail, as such exceptions
+# have to be put in place to handle this "off-on" scenario...
+
+# Living room [Hue room]
+- trigger:
+    - platform: state
+      entity_id: light.living_room
+    - platform: event
+      event_type: template_reloaded
+  sensor:
+    name: Hue scene (Living room)
+    unique_id: 69b3fafe-1b0a-4f39-88c5-c92f31806e1a
+    icon: mdi:movie-filter
+    state: >-
+      {% if states('light.living_room') == 'off' %}
+        <Off>
+      {% else %}
+        {% set brightness = state_attr('light.living_room', 'brightness') %}
+        {% set color_temp = state_attr('light.living_room', 'color_temp') %}
+        {%
+          if brightness > 110 and brightness < 120 and
+          color_temp > 225 and color_temp < 235
+        %}
+          Daytime
+        {%
+          elif brightness > 130 and brightness < 140 and
+          color_temp > 430 and color_temp < 450
+        %}
+          Ambiance
+        {%
+          elif brightness > 1 and brightness < 10 and
+          color_temp > 430 and color_temp < 450
+        %}
+          Movie
+        {%
+          elif brightness > 11 and brightness < 20 and
+          color_temp > 430 and color_temp < 450
+        %}
+          Movie (ambiance)
+        {%
+          elif brightness > 175 and brightness < 185 and
+          color_temp > 420 and color_temp < 430
+        %}
+          Active
+        {% else %}
+          <Unknown>
+        {% endif %}
+      {% endif %}
+    attributes:
+      # Keep track of previous scene; skip if unknown/unavailable, in scene
+      # <Unknown> or identical to the already stored previous scene
+      previous_scene: >-
+        {%
+          if states('sensor.hue_scene_living_room') not in
+            ['unknown', 'unavailable']
+        %}
+          {%
+            if states('sensor.hue_scene_living_room') != '<Unknown>' and
+            states('sensor.hue_scene_living_room') != state_attr(
+              'sensor.hue_scene_living_room', 'previous_scene')
+          %}
+            {{ states('sensor.hue_scene_living_room') }}
+          {% else %}
+            {{ state_attr('sensor.hue_scene_living_room', 'previous_scene') }}
+          {% endif %}
+        {% endif %}
+# Kitchen counter & cupboards [Hue zone]
+- trigger:
+    - platform: state
+      entity_id: light.kitchen_counter_cupboards
+    - platform: event
+      event_type: template_reloaded
+  sensor:
+    name: Hue scene (Kitchen counter & cupboards)
+    unique_id: b7842630-c541-4e0e-a7ce-c0f4deea3f81
+    icon: mdi:movie-filter
+    # For this zone(/scene combination) the Hue API starts off by providing
+    # xy_color values and then – sometimes – switches to a color_temp value
+    # midway through the scene being active (not prompted by any change to the
+    # actual lights). Hence, we have to deal with both...
+    state: >-
+      {% if states('light.kitchen_counter_cupboards') == 'off' %}
+        <Off>
+      {% else %}
+        {%
+          set brightness = state_attr(
+            'light.kitchen_counter_cupboards', 'brightness'
+          )
+        %}
+        {%
+          if state_attr('light.kitchen_counter_cupboards', 'color_temp') == none
+        %}
+          {% set color_temp = -1.0 %}
+        {% else %}
+          {%
+            set color_temp = state_attr(
+              'light.kitchen_counter_cupboards', 'color_temp'
+            )
+          %}
+        {% endif %}
+        {%
+          if state_attr('light.kitchen_counter_cupboards', 'xy_color') == none
+        %}
+          {% set xy_color = [-1.0, -1.0] %}
+        {% else %}
+          {%
+            set xy_color = state_attr(
+              'light.kitchen_counter_cupboards', 'xy_color'
+            )
+          %}
+        {% endif %}
+        {%
+          if brightness > 245 and brightness < 256 and (
+            color_temp > 230 and color_temp < 240 or (
+              xy_color[0] > 0.35 and xy_color[0] < 0.39 and
+              xy_color[1] > 0.35 and xy_color[1] < 0.39
+            )
+          )
+        %}
+          Activity
+        {% else %}
+          <Unknown>
+        {% endif %}
+      {% endif %}
+    attributes:
+      # Keep track of previous scene; skip if unknown/unavailable, in scene
+      # <Unknown> or identical to the already stored previous scene
+      previous_scene: >-
+        {%
+          if states('sensor.kitchen_counter_cupboards') not in
+            ['unknown', 'unavailable']
+        %}
+          {%
+            if states('sensor.kitchen_counter_cupboards') != '<Unknown>' and
+            states('sensor.kitchen_counter_cupboards') != state_attr(
+              'sensor.kitchen_counter_cupboards', 'previous_scene')
+          %}
+            {{ states('sensor.kitchen_counter_cupboards') }}
+          {% else %}
+            {{ state_attr('sensor.kitchen_counter_cupboards', 'previous_scene') }}
+          {% endif %}
+        {% endif %}
+# Kitchen [Hue room]
+- trigger:
+    # Kitchen relies on the state of Kitchen counter & cupboards, so it should
+    # process _after_ that sensor is updated
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen_counter_cupboards
+  sensor:
+    name: Hue scene (Kitchen)
+    unique_id: c5876824-72b0-4b40-9d70-a2cde1bc1d7f
+    icon: mdi:movie-filter
+    # If Kitchen is off and Kitchen counter & cupboards switches to Activity,
+    # don't do anything. In this situation the Hue API messes up (see comment in
+    # the header) and as such it's best to keep reporting the "off"-state...
+    state: >-
+      {%
+        if states('light.kitchen') == 'off' or (
+          states('sensor.hue_scene_kitchen') == '<Off>' and
+          states('sensor.hue_scene_kitchen_counter_cupboards') == 'Activity'
+        )
+      %}
+        <Off>
+      {% else %}
+        {% set brightness = state_attr('light.kitchen', 'brightness') %}
+        {% set color_temp = state_attr('light.kitchen', 'color_temp') %}
+        {%
+          if brightness > 125 and brightness < 135 and
+          color_temp > 225 and color_temp < 235
+        %}
+          Daytime
+        {%
+          elif brightness > 75 and brightness < 85 and
+          color_temp > 430 and color_temp < 440
+        %}
+          Ambiance
+        {%
+          elif brightness > 1 and brightness < 10 and
+          color_temp > 430 and color_temp < 440
+        %}
+          Movie
+        {%
+          elif brightness > 250 and brightness < 260 and
+          color_temp > 340 and color_temp < 350
+        %}
+          Bright (custom)
+        {% else %}
+          <Unknown>
+        {% endif %}
+      {% endif %}
+    attributes:
+      # Keep track of previous scene; skip if unknown/unavailable, in scene
+      # <Unknown> or identical to the already stored previous scene
+      previous_scene: >-
+        {%
+          if states('sensor.hue_scene_kitchen') not in
+            ['unknown', 'unavailable']
+        %}
+          {%
+            if states('sensor.hue_scene_kitchen') != '<Unknown>' and
+            states('sensor.hue_scene_kitchen') != state_attr(
+              'sensor.hue_scene_kitchen', 'previous_scene')
+          %}
+            {{ states('sensor.hue_scene_kitchen') }}
+          {% else %}
+            {{ state_attr('sensor.hue_scene_kitchen', 'previous_scene') }}
+          {% endif %}
+        {% endif %}

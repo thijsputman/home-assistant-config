@@ -6,7 +6,6 @@ cards:
     entity: input_select.hue_scene_kitchen
     show_name: false
     show_state: true
-    show_icon: true
     icon_height: 36px
     icon: mdi:pot-steam
     hold_action:
@@ -29,6 +28,31 @@ cards:
     show_state: true
     hold_action:
       action: none
+    icon_height: 36px
+    icon: mdi:sofa
+  # Monitor the newly implemented template sensor approach
+  - type: button
+    tap_action:
+      action: more-info
+    entity: sensor.hue_scene_kitchen
+    show_name: false
+    show_state: true
+    icon_height: 36px
+    icon: mdi:pot-steam
+  - type: button
+    tap_action:
+      action: more-info
+    entity: sensor.hue_scene_kitchen_counter_cupboards
+    show_name: false
+    show_state: true
+    icon_height: 36px
+    icon: mdi:water-pump
+  - type: button
+    tap_action:
+      action: more-info
+    entity: sensor.hue_scene_living_room
+    show_name: false
+    show_state: true
     icon_height: 36px
     icon: mdi:sofa
 square: false

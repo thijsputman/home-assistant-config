@@ -23,27 +23,25 @@
   - See which of the current template sensors (mainly tado° related) are
     actually useful given the above considerations; remove the ones that are
     not...
-- [ ] Some of the automation/helper-combinations can be replaced with template
+- [x] Some of the automation/helper-combinations can be replaced with template
       entities/sensors – mainly those that effectively are nothing more than a
       set of operations on the state of one or more existing sensors:
   - ✔️ Time of Day / Nighttime
-  - The Hue scene heuristics
-- [ ] See where
-      [**trigger-based template sensors**](https://www.home-assistant.io/blog/2021/04/07/release-20214/)
-      can/should be used.
-  - The `state_attr('sensor.xxx', 'last_reset').today().day|int` constructs
-    (i.e. hacks 😉) in [`📄 sensors/dsmr.yaml`](./sensors/dsmr.yaml) appear to
-    be great candidates at first sight...
-  - ~~Some of the binary sensors indicating device activity (e.g. those for the
-    dishwasher and dryer) could be triggered with a slight delay (or with more
-    elaborate conditions) to ensure a short "pauses" in their cleaning cycle
-    don't incorrectly toggle the sensor off~~ More appropriate to use template
-    binary sensors – see below
+  - ✔️ The Hue scene heuristics – under evaluation
 - [ ] Clean up `📄 sensors.yaml` (i.e., move its contents into the `📁 sensors`
       folder). Do the same with the binary sensors (move them from
-      `📄 configuration.yaml` into `📁 sensors_binary`). There's a handful of
-      "regular" template sensors (`sensor.binary_...`) that should've been
-      implemented as template binary sensors – correct those
+      `📄 configuration.yaml` into `📁 sensors_binary`).
+  - Reimplement all template sensors using
+    [the new format](https://www.home-assistant.io/integrations/template) and
+    move them into the `📁 templates` folder
+  - There's a handful of template sensors (`sensor.binary_...`) that should've
+    been implemented as template binary sensors – correct those
+  - Use
+    [**trigger-based template sensors**](https://www.home-assistant.io/integrations/template/#configuration-for-trigger-based-template-sensors)
+    where appropriate. For example, the
+    `state_attr('sensor.xxx', 'last_reset').today().day|int` constructs (i.e.
+    hacks 😉) in [`📄 sensors/dsmr.yaml`](./sensors/dsmr.yaml) appear to be
+    great candidates...
 - [ ] Further enhance the (Android) companion app notifications
   - ✔️ Channels and grouping/threading
   - ✔️ Support for attachments/images
