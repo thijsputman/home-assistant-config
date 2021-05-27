@@ -24,7 +24,7 @@
     - service: input_boolean.turn_on
       data:
         entity_id: input_boolean.housekeeper_present
-    - delay: "03:00:00"
+    - delay: "04:00:00"
     - service: input_boolean.turn_off
       data:
         entity_id: input_boolean.housekeeper_present
