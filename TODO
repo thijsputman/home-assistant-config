@@ -135,6 +135,3 @@
       allows to include a snapshot directly in the notification)
   - For testing purposes currently implemented as "doorbell rang when
     away"-notification
-- [ ] The (Neato) robot vacuums trigger the motion sensors (and thus the alarm
-      when we're away 😳🤐) – add time-based excludes to specific motion sensors
-      to cope with this...

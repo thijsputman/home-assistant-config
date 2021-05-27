@@ -106,6 +106,38 @@
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
+    # Ignore motion sensor in Attic while Neato is active
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_91
+          state: "off"
+        - condition: not
+          conditions:
+            - condition: time
+              after: "11:30:00"
+              before: "14:30:00"
+              weekday:
+                - mon
+                - thu
+    # Ignore motion sensor on first floor while Neato is active
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_63
+          state: "off"
+        - condition: not
+          conditions:
+            - condition: or
+              conditions:
+                - condition: time
+                  after: "11:00:00"
+                  before: "16:00:00"
+                  weekday: mon
+                - condition: time
+                  after: "13:00:00"
+                  before: "18:00:00"
+                  weekday: thu
   action:
     - service: alarm_control_panel.alarm_trigger
       data: {}
