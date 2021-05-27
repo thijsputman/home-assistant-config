@@ -140,18 +140,36 @@
       # <Unknown> or identical to the already stored previous scene
       previous_scene: >-
         {%
-          if states('sensor.kitchen_counter_cupboards') not in
+          if states('sensor.hue_scene_kitchen_counter_cupboards') not in
             ['unknown', 'unavailable']
         %}
           {%
-            if states('sensor.kitchen_counter_cupboards') != '<Unknown>' and
-            states('sensor.kitchen_counter_cupboards') != state_attr(
-              'sensor.kitchen_counter_cupboards', 'previous_scene')
+            if states('sensor.hue_scene_kitchen_counter_cupboards') !=
+              '<Unknown>' and
+            states('sensor.hue_scene_kitchen_counter_cupboards') != state_attr(
+              'sensor.hue_scene_kitchen_counter_cupboards', 'previous_scene')
           %}
-            {{ states('sensor.kitchen_counter_cupboards') }}
+            {{ states('sensor.hue_scene_kitchen_counter_cupboards') }}
           {% else %}
-            {{ state_attr('sensor.kitchen_counter_cupboards', 'previous_scene') }}
+            {{
+              state_attr(
+                'sensor.hue_scene_kitchen_counter_cupboards', 'previous_scene')
+            }}
           {% endif %}
+        {% endif %}
+      # This attribute does a ping-pong between true and false (changing at
+      # every trigger). We need the subsequent Kitchen trigger to fire each time
+      # Kitchen counter & cupboards triggers (even if the its state doesn't
+      # change – see the header notes for more details). This ping-pong achieves
+      # an unconditional state change.
+      ping_pong: >-
+        {%
+          if state_attr(
+            'sensor.hue_scene_kitchen_counter_cupboards', 'ping_pong') is true
+        %}
+          {{ false }}
+        {% else %}
+          {{ true }}
         {% endif %}
 # Kitchen [Hue room]
 - trigger:
