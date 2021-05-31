@@ -208,6 +208,8 @@ card:
               padding-bottom: 0px !important;
             }
         entity: climate.tado_smart_ac_control_attic
+        step_size: 1
+        decimals: 0
         header: false
         layout:
           step: row

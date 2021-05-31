@@ -203,7 +203,9 @@
       default:
         - service: light.turn_on
           data:
-            entity_id: light.attic_hallway
+            entity_id:
+              - light.smart_relay_3
+              - light.smart_relay_4
     # Wait for _all_ motion sensors to clear
     - wait_template: >-
         {{
@@ -216,6 +218,10 @@
       state: idle
     - service: light.turn_off
       data:
-        entity_id: light.attic_hallway
+        # Using the "light.attic_hallway" light group appears to be not 100%
+        # reliable – addressing the relays individually is...
+        entity_id:
+          - light.smart_relay_3
+          - light.smart_relay_4
   mode: restart
   max_exceeded: silent

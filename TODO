@@ -12,12 +12,14 @@
 
 - [ ] Move all icon customisations for sensors defined in YAML from
       `📄 customize.yaml` to their respective YAML files
+  - And where possible, add `unique_id` such that customisation from the UI
+    becomes possible
 - [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
       `light_x`, `openclose_y`, the other half already have sensible names)
 - [ ] State attributes store history too, so there's no need to create template
       sensors if they're purely used for graphing in dashboards
       (`mini-graph-card` can graph attributes) or in other automations (use a
-      template to retrieve the attribute's value)
+      template to retrieve the attribute's value if everything else fails)
   - Main value of template sensors is to easily retrieve an attribute's history
     without having it structural on a dashboard (i.e. incidental usage)
   - See which of the current template sensors (mainly tado° related) are
@@ -27,7 +29,7 @@
       entities/sensors – mainly those that effectively are nothing more than a
       set of operations on the state of one or more existing sensors:
   - ✔️ Time of Day / Nighttime
-  - ✔️ The Hue scene heuristics – under evaluation
+  - ✔️ The Hue scene heuristics – 🚧 under evaluation 🚧
 - [ ] Clean up `📄 sensors.yaml` (i.e., move its contents into the `📁 sensors`
       folder). Do the same with the binary sensors (move them from
       `📄 configuration.yaml` into `📁 sensors_binary`).
