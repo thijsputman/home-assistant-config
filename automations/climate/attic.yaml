@@ -182,3 +182,107 @@
       target:
         entity_id: climate.tado_attic
   mode: single
+- alias: ❄️ | 🚪 Switch off Airco – Attic (window open)
+  id: 717e590f-b4d7-4cf9-8efd-c540f5ea3298
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.openclose_33
+      from: "off"
+      to: "on"
+    # Using HomeKit to trigger – triggers faster than the online integration
+    - platform: state
+      entity_id: climate.tado_smart_ac_control_attic
+      to: cool
+  condition:
+    - condition: state
+      entity_id: binary_sensor.openclose_33
+      state: "on"
+    - condition: state
+      entity_id: climate.tado_smart_ac_control_attic
+      state: cool
+  action:
+    - variables:
+        # Take state from the (online) tadoº integration (so we can distinguish
+        # between "cool" and "auto" hvac-modes)
+        last_hvac_mode: >-
+          {{ states('climate.tado_attic_ac') }}
+        last_swing_mode: >-
+          {{ state_attr('climate.tado_attic_ac', 'swing_mode') }}
+        # HomeKit updates much faster, so prefer that for the temperature
+        last_temperature: >-
+          {{ state_attr('climate.tado_smart_ac_control_attic', 'temperature') }}
+    - service: climate.turn_off
+      data: {}
+      target:
+        entity_id: climate.tado_smart_ac_control_attic
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          targetDevices: home
+          channel: Notification
+          group: climate
+          tag: airco_attic_window
+          title: ❄️ Attic airco switched off – the window is open
+          message: >-
+            Please close the window in the Attic to allow the airco to switch
+            back to {{ last_hvac_mode }}-mode...
+    # Wait for the window to close
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.openclose_33
+          from: "on"
+          to: "off"
+      # Give up after a couple hours...
+      timeout: "02:00:00"
+      continue_on_timeout: true
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: airco_attic_window
+    - condition: state
+      entity_id: binary_sensor.openclose_33
+      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: climate.tado_smart_ac_control_attic
+          state: cool
+    # Use the (online) tadoº integration to restore so we can properly restore
+    # hvac- and swing-modes (even though it's slow to update its state, commands
+    # come through without delay)...
+    - choose:
+        # No need to restore swing-mode or temperature in "auto" hvac-mode
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ last_hvac_mode == 'auto' }}
+          sequence:
+            - service: climate.set_hvac_mode
+              data:
+                hvac_mode: >-
+                  {{ last_hvac_mode }}
+              target:
+                entity_id: climate.tado_attic_ac
+      default:
+        - service: climate.set_hvac_mode
+          data:
+            hvac_mode: >-
+              {{ last_hvac_mode }}
+          target:
+            entity_id: climate.tado_attic_ac
+        - service: climate.set_swing_mode
+          data:
+            swing_mode: >-
+              {{ last_swing_mode }}
+          target:
+            entity_id: climate.tado_attic_ac
+        - service: climate.set_temperature
+          data:
+            temperature: >-
+              {{ last_temperature }}
+          target:
+            entity_id: climate.tado_attic_ac
+  mode: single
+  max_exceeded: silent
