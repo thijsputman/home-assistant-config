@@ -53,17 +53,25 @@ views:
           - type: grid
             cards:
               - type: button
+                name: Electric blanket – Bedroom
                 tap_action:
                   action: toggle
                 entity: switch.on_off_plug_in_unit_3
               - type: button
+                name: Electric heater – Shed
                 tap_action:
                   action: toggle
                 entity: switch.smart_plug_5
               - type: button
+                name: Ventilator – Guestroom
                 tap_action:
                   action: toggle
                 entity: switch.on_off_plug_in_unit_4
+              - type: button
+                name: VOCOlinc – Living room
+                tap_action:
+                  action: toggle
+                entity: humidifier.vocolinc_flb_living_room
           - !include home/climate/bathroom_fan.yaml
       - type: vertical-stack
         cards:

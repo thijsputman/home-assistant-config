@@ -1,0 +1,54 @@
+- alias: 💨 | ⏰ Aroma diffuser Living room on (daily at 19:00 when someone home)
+  id: 9b6842ce-d23d-4715-92ad-d59e681aad3a
+  description: ""
+  trigger:
+    - platform: time
+      at: "19:00:00"
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: home
+  action:
+    - service: humidifier.turn_on
+      data:
+        entity_id: humidifier.vocolinc_flb_living_room
+  mode: single
+- alias: 💨 | ⏰ Aroma diffuser Living room off (daily at 19:30)
+  id: 6ef98fbd-94ab-4fbd-952f-1e8aded4f046
+  description: ""
+  trigger:
+    - platform: time
+      at: "19:30:00"
+  condition:
+    - condition: state
+      entity_id: humidifier.vocolinc_flb_living_room
+      state: "on"
+  action:
+    - service: humidifier.turn_off
+      data:
+        entity_id: humidifier.vocolinc_flb_living_room
+  mode: single
+- alias: 💨 | 🤖 Aroma diffuser Living room off (after 90 minutes / everyone away)
+  id: dab99a02-cf11-43a2-a2af-c188dac07acf
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: humidifier.vocolinc_flb_living_room
+      to: "on"
+      for: "01:30:00"
+    - platform: state
+      entity_id: group.family
+      from: home
+      to: not_home
+    # Trigger on Home Assistant (re)start and automations reloaded to prevent
+    # missing the "held state" (and staying on indefinitely)
+    - platform: homeassistant
+      event: start
+    - platform: event
+      event_type: automation_reloaded
+  condition: []
+  action:
+    - service: humidifier.turn_off
+      data:
+        entity_id: humidifier.vocolinc_flb_living_room
+  mode: single
