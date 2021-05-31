@@ -15,7 +15,7 @@
   condition:
     - condition: state
       entity_id: climate.tado_living_room
-      attribute: preset_modes
+      attribute: preset_mode
       state: home
   action:
     # Control tado° via the Tado integration (i.e. Internet)
@@ -35,7 +35,7 @@
   condition:
     - condition: state
       entity_id: climate.tado_living_room
-      attribute: preset_modes
+      attribute: preset_mode
       state: away
   action:
     # Control tado° via the Tado integration (i.e. Internet)
