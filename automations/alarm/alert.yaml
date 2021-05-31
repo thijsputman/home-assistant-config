@@ -46,9 +46,11 @@
       to: triggered
   condition: []
   action:
-    - service: switch.turn_on
-      entity_id: switch.warning_device_8
-  mode: single
+    - service: script.sirens
+      data:
+        mode: lselect
+        ontime: 180
+  mode: restart
 - alias: 🚨 | 🔊 Stop sounding the alarm (alarm trigger ended)
   id: 06b3864d-3f70-45d7-96fa-6c30fa2576c2
   description: ""
@@ -58,8 +60,9 @@
       from: triggered
   condition: []
   action:
-    - service: switch.turn_off
-      entity_id: switch.warning_device_8
+    - service: script.sirens
+      data:
+        mode: none
   mode: single
 - alias: 🚨 | 🕹️ Mute/unmute the alarm (Bedroom Smart Switches)
   id: 830121ea-907f-4234-be81-b4acce05c1bc
@@ -88,18 +91,21 @@
     - choose:
         - conditions:
             - condition: state
-              entity_id: switch.warning_device_8
+              entity_id: script.sirens
               state: "on"
           sequence:
-            - service: switch.turn_off
-              entity_id: switch.warning_device_8
+            - service: script.sirens
+              data:
+                mode: none
         - conditions:
             - condition: state
-              entity_id: switch.warning_device_8
+              entity_id: script.sirens
               state: "off"
           sequence:
-            - service: switch.turn_on
-              entity_id: switch.warning_device_8
+            - service: script.sirens
+              data:
+                mode: lselect
+                ontime: 180
       default: []
   mode: single
 - alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)

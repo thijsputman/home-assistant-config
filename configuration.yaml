@@ -170,7 +170,7 @@ alarm_control_panel:
     code_arm_required: false
     arming_time: 0
     delay_time: 30
-    trigger_time: 180
+    trigger_time: 180 # N.B. this value is hard-coded in several places...
     disarmed:
       trigger_time: 0
     armed_night:

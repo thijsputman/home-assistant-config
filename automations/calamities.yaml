@@ -37,16 +37,26 @@
       entity_id: group.family
       state: home
   action:
+    # Short pulses of the siren
     - repeat:
-        # Short pulses for 2 minutes – just to get people's attention...
-        count: 8
         sequence:
-          - service: switch.turn_on
-            entity_id: switch.warning_device_8
-          - delay: 2
-          - service: switch.turn_off
-            entity_id: switch.warning_device_8
-          - delay: 13
+          - service: script.sirens
+            data:
+              mode: lselect
+              ontime: 3
+          - delay: 12
+        until:
+          # Stop if the sensors clear
+          - condition: state
+            entity_id:
+              - binary_sensor.water_59
+              - binary_sensor.water_82
+            state: "off"
+          # Or after 8 iterations (2 minutes) – it's just to get people's
+          # attention...
+          - condition: template
+            value_template: >-
+              {{ repeat.index <= 8 }}
   mode: single
 - alias: 🤯/🔥 | 📱 Send notification (smoke detected)
   id: 1166dfdf-0375-4834-aa52-188c78d3bbdd
@@ -80,21 +90,29 @@
       # Hold state for 1 minute so we don't raise hell on a false alarm...
       for: "00:01:00"
   condition: []
-  # Sound the alarm for 15 minutes or until the smoke detector clears. The goal
-  # is to draw as much attention as possible regardless of whether someone is
-  # home – the neighbours might notice and call the Fire department. If after
-  # 15 minutes the alarm is still sounding, it has probably outlives its
-  # usefulness...
+  # Sound the alarm for 5 minutes (the maximum duration) or until the smoke
+  # detector clears. The goal is to draw as much attention as possible
+  # regardless of whether someone is home – the neighbours might notice and call
+  # the Fire department. If after 5 minutes the alarm is still sounding, it has
+  # probably outlived its usefulness...
   action:
-    - service: switch.turn_on
-      entity_id: switch.warning_device_8
+    # Turn on the siren without blocking this script's execution
+    - service: script.turn_on
+      target:
+        entity_id: script.sirens
+      data:
+        variables:
+          mode: lselect
+          ontime: 300
     - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.fire_81
           from: "on"
           to: "off"
-      timeout: "00:15:00"
-      continue_on_timeout: true
-    - service: switch.turn_off
-      entity_id: switch.warning_device_8
+      # No need to bother once the siren is off
+      timeout: 300
+      continue_on_timeout: false
+    - service: script.sirens
+      data:
+        mode: none
   mode: single

@@ -1,0 +1,87 @@
+# Control a group of Heiman Zigbee WarningDevices (i.e. sirens)
+#
+# Although the devices are exposed as lights through the deCONZ integration too,
+# triggering them directly through the deCONZ REST API gives more
+# control/functionality.
+# See https://github.com/dresden-elektronik/deconz-rest-plugin/issues/3232#issuecomment-688145449
+# and https://github.com/dresden-elektronik/deconz-rest-plugin/issues/4432#issuecomment-782841021
+# for more details.
+#
+# Furthermore, the lights exposed through deCONZ don't appear to properly track
+# the actual state of the alarm (i.e. the lights don't report "on" when the
+# siren is activated). This behaviour appears to be by design (see
+# https://github.com/dresden-elektronik/deconz-rest-plugin/issues/4045), so this
+# script also makes an attempt at tracking alarm/siren state...
+#
+# Finally, I manually increased the "Max Duration" attribute of the "IAS WD"
+# cluster for my devices from 240 seconds (the Heiman default) to 300 seconds
+# (so it matches the deCONZ proposed value).
+sirens:
+  alias: Sirens
+  description: >-
+    Control group of Heiman Zigbee WarningDevices.
+  fields:
+    mode:
+      description: Warning mode
+      required: false
+      default: none
+      selector:
+        select:
+          options:
+            - none # Stop the sirens
+            - select # Sound and blink for 1 second
+            - lselect # Sound and blink for up to 5 minutes
+            - blink # Blink for up to 5 minutes
+    ontime:
+      description: On-time (for "lselect" and "blink")
+      required: false
+      default: 60
+      selector:
+        number:
+          min: 1
+          max: 300
+  variables:
+    # Default to "none" (i.e. stop the sirens)
+    mode: >-
+      {% if mode is defined and mode in ['select', 'lselect', 'blink'] %}
+        {{ mode }}
+      {% else %}
+        none
+      {% endif %}
+    # Instead of the maximum of 5 minutes, default to 60 seconds
+    ontime: >-
+      {% if ontime is defined and ontime >= 1 and ontime <= 300 %}
+        {{ ontime | int }}
+      {% else %}
+        60
+      {% endif %}
+  sequence:
+    - variables:
+        json_payload: >-
+          {
+            "alert": "{{ mode }}",
+            {% if mode in ['lselect', 'blink'] %}
+              "ontime": {{ ontime }}
+            {% endif %}
+          }
+    - service: deconz.configure
+      data:
+        entity: switch.warning_device_8
+        field: /state
+        data: >-
+          {{ json_payload }}
+    - service: deconz.configure
+      data:
+        entity: switch.warning_device_17
+        field: /state
+        data: >-
+          {{ json_payload }}
+    # Delay script for the duration of on-time – we do this to make the
+    # "on"-state of the script (roughly) reflect the time during which the
+    # siren/alarm was on
+    - condition: template
+      value_template: >-
+        {{ mode not in ['none', 'select'] }}
+    - delay: >-
+        {{ ontime }}
+  mode: restart
