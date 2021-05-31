@@ -112,8 +112,6 @@
 
 ## Alarm
 
-- [ ] Test the alarm sirens every first Monday of the month at 12:00 (to
-      coincide with the Dutch national alarm siren test)
 - [ ] Provide a button to disable the siren in the Lovelace UI (in case of a
       "non-burglary" event)
 - [ ] Replace the notifications ("motion detected when away") from the Arlo-app
