@@ -24,7 +24,7 @@ card:
                 strptime(
                   now().year ~ ' ' ~ states('sensor.aarlo_last_back'),
                   '%Y %m-%d %H:%M'
-                ) + timedelta( days = 1 ) > now().today()
+                ) + timedelta( hours = 12 ) > now().today()
               -%}
                 border: 3px solid var(--warning-color);
               {%- else -%}
