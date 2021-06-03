@@ -1,9 +1,10 @@
-# tado° (combination of HomeKit controller and the Tado integration)
+# Thermostat – tado° (combination of HomeKit and online integration)
 #
-# Scheduling and "Away" mode are arranged via the tado° app/service. The below
+# Scheduling and "Away" mode are handled by the tado° app/service. The below
 # automations are mainly concerned with switching the "Away" mode on and off
 # and some exceptional scheduling conditions.
-- alias: 🌡️ | ✈️ tado° to "Away" mode (everyone away)
+
+- alias: 🌡️/❄️ | ✈️ tado° to "Away" mode (everyone away)
   id: 7dd16eef-43de-458c-9231-145260a5bea8
   description: ""
   trigger:
@@ -24,7 +25,7 @@
         preset_mode: away
       entity_id: climate.tado_living_room
   mode: single
-- alias: 🌡️ | ✈️ tado° to "Home" mode (someone home)
+- alias: 🌡️/❄️ | ✈️ tado° to "Home" mode (someone home)
   id: e9f167c4-5f85-4eb3-810b-942edd2c5f0f
   description: ""
   trigger:

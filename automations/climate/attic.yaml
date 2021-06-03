@@ -119,9 +119,10 @@
     # When tado° transitions from Away- to Home-mode, it restores all schedules
     # and thus potentially switches the Attic radiator on...
     - platform: state
-      entity_id: sensor.tado_living_room_tado_mode
-      from: AWAY
-      to: HOME
+      entity_id: climate.tado_attic
+      attribute: preset_mode
+      from: away
+      to: home
       # Hold the state for a short while to ensure HomeKit (which we use for
       # radiator control) catches up with the online state...
       for: "00:01:00"
@@ -212,10 +213,13 @@
         # HomeKit updates much faster, so prefer that for the temperature
         last_temperature: >-
           {{ state_attr('climate.tado_smart_ac_control_attic', 'temperature') }}
+    # Control via (online) tadoº integration – this ensures a planned schedule
+    # change doesn't overrule the off-state (and thus switches on the airco
+    # regardless of the fact the window is still open)
     - service: climate.turn_off
       data: {}
       target:
-        entity_id: climate.tado_smart_ac_control_attic
+        entity_id: climate.tado_attic_ac
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -229,26 +233,26 @@
           message: >-
             Please close the window in the Attic to allow the airco to switch
             back to {{ last_hvac_mode }}-mode...
-    # Wait for the window to close
+    # Wait for the window to close or a manual override to occur
     - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.openclose_33
           from: "on"
           to: "off"
-      # Give up after a couple hours...
-      timeout: "02:00:00"
+        - platform: state
+          entity_id: climate.tado_smart_ac_control_attic
+          # HomeKit only reports "off" and "cool"
+          from: "off"
+          to: cool
+      timeout: "06:00:00"
       continue_on_timeout: true
     - service: persistent_notification.dismiss
       data:
         notification_id: airco_attic_window
-    - condition: state
-      entity_id: binary_sensor.openclose_33
-      state: "off"
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: climate.tado_smart_ac_control_attic
-          state: cool
+    # No trigger fired (i.e. timeout expired) – abort
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is not none }}
     # Use the (online) tadoº integration to restore so we can properly restore
     # hvac- and swing-modes (even though it's slow to update its state, commands
     # come through without delay)...

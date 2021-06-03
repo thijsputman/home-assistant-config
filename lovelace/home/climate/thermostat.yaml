@@ -186,6 +186,8 @@ card:
       control: false
       header:
         name: airco – Attic
+        toggle:
+          entity: input_boolean.airco_active
         icon:
           idle: mdi:snowflake-off
           cooling: mdi:snowflake
