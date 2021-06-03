@@ -126,14 +126,14 @@ views:
       - !include home/consumption/gas.yaml
       - type: grid
         cards:
-          - !include home/consumption/appliances/heater_shed.yaml
-          - !include home/consumption/appliances/boiler_kitchen.yaml
-          - !include home/consumption/appliances/washing_machine.yaml
-          - !include home/consumption/appliances/dryer.yaml
-          - !include home/consumption/appliances/dishwasher.yaml
           - !include home/consumption/appliances/lights.yaml
           - !include home/consumption/appliances/ups.yaml
+          - !include home/consumption/appliances/boiler_kitchen.yaml
+          - !include home/consumption/appliances/dishwasher.yaml
+          - !include home/consumption/appliances/washing_machine.yaml
+          - !include home/consumption/appliances/dryer.yaml
           - !include home/consumption/appliances/airco_attic.yaml
+          - !include home/consumption/appliances/heater_shed.yaml
         columns: 2
         square: false
   # Network
