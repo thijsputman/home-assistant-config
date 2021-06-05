@@ -27,7 +27,6 @@ recorder:
       - sensor.*_raw
       - sensor.9292_*
       - sensor.pi_hole_ads_*
-      - input_text.hue_scene_previous_*
       - sensor.ups_battery_run*
       # Utility Meter – DSMR
       - sensor.daily_energy_*

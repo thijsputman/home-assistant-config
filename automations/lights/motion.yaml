@@ -24,14 +24,16 @@
       # no changes were made to the lighting. We can safely restore the previous
       # scene for the "Kitchen" as a whole...
     - condition: state
-      entity_id: input_select.hue_scene_kitchen_counter_cupboards
+      entity_id: sensor.hue_scene_kitchen_counter_cupboards
       state: Activity
     - choose:
         - conditions:
             - condition: template
               value_template: >-
-                {{  not is_state('input_select.hue_scene_kitchen', '<Off>') and
-                    not is_state('input_select.hue_scene_kitchen', '<Unknown>') }}
+                {{
+                  not is_state('sensor.hue_scene_kitchen', '<Off>') and
+                  not is_state('sensor.hue_scene_kitchen', '<Unknown>')
+                }}
           sequence:
             - service: script.hue_activate_scene_kitchen
               data:
@@ -40,11 +42,11 @@
                 # state even though some of its lights changed). We can simply
                 # re-apply the already active scene.
                 scene_name: >-
-                  {{ states('input_select.hue_scene_kitchen') }}
+                  {{ states('sensor.hue_scene_kitchen') }}
         - conditions:
             - condition: template
               value_template: >-
-                {{ is_state('input_select.hue_scene_kitchen', '<Off>') }}
+                {{ is_state('sensor.hue_scene_kitchen', '<Off>') }}
           sequence:
             - service: light.turn_off
               data:

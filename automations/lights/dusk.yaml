@@ -36,7 +36,7 @@
                   entity_id: light.living_room
                   state: "off"
                 - condition: state
-                  entity_id: input_select.hue_scene_living_room
+                  entity_id: sensor.hue_scene_living_room
                   state: Daytime
           sequence:
             - service: hue.hue_activate_scene
@@ -53,7 +53,7 @@
                   entity_id: light.kitchen
                   state: "off"
                 - condition: state
-                  entity_id: input_select.hue_scene_kitchen
+                  entity_id: sensor.hue_scene_kitchen
                   state: Daytime
           sequence:
             - service: script.hue_activate_scene_kitchen

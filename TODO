@@ -25,11 +25,6 @@
   - See which of the current template sensors (mainly tado° related) are
     actually useful given the above considerations; remove the ones that are
     not...
-- [x] Some of the automation/helper-combinations can be replaced with template
-      entities/sensors – mainly those that effectively are nothing more than a
-      set of operations on the state of one or more existing sensors:
-  - ✔️ Time of Day / Nighttime
-  - ✔️ The Hue scene heuristics – 🚧 under evaluation 🚧
 - [ ] Clean up `📄 sensors.yaml` (i.e., move its contents into the `📁 sensors`
       folder). Do the same with the binary sensors (move them from
       `📄 configuration.yaml` into `📁 sensors_binary`).

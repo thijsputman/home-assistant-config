@@ -29,17 +29,17 @@
         - condition: and
           conditions:
             - condition: state
-              entity_id: input_select.hue_scene_kitchen_counter_cupboards
+              entity_id: sensor.hue_scene_kitchen_counter_cupboards
               state: Activity
             - condition: state
-              entity_id: input_select.hue_scene_kitchen
+              entity_id: sensor.hue_scene_kitchen
               state: <Off>
   action:
     - choose:
         # If the Kitchen counter & cupboards lights are on, leave those on
         - conditions:
             - condition: state
-              entity_id: input_select.hue_scene_kitchen_counter_cupboards
+              entity_id: sensor.hue_scene_kitchen_counter_cupboards
               state: Activity
           sequence:
             - service: script.hue_activate_scene_kitchen
@@ -66,7 +66,7 @@
       entity_id: sensor.time_of_day
       state: day
     - condition: state
-      entity_id: input_select.hue_scene_kitchen
+      entity_id: sensor.hue_scene_kitchen
       state: Daytime
   action:
     - service: light.turn_off
@@ -121,7 +121,7 @@
       entity_id: sensor.time_of_day
       state: day
     - condition: state
-      entity_id: input_select.hue_scene_living_room
+      entity_id: sensor.hue_scene_living_room
       state: Daytime
   action:
     - service: light.turn_off
