@@ -209,7 +209,7 @@
         %}
           Ambiance
         {%
-          elif brightness > 1 and brightness < 10 and
+          elif brightness > 0 and brightness < 10 and
           color_temp > 430 and color_temp < 440
         %}
           Movie
