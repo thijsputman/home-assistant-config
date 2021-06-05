@@ -95,10 +95,7 @@
       # More complex than the "last_period" calculation as we need to
       # disregard today's (incomplete) value to prevent skewing the average.
       value_template: >-
-        {% if
-          state_attr('sensor.monthly_energy_offpeak',
-            'last_reset').today().day|int <= 1
-        %}
+        {% if now().today().day|int <= 1 %}
           {{
             (
               (states('sensor.daily_energy_offpeak')|float *
@@ -121,9 +118,7 @@
                     states('sensor.daily_energy_peak')|float) *
                   states('input_number.rate_energy_peak')|float
                 )
-              ) /
-                (state_attr('sensor.monthly_energy_offpeak',
-                  'last_reset').today().day|int - 1)
+              ) / (now().today().day|int - 1)
             ) | round(2)
           }}
         {% endif %}
@@ -137,8 +132,10 @@
                 (state_attr('sensor.monthly_energy_peak', 'last_period')|float *
                   states('input_number.rate_energy_peak')|float)
               ) / (
-                state_attr('sensor.monthly_energy_offpeak', 'last_reset') -
-                  timedelta(days=1)
+                strptime(
+                  state_attr('sensor.monthly_energy_offpeak', 'last_reset'),
+                  '%Y-%m-%dT%H:%M:%S.%f%z'
+                ) - timedelta(days=1)
               ).day|int
             ) | round(2)
           }}
@@ -185,9 +182,7 @@
       # More complex than the "last_period" calculation as we need to
       # disregard today's (incomplete) value to prevent skewing the average.
       value_template: >-
-        {% if
-          state_attr('sensor.monthly_gas', 'last_reset').today().day|int <= 1
-        %}
+        {% if now().today().day|int <= 1 %}
           {{
             (
               states('sensor.daily_gas')|float *
@@ -203,9 +198,7 @@
                   states('sensor.daily_gas')|float
                 ) *
                 states('input_number.rate_gas')|float
-              ) /
-                (state_attr('sensor.monthly_gas',
-                  'last_reset').today().day|int - 1)
+              ) / (now().today().day|int - 1)
             ) | round(2)
           }}
         {% endif %}
@@ -217,8 +210,10 @@
                 state_attr('sensor.monthly_gas', 'last_period')|float *
                 states('input_number.rate_gas')|float
               ) / (
-                state_attr('sensor.monthly_gas', 'last_reset') -
-                  timedelta(days=1)
+                strptime(
+                  state_attr('sensor.monthly_gas', 'last_reset'),
+                  '%Y-%m-%dT%H:%M:%S.%f%z'
+                ) - timedelta(days=1)
               ).day|int
             ) | round(2)
           }}

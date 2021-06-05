@@ -40,10 +40,11 @@
     been implemented as template binary sensors – correct those
   - Use
     [**trigger-based template sensors**](https://www.home-assistant.io/integrations/template/#configuration-for-trigger-based-template-sensors)
-    where appropriate. For example, the
-    `state_attr('sensor.xxx', 'last_reset').today().day|int` constructs (i.e.
-    hacks 😉) in [`📄 sensors/dsmr.yaml`](./sensors/dsmr.yaml) appear to be
-    great candidates...
+    where appropriate. For example, several sensors in
+    [`📄 sensors/dsmr.yaml`](./sensors/dsmr.yaml) use `now()` in a static manner
+    (i.e. to do date arithmetic) – making these trigger-based stops them from
+    rendering unnecessarily once-per-minute (due to the inclusion of `now()` in
+    their templates)
 - [ ] Further enhance the (Android) companion app notifications
   - ✔️ Channels and grouping/threading
   - ✔️ Support for attachments/images
