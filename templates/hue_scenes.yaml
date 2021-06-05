@@ -28,8 +28,14 @@
       {% if states('light.living_room') == 'off' %}
         <Off>
       {% else %}
-        {% set brightness = state_attr('light.living_room', 'brightness') %}
-        {% set color_temp = state_attr('light.living_room', 'color_temp') %}
+        {%
+          set brightness =
+            state_attr('light.living_room', 'brightness') | int(-1)
+        %}
+        {%
+          set color_temp =
+            state_attr('light.living_room', 'color_temp') | int(-1)
+        %}
         {%
           if brightness > 110 and brightness < 120 and
           color_temp > 225 and color_temp < 235
@@ -96,30 +102,21 @@
         <Off>
       {% else %}
         {%
-          set brightness = state_attr(
-            'light.kitchen_counter_cupboards', 'brightness'
-          )
+          set brightness =
+            state_attr('light.kitchen_counter_cupboards', 'brightness') | int(-1)
         %}
         {%
-          if state_attr('light.kitchen_counter_cupboards', 'color_temp') == none
+          set color_temp =
+            state_attr('light.kitchen_counter_cupboards', 'color_temp') | int(-1)
         %}
-          {% set color_temp = -1.0 %}
-        {% else %}
-          {%
-            set color_temp = state_attr(
-              'light.kitchen_counter_cupboards', 'color_temp'
-            )
-          %}
-        {% endif %}
         {%
           if state_attr('light.kitchen_counter_cupboards', 'xy_color') == none
         %}
           {% set xy_color = [-1.0, -1.0] %}
         {% else %}
           {%
-            set xy_color = state_attr(
-              'light.kitchen_counter_cupboards', 'xy_color'
-            )
+            set xy_color =
+              state_attr('light.kitchen_counter_cupboards', 'xy_color')
           %}
         {% endif %}
         {%
@@ -193,8 +190,14 @@
       %}
         <Off>
       {% else %}
-        {% set brightness = state_attr('light.kitchen', 'brightness') %}
-        {% set color_temp = state_attr('light.kitchen', 'color_temp') %}
+        {%
+          set brightness =
+            state_attr('light.kitchen', 'brightness') | int(-1)
+        %}
+        {%
+          set color_temp =
+            state_attr('light.kitchen', 'color_temp') | int(-1)
+        %}
         {%
           if brightness > 125 and brightness < 135 and
           color_temp > 225 and color_temp < 235
