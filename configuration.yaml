@@ -1,8 +1,5 @@
 default_config: # yamllint disable-line rule:empty-values
 
-cloud:
-  alexa: !include alexa.yaml
-
 homeassistant:
   customize: !include customize.yaml
   allowlist_external_dirs:
