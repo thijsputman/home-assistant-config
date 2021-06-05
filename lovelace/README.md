@@ -16,12 +16,12 @@ custom CSS.
 
 - `aarlo-glance.js?v=0.1.4.1`
 - `card-mod.js?v=3.0.12`
-- `compass-card.js?v=1.1.1`
+- `compass-card.js?v=1.2.1`
 - `home-assistant-sun-card.js?v=0.1.4`
 - `logbook-card.js?v=1.3.2`
 - `mini-graph-card-bundle.js?v=0.11.0-dev.4`
 - `paper-buttons-row.js?v=0.5.0`
-- `simple-thermostat.js?v=2.4.0`
+- `simple-thermostat.js?v=2.4.2`
 - `vacuum-card.js?v=1.21.2`
 
 ## Custom CSS
