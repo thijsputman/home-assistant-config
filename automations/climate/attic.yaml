@@ -187,6 +187,147 @@
       target:
         entity_id: climate.tado_attic
   mode: single
+- alias: ❄️ | 👫 Airco – Attic on (occupied)
+  id: f3bd94fa-4646-4c70-9e0d-fd7288579bfe
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: light.attic
+      from: "off"
+      to: "on"
+      for: "00:05:00"
+  condition:
+    - condition: state
+      entity_id: input_boolean.airco_active
+      state: "on"
+    #  Attic temperature should to be above 24ºC for this to be useful
+    - condition: numeric_state
+      entity_id: sensor.temperature_3
+      above: 24.0
+    - condition: state
+      entity_id: climate.tado_attic_ac
+      state: "off"
+  action:
+    - service: climate.set_hvac_mode
+      data:
+        hvac_mode: auto
+      target:
+        entity_id: climate.tado_attic_ac
+  mode: single
+- alias: ❄️ | 👫 Airco – Attic off (unoccupied)
+  id: 426b173e-cef1-4e6d-a7f0-a1249db7c745
+  description: ""
+  trigger:
+    - platform: state
+      entity_id: light.attic
+      from: "on"
+      to: "off"
+      for: "00:05:00"
+  condition:
+    - condition: state
+      entity_id: climate.tado_attic_ac
+      state: auto
+  action:
+    - service: climate.set_hvac_mode
+      data:
+        hvac_mode: "off"
+      target:
+        entity_id: climate.tado_attic_ac
+  mode: single
+# On weekdays override the tado°-schedule (i.e. disable the airco) if the Attic
+# remains unoccupied for half an hour after a scheduled activation
+- alias: ❄️ | ⏰ Airco – Attic override schedule (remains unoccupied)
+  id: bc7a77e4-3fad-4b78-a2aa-91b0e507681a
+  description: ""
+  trigger:
+    - platform: time
+      at: "09:00:00"
+    - platform: time
+      at: "14:00:00"
+  condition:
+    - condition: time
+      weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
+    # Only relevant if the airco has its schedule enabled
+    - condition: state
+      entity_id: climate.tado_attic_ac
+      state: auto
+    # Waiting for the lights to remain off only makes sense if the lights are
+    # off to begin with...
+    - condition: state
+      entity_id: light.attic
+      state: "off"
+  action:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: light.attic
+          from: "off"
+          to: "on"
+      timeout: "00:30:00"
+      continue_on_timeout: true
+    # Only continue (i.e. switch the airco off) if the timer expired (i.e. the
+    # Attic was not occupied within half an hour)
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    - service: climate.set_hvac_mode
+      data:
+        hvac_mode: "off"
+      target:
+        entity_id: climate.tado_attic_ac
+  mode: single
+# Prevent the tado°-schedule from switching the airco off at 19:00 if the Attic
+# is still occupied
+- alias: ❄️ | ⏰ Airco – Attic override schedule (occupied)
+  id: 29a57844-67d5-4a05-8fc8-2abef78c0943
+  description: ""
+  trigger:
+    # Pre-empt schedule change – trigger slightly before 19:00
+    - platform: time
+      at: "18:59:00"
+  condition:
+    - condition: time
+      weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
+    #  Attic temperature should to be above 24ºC for this to be useful
+    - condition: numeric_state
+      entity_id: sensor.temperature_3
+      above: 24.0
+    - condition: state
+      entity_id: climate.tado_attic_ac
+      state: auto
+    - condition: state
+      entity_id: light.attic
+      state: "on"
+  action:
+    - variables:
+        last_swing_mode: >-
+          {{ state_attr('climate.tado_attic_ac', 'swing_mode') }}
+        # HomeKit updates much faster – prefer that for the temperature
+        last_temperature: >-
+          {{ state_attr('climate.tado_smart_ac_control_attic', 'temperature') }}
+    # Override tado°-schedule with manual "cool"-mode
+    - service: script.airco_set_operating_mode
+      data:
+        entity_id: climate.tado_attic_ac
+        hvac_mode: cool
+        swing_mode: >-
+          {{ last_swing_mode }}
+        temperature: >-
+          {{ last_temperature }}
+    # Wait for the Attic to not be occupied anymore
+    - wait_for_trigger:
+        - platform: state
+          entity_id: light.attic
+          from: "on"
+          to: "off"
+      timeout: "04:01:00" # Wait until 22:00 sharp
+      continue_on_timeout: true
+    # Restore tado°-schedule (i.e. switch off)
+    - service: climate.set_hvac_mode
+      data:
+        hvac_mode: auto
+      target:
+        entity_id: climate.tado_attic_ac
+  mode: single
 - alias: ❄️ | 🚪 Switch off Airco – Attic (window open)
   id: 717e590f-b4d7-4cf9-8efd-c540f5ea3298
   description: ""
@@ -253,10 +394,10 @@
     - service: persistent_notification.dismiss
       data:
         notification_id: airco_attic_window
-    # No trigger fired (i.e. timeout expired) – abort
+    # Only restore previous state if "window closed" triggered
     - condition: template
       value_template: >-
-        {{ wait.trigger is not none }}
+        {{ wait.trigger.entity_id == 'binary_sensor.openclose_33' }}
     # Use the (online) tadoº integration to restore so we can properly restore
     # hvac- and swing-modes (even though it's slow to update its state, commands
     # come through without delay)...
@@ -274,23 +415,14 @@
               target:
                 entity_id: climate.tado_attic_ac
       default:
-        - service: climate.set_hvac_mode
+        - service: script.airco_set_operating_mode
           data:
+            entity_id: climate.tado_attic_ac
             hvac_mode: >-
               {{ last_hvac_mode }}
-          target:
-            entity_id: climate.tado_attic_ac
-        - service: climate.set_swing_mode
-          data:
             swing_mode: >-
               {{ last_swing_mode }}
-          target:
-            entity_id: climate.tado_attic_ac
-        - service: climate.set_temperature
-          data:
             temperature: >-
               {{ last_temperature }}
-          target:
-            entity_id: climate.tado_attic_ac
   mode: single
   max_exceeded: silent

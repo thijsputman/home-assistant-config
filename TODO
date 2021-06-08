@@ -82,6 +82,14 @@
       properly controlled when there is no access to the online Tado service~~
   - On hold till the first time this actually turns out to be an issue. As of
     yet, the Tado online service has been rock-solid...
+- [ ] Combine Attic thermostat/heating and airco automations – mainly with
+      regards to their (occupancy-based) triggers; those largely overlap
+  - See how well the occupancy detection with vibration sensors on the chairs
+    holds up and if possible use that for these automations
+- [ ] Just like the heating in the Attic, the airco unit most likely also needs
+      to be switched of manually when Tado transitions from Away- to Home-mode
+      (otherwise it reverts back to its schedule and switches on even though
+      no-one is present in the Attic)
 
 ## Lights
 
