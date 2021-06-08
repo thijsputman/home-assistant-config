@@ -76,12 +76,7 @@
       at: "09:00:00"
   condition:
     - condition: time
-      weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
+      weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     # Only relevant if the Attic radiator is on
     - condition: numeric_state
       entity_id: sensor.tado_smart_radiator_attic_setpoint

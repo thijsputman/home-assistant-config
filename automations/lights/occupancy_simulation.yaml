@@ -27,12 +27,7 @@
       to: dusk
   condition:
     - condition: time
-      weekday:
-        - mon
-        - tue
-        - wed
-        - thu
-        - fri
+      weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     - condition: state
       entity_id: group.family
       state: not_home

@@ -55,9 +55,7 @@
     - choose:
         - conditions:
             - condition: time
-              weekday:
-                - fri
-                - sat
+              weekday: [fri, sat] # yamllint disable-line rule:brackets
           sequence:
             - service: input_datetime.set_datetime
               data:
@@ -65,12 +63,8 @@
               entity_id: input_datetime.wakeup
         - conditions:
             - condition: time
-              weekday:
-                - mon
-                - tue
-                - wed
-                - thu
-                - sun
+              # yamllint disable-line rule:brackets
+              weekday: [sun, mon, tue, wed, thu]
           sequence:
             - service: input_datetime.set_datetime
               data:

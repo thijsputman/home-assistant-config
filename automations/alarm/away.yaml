@@ -117,9 +117,7 @@
             - condition: time
               after: "11:30:00"
               before: "14:30:00"
-              weekday:
-                - mon
-                - thu
+              weekday: [mon, thu] # yamllint disable-line rule:brackets
     # Ignore motion sensor on first floor while Neato is active
     - condition: or
       conditions:
