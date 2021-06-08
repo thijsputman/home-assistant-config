@@ -18,5 +18,5 @@
     device_class: occupancy
     state: "on"
     # Empirically determined that I move around in my chair at least once every
-    # 20 minutes...
-    auto_off: 1200
+    # half an hour...
+    auto_off: 1800
