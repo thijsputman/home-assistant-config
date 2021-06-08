@@ -1,0 +1,22 @@
+- trigger:
+    # Using vibration sensors on the office chairs to infer occupancy of the
+    # Attic (i.e. the "Office" 😉) – the vibration itself is not strong enough,
+    # but changes to either orientation or tilt angle indicate someone is moving
+    # around in the chair...
+    - platform: state
+      entity_id:
+        - binary_sensor.vibration_102
+      attribute: orientation
+    - platform: state
+      entity_id:
+        - binary_sensor.vibration_102
+      attribute: orientation
+  binary_sensor:
+    name: Occupancy (Attic)
+    unique_id: 3ff1e67a-37ba-443c-b390-e9d2bdf4b07f
+    icon: mdi:account-check
+    device_class: occupancy
+    state: "on"
+    # Empirically determined that I move around in my chair at least once every
+    # 20 minutes...
+    auto_off: 1200
