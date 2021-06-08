@@ -1,5 +1,5 @@
-# The RGBWW led controller for the Kitchen counter strip is a bit stubborn;
-# doesn't always respond to the first scene change request – so we punch it in
+# The Gledopto light-strip controllers in the Kitchen are a bit stubborn; they
+# don't always respond to the first scene change request – so we punch it in
 # twice...
 hue_activate_scene_kitchen:
   alias: Hue activate scene – Kitchen
