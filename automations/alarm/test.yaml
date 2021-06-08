@@ -8,7 +8,7 @@
     # First Monday of the month
     - condition: template
       value_template: >-
-        {{ now().isoweekday() == 1 and now().day <= 6 }}
+        {{ now().isoweekday() == 1 and now().day <= 7 }}
     - condition: state
       entity_id: group.family
       state: home

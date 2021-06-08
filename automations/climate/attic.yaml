@@ -174,7 +174,11 @@
   trigger:
     - platform: state
       entity_id: climate.tado_living_room
-  condition: []
+  condition:
+    # Only run if the states differ
+    - condition: template
+      value_template: >-
+        {{ trigger.to_state.state != states('climate.tado_attic') }}
   action:
     - service: climate.set_hvac_mode
       data:

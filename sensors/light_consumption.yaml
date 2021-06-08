@@ -10,8 +10,8 @@
 #   0.  Zigbee entities that are not actually lights (no-op).
 #   1.  Lights that are switched off are assumed to consume 0.4 Watt (based on
 #       https://www.anandtech.com/show/6805/philips-hue-automated-home-lighting-gets-colorful/6)
-#   2.  Light-strips, assumed to be all 2 meters in length and using 50% of
-#       their 24 Watt rating
+#   2.  All 2-meter light-strips, assumed to be using 50% of their 24 Watt
+#       rating
 #   3.  The Ensuite ceiling light (which contains 6 individual bulbs), assumed
 #       to be using 50% of its 36 Watt rating
 #   4.  One of the Aqara smart-relay "gangs" in the Attic hallway connected to
