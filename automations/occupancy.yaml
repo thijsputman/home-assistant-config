@@ -50,7 +50,7 @@
         - conditions:
             - condition: template
               value_template: >-
-                {{ trigger.platform == 'state' }}
+                {{ wait.trigger.platform == 'state' }}
           sequence:
             - service: persistent_notification.dismiss
               data:
