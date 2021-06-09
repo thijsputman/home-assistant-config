@@ -1,0 +1,64 @@
+- alias: 📱 | 👀 Remind to switch off Attic lights (unoccupied)
+  id: e9cb0d94-549b-4080-9d49-ad6f1d81c6a9
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.occupancy_office_chairs
+      from: "on"
+      to: "off"
+      for: "00:30:00"
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: home
+    - condition: state
+      entity_id: light.attic
+      state: "on"
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: general
+          channel: Alert
+          targetDevices: home
+          title: 💡 Attic lights left on?
+          tag: attic_lights
+          action_1: Switch off
+          message: >-
+            It appears there's no-one in the Attic and the lights are still on.
+            Would you like to switch them off?
+    - wait_for_trigger:
+        # Action from mobile notification
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: ACTION_1_attic_lights
+        # Lights off / occupancy detected – invalidated
+        - platform: state
+          entity_id: light.attic
+          from: "on"
+          to: "off"
+        - platform: state
+          entity_id: binary_sensor.occupancy_office_chairs
+          from: "off"
+          to: "on"
+      timeout: "04:00:00"
+      continue_on_timeout: false
+    - choose:
+        # Invalidated – dismiss notification
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ trigger.platform == 'state' }}
+          sequence:
+            - service: persistent_notification.dismiss
+              data:
+                notification_id: attic_lights
+      # Turn off the lights
+      default:
+        - service: light.turn_off
+          data:
+            entity_id: light.attic
+  mode: single
+  max_exceeded: silent
