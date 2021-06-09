@@ -43,6 +43,19 @@ persistent_notification:
       required: false
       selector:
         text: # yamllint disable-line rule:empty-values
+    # Optional notification actions (next to the always-present "Dismiss"-
+    # action). To act on these, a custom [tag] needs to be provided as the
+    # actions will be "ACTION_1_[tag]" and "ACTION_2_[tag]" respectively.
+    action_1:
+      description: Mobile devices – First notification action
+      required: false
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    action_2:
+      description: Mobile devices – Second notification action
+      required: false
+      selector:
+        text: # yamllint disable-line rule:empty-values
     group:
       description: Mobile devices – Grouping/threading of notifications
       required: false
@@ -190,10 +203,28 @@ persistent_notification:
             - action: >-
                 DISMISS_{{ context.id }}
               title: Dismiss
+            - action: >-
+                {% if action_1 is defined %}
+                  ACTION_1_{{ tag }}
+                {% endif %}
+              title: >-
+                {% if action_1 is defined %}
+                  {{ action_1 }}
+                {% endif %}
+            - action: >-
+                {% if action_2 is defined %}
+                  ACTION_2_{{ tag }}
+                {% endif %}
+              title: >-
+                {% if action_2 is defined %}
+                  {{ action_2 }}
+                {% endif %}
     - service: persistent_notification.create
       data:
         title: >-
-          {{ title }}
+          {% if title is defined %}
+            {{ title }}
+          {% endif %}
         message: >-
           {{ lovelaceMessage }}
         notification_id: >-
@@ -206,6 +237,17 @@ persistent_notification:
           event_data:
             action: >-
               DISMISS_{{ context.id }}
+        # The (optional) action buttons also dismiss the notification
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: >-
+              ACTION_1_{{ tag }}
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: >-
+              ACTION_2_{{ tag }}
         # Dismissed from Lovelace
         - platform: event
           event_type: call_service
@@ -235,9 +277,14 @@ persistent_notification:
       timeout: "24:00:00"
       continue_on_timeout: false
     - choose:
-        # Dismissed from mobile device
+        # Dismissed from mobile device (either via "Dismiss" or one of the
+        # optional action buttons)
         - conditions: >-
-            {{ wait.trigger.event.data.action == 'DISMISS_' ~ context.id }}
+            {{
+              wait.trigger.event.data.action == 'DISMISS_' ~ context.id or
+                wait.trigger.event.data.action == 'ACTION_1_' ~ tag or
+                wait.trigger.event.data.action == 'ACTION_2_' ~ tag
+            }}
           sequence:
             # Remove persistent notification from Lovelace
             - service: persistent_notification.dismiss
