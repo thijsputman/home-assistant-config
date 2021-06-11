@@ -62,6 +62,7 @@
         - vacuum.neato_d7
         - switch.pi_hole
         - binary_sensor.ds1815_security_status
+        - media_player.pi0_speaker_bedroom
       to:
         - unknown
         - unavailable
@@ -73,6 +74,16 @@
         - unknown
         - unavailable
       for: "01:00:00"
+    # Mi Flora (MQTT) sensors stop updating altogether – the light/lux
+    # measurements appear most variable (they keep changing slightly, even when
+    # it's dark). If they stop changing, most probably the bt-mqtt-gateway
+    # has failed...
+    - platform: state
+      entity_id:
+        - sensor.miflora_strelitzia_attic_light
+        - sensor.miflora_bonsai_living_room_light
+        - sensor.miflora_calathea_living_room_light
+      for: "04:00:00"
   condition:
     # We should either be online (i.e. the Remote UI is connected), or the entity
     # in question should _not_ require Internet-connectivity to function
