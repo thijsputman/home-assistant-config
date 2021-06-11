@@ -34,8 +34,9 @@
               entity_id: light.kitchen
               state: "off"
           sequence:
-            - service: script.hue_activate_scene_kitchen
+            - service: hue.hue_activate_scene
               data:
+                group_name: Kitchen
                 scene_name: Ambiance
       default: []
     - choose:

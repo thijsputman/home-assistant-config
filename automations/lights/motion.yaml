@@ -11,8 +11,9 @@
       entity_id: sensor.lightlevel_55
       below: 200
   action:
-    - service: script.hue_activate_scene_kitchen_counter_cupboards
+    - service: hue.hue_activate_scene
       data:
+        group_name: Kitchen counter & cupboards
         scene_name: Activity
     - wait_for_trigger:
         - platform: state
@@ -35,8 +36,9 @@
                   not is_state('sensor.hue_scene_kitchen', '<Unknown>')
                 }}
           sequence:
-            - service: script.hue_activate_scene_kitchen
+            - service: hue.hue_activate_scene
               data:
+                group_name: Kitchen
                 # This works because changing "Kitchen counter & cupboards"
                 # doesn't actually change the "Kitchen" scene (it retains its
                 # state even though some of its lights changed). We can simply

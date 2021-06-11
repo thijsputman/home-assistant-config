@@ -1,34 +1,3 @@
-# The Gledopto light-strip controllers in the Kitchen are a bit stubborn; they
-# don't always respond to the first scene change request – so we punch it in
-# twice...
-hue_activate_scene_kitchen:
-  alias: Hue activate scene – Kitchen
-  icon: mdi:lightbulb-group-outline
-  sequence:
-    - repeat:
-        count: 2
-        sequence:
-          - service: hue.hue_activate_scene
-            data:
-              group_name: Kitchen
-              scene_name: >-
-                {{ scene_name }}
-          - delay: 1
-  mode: single
-hue_activate_scene_kitchen_counter_cupboards:
-  alias: Hue activate scene – Kitchen counter & cupboards
-  icon: mdi:lightbulb-group-outline
-  sequence:
-    - repeat:
-        count: 2
-        sequence:
-          - service: hue.hue_activate_scene
-            data:
-              group_name: Kitchen counter & cupboards
-              scene_name: >-
-                {{ scene_name }}
-          - delay: 1
-  mode: single
 hue_activate_scene_living_room_kitchen:
   alias: Hue activate scene – Living room & Kitchen
   icon: mdi:lightbulb-group-outline
@@ -38,8 +7,9 @@ hue_activate_scene_living_room_kitchen:
         group_name: Living room
         scene_name: >-
           {{ scene_name }}
-    - service: script.hue_activate_scene_kitchen
+    - service: hue.hue_activate_scene
       data:
+        group_name: Kitchen
         scene_name: >-
           {% if scene_name == 'Active' %}
             Bright (custom)

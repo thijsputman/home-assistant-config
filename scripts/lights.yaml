@@ -15,8 +15,9 @@ lights_out:
     # Kitchen lights to provide a visual cue that the script is running.
     # Note that the Gledopto controllers don't like (i.e. don't respond to) Hue
     # fade outs; that's why there's no fade out here.
-    - service: script.hue_activate_scene_kitchen
+    - service: hue.hue_activate_scene
       data:
+        group_name: Kitchen
         scene_name: Movie
     - delay: "00:05:00"
     # Lower Hallway brightness one minute prior to switching it off

@@ -42,15 +42,18 @@
               entity_id: sensor.hue_scene_kitchen_counter_cupboards
               state: Activity
           sequence:
-            - service: script.hue_activate_scene_kitchen
+            - service: hue.hue_activate_scene
               data:
+                group_name: Kitchen
                 scene_name: Daytime
-            - service: script.hue_activate_scene_kitchen_counter_cupboards
+            - service: hue.hue_activate_scene
               data:
+                group_name: Kitchen counter & cupboards
                 scene_name: Activity
       default:
-        - service: script.hue_activate_scene_kitchen
+        - service: hue.hue_activate_scene
           data:
+            group_name: Kitchen
             scene_name: Daytime
   mode: single
 - alias: 💡 | ⛅ Kitchen lights off during daytime (☀️ > 90 lux)

@@ -202,8 +202,9 @@
               entity_id: light.kitchen
               state: "off"
           sequence:
-            - service: script.hue_activate_scene_kitchen
+            - service: hue.hue_activate_scene
               data:
+                group_name: Kitchen
                 scene_name: Bright (custom)
       default: []
     - delay: 1
@@ -267,8 +268,9 @@
       data:
         group_name: Hallway
         scene_name: Evening
-    - service: script.hue_activate_scene_kitchen
+    - service: hue.hue_activate_scene
       data:
+        group_name: Kitchen
         scene_name: Ambiance
 - alias: 🚨 | 💡 Hallway and Kitchen lights on ("Armed away" → pending → disarmed)
   id: 84d125f9-e88c-4bce-81e7-6f08a04f5afe
@@ -305,6 +307,7 @@
       data:
         group_name: Hallway
         scene_name: Evening
-    - service: script.hue_activate_scene_kitchen
+    - service: hue.hue_activate_scene
       data:
+        group_name: Kitchen
         scene_name: Ambiance
