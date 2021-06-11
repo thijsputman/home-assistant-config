@@ -1,0 +1,97 @@
+# The Gledopto controllers in the Kitchen are a bit stubborn; they don't always
+# respond to the first scene change request nor do they always properly switch
+# off when asked to do so... See "📄 docs/HUE.md" for more details.
+# The below aims to keep the "off" state of the Gledopto controllers in line
+# with the other lights in the Kitchen (which don't exhibit this aberrant
+# behaviour).
+- alias: 💡 | 🩹 Enforce "off"-state for Gledopto controllers
+  id: 77eb93cc-0e5f-4ad9-9153-e2f7858b1688
+  trigger:
+    - platform: state
+      entity_id:
+        - light.extended_color_light_1_3
+        - light.extended_color_light_1_4
+      to: "on"
+      for: 10
+  condition:
+    # Whenever these two lights-strips are on, the lights in the cupboards
+    # should also be on – if not, toggle the light-strips back off...
+    - condition: state
+      # Checking one of the four cupboard lights is sufficient
+      entity_id: light.hue_color_spot_2_2
+      state: "off"
+  action:
+    - service: light.turn_off
+      data: {}
+      target:
+        entity_id:
+          - light.extended_color_light_1_3
+          - light.extended_color_light_1_4
+  mode: restart
+# Change scene in Kitchen twice to ensure the Gledopto controllers follow
+- alias: 💡 | 🩹 Enforce Kitchen scene change for Gledopto controllers
+  id: 66dc6374-f19a-437c-966b-0679400fc2b5
+  trigger:
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen_counter_cupboards
+      to:
+        - Activity
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen
+      to:
+        - Daytime
+        - Ambiance
+        - Movie
+        - Bright (custom)
+  condition: []
+  action:
+    - variables:
+        group_name: >-
+          {% if trigger.entity_id ==
+            'sensor.hue_scene_kitchen_counter_cupboards' %}
+            Kitchen counter & cupboards
+          {% elif trigger.entity_id == 'sensor.hue_scene_kitchen' %}
+            Kitchen
+          {% endif %}
+        scene_name: >-
+          {{ trigger.to_state.state }}
+    - condition: template
+      value_template: >-
+        {{ group_name is defined }}
+    - service: hue.hue_activate_scene
+      data:
+        group_name: >-
+          {{ group_name }}
+        scene_name: >-
+          {{ scene_name }}
+    # Prevent endless loop (i.e. this automation triggering itself)...
+    - delay: 10
+  mode: single
+  max_exceeded: silent
+# Occasionally, the Innr colour bulbs in the Garden refuse a scene change, so
+# whenever we change the Garden, change it twice to ensure they properly follow
+- alias: 💡 | 🩹 Enforce Garden scene change for Innr bulbs
+  id: 0c7cd39c-6355-45ee-9e53-ab2d3c940f08
+  trigger:
+    - platform: state
+      entity_id: sensor.hue_scene_garden
+      to:
+        - Active
+        - Ambiance
+        - Summer Night
+  condition: []
+  action:
+    - variables:
+        scene_name: >-
+          {{ trigger.to_state.state }}
+    # Best result is achieved if the second command is slightly delayed
+    - delay: 3
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Garden
+        scene_name: >-
+          {{ scene_name }}
+    # Prevent endless loop (i.e. this automation triggering itself)...
+    - delay: 7
+  mode: single
+  max_exceeded: silent

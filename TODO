@@ -115,11 +115,6 @@
       detected scene does not change (most likely the overall change is too
       small – might require a specific exception)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
-- [ ] The reactive approach to correcting the "off"-state of the Gledopto
-      controllers in the Kitchen is perhaps also usable to enforce their Hue
-      scene transitions (better than always firing the transition twice)
-  - Additionally, the two Innr bulbs in the Garden sometimes also don't respond
-    to scene changed; a similar approach might work there too
 
 ## Alarm
 

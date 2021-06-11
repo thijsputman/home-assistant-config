@@ -181,11 +181,20 @@
     # If Kitchen is off and Kitchen counter & cupboards switches to Activity,
     # don't do anything. In this situation the Hue API messes up (see comment in
     # the header) and as such it's best to keep reporting the "off"-state...
+    # Additionally, if _only_ the Gledopto controllers are switched on, don't do
+    # anything either – they've bugged out. See "📄 automations/lights/hue.yaml"
+    # on how this situation is handled; keep reporting the "off"-state to ensure
+    # we don't interfer with that handling...
     state: >-
       {%
         if states('light.kitchen') == 'off' or (
           states('sensor.hue_scene_kitchen') == '<Off>' and
           states('sensor.hue_scene_kitchen_counter_cupboards') == 'Activity'
+        ) or (
+          (
+            states('light.extended_color_light_1_3') == 'on' or
+            states('light.extended_color_light_1_4') == 'on'
+          ) and states('light.hue_color_spot_2_2') == 'off'
         )
       %}
         <Off>
