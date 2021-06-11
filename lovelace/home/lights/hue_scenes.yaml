@@ -24,4 +24,12 @@ cards:
     show_state: true
     icon_height: 36px
     icon: mdi:sofa
+  - type: button
+    tap_action:
+      action: more-info
+    entity: sensor.hue_scene_garden
+    show_name: false
+    show_state: true
+    icon_height: 36px
+    icon: mdi:nature
 square: false

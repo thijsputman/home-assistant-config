@@ -240,3 +240,70 @@
             {{ state_attr('sensor.hue_scene_kitchen', 'previous_scene') }}
           {% endif %}
         {% endif %}
+# Garden [Hue room]
+- trigger:
+    - platform: state
+      entity_id: light.garden
+    - platform: event
+      event_type: template_reloaded
+  sensor:
+    name: Hue scene (Garden)
+    unique_id: 2e5bc57f-240a-4669-90e4-ace50876fb70
+    icon: mdi:movie-filter
+    state: >-
+      {% if states('light.garden') == 'off' %}
+        <Off>
+      {% else %}
+        {%
+          set brightness =
+            state_attr('light.garden', 'brightness') | int(-1)
+        %}
+        {%
+          set color_temp =
+            state_attr('light.garden', 'color_temp') | int(-1)
+        %}
+        {%
+          if state_attr('light.garden', 'xy_color') == none
+        %}
+          {% set xy_color = [-1.0, -1.0] %}
+        {% else %}
+          {%
+            set xy_color = state_attr('light.garden', 'xy_color')
+          %}
+        {% endif %}
+        {%
+          if brightness > 245 and (
+            xy_color[0] > 0.35 and xy_color[0] < 0.39 and
+            xy_color[1] > 0.35 and xy_color[1] < 0.39
+          )
+        %}
+          Active
+        {%
+          elif brightness > 90 and brightness < 100 and (
+            xy_color[0] > 0.30 and xy_color[0] < 0.34 and
+            xy_color[1] > 0.36 and xy_color[1] < 0.40
+          )
+        %}
+          Ambiance
+        {% else %}
+          <Unknown>
+        {% endif %}
+      {% endif %}
+    attributes:
+      # Keep track of previous scene; skip if unknown/unavailable, in scene
+      # <Unknown> or identical to the already stored previous scene
+      previous_scene: >-
+        {%
+          if states('sensor.hue_scene_garden') not in
+            ['unknown', 'unavailable']
+        %}
+          {%
+            if states('sensor.hue_scene_garden') != '<Unknown>' and
+            states('sensor.hue_scene_garden') != state_attr(
+              'sensor.hue_scene_garden', 'previous_scene')
+          %}
+            {{ states('sensor.hue_scene_garden') }}
+          {% else %}
+            {{ state_attr('sensor.hue_scene_garden', 'previous_scene') }}
+          {% endif %}
+        {% endif %}
