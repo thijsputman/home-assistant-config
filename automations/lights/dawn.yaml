@@ -58,7 +58,18 @@
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-  condition: []
+  condition:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.living_room
+          state: "on"
+        - condition: state
+          entity_id: light.kitchen
+          state: "on"
+        - condition: state
+          entity_id: light.hallway
+          state: "on"
   action:
     - service: light.turn_off
       data: {}

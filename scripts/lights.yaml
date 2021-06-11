@@ -55,21 +55,33 @@ lights_out:
       data:
         transition: 10
         entity_id: light.hallway
-    # Occasionally, lights don't turn off properly (they report "off" but
-    # appear to remain "on" – after a while they realise this discrepancy and
-    # report back "on"). This causes "Everyone asleep" to not trigger. Here we
-    # ensure all lights are *really* off. Repeated twice: Once to ensures all
-    # lights are "off", twice to ensure none of the lights reported back "on"
-    # as a result of the first "off" transition...
-    # The Gledopto controllers exhibit a more pronounced version of this
-    # behaviour and thus have their own independent handling.
-    - repeat:
-        count: 2
-        sequence:
-          - delay: 120
-          - service: light.turn_off
-            data: {}
-            target:
-              entity_id: group.light_inside_rooms
+    # Occasionally, lights don't turn off properly – this causes the
+    # "Everyone asleep"-state to not trigger. Here we ensure all lights are
+    # *really* off by toggling all groups that are still reporting "on", "off"
+    # yet again... The 10-minute delay is important as it sometimes takes a
+    # while for the state reported by the Hue API to align with the actual state
+    # of the lights again.
+    # An exception is made for the the Bedroom (where the lights might still be
+    # switched on intentionally).
+    - delay: "00:10:00"
+    - variables:
+        rooms_on: >-
+          {% set result = namespace(lights=[]) %}
+          {% for light in expand(states.group.light_inside_rooms) |
+            selectattr('attributes.is_hue_group', 'true') |
+            selectattr('state', 'eq', 'on') |
+            selectattr('entity_id', 'ne', 'light.bedroom')
+          %}
+            {% set result.lights = result.lights + [light] %}
+          {% endfor %}
+          {{ result.lights | join(',', attribute='entity_id') }}
+    - condition: template
+      value_template: >-
+        {{ rooms_on != '' }}
+    - service: light.turn_off
+      data: {}
+      target:
+        entity_id: >-
+          {{ rooms_on }}
   mode: single
   icon: mdi:lightbulb-group-off
