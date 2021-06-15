@@ -6,21 +6,41 @@
       entity_id: binary_sensor.presence_53
       from: "off"
       to: "on"
+    - platform: state
+      entity_id: binary_sensor.presence_105
+      from: "off"
+      to: "on"
   condition:
-    - condition: numeric_state
-      entity_id: sensor.lightlevel_55
-      below: 200
+    - condition: or
+      conditions:
+        # One sensor triggers regardless of brightness level...
+        - condition: template
+          value_template: >-
+            {{ trigger.entity_id == 'binary_sensor.presence_105' }}
+        # ...the other not
+        - condition: and
+          conditions:
+            - condition: template
+              value_template: >-
+                {{ trigger.entity_id == 'binary_sensor.presence_53' }}
+            - condition: numeric_state
+              entity_id: sensor.lightlevel_55
+              below: 200
   action:
     - service: hue.hue_activate_scene
       data:
         group_name: Kitchen counter & cupboards
         scene_name: Activity
-    - wait_for_trigger:
-        - platform: state
-          entity_id: binary_sensor.presence_53
-          from: "on"
-          to: "off"
-          for: "00:02:00"
+    # Wait for _all_ motion sensors to clear – otherwise "race conditions" are
+    # possible where the lights go off (because one sensor clears) and never
+    # come back on again (because the other sensor never clears due to
+    # ongoing motion and thus never retriggers the lights).
+    - wait_template: >-
+        {{
+          is_state('binary_sensor.presence_53', 'off') and
+          is_state('binary_sensor.presence_105', 'off')
+        }}
+    - delay: 120
       # If the scene for "Kitchen counter & cupboards" is still "Activity",
       # no changes were made to the lighting. We can safely restore the previous
       # scene for the "Kitchen" as a whole...
@@ -153,10 +173,7 @@
             brightness: 255
             kelvin: 2900
           entity_id: light.bathroom
-    # Wait for _all_ motion sensors to clear – otherwise "race conditions" are
-    # possible where the lights goes off (because one sensor clears) and never
-    # come back on again (because the other sensor never clears due to
-    # ongoing motion and thus never retriggers the lights).
+    # Wait for _all_ motion sensors to clear
     - wait_template: >-
         {{
           is_state('binary_sensor.presence_68', 'off') and
