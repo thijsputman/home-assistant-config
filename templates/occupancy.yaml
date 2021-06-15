@@ -7,10 +7,12 @@
     - platform: state
       entity_id:
         - binary_sensor.vibration_102
+        - binary_sensor.vibration_106
       attribute: orientation
     - platform: state
       entity_id:
         - binary_sensor.vibration_102
+        - binary_sensor.vibration_106
       attribute: orientation
   binary_sensor:
     name: Occupancy (Office chairs)
@@ -18,8 +20,8 @@
     icon: mdi:account-check
     device_class: occupancy
     state: "on"
-    # Empirically determined that I move around in my chair at least once every
-    # half an hour...
+    # Empirically determined that we move around in our chairs at least once
+    # every half an hour...
     auto_off: 1800
 # Attic occupancy – combination of the office chairs occupancy and the state of
 # the lights, under the condition that someone is home
