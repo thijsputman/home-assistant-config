@@ -182,12 +182,16 @@
       target:
         entity_id: climate.tado_attic
   mode: single
-- alias: ❄️ | 👀 Airco – Attic enable schedule (occupied)
+- alias: ❄️ | 👀 Airco – Attic enable schedule (occupied; "Airco active" on)
   id: f3bd94fa-4646-4c70-9e0d-fd7288579bfe
   description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.occupancy_attic
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: input_boolean.airco_active
       from: "off"
       to: "on"
   condition:
@@ -209,12 +213,16 @@
       target:
         entity_id: climate.tado_attic_ac
   mode: single
-- alias: ❄️ | 👀 Airco – Attic off (unoccupied)
+- alias: ❄️ | 👀 Airco – Attic off (unoccupied; "Airco active" off)
   id: 426b173e-cef1-4e6d-a7f0-a1249db7c745
   description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.occupancy_attic
+      from: "on"
+      to: "off"
+    - platform: state
+      entity_id: input_boolean.airco_active
       from: "on"
       to: "off"
   condition:
