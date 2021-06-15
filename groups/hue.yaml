@@ -1,0 +1,61 @@
+# Used by the Hue scene heuristic in "📄 templates/hue_scenes.yaml" to enumerate
+# the lights that are switched on per Hue room/zone.
+
+hue_room_living_room:
+  name: Living room (Hue)
+  icon: mdi:lightbulb-group-outline
+  entities:
+    - light.hue_filament_bulb_1_3
+    - light.copper_lamp_living_room
+    - light.hue_white_light_1
+    - light.fireplace_1_living_room
+    - light.fireplace_2_living_room
+    - light.hue_aura_living_room
+    - light.hue_iris_1
+    - light.screen_left_living_room
+    - light.screen_right_living_room
+    - light.wall_garden_left_living_room
+    - light.wall_garden_right_living_room
+hue_room_kitchen:
+  name: Kitchen (Hue)
+  icon: mdi:lightbulb-group-outline
+  entities:
+    - light.extended_color_light_1_3
+    - light.color_spot_1_kitchen
+    - light.color_spot_2_kitchen
+    - light.hue_color_spot_1
+    - light.extended_color_light_1_4
+    - light.hue_color_spot_2_2
+    - light.hue_color_spot_1_3
+    - light.hue_color_spot_1_2
+    - light.hue_color_spot_2
+    - light.hue_lightstrip_plus_1
+    - light.hue_lightstrip_plus_1_3
+    - light.hue_lightstrip_plus_1_2
+    - light.spot_1_kitchen_hallway_side
+    - light.spot_2_kitchen
+    - light.spot_3_kitchen
+    - light.spot_4_kitchen_garden_side
+hue_zone_kitchen_counter_cupboards:
+  name: Kitchen counter & cupboards (Hue)
+  icon: mdi:lightbulb-group-outline
+  entities:
+    - light.extended_color_light_1_3
+    - light.extended_color_light_1_4
+    - light.hue_color_spot_2_2
+    - light.hue_color_spot_1_3
+    - light.hue_color_spot_1_2
+    - light.hue_color_spot_2
+hue_room_garden:
+  name: Garden (Hue)
+  icon: mdi:lightbulb-group-outline
+  entities:
+    - light.hue_outdoor_wall_1
+    - light.outdoor_lightstrip_garden
+    - light.hue_outdoor_wall_1_2
+    - light.shed_wall_garden
+    - light.hue_ambiance_spot_1
+    - light.outdoor_spot_garden
+    - light.hue_outdoor_spot_1
+    - light.extended_color_light_1_2
+    - light.extended_color_light_1

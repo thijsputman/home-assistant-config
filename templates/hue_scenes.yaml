@@ -1,5 +1,16 @@
 # Heuristically track the Hue scene name based on the group's (i.e. Hue
-# room/zone) brightness, color_temp and/or xy_color.
+# room/zone) brightness, color_temp and/or xy_color and the number of lights
+# switched on.
+#
+# Uses the groups of lights defined in "📄 groups/hue.yaml" to enumerate the
+# number of lights switched on. This greatly increases the accuracy of the
+# heuristic (as otherwise switching on a single light in a room would often
+# detect the previous scene for that room as the active scene).
+# When a room is switched on, changing individual lights (or vice versa,
+# switching on the entire room when individual lights are on) might – or might
+# not – lead to an update in the detected scene. This greatly depends on whether
+# the Hui API actually reports it as a state change... Coping with this caveat
+# is currently beyond the scope of the heuristic.
 #
 # Note that when a Hue *zone* changes, the Hue *room(s)* it belongs to keep
 # reporting their previous state (i.e. some of their lights  changed, but the
@@ -18,6 +29,13 @@
 - trigger:
     - platform: state
       entity_id: light.living_room
+    # If we trigger to <Unknown> wait 10 seconds and try again – sometimes the
+    # individual Hue lights don't propagate fast enough; give them a bit of
+    # time an rerun the template
+    - platform: state
+      entity_id: sensor.hue_scene_living_room
+      to: <Unknown>
+      for: 10
     - platform: event
       event_type: template_reloaded
   sensor:
@@ -29,6 +47,10 @@
         <Off>
       {% else %}
         {%
+          set num_lights = expand('group.hue_room_living_room') |
+            selectattr('state', '==', 'on') | list | length
+        %}
+        {%
           set brightness =
             state_attr('light.living_room', 'brightness') | int(-1)
         %}
@@ -38,27 +60,27 @@
         %}
         {%
           if brightness > 110 and brightness < 120 and
-          color_temp > 225 and color_temp < 235
+          color_temp > 225 and color_temp < 235 and num_lights >= 8
         %}
           Daytime
         {%
           elif brightness > 130 and brightness < 140 and
-          color_temp > 430 and color_temp < 450
+          color_temp > 430 and color_temp < 450 and num_lights >= 11
         %}
           Ambiance
         {%
           elif brightness > 1 and brightness < 10 and
-          color_temp > 430 and color_temp < 450
+          color_temp > 430 and color_temp < 450 and num_lights >= 9
         %}
           Movie
         {%
           elif brightness > 11 and brightness < 20 and
-          color_temp > 430 and color_temp < 450
+          color_temp > 430 and color_temp < 450 and num_lights >= 9
         %}
           Movie (ambiance)
         {%
           elif brightness > 175 and brightness < 185 and
-          color_temp > 420 and color_temp < 430
+          color_temp > 420 and color_temp < 430 and num_lights >= 11
         %}
           Active
         {% else %}
@@ -87,20 +109,25 @@
 - trigger:
     - platform: state
       entity_id: light.kitchen_counter_cupboards
+    # If we trigger to <Unknown> wait 10 seconds and try again
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen_counter_cupboards
+      to: <Unknown>
+      for: 10
     - platform: event
       event_type: template_reloaded
   sensor:
     name: Hue scene (Kitchen counter & cupboards)
     unique_id: b7842630-c541-4e0e-a7ce-c0f4deea3f81
     icon: mdi:movie-filter
-    # For this zone(/scene combination) the Hue API starts off by providing
-    # xy_color values and then – sometimes – switches to a color_temp value
-    # midway through the scene being active (not prompted by any change to the
-    # actual lights). Hence, we have to deal with both...
     state: >-
       {% if states('light.kitchen_counter_cupboards') == 'off' %}
         <Off>
       {% else %}
+        {%
+          set num_lights = expand('group.hue_zone_kitchen_counter_cupboards') |
+            selectattr('state', '==', 'on') | list | length
+        %}
         {%
           set brightness =
             state_attr('light.kitchen_counter_cupboards', 'brightness') | int(-1)
@@ -119,13 +146,19 @@
               state_attr('light.kitchen_counter_cupboards', 'xy_color')
           %}
         {% endif %}
+        {#
+          For this zone(/scene combination) the Hue API starts off by providing
+          xy_color values and then – sometimes – switches to a color_temp value
+          midway through the scene being active (not prompted by any change to
+          the actual lights). Hence, we have to deal with both...
+        #}
         {%
           if brightness > 245 and brightness < 256 and (
             color_temp > 230 and color_temp < 240 or (
               xy_color[0] > 0.35 and xy_color[0] < 0.39 and
               xy_color[1] > 0.35 and xy_color[1] < 0.39
             )
-          )
+          ) and num_lights >= 6
         %}
           Activity
         {% else %}
@@ -178,27 +211,24 @@
     name: Hue scene (Kitchen)
     unique_id: c5876824-72b0-4b40-9d70-a2cde1bc1d7f
     icon: mdi:movie-filter
-    # If Kitchen is off and Kitchen counter & cupboards switches to Activity,
-    # don't do anything. In this situation the Hue API messes up (see comment in
-    # the header) and as such it's best to keep reporting the "off"-state...
-    # Additionally, if _only_ the Gledopto controllers are switched on, don't do
-    # anything either – they've bugged out. See "📄 automations/lights/hue.yaml"
-    # on how this situation is handled; keep reporting the "off"-state to ensure
-    # we don't interfer with that handling...
     state: >-
+      {#
+        If Kitchen is off and Kitchen counter & cupboards switches to Activity,
+        don't do anything. In this situation the Hue API messes up (see comment
+        in the header) and as such it's best to keep reporting the "off"-state.
+      #}
       {%
         if states('light.kitchen') == 'off' or (
           states('sensor.hue_scene_kitchen') == '<Off>' and
           states('sensor.hue_scene_kitchen_counter_cupboards') == 'Activity'
-        ) or (
-          (
-            states('light.extended_color_light_1_3') == 'on' or
-            states('light.extended_color_light_1_4') == 'on'
-          ) and states('light.hue_color_spot_2_2') == 'off'
         )
       %}
         <Off>
       {% else %}
+        {%
+          set num_lights = expand('group.hue_room_kitchen') |
+            selectattr('state', '==', 'on') | list | length
+        %}
         {%
           set brightness =
             state_attr('light.kitchen', 'brightness') | int(-1)
@@ -209,22 +239,22 @@
         %}
         {%
           if brightness > 125 and brightness < 135 and
-          color_temp > 225 and color_temp < 235
+          color_temp > 225 and color_temp < 235 and num_lights >= 16
         %}
           Daytime
         {%
           elif brightness > 75 and brightness < 85 and
-          color_temp > 430 and color_temp < 440
+          color_temp > 430 and color_temp < 440 and num_lights >= 16
         %}
           Ambiance
         {%
           elif brightness > 0 and brightness < 10 and
-          color_temp > 430 and color_temp < 440
+          color_temp > 430 and color_temp < 440  and num_lights >= 12
         %}
           Movie
         {%
           elif brightness > 250 and brightness < 260 and
-          color_temp > 340 and color_temp < 350
+          color_temp > 340 and color_temp < 350  and num_lights >= 16
         %}
           Bright (custom)
         {% else %}
@@ -253,6 +283,11 @@
 - trigger:
     - platform: state
       entity_id: light.garden
+    # If we trigger to <Unknown> wait 10 seconds and try again
+    - platform: state
+      entity_id: sensor.hue_scene_garden
+      to: <Unknown>
+      for: 10
     - platform: event
       event_type: template_reloaded
   sensor:
@@ -264,12 +299,12 @@
         <Off>
       {% else %}
         {%
-          set brightness =
-            state_attr('light.garden', 'brightness') | int(-1)
+          set num_lights = expand('group.hue_room_garden') |
+            selectattr('state', '==', 'on') | list | length
         %}
         {%
-          set color_temp =
-            state_attr('light.garden', 'color_temp') | int(-1)
+          set brightness =
+            state_attr('light.garden', 'brightness') | int(-1)
         %}
         {%
           if state_attr('light.garden', 'xy_color') == none
@@ -284,14 +319,14 @@
           if brightness > 245 and (
             xy_color[0] > 0.35 and xy_color[0] < 0.39 and
             xy_color[1] > 0.35 and xy_color[1] < 0.39
-          )
+          ) and num_lights >= 7
         %}
           Active
         {%
           elif brightness > 90 and brightness < 100 and (
             xy_color[0] > 0.30 and xy_color[0] < 0.34 and
             xy_color[1] > 0.36 and xy_color[1] < 0.40
-          )
+          ) and num_lights >= 8
         %}
           Ambiance
         {% else %}
