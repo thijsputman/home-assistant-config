@@ -219,8 +219,14 @@
       #}
       {%
         if states('light.kitchen') == 'off' or (
-          states('sensor.hue_scene_kitchen') == '<Off>' and
           states('sensor.hue_scene_kitchen_counter_cupboards') == 'Activity'
+          and (
+            states('sensor.hue_scene_kitchen') == '<Off>' or (
+              states('sensor.hue_scene_kitchen') == '<Unknown>' and
+              state_attr('sensor.hue_scene_kitchen', 'previous_scene')
+                == '<Off>'
+            )
+          )
         )
       %}
         <Off>
