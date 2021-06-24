@@ -130,6 +130,8 @@ views:
           - !include home/consumption/appliances/ups.yaml
           - !include home/consumption/appliances/boiler_kitchen.yaml
           - !include home/consumption/appliances/dishwasher.yaml
+          - !include home/consumption/appliances/television.yaml
+          - !include home/consumption/appliances/sonair.yaml
           - !include home/consumption/appliances/washing_machine.yaml
           - !include home/consumption/appliances/dryer.yaml
           - !include home/consumption/appliances/airco_attic.yaml

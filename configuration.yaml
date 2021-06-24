@@ -36,6 +36,7 @@ recorder:
       - input_number.rate_*
       # Utility Meter – Appliances
       - sensor.monthly_consumption_*
+      - sensor.monthly_costs_*
 
 history:
   exclude:
@@ -136,6 +137,12 @@ utility_meter:
     cycle: monthly
   monthly_consumption_ups:
     source: sensor.consumption_ups
+    cycle: monthly
+  monthly_consumption_television:
+    source: sensor.consumption_112
+    cycle: monthly
+  monthly_consumption_sonair_combined:
+    source: sensor.consumption_sonair_combined
     cycle: monthly
 
 # Neato

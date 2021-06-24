@@ -51,6 +51,8 @@ include:
     - sensor.power_99 # Airco (Attic)
     - sensor.power_lights_all
     - sensor.ups_power
+    - sensor.power_108 # Television (i.e. Multimedia hub)
+    - sensor.power_sonair_combined
 component_config:
   # Don't push entity_id-attribute (i.e. names of group members) for the
   # family group; keeps the data in InfluxDB free of PII...

@@ -28,10 +28,10 @@ card:
             font-size: 1rem;
             color: var(--paper-grey-500);
           }
-      name: Boiler – Kitchen
       tap_action:
         action: more-info
-      entity: switch.smart_plug_9
+      entity: binary_sensor.sonair_combined
+      name: Sonair – combined
       show_name: true
       show_icon: true
       show_state: false
@@ -50,7 +50,7 @@ card:
             padding: 0px;
             text-align: center;
           }
-      entity: sensor.monthly_consumption_costs_boiler_kitchen
+      entity: sensor.monthly_costs_sonair_combined
       attribute: last_period
       unit: € / month
     - type: custom:mini-graph-card
@@ -74,9 +74,9 @@ card:
         graph: bar
         labels: false
       entities:
-        - entity: sensor.power_57
+        - entity: sensor.power_sonair_combined
           show_graph: false
-        - entity: sensor.consumption_58
+        - entity: sensor.consumption_sonair_combined
           aggregate_func: delta
           color: thistle
           name: Power usage

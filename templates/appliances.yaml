@@ -1,0 +1,113 @@
+- sensor:
+    # Television (i.e. "Multimedia hub")
+    - name: Monthly costs (Television)
+      unique_id: 619f29c6-d3db-48ba-827f-1cb7aaa7d3d5
+      unit_of_measurement: €
+      # Runs mostly during peak-hours, use peak-rate to approximate costs
+      state: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_television')|float *
+              states('input_number.rate_energy_peak')|float)
+          ) | round(2)
+        }}
+      attributes:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_television',
+                  'last_period')|float *
+                states('input_number.rate_energy_peak')|float)
+            ) | round(2)
+          }}
+    # Sonair (combined measurement for all three units)
+    - name: Power (Sonair – combined)
+      unique_id: e036c831-7770-4d3a-9e16-36890fd4ac71
+      unit_of_measurement: W
+      device_class: power
+      # Using _or_ intentionally – even if only a single sensor is reporting
+      # power data it makes sense to report it as the combined total
+      availability: >-
+        {{
+          states('sensor.power_110') not in ['unknown', 'unavailable'] or
+          states('sensor.power_113') not in ['unknown', 'unavailable'] or
+          states('sensor.power_115') not in ['unknown', 'unavailable']
+        }}
+      state: >-
+        {{
+          states('sensor.power_110') | int(0) +
+          states('sensor.power_113') | int(0) +
+          states('sensor.power_115') | int(0)
+        }}
+    - name: Consumption (Sonair – combined)
+      unique_id: 426baa58-79dd-4714-8713-f55e1a24ade0
+      unit_of_measurement: kWh
+      device_class: energy
+      # Using _and_ intentionally – as this is a cumulative measure, reporting
+      # data when not all sensors are available would lead to strange drops in
+      # the cumulative number...
+      availability: >-
+        {{
+          states('sensor.consumption_111') not in ['unknown', 'unavailable'] and
+          states('sensor.consumption_114') not in ['unknown', 'unavailable'] and
+          states('sensor.consumption_116') not in ['unknown', 'unavailable']
+        }}
+      state: >-
+        {{
+          (
+            states('sensor.consumption_111') | float +
+            states('sensor.consumption_114') | float +
+            states('sensor.consumption_116') | float
+          ) | round(2)
+        }}
+    - name: Monthly costs (Sonair – combined)
+      unique_id: 373d8b30-e8d3-4995-8a10-8e76e515d8a1
+      unit_of_measurement: €
+      # Runs mostly during peak-hours, use peak-rate to approximate costs
+      state: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_sonair_combined')|float *
+              states('input_number.rate_energy_peak')|float)
+          ) | round(2)
+        }}
+      attributes:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_sonair_combined',
+                  'last_period')|float *
+                states('input_number.rate_energy_peak')|float)
+            ) | round(2)
+          }}
+- binary_sensor:
+    # Television (i.e. Multimedia hub)
+    - name: Television
+      unique_id: 579cc669-4c98-41c0-8c42-bb49ec8346d0
+      device_class: power
+      icon: mdi:television
+      availability: >-
+        {{ states('sensor.power_108') not in ['unknown', 'unavailable'] }}
+      # Idle/standby consumption is anywhere between 5 and 20 Watt
+      state: >-
+        {%- if states('sensor.power_108')|float > 20 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
+    # Sonair (combined)
+    - name: Sonair (combined)
+      unique_id: 80fe5a11-0776-4407-98da-4401ab9de0e3
+      device_class: power
+      icon: mdi:air-filter
+      availability: >-
+        {{
+          states('sensor.power_sonair_combined') not in
+            ['unknown', 'unavailable']
+        }}
+      state: >-
+        {%- if states('sensor.power_sonair_combined')|int > 0 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
