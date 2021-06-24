@@ -1,0 +1,131 @@
+# Used in "📄 ./fans.yaml" and "📄 ./switches.yaml" – there's no need to ever
+# call these scripts directly; they're just to prevent duplicating logic...
+sonair_turn_on:
+  alias: Sonair – turn on [internal]
+  sequence:
+    - service: switch.turn_on
+      data: {}
+      target:
+        entity_id: >-
+          {{ switch_entity_id }}
+    - delay: 3
+    - service: remote.send_command
+      target:
+        entity_id: >-
+          {{ remote_entity_id }}
+      data:
+        device: sonair
+        command: power
+    - delay: 3
+    - service: input_boolean.turn_off
+      target:
+        entity_id: >-
+          {{ boolean_entity_id }}
+    - service: remote.send_command
+      target:
+        entity_id: >-
+          {{ remote_entity_id }}
+      data:
+        device: sonair
+        command: mode_2
+  mode: single
+  icon: mdi:air-filter
+sonair_turn_off:
+  alias: Sonair – turn off [internal]
+  sequence:
+    - service: input_boolean.turn_off
+      target:
+        entity_id: >-
+          {{ boolean_entity_id }}
+    - service: switch.turn_off
+      data: {}
+      target:
+        entity_id: >-
+          {{ switch_entity_id }}
+  mode: single
+  icon: mdi:air-filter
+sonair_set_percentage:
+  alias: Sonair – set percentage [internal]
+  sequence:
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ percentage == 0 }}
+          sequence:
+            - service: switch.turn_off
+              data: {}
+              target:
+                entity_id: >-
+                  {{ switch_entity_id }}
+      default:
+        - service: input_boolean.turn_off
+          target:
+            entity_id: >-
+              {{ boolean_entity_id }}
+        - service: remote.send_command
+          target:
+            entity_id: >-
+              {{ remote_entity_id }}
+          data:
+            device: sonair
+            command: >-
+              {% if percentage == 100 %}
+                mode_10
+              {% elif percentage == 80 %}
+                mode_8
+              {% elif percentage == 60 %}
+                mode_6
+              {% elif percentage == 40 %}
+                mode_4
+              {% elif percentage == 20 %}
+                mode_2
+              {% endif %}
+  mode: single
+  icon: mdi:air-filter
+sonair_co2_turn_on:
+  alias: Sonair – turn on CO²-sensor [internal]
+  sequence:
+    # Only act if the Sonair-unit is/appears on
+    - condition: template
+      value_template: >-
+        {{
+          states(switch_entity_id) == 'on' and
+          states(speed_entity_id) | int(0) > 0
+        }}
+    - service: input_boolean.turn_on
+      target:
+        entity_id: >-
+          {{ boolean_entity_id }}
+    - service: remote.send_command
+      target:
+        entity_id: >-
+          {{ remote_entity_id }}
+      data:
+        device: sonair
+        # Speed/mode 5 enables the CO²-sensor
+        command: mode_5
+  mode: single
+  icon: mdi:molecule-co2
+sonair_co2_turn_off:
+  alias: Sonair – turn off CO²-sensor [internal]
+  sequence:
+    - condition: template
+      value_template: >-
+        {{
+          states(switch_entity_id) == 'on' and
+          states(speed_entity_id) | int(0) > 0
+        }}
+    - service: input_boolean.turn_off
+      target:
+        entity_id: >-
+          {{ boolean_entity_id }}
+    - service: remote.send_command
+      target:
+        entity_id: >-
+          {{ remote_entity_id }}
+      data:
+        device: sonair
+        command: mode_2
+  mode: single
+  icon: mdi:molecule-co2

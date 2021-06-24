@@ -205,13 +205,6 @@ light:
       - light.smart_relay_3
       - light.smart_relay_4
 
-switch:
-  - platform: aarlo
-    siren: true
-    snapshot: true
-    siren_volume: 6
-    siren_duration: 10
-
 media_player:
   # Arlo
   - platform: aarlo
@@ -253,6 +246,8 @@ sensor custom: !include_dir_merge_list sensors/
 template: !include_dir_merge_list templates/
 
 plant: !include plants.yaml
+fan: !include fans.yaml
+switch: !include switches.yaml
 
 group: !include_dir_merge_named groups/
 

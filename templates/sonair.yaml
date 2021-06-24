@@ -1,0 +1,66 @@
+- sensor:
+    # Wardrobe
+    - name: Speed (Sonair – Wardrobe)
+      unique_id: 63f88f59-7c49-4146-b4a8-26d81524522f
+      unit_of_measurement: "%"
+      icon: mdi:fan
+      state: >-
+        {% set power = states('sensor.power_113') | int(0) %}
+        {# 150 m³/h #}
+        {% if power >= 20 %}
+          100
+        {# 105 m³/h #}
+        {% elif power >= 8 %}
+          80
+        {# 70 m³/h #}
+        {% elif power >= 4 %}
+          60
+        {# 50 m³/h #}
+        {% elif power >= 3 %}
+          40
+        {# 30 m³/h #}
+        {% elif power >= 2 %}
+          20
+        {% else %}
+          0
+        {% endif %}
+    # Living room
+    - name: Speed (Sonair – Living room)
+      unique_id: 5cb01c92-8db8-45e9-b01a-9719448a685a
+      unit_of_measurement: "%"
+      icon: mdi:fan
+      state: >-
+        {% set power = states('sensor.power_115') | int(0) %}
+        {% if power >= 20 %}
+          100
+        {% elif power >= 8 %}
+          80
+        {% elif power >= 4 %}
+          60
+        {% elif power >= 3 %}
+          40
+        {% elif power >= 2 %}
+          20
+        {% else %}
+          0
+        {% endif %}
+    # Guestroom
+    - name: Speed (Sonair – Guestroom)
+      unique_id: 096bdd41-113b-4cce-977b-6053a016b4c1
+      unit_of_measurement: "%"
+      icon: mdi:fan
+      state: >-
+        {% set power = states('sensor.power_110') | int(0) %}
+        {% if power >= 20 %}
+          100
+        {% elif power >= 8 %}
+          80
+        {% elif power >= 4 %}
+          60
+        {% elif power >= 3 %}
+          40
+        {% elif power >= 2 %}
+          20
+        {% else %}
+          0
+        {% endif %}

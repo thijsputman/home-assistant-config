@@ -1,0 +1,114 @@
+- platform: template
+  fans:
+    # Wardrobe
+    sonair_wardrobe:
+      friendly_name: Sonair (Wardrobe)
+      unique_id: c08487c4-46bf-42bc-a784-854b4c30907b
+      # The state of the smart-plug represents the state of the Sonair; unless
+      # the IR remote is unavailable (at which point we are unable to control
+      # the Sonair-unit and it's probably best to raise the issue through the
+      # state of the template fan).
+      # Toggling the smart-plug independently of the template fan breaks the
+      # below state-machine; this is easily recovered by toggling the template
+      # fan off/on again properly...
+      value_template: >-
+        {%
+          if states('remote.broadlink_wardrobe_remote') in
+            ['unknown', 'unavailable']
+        %}
+          {{ states('remote.broadlink_wardrobe_remote') }}
+        {% else %}
+          {{ states('switch.smart_plug_27') }}
+        {% endif %}
+      percentage_template: >-
+        {{ states('sensor.speed_sonair_wardrobe') | int(0) }}
+      turn_on:
+        service: script.sonair_turn_on
+        data:
+          switch_entity_id: switch.smart_plug_27
+          boolean_entity_id: input_boolean.co2_sensor_sonair_wardrobe
+          remote_entity_id: remote.broadlink_wardrobe_remote
+      turn_off:
+        service: script.sonair_turn_off
+        data:
+          switch_entity_id: switch.smart_plug_27
+          boolean_entity_id: input_boolean.co2_sensor_sonair_wardrobe
+      set_percentage:
+        service: script.sonair_set_percentage
+        data:
+          switch_entity_id: switch.smart_plug_27
+          boolean_entity_id: input_boolean.co2_sensor_sonair_wardrobe
+          remote_entity_id: remote.broadlink_wardrobe_remote
+          percentage: >-
+            {{ percentage }}
+      speed_count: 5
+    # Living room
+    sonair_living_room:
+      friendly_name: Sonair (Living room)
+      unique_id: 7cdf20c0-7de4-4419-b36b-e16ddff44945
+      value_template: >-
+        {%
+          if states('remote.broadlink_living_room_remote') in
+            ['unknown', 'unavailable']
+        %}
+          {{ states('remote.broadlink_living_room_remote') }}
+        {% else %}
+          {{ states('switch.smart_plug_28') }}
+        {% endif %}
+      percentage_template: >-
+        {{ states('sensor.speed_sonair_living_room') | int(0) }}
+      turn_on:
+        service: script.sonair_turn_on
+        data:
+          switch_entity_id: switch.smart_plug_28
+          boolean_entity_id: input_boolean.co2_sensor_sonair_living_room
+          remote_entity_id: remote.broadlink_living_room_remote
+      turn_off:
+        service: script.sonair_turn_off
+        data:
+          switch_entity_id: switch.smart_plug_28
+          boolean_entity_id: input_boolean.co2_sensor_sonair_living_room
+      set_percentage:
+        service: script.sonair_set_percentage
+        data:
+          switch_entity_id: switch.smart_plug_28
+          boolean_entity_id: input_boolean.co2_sensor_sonair_living_room
+          remote_entity_id: remote.broadlink_living_room_remote
+          percentage: >-
+            {{ percentage }}
+      speed_count: 5
+    # Guestroom
+    sonair_guestroom:
+      friendly_name: Sonair (Guestroom)
+      unique_id: 8fe50383-8151-41d8-aafd-fc3349352582
+      value_template: >-
+        {%
+          if states('remote.broadlink_guestroom_remote') in
+            ['unknown', 'unavailable']
+        %}
+          {{ states('remote.broadlink_guestroom_remote') }}
+        {% else %}
+          {{ states('switch.smart_plug_18') }}
+        {% endif %}
+      percentage_template: >-
+        {{ states('sensor.speed_sonair_guestroom') | int(0) }}
+      turn_on:
+        service: script.sonair_turn_on
+        data:
+          switch_entity_id: switch.smart_plug_18
+          boolean_entity_id: input_boolean.co2_sensor_sonair_guestroom
+          remote_entity_id: remote.broadlink_guestroom_remote
+      turn_off:
+        service: script.sonair_turn_off
+        data:
+          switch_entity_id: switch.smart_plug_18
+          boolean_entity_id: input_boolean.co2_sensor_sonair_guestroom
+      set_percentage:
+        service: script.sonair_set_percentage
+        data:
+          switch_entity_id: switch.smart_plug_18
+          boolean_entity_id: input_boolean.co2_sensor_sonair_guestroom
+          remote_entity_id: remote.broadlink_guestroom_remote
+          percentage: >-
+            {{ percentage }}
+      speed_count: 5
