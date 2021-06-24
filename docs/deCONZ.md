@@ -19,6 +19,29 @@ including the power consumption measurements.
 
 Pairing is a bit of hassle though:
 
+#### deCONZ 2.11.5 (June 2021)
+
+Once the device is paired (with or without all of its additional sensors),
+there's no more need to remove and re-add it until all sensors show up. Instead,
+restart discovery on the device (keep its button pressed for 5 seconds – blinks
+red once and then starts rapidly blinking blue) and start a **sensor** search
+from the Phoscon GUI (instead of the initial _light_ search used to pair the
+device).
+
+Make sure the device is powered _on_ (it powers itself off when you keep its
+button pressed for 5 seconds) _before_ you start the sensor search.
+
+This search should almost immediately return a new sensor. Needs to be done
+twice, once for the `power` and once for the `consumption` sensor (even if one
+of them was already found during initial pairing). The procedure is comperable
+with the BlitzWolf procedure described in the next section...
+
+Additionally, it appears not needed anymore to manually delete additional
+sensors upon deleting the main `light`-entity; deCONZ seems to be taking care of
+this automatically now.
+
+#### Original instructions
+
 It appears (through limited testing) to work best if the plug is drawing power
 while being paired (i.e. switch on the device connected to the plug). If pairing
 is successful, one "light" and two senors (`power` and `consumption`) should
@@ -106,3 +129,12 @@ behaviours have been observed.
 The signal repeater was located physically very close to the Heiman unit.
 **Conclusion**: It appears that somehow the `TRADFRI Signal Repeater` and the
 `Heiman WarningDevice` don't play nice in close proximity? 😕
+
+#### Update – June 2021
+
+After a prolonged power outage, the Heiman warning-device again didn't come back
+online; effectively showing the same symptoms as described above. The other
+Heiman warning-device came back online just fine.
+
+I'm strongly starting to suspect the device itself is totally broken to begin
+with... 🤐

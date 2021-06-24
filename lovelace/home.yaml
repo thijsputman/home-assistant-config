@@ -63,10 +63,10 @@ views:
                   action: toggle
                 entity: switch.smart_plug_5
               - type: button
-                name: Ventilator – Guestroom
+                name: Boiler – Kitchen
                 tap_action:
                   action: toggle
-                entity: switch.on_off_plug_in_unit_4
+                entity: switch.smart_plug_9
               - type: button
                 name: VOCOlinc – Living room
                 tap_action:

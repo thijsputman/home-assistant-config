@@ -163,3 +163,24 @@
     - delay: 30
     - event: template_reloaded
   mode: restart
+# Stop Home Assistant (mainly to prevent database corruption) if a power failure
+# appears imminent
+- alias: 🚧 | 🔋 Stop Home Assistant (UPS low power)
+  id: e7dcf99d-a13d-43ed-a828-d19335c94787
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.ups_battery_charge
+      below: 10
+  condition:
+    - condition: state
+      entity_id: sensor.ups_status
+      state: On Battery Battery Discharging
+  action:
+    - service: system_log.write
+      data:
+        level: critical
+        message: >-
+          UPS battery level below 10%; power failure appears imminent –
+          stopping Home Assistant...
+    - service: homeassistant.stop
+  mode: single

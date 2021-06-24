@@ -31,14 +31,17 @@
       data:
         group_name: Kitchen counter & cupboards
         scene_name: Activity
-    # Wait for _all_ motion sensors to clear – otherwise "race conditions" are
+    # Wait for _all_ motion sensors to clear – otherwise race conditions are
     # possible where the lights go off (because one sensor clears) and never
     # come back on again (because the other sensor never clears due to
     # ongoing motion and thus never retriggers the lights).
+    # The "!= 'on'" check (as opposed to a "== 'off'") is intentional as it is
+    # a bit more forgiving in cases where a sensor drops off the network (i.e.
+    # "unavailable") while this automation is running.
     - wait_template: >-
         {{
-          is_state('binary_sensor.presence_53', 'off') and
-          is_state('binary_sensor.presence_105', 'off')
+          states('binary_sensor.presence_53') != 'on' and
+          states('binary_sensor.presence_105') != 'on'
         }}
     - delay: 120
       # If the scene for "Kitchen counter & cupboards" is still "Activity",
@@ -176,8 +179,8 @@
     # Wait for _all_ motion sensors to clear
     - wait_template: >-
         {{
-          is_state('binary_sensor.presence_68', 'off') and
-          is_state('binary_sensor.presence_71', 'off')
+          states('binary_sensor.presence_68') != 'on' and
+          states('binary_sensor.presence_71') != 'on'
         }}
     - delay: 150
     - service: light.turn_off

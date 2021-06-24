@@ -306,6 +306,8 @@
     - platform: time
       at: "01:00:00"
   condition:
+    - condition: time
+      weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     - condition: state
       entity_id: input_boolean.airco_active
       state: "on"
