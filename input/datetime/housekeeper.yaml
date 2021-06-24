@@ -1,5 +1,0 @@
-housekeeper_pre_arrival:
-  name: Housekeeper (pre-arrival)
-  has_date: true
-  has_time: true
-  initial: !secret housekeeper_pre_arrival_datetime

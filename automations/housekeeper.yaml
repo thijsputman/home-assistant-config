@@ -1,30 +1,18 @@
-- alias: 🚧 | 🧹 Housekeeper present
+- alias: ⏰ | 🧹 Housekeeper present
   id: 22862b80-0db9-41a1-8ab0-86bd72278540
   description: ""
-  # Using an input_datetime to store on which day of the week the housekeeper
-  # comes – compared against sensor.date (which changes daily at 00:00)
   trigger:
-    - platform: template
-      value_template: >-
-        {{
-          (
-            state_attr("input_datetime.housekeeper_pre_arrival", "timestamp") |
-              timestamp_custom("%w")
-          ) == (states("sensor.date") | as_timestamp | timestamp_custom("%w"))
-        }}
-  condition: []
+    - platform: time
+      at: !secret housekeeper_time
+  condition:
+    - condition: time
+      weekday:
+        - !secret housekeeper_day
   action:
-    # Use the same input_datetime to store at what time the housekeeper comes
-    # (i.e. for how much to delay after 00:00)
-    - delay: >-
-        {{
-          state_attr("input_datetime.housekeeper_pre_arrival", "timestamp") |
-            timestamp_custom("%H:%M")
-        }}
     - service: input_boolean.turn_on
       data:
         entity_id: input_boolean.housekeeper_present
-    - delay: "04:00:00"
+    - delay: !secret housekeeper_duration
     - service: input_boolean.turn_off
       data:
         entity_id: input_boolean.housekeeper_present
