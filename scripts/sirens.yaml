@@ -11,7 +11,11 @@
 # the actual state of the alarm (i.e. the lights don't report "on" when the
 # siren is activated). This behaviour appears to be by design (see
 # https://github.com/dresden-elektronik/deconz-rest-plugin/issues/4045), so this
-# script also makes an attempt at tracking alarm/siren state...
+# script makes an attempt at tracking alarm/siren state by delaying execution
+# while the alarm is (supposed to be) sounding.
+# This setup has an additional advantage: As the run-mode of the script is
+# "restart", stopping a sounding alarm can always be achieved by calling the
+# script again with "mode" set to "none".
 #
 # Finally, I manually increased the "Max Duration" attribute of the "IAS WD"
 # cluster for my devices from 240 seconds (the Heiman default) to 300 seconds
@@ -32,8 +36,12 @@ sirens:
             - select # Sound and blink for 1 second
             - lselect # Sound and blink for up to 5 minutes
             - blink # Blink for up to 5 minutes
+            # Non-standard (i.e. not provided by deCONZ): Pulse the siren (3
+            # seconds on; 12 seconds off) – the number of pulses is determined
+            # via "ontime" (e.g. 60 seconds results in 4 pulses)
+            - pulse
     ontime:
-      description: On-time (for "lselect" and "blink")
+      description: On-time (for "lselect", "blink" and "pulse")
       required: false
       default: 60
       selector:
@@ -43,7 +51,9 @@ sirens:
   variables:
     # Default to "none" (i.e. stop the sirens)
     mode: >-
-      {% if mode is defined and mode in ['select', 'lselect', 'blink'] %}
+      {%
+        if mode is defined and mode in ['select', 'lselect', 'blink', 'pulse']
+      %}
         {{ mode }}
       {% else %}
         none
@@ -57,31 +67,54 @@ sirens:
       {% endif %}
   sequence:
     - variables:
+        repeat: >-
+          {% if mode == 'pulse' %}
+            {{ (ontime / 15) | round(0, 'ceil') }}
+          {% else %}
+            1
+          {% endif %}
         json_payload: >-
-          {
-            "alert": "{{ mode }}",
-            {% if mode in ['lselect', 'blink'] %}
-              "ontime": {{ ontime }}
-            {% endif %}
-          }
-    - service: deconz.configure
-      data:
-        entity: switch.warning_device_8
-        field: /state
-        data: >-
-          {{ json_payload }}
-    - service: deconz.configure
-      data:
-        entity: switch.warning_device_17
-        field: /state
-        data: >-
-          {{ json_payload }}
-    # Delay script for the duration of on-time – we do this to make the
-    # "on"-state of the script (roughly) reflect the time during which the
-    # siren/alarm was on
-    - condition: template
-      value_template: >-
-        {{ mode not in ['none', 'select'] }}
-    - delay: >-
-        {{ ontime }}
+          {% if mode == 'pulse' %}
+            {
+              "alert": "lselect",
+              "ontime": 3
+            }
+          {% else %}
+            {
+              "alert": "{{ mode }}",
+              {% if mode in ['lselect', 'blink'] %}
+                "ontime": {{ ontime }}
+              {% endif %}
+            }
+          {% endif %}
+    - repeat:
+        count: >-
+          {{ repeat }}
+        sequence:
+          - service: deconz.configure
+            data:
+              entity: switch.warning_device_8
+              field: /state
+              data: >-
+                {{ json_payload }}
+          # 🚧 Heiman-unit broken – temporarily disabled 🚧
+          # - service: deconz.configure
+          #   data:
+          #     entity: switch.warning_device_17
+          #     field: /state
+          #     data: >-
+          #       {{ json_payload }}
+          #
+          # Delay script for the duration of the siren sounding – this to makes
+          # the "on"-state of the script (roughly) reflect the time during which
+          # the siren/alarm is on
+          - delay: >-
+              {% if mode in ['none', 'select'] %}
+                1
+              {% elif mode == 'pulse' %}
+                15
+              {% else %}
+                {{ ontime }}
+              {% endif %}
   mode: restart
+  icon: mdi:alarm-bell

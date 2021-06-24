@@ -64,7 +64,7 @@
       data:
         mode: none
   mode: single
-- alias: 🚨 | 🕹️ Mute/unmute the alarm (Bedroom Smart Switches)
+- alias: 🚨 | 🕹️ Silence the alarm (Bedroom Smart Switches)
   id: 830121ea-907f-4234-be81-b4acce05c1bc
   description: ""
   trigger:
@@ -80,34 +80,25 @@
       type: remote_button_short_press
       subtype: turn_on
   condition:
-    # Only act if the "Home Alarm" is triggered _and_ someone is home
+    # Only act if the "Home Alarm" is triggered, the siren is sounding _and_
+    # someone is home
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: triggered
     - condition: state
+      entity_id: script.sirens
+      state: "on"
+    - condition: state
       entity_id: group.family
       state: home
   action:
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: script.sirens
-              state: "on"
-          sequence:
-            - service: script.sirens
-              data:
-                mode: none
-        - conditions:
-            - condition: state
-              entity_id: script.sirens
-              state: "off"
-          sequence:
-            - service: script.sirens
-              data:
-                mode: lselect
-                ontime: 180
-      default: []
+    # Silence – continue blinking until the alarm state clears
+    - service: script.sirens
+      data:
+        mode: blink
+        ontime: 180
   mode: single
+  max_exceeded: silent
 - alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)
   id: 45a353ab-e5c4-459c-a2ca-ac0d6a5e3aa8
   description: ""
