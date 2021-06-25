@@ -1,3 +1,16 @@
+# Approximate Sonair fan-speed based on its power consumption
+#
+# At the lower fan-speed settings, the (rounded) power-reading provided by
+# deCONZ is insufficient to accurately determine the fan-speed. Depending on
+# environmental factors, especially the 20%- and 40%-modes are difficult to
+# differentiate between. The (also rounded) "current"-reading has a higher
+# resolution and thus allows for a more accurate reading, but doesn't update
+# on change (it updates at a set interval).
+# To accommodate for this fixed update interval, the three (Aqara/lumi)
+# smart-plugs have had their reporting interval increased from 300 to 60 seconds
+# as a manageable compromise between speed of update and sending through
+# unchanged/useless values too often... The below logic furthermore assumes the
+# voltage to not fluctuate too much.
 - sensor:
     # Wardrobe
     - name: Speed (Sonair – Wardrobe)
@@ -6,21 +19,24 @@
       icon: mdi:fan
       state: >-
         {% set power = states('sensor.power_113') | int(0) %}
-        {# 150 m³/h #}
-        {% if power >= 20 %}
+        {% set current = state_attr('sensor.power_113', 'current') | int(0) %}
+        {% if power >= 15 %}
+          {# 150 m³/h #}
           100
-        {# 105 m³/h #}
-        {% elif power >= 8 %}
+        {% elif power >= 7 %}
+          {# 105 m³/h #}
           80
-        {# 70 m³/h #}
-        {% elif power >= 4 %}
-          60
-        {# 50 m³/h #}
-        {% elif power >= 3 %}
-          40
-        {# 30 m³/h #}
         {% elif power >= 2 %}
-          20
+          {% if current >= 15 %}
+            {# 70 m³/h #}
+            60
+          {% elif current >= 10 %}
+            {# 50 m³/h #}
+            40
+          {% else %}
+            {# 30 m³/h #}
+            20
+          {% endif %}
         {% else %}
           0
         {% endif %}
@@ -31,16 +47,24 @@
       icon: mdi:fan
       state: >-
         {% set power = states('sensor.power_115') | int(0) %}
-        {% if power >= 20 %}
+        {% set current = state_attr('sensor.power_115', 'current') | int(0) %}
+        {% if power >= 15 %}
+          {# 150 m³/h #}
           100
-        {% elif power >= 8 %}
+        {% elif power >= 7 %}
+          {# 105 m³/h #}
           80
-        {% elif power >= 4 %}
-          60
-        {% elif power >= 3 %}
-          40
         {% elif power >= 2 %}
-          20
+          {% if current >= 15 %}
+            {# 70 m³/h #}
+            60
+          {% elif current >= 10 %}
+            {# 50 m³/h #}
+            40
+          {% else %}
+            {# 30 m³/h #}
+            20
+          {% endif %}
         {% else %}
           0
         {% endif %}
@@ -51,16 +75,24 @@
       icon: mdi:fan
       state: >-
         {% set power = states('sensor.power_110') | int(0) %}
-        {% if power >= 20 %}
+        {% set current = state_attr('sensor.power_110', 'current') | int(0) %}
+        {% if power >= 15 %}
+          {# 150 m³/h #}
           100
-        {% elif power >= 8 %}
+        {% elif power >= 7 %}
+          {# 105 m³/h #}
           80
-        {% elif power >= 4 %}
-          60
-        {% elif power >= 3 %}
-          40
         {% elif power >= 2 %}
-          20
+          {% if current >= 15 %}
+            {# 70 m³/h #}
+            60
+          {% elif current >= 10 %}
+            {# 50 m³/h #}
+            40
+          {% else %}
+            {# 30 m³/h #}
+            20
+          {% endif %}
         {% else %}
           0
         {% endif %}
