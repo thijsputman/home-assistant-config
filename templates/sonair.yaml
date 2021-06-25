@@ -1,16 +1,15 @@
 # Approximate Sonair fan-speed based on its power consumption
 #
 # At the lower fan-speed settings, the (rounded) power-reading provided by
-# deCONZ is insufficient to accurately determine the fan-speed. Depending on
-# environmental factors, especially the 20%- and 40%-modes are difficult to
-# differentiate between. The (also rounded) "current"-reading has a higher
-# resolution and thus allows for a more accurate reading, but doesn't update
-# on change (it updates at a set interval).
+# deCONZ is insufficient to accurately determine the fan-speed. Especially the
+# 20%- and 40%-modes are difficult to differentiate between. The (also rounded)
+# "current"-reading (multiplied by the voltage) has a higher resolution and thus
+# allows for a more accurate reading, but doesn't update on change (it updates
+# at a set interval).
 # To accommodate for this fixed update interval, the three (Aqara/lumi)
 # smart-plugs have had their reporting interval increased from 300 to 60 seconds
 # as a manageable compromise between speed of update and sending through
-# unchanged/useless values too often... The below logic furthermore assumes the
-# voltage to not fluctuate too much.
+# unchanged/useless values too often...
 - sensor:
     # Wardrobe
     - name: Speed (Sonair – Wardrobe)
@@ -20,6 +19,8 @@
       state: >-
         {% set power = states('sensor.power_113') | int(0) %}
         {% set current = state_attr('sensor.power_113', 'current') | int(0) %}
+        {% set voltage = state_attr('sensor.power_113', 'voltage') | int(0) %}
+        {% set power_x = current/1000 * voltage %}
         {% if power >= 15 %}
           {# 150 m³/h #}
           100
@@ -27,10 +28,10 @@
           {# 105 m³/h #}
           80
         {% elif power >= 2 %}
-          {% if current >= 15 %}
+          {% if power_x >= 3.0 %}
             {# 70 m³/h #}
             60
-          {% elif current >= 10 %}
+          {% elif power_x >= 2.0 %}
             {# 50 m³/h #}
             40
           {% else %}
@@ -48,6 +49,8 @@
       state: >-
         {% set power = states('sensor.power_115') | int(0) %}
         {% set current = state_attr('sensor.power_115', 'current') | int(0) %}
+        {% set voltage = state_attr('sensor.power_115', 'voltage') | int(0) %}
+        {% set power_x = current/1000 * voltage %}
         {% if power >= 15 %}
           {# 150 m³/h #}
           100
@@ -55,10 +58,10 @@
           {# 105 m³/h #}
           80
         {% elif power >= 2 %}
-          {% if current >= 15 %}
+          {% if power_x >= 3.0 %}
             {# 70 m³/h #}
             60
-          {% elif current >= 10 %}
+          {% elif power_x >= 2.0 %}
             {# 50 m³/h #}
             40
           {% else %}
@@ -76,6 +79,8 @@
       state: >-
         {% set power = states('sensor.power_110') | int(0) %}
         {% set current = state_attr('sensor.power_110', 'current') | int(0) %}
+        {% set voltage = state_attr('sensor.power_110', 'voltage') | int(0) %}
+        {% set power_x = current/1000 * voltage %}
         {% if power >= 15 %}
           {# 150 m³/h #}
           100
@@ -83,10 +88,10 @@
           {# 105 m³/h #}
           80
         {% elif power >= 2 %}
-          {% if current >= 15 %}
+          {% if power_x >= 3.0 %}
             {# 70 m³/h #}
             60
-          {% elif current >= 10 %}
+          {% elif power_x >= 2.0 %}
             {# 50 m³/h #}
             40
           {% else %}
