@@ -84,7 +84,7 @@ sonair_set_percentage:
   mode: single
   icon: mdi:air-filter
 sonair_co2_turn_on:
-  alias: Sonair – turn on CO²-sensor [internal]
+  alias: Sonair – turn on CO₂-sensor [internal]
   sequence:
     # Only act if the Sonair-unit is/appears on
     - condition: template
@@ -103,12 +103,12 @@ sonair_co2_turn_on:
           {{ remote_entity_id }}
       data:
         device: sonair
-        # Speed/mode 5 enables the CO²-sensor
+        # Speed/mode 5 enables the CO₂-sensor
         command: mode_5
   mode: single
   icon: mdi:molecule-co2
 sonair_co2_turn_off:
-  alias: Sonair – turn off CO²-sensor [internal]
+  alias: Sonair – turn off CO₂-sensor [internal]
   sequence:
     - condition: template
       value_template: >-

@@ -1,9 +1,9 @@
 co2_sensor_sonair_wardrobe:
-  name: CO²-sensor (Sonair – Wardrobe)
+  name: CO₂-sensor (Sonair – Wardrobe)
   icon: mdi:fan-auto
 co2_sensor_sonair_living_room:
-  name: CO²-sensor (Sonair – Living room)
+  name: CO₂-sensor (Sonair – Living room)
   icon: mdi:fan-auto
 co2_sensor_sonair_guestroom:
-  name: CO²-sensor (Sonair – Guestroom)
+  name: CO₂-sensor (Sonair – Guestroom)
   icon: mdi:fan-auto

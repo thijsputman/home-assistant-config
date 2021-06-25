@@ -5,14 +5,14 @@
   siren_volume: 6
   siren_duration: 10
 
-# Sonair CO²-sensor toggles. There's no way to detect when the CO²-sensor is
+# Sonair CO₂-sensor toggles. There's no way to detect when the CO₂-sensor is
 # enabled/disabled outside of Home Assistant, so this only works (well) when no
 # external changes are made...
 - platform: template
   switches:
     # Wardrobe
     co2_sensor_sonair_wardrobe:
-      friendly_name: CO²-sensor (Sonair – Wardrobe)
+      friendly_name: CO₂-sensor (Sonair – Wardrobe)
       unique_id: 35f3bbd9-052c-48b0-9b0c-990546942187
       icon_template: mdi:molecule-co2
       # The sensor can only be enabled if the Sonair-unit itself is/appears on
@@ -38,7 +38,7 @@
             remote_entity_id: remote.broadlink_wardrobe_remote
     # Living room
     co2_sensor_sonair_living_room:
-      friendly_name: CO²-sensor (Sonair – Living room)
+      friendly_name: CO₂-sensor (Sonair – Living room)
       unique_id: e5d39095-6221-4353-bf69-9111cd39a939
       icon_template: mdi:molecule-co2
       value_template: >-
@@ -63,7 +63,7 @@
             remote_entity_id: remote.broadlink_living_room_remote
     # Guestroom
     co2_sensor_sonair_guestroom:
-      friendly_name: CO²-sensor (Sonair – Guestroom)
+      friendly_name: CO₂-sensor (Sonair – Guestroom)
       unique_id: 10598aa9-09de-4b7c-90cd-199ad8ff2c45
       icon_template: mdi:molecule-co2
       value_template: >-
