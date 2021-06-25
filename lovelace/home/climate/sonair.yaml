@@ -1,0 +1,56 @@
+type: entities
+entities:
+  - type: custom:slider-entity-row
+    card_mod:
+      style:
+        hui-generic-entity-row$: |
+          .info{
+            flex: 1 1 20%;
+          }
+    entity: fan.sonair_living_room
+    name: Living room
+    hide_state: true
+    grow: true
+    toggle: true
+    hide_when_off: true
+    extend_paper_buttons_row:
+      position: center
+      buttons:
+        - entity: switch.co2_sensor_sonair_living_room
+          name: false
+  - type: custom:slider-entity-row
+    card_mod:
+      style:
+        hui-generic-entity-row$: |
+          .info{
+            flex: 1 1 20%;
+          }
+    entity: fan.sonair_guestroom
+    name: Guestroom
+    hide_state: true
+    grow: true
+    toggle: true
+    hide_when_off: true
+    extend_paper_buttons_row:
+      position: center
+      buttons:
+        - entity: switch.co2_sensor_sonair_guestroom
+          name: false
+  - type: custom:slider-entity-row
+    card_mod:
+      style:
+        hui-generic-entity-row$: |
+          .info{
+            flex: 1 1 20%;
+          }
+    entity: fan.sonair_wardrobe
+    name: Wardrobe
+    hide_state: true
+    grow: true
+    toggle: true
+    hide_when_off: true
+    extend_paper_buttons_row:
+      position: center
+      buttons:
+        - entity: switch.co2_sensor_sonair_wardrobe
+          name: false

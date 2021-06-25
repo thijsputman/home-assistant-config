@@ -22,6 +22,7 @@ custom CSS.
 - `mini-graph-card-bundle.js?v=0.11.0-dev.4`
 - `paper-buttons-row.js?v=0.5.0`
 - `simple-thermostat.js?v=2.4.2`
+- `slider-entity-row.js?v=17.1.0`
 - `vacuum-card.js?v=1.21.2`
 
 ## Custom CSS

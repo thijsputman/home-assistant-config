@@ -47,7 +47,10 @@ views:
     icon: mdi:home-thermometer
     badges: []
     cards:
-      - !include home/climate/thermostat.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/climate/thermostat.yaml
+          - !include home/climate/sonair.yaml
       - type: vertical-stack
         cards:
           - type: grid
