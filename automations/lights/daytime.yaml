@@ -72,8 +72,19 @@
       entity_id: sensor.hue_scene_kitchen
       state: Daytime
   action:
+    - variables:
+        kitchen_counter_cupboards: >-
+          {{ states('sensor.hue_scene_kitchen_counter_cupboards') }}
     - service: light.turn_off
       entity_id: light.kitchen
+    # If the Kitchen counter & cupboards lights were on, turn them on again
+    - condition: template
+      value_template: >-
+        {{ kitchen_counter_cupboards == 'Activity' }}
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Kitchen counter & cupboards
+        scene_name: Activity
   mode: single
 - alias: 💡 | ⛅ Living room lights on during daytime (☀️ < 25 lux)
   id: 05a5eb32-be80-4130-a561-d21015851ae8

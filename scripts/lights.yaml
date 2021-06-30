@@ -19,6 +19,10 @@ lights_out:
       data:
         group_name: Kitchen
         scene_name: Movie
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Evening
     - delay: "00:05:00"
     # Lower Hallway brightness one minute prior to switching it off
     - service: light.turn_on
