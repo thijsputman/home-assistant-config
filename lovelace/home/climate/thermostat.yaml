@@ -163,6 +163,100 @@ card:
               name: false
             "off":
               name: false
+    # airco (Bedroom) – header
+    - type: custom:simple-thermostat
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            padding-bottom: 0px !important;
+          }
+          ha-card header{
+            padding-bottom: 0px !important;
+          }
+          ha-card section.body{
+            display: none;
+          }
+      entity: climate.tado_smart_ac_control_bedroom
+      hide:
+        setpoint: true
+        state: true
+        temperature: true
+      control: false
+      header:
+        name: airco – Bedroom
+        toggle:
+          entity: input_boolean.airco_active
+        icon:
+          idle: mdi:snowflake-off
+          cooling: mdi:snowflake
+        faults:
+          - entity: binary_sensor.tado_bedroom_ac_open_window
+            icon: mdi:window-closed
+            hide_inactive: true
+    # airco (Bedroom) – temperature control
+    - type: conditional
+      conditions:
+        - entity: climate.tado_smart_ac_control_bedroom
+          state: cool
+      card:
+        type: custom:simple-thermostat
+        card_mod:
+          style: |
+            ha-card {
+              border: 0px;
+              box-shadow: unset;
+              padding-bottom: 0px !important;
+            }
+        entity: climate.tado_smart_ac_control_bedroom
+        step_size: 1
+        decimals: 0
+        header: false
+        layout:
+          step: row
+        hide:
+          state: true
+          temperature: true
+        control: false
+    # airco (Bedroom) – operation mode
+    - type: conditional
+      conditions:
+        - entity: !secret tado_wr2_connection_state
+          state: "on"
+      card:
+        type: custom:simple-thermostat
+        card_mod:
+          style: |
+            ha-card{
+              border: 0px;
+              box-shadow: unset;
+              --cool-color: var(--primary-color) !important;
+            }
+            ha-card section.body{
+              display: none;
+            }
+        entity: climate.tado_bedroom_ac
+        header: false
+        hide:
+          setpoint: true
+          temperature: true
+          state: true
+        control:
+          hvac:
+            auto:
+              name: false
+            cool:
+              name: false
+            "off":
+              name: false
+            heat: false
+            heat_cool: false
+            dry:
+              name: false
+            fan_only: false
+          swing:
+            _hide_when_off: true
     # airco (Attic) – header
     - type: custom:simple-thermostat
       card_mod:
@@ -186,8 +280,6 @@ card:
       control: false
       header:
         name: airco – Attic
-        toggle:
-          entity: input_boolean.airco_active
         icon:
           idle: mdi:snowflake-off
           cooling: mdi:snowflake
@@ -251,7 +343,8 @@ card:
             "off":
               name: false
             heat_cool: false
-            dry: false
+            dry:
+              name: false
             fan_only: false
           swing:
             _hide_when_off: true
