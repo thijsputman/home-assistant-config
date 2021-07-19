@@ -1,9 +1,12 @@
 # DSMR (Dutch Slimme Meter Requirements)
 
-- platform: dsmr
-  host: pi0-dsmr.sgraastra
-  port: 2001
-  dsmr_version: 5
+- platform: derivative
+  name: Hourly Gas Consumption
+  round: 3
+  source: sensor.gas_consumption
+  unit_time: h
+  unit: m³/h
+  time_window: "01:00:00"
 
 - platform: template
   sensors:

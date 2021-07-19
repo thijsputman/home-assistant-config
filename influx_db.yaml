@@ -11,7 +11,8 @@ default_measurement: units
 include:
   entities:
     - sensor.power_consumption
-    - sensor.hourly_gas_consumption
+    - sensor.gas_consumption # cumulative
+    - sensor.hourly_gas_consumption # computed; prefer "gas_consumption"
     - group.family # occupancy
     - sensor.time_of_day
     # WeeWX

@@ -13,9 +13,6 @@ recorder:
   db_url: sqlite:////nvme/home-assistant_v2.db
   exclude:
     entities:
-      - sensor.daily_gas
-      # N.B. The "sensor.daily_energy" should *not* be excluded; it is required
-      # to graph the daily cumulative energy usage over time...
       - sensor.monthly_gas
       - sensor.monthly_energy
       - sensor.ups_nominal_real_power

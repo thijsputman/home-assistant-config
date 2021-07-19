@@ -11,3 +11,11 @@
   (resolved 1-5-2021 @ 19:30 CET)
 - **4-5-2021 17:30 CET** – the value for `sensor.power_lights_all` now also
   includes the stand-by consumption of all Zigbee bulbs
+- **14-7-2021 16:00 CET** – added `sensor.gas_consumption` which should be
+  preferred over the (still present) `sensor.hourly_gas_consumption` sensor.
+  Home Assistant 2021.7
+  [removed the hourly gas consumption reading from the DSMR integration](https://github.com/home-assistant/core/pull/52147);
+  it was reintroduced using the Derivative integration. Until 19-7-2021 @ 16:00
+  CET the values were computed differently (higher derivative over a shorter
+  timespan) compared to the values as previously computed by the DSMR
+  integration.

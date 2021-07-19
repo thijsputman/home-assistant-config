@@ -47,6 +47,7 @@ cards:
     name: Daily power usage (past 10 days)
     hour24: true
     lower_bound: 0
+    aggregate_func: max
     decimals: 2
     cache: true
     show:
@@ -54,7 +55,6 @@ cards:
       labels: true
     entities:
       - entity: sensor.daily_energy
-        aggregate_func: delta
         color: thistle
         name: Energy consumption
   - type: horizontal-stack

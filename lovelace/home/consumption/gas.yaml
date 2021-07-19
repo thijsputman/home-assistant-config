@@ -49,7 +49,7 @@ cards:
     name: Daily gas usage (past 10 days)
     hour24: true
     lower_bound: 0
-    aggregate_func: delta
+    aggregate_func: max
     decimals: 2
     cache: true
     show:
@@ -57,11 +57,9 @@ cards:
       labels: true
     entities:
       - entity: sensor.daily_gas
-        show_graph: false
-        unit: m³
-      - entity: sensor.gas_consumption
         unit: m³
         color: thistle
+        name: Gas consumption
   - type: horizontal-stack
     cards:
       - type: custom:mod-card
