@@ -138,6 +138,7 @@ views:
           - !include home/consumption/appliances/washing_machine.yaml
           - !include home/consumption/appliances/dryer.yaml
           - !include home/consumption/appliances/airco_attic.yaml
+          - !include home/consumption/appliances/airco_bedroom.yaml
           - !include home/consumption/appliances/heater_shed.yaml
         columns: 2
         square: false

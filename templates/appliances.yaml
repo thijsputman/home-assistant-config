@@ -80,6 +80,29 @@
                 states('input_number.rate_energy_peak')|float)
             ) | round(2)
           }}
+    # Airco (Bedroom)
+    - name: Monthly costs (Airco – Bedroom)
+      unique_id: c7aad2d5-7536-4143-82bb-2b2fc62a86f4
+      unit_of_measurement: €
+      # Runs all-day round, use average of the two rates to approximate costs
+      state: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_airco_bedroom')|float *
+              (states('input_number.rate_energy_peak')|float +
+              states('input_number.rate_energy_offpeak')|float) / 2)
+          ) | round(2)
+        }}
+      attributes:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_airco_bedroom',
+                  'last_period')|float *
+                (states('input_number.rate_energy_peak')|float +
+                states('input_number.rate_energy_offpeak')|float) / 2)
+            ) | round(2)
+          }}
 - binary_sensor:
     # Television (i.e. Multimedia hub)
     - name: Television
@@ -107,6 +130,20 @@
         }}
       state: >-
         {%- if states('sensor.power_sonair_combined')|int > 0 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
+    # Airco (Bedroom)
+    - name: Airco (Bedroom)
+      unique_id: d315b0b3-e39d-46ff-a10c-5be1c5c462bc
+      device_class: power
+      icon: mdi:hvac
+      availability: >-
+        {{ states('sensor.power_117') not in ['unknown', 'unavailable'] }}
+      # Idle/standby consumption is below 5 Watt
+      state: >-
+        {%- if states('sensor.power_117')|float > 5 -%}
           on
         {%- else -%}
           off
