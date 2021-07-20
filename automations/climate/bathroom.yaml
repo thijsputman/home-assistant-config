@@ -1,9 +1,9 @@
-- alias: 💨 | 🤖 Bathroom fan on (Δ💧 > 3%/min)
+- alias: 💨 | 🤖 Bathroom fan on (Δ💧 > 1.5%/min)
   id: 80c4a53f-223b-4dd9-95f5-b29c51ed6ffa
   trigger:
     - platform: numeric_state
       entity_id: sensor.humidity_change_bathroom
-      above: 3.0
+      above: 1.5
   condition: []
   action:
     # Only act if humidity in the Bathroom is too high (and also prevent errant
@@ -26,7 +26,7 @@
     - service: light.turn_on
       data:
         entity_id: light.smart_relay_1
-- alias: 💨 | 🤖 Bathroom fan off (Δ💧 < 0.5%/min; 20 minute rundown)
+- alias: 💨 | 🤖 Bathroom fan off (Δ💧 < 0.5%/min; 40 minute rundown)
   id: 150bbec5-df6a-4d4b-9452-262f24ca47a7
   trigger:
     - platform: numeric_state
