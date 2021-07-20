@@ -257,6 +257,19 @@ card:
             fan_only: false
           swing:
             _hide_when_off: true
+          fan:
+            auto: false
+            high:
+              name: false
+              icon: mdi:signal-cellular-3
+            medium:
+              name: false
+              icon: mdi:signal-cellular-2
+            low:
+              name: false
+              icon: mdi:signal-cellular-1
+            _name: Fan speed
+            _hide_when_off: true
     # airco (Attic) – header
     - type: custom:simple-thermostat
       card_mod:
