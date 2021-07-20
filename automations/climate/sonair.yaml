@@ -1,0 +1,208 @@
+- alias: 💨 | 💤 Sonair – Living room increase airflow (everyone asleep)
+  id: 9a1829d1-11f8-4487-93b3-b5e7288a3f31
+  trigger:
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: fan.sonair_living_room
+      state: "on"
+  action:
+    - choose:
+        # If the outside temperature is within an acceptable range (i.e. it
+        # won't make it too hot nor too cold inside) increase to 70 m³/h
+        - conditions:
+            - condition: numeric_state
+              entity_id: sensor.weewx_outside_temperature
+              above: 10
+              below: 22
+          sequence:
+            - service: fan.set_percentage
+              data:
+                percentage: 60
+              target:
+                entity_id: fan.sonair_living_room
+        # If it's freezing outside don't increase airflow (30 m³/h is more or
+        # less equal to what the CO₂-controlled mode pulls in by default)
+        - conditions:
+            - condition: numeric_state
+              entity_id: sensor.weewx_outside_temperature
+              below: 0
+          sequence:
+            - service: fan.set_percentage
+              data:
+                percentage: 20
+              target:
+                entity_id: fan.sonair_living_room
+      # In all other cases increase set to 50 m³/h
+      default:
+        - service: fan.set_percentage
+          data:
+            percentage: 40
+          target:
+            entity_id: fan.sonair_living_room
+  mode: single
+- alias: 💨 | 💤 Sonair – Living room decrease airflow (everyone awake)
+  id: d7e3c910-09f3-405d-855d-58e9c5564a1b
+  trigger:
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
+  condition:
+    - condition: state
+      entity_id: fan.sonair_living_room
+      state: "on"
+  action:
+    - choose:
+        # If it's cold outside immediately switch to CO₂-controlled mode to not
+        # ventilate (and cool down the room) more than necessary
+        - conditions:
+            - condition: numeric_state
+              entity_id: sensor.weewx_outside_temperature
+              below: 4
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.co2_sensor_sonair_living_room
+      # Otherwise switch to 50 m³/h
+      default:
+        - service: fan.set_percentage
+          data:
+            percentage: 40
+          target:
+            entity_id: fan.sonair_living_room
+  mode: single
+# The Sonair is relatively silent but as it gets more quite outside, the 40%
+# speed setting becomes audible. Switching to CO₂-controlled mode reduces
+# ventilation (and thus noise).
+- alias: 💨 | ⏰ Sonair – Living room CO₂-controlled (daily at 20:00)
+  id: 1fe024b6-8f8b-4d34-b19b-62c4052fadf2
+  trigger:
+    - platform: time
+      at: "20:00:00"
+  condition:
+    - condition: state
+      entity_id: fan.sonair_living_room
+      state: "on"
+    - condition: state
+      entity_id: switch.co2_sensor_sonair_living_room
+      state: "off"
+    # If the fan speed is above 40% it has most likely been manually overridden;
+    # in that case we don't make any further changes...
+    - condition: not
+      conditions:
+        - condition: numeric_state
+          entity_id: fan.sonair_living_room
+          attribute: percentage
+          above: 40
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.co2_sensor_sonair_living_room
+  mode: single
+- alias: 💨 | ⏰ Sonair – Guestroom restore airflow (everyone awake)
+  id: fc5a63a2-f71d-4320-8f98-d61341cba37e
+  trigger:
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
+  condition:
+    - condition: state
+      entity_id: fan.sonair_guestroom
+      state: "on"
+  action:
+    - choose:
+        # If it's cold outside remain in CO₂-controlled mode to not ventilate
+        # (and cool down the room) more than necessary
+        - conditions:
+            - condition: numeric_state
+              entity_id: sensor.weewx_outside_temperature
+              below: 4
+          sequence:
+            - service: switch.turn_on
+              target:
+                entity_id: switch.co2_sensor_sonair_guestroom
+      # Otherwise switch to 50 m³/h
+      default:
+        - service: fan.set_percentage
+          data:
+            percentage: 40
+          target:
+            entity_id: fan.sonair_guestroom
+  mode: single
+- alias: 💨 | 💤/⏰ Sonair – Guestroom CO₂-controlled (everyone asleep / daily at 23:00)
+  id: cefa0b39-73b1-47cc-b781-0604d5f23fd6
+  trigger:
+    - platform: time
+      at: "23:00:00"
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: fan.sonair_guestroom
+      state: "on"
+    - condition: state
+      entity_id: switch.co2_sensor_sonair_guestroom
+      state: "off"
+  action:
+    - service: switch.turn_on
+      target:
+        entity_id: switch.co2_sensor_sonair_guestroom
+- alias: 💨 | ⏰ Sonair – Wardrobe limit airflow (🌡️ < 0ºC)
+  id: f7bbe56e-fef4-4a79-9e94-5ec3d861fc3b
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.weewx_outside_temperature
+      below: 0
+      for: "01:00:00"
+    # Trigger on Home Assistant (re)start and automations reloaded to prevent
+    # missing the "held state"
+    - platform: homeassistant
+      event: start
+    - platform: event
+      event_type: automation_reloaded
+  condition:
+    - condition: state
+      entity_id: fan.sonair_wardrobe
+      state: "on"
+    - condition: numeric_state
+      entity_id: sensor.weewx_outside_temperature
+      below: 0
+  action:
+    - service: fan.set_percentage
+      data:
+        percentage: 20
+      target:
+        entity_id: fan.sonair_wardrobe
+- alias: 💨 | ⏰ Sonair – Wardrobe restore airflow (🌡️ > 0ºC)
+  id: e97b3037-3e1e-4933-9257-3c1fe74c1295
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.weewx_outside_temperature
+      above: 0
+      for: "01:00:00"
+    # Trigger on Home Assistant (re)start and automations reloaded to prevent
+    # missing the "held state"
+    - platform: homeassistant
+      event: start
+    - platform: event
+      event_type: automation_reloaded
+  condition:
+    - condition: state
+      entity_id: fan.sonair_wardrobe
+      state: "on"
+    - condition: numeric_state
+      entity_id: sensor.weewx_outside_temperature
+      above: 0
+  action:
+    - service: fan.set_percentage
+      data:
+        percentage: 40
+      target:
+        entity_id: fan.sonair_wardrobe
