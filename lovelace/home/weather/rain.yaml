@@ -72,7 +72,6 @@ card:
         icon: false
       entities:
         - entity: sensor.weewx_rain_day
-          name: Evapotranspiration
           unit: mm/day
           show_graph: false
           show_legend: false

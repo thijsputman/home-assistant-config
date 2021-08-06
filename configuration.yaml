@@ -42,6 +42,15 @@ history:
     entities:
       - binary_sensor.updater
 
+logger:
+  default: warning
+  filters:
+    homeassistant.helpers.entity:
+      - ^Update for sensor.9292_ov_[a-z0-9_]+ fails$
+      # These warnings are superfluous – the Neato integration itself generates
+      # critical errors in case something is truly wrong...
+      - ^Update of (sensor|switch|vacuum).neato_[a-z0-9_]+ is taking over [0-9]+ seconds$
+
 lovelace:
   mode: storage
   dashboards:

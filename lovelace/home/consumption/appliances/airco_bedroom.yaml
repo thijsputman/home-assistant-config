@@ -28,7 +28,7 @@ card:
             font-size: 1rem;
             color: var(--paper-grey-500);
           }
-      name: Airco – Attic
+      name: Airco – Bedroom
       tap_action:
         action: more-info
       entity: binary_sensor.airco_bedroom
