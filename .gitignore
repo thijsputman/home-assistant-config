@@ -3,7 +3,8 @@
 /.cloud
 /.storage
 /blueprints/*/homeassistant
-/custom_components
+/custom_components/*
+!/custom_components/README.md
 /deps
 /image
 /tts
