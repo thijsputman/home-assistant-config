@@ -48,25 +48,25 @@ sirens:
         number:
           min: 1
           max: 300
-  variables:
-    # Default to "none" (i.e. stop the sirens)
-    mode: >-
-      {%
-        if mode is defined and mode in ['select', 'lselect', 'blink', 'pulse']
-      %}
-        {{ mode }}
-      {% else %}
-        none
-      {% endif %}
-    # Instead of the maximum of 5 minutes, default to 60 seconds
-    ontime: >-
-      {% if ontime is defined and ontime >= 1 and ontime <= 300 %}
-        {{ ontime | int }}
-      {% else %}
-        60
-      {% endif %}
   sequence:
     - variables:
+        # Default to "none" (i.e. stop the sirens)
+        mode: >-
+          {%
+            if mode is defined and mode in
+              ['select', 'lselect', 'blink', 'pulse']
+          %}
+            {{ mode }}
+          {% else %}
+            none
+          {% endif %}
+        # Instead of the maximum of 5 minutes, default to 60 seconds
+        ontime: >-
+          {% if ontime is defined and ontime >= 1 and ontime <= 300 %}
+            {{ ontime | int }}
+          {% else %}
+            60
+          {% endif %}
         repeat: >-
           {% if mode == 'pulse' %}
             {{ (ontime / 15) | round(0, 'ceil') }}
@@ -97,14 +97,12 @@ sirens:
               field: /state
               data: >-
                 {{ json_payload }}
-          # 🚧 Heiman-unit broken – temporarily disabled 🚧
-          # - service: deconz.configure
-          #   data:
-          #     entity: switch.warning_device_17
-          #     field: /state
-          #     data: >-
-          #       {{ json_payload }}
-          #
+          - service: deconz.configure
+            data:
+              entity: switch.warning_device_4
+              field: /state
+              data: >-
+                {{ json_payload }}
           # Delay script for the duration of the siren sounding – this to makes
           # the "on"-state of the script (roughly) reflect the time during which
           # the siren/alarm is on
