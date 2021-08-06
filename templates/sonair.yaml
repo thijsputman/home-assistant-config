@@ -21,17 +21,17 @@
         {% set current = state_attr('sensor.power_113', 'current') | int(0) %}
         {% set voltage = state_attr('sensor.power_113', 'voltage') | int(0) %}
         {% set power_x = current/1000 * voltage %}
-        {% if power >= 15 %}
+        {% if power >= 8 %}
           {# 150 m³/h #}
           100
-        {% elif power >= 7 %}
+        {% elif power >= 4 %}
           {# 105 m³/h #}
           80
-        {% elif power >= 2 %}
-          {% if power_x >= 3.0 %}
+        {% elif power >= 1 %}
+          {% if power_x >= 2.5 %}
             {# 70 m³/h #}
             60
-          {% elif power_x >= 2.0 %}
+          {% elif power_x >= 1.95 %}
             {# 50 m³/h #}
             40
           {% else %}
@@ -51,17 +51,17 @@
         {% set current = state_attr('sensor.power_115', 'current') | int(0) %}
         {% set voltage = state_attr('sensor.power_115', 'voltage') | int(0) %}
         {% set power_x = current/1000 * voltage %}
-        {% if power >= 15 %}
+        {% if power >= 8 %}
           {# 150 m³/h #}
           100
-        {% elif power >= 7 %}
+        {% elif power >= 4 %}
           {# 105 m³/h #}
           80
-        {% elif power >= 2 %}
-          {% if power_x >= 3.0 %}
+        {% elif power >= 1 %}
+          {% if power_x >= 2.5 %}
             {# 70 m³/h #}
             60
-          {% elif power_x >= 2.0 %}
+          {% elif power_x >= 1.95 %}
             {# 50 m³/h #}
             40
           {% else %}
@@ -81,17 +81,17 @@
         {% set current = state_attr('sensor.power_110', 'current') | int(0) %}
         {% set voltage = state_attr('sensor.power_110', 'voltage') | int(0) %}
         {% set power_x = current/1000 * voltage %}
-        {% if power >= 15 %}
+        {% if power >= 8 %}
           {# 150 m³/h #}
           100
-        {% elif power >= 7 %}
+        {% elif power >= 4 %}
           {# 105 m³/h #}
           80
-        {% elif power >= 2 %}
-          {% if power_x >= 3.0 %}
+        {% elif power >= 1 %}
+          {% if power_x >= 2.5 %}
             {# 70 m³/h #}
             60
-          {% elif power_x >= 2.0 %}
+          {% elif power_x >= 1.95 %}
             {# 50 m³/h #}
             40
           {% else %}

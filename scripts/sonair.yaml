@@ -28,7 +28,8 @@ sonair_turn_on:
       data:
         device: sonair
         command: mode_2
-  mode: single
+  mode: parallel
+  max: 5
   icon: mdi:air-filter
 sonair_turn_off:
   alias: Sonair – turn off [internal]
@@ -42,7 +43,8 @@ sonair_turn_off:
       target:
         entity_id: >-
           {{ switch_entity_id }}
-  mode: single
+  mode: parallel
+  max: 5
   icon: mdi:air-filter
 sonair_set_percentage:
   alias: Sonair – set percentage [internal]
@@ -81,7 +83,8 @@ sonair_set_percentage:
               {% elif percentage == 20 %}
                 mode_2
               {% endif %}
-  mode: single
+  mode: parallel
+  max: 5
   icon: mdi:air-filter
 sonair_co2_turn_on:
   alias: Sonair – turn on CO₂-sensor [internal]
@@ -105,7 +108,8 @@ sonair_co2_turn_on:
         device: sonair
         # Speed/mode 5 enables the CO₂-sensor
         command: mode_5
-  mode: single
+  mode: parallel
+  max: 5
   icon: mdi:molecule-co2
 sonair_co2_turn_off:
   alias: Sonair – turn off CO₂-sensor [internal]
@@ -127,5 +131,6 @@ sonair_co2_turn_off:
       data:
         device: sonair
         command: mode_2
-  mode: single
+  mode: parallel
+  max: 5
   icon: mdi:molecule-co2
