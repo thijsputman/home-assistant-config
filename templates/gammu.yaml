@@ -1,0 +1,26 @@
+# Using a prepaid Vodafone NL SIM – after each transaction Vodafone sends an SMS
+# with the remaining credit. This is read by the below template sensor so
+# warnings can be issued if/when the credit should be topped up...
+- trigger:
+    - platform: template
+      value_template: >-
+        {{
+          states('sensor.gammu_received_message') is
+            search('Je tegoed is nu [0-9]+\.[0-9]+ euro.', ignorecase=False)
+          and states('sensor.gammu_received_message') is
+            match('<Vodafone>', ignorecase=False)
+        }}
+  sensor:
+    name: Gammu credit (Vodafone)
+    unique_id: da953887-8930-4701-9d82-621950eb9a44
+    icon: mdi:cellphone-message
+    unit_of_measurement: €
+    state: >-
+      {{
+        states('sensor.gammu_received_message') |
+          regex_findall_index(
+            find='Je tegoed is nu ([0-9]+\.[0-9]+) euro.',
+            index=0,
+            ignorecase=False
+          ) | round (2)
+      }}

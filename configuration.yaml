@@ -25,6 +25,8 @@ recorder:
       - sensor.9292_*
       - sensor.pi_hole_ads_*
       - sensor.ups_battery_run*
+      - sensor.gammu_sent_*
+      - sensor.gammu_received_*
       # Utility Meter – DSMR
       - sensor.daily_energy_*
       - sensor.monthly_energy_*
