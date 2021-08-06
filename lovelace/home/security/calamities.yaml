@@ -1,0 +1,9 @@
+type: glance
+entities:
+  - entity: binary_sensor.fire_81
+    name: Smoke
+  - entity: binary_sensor.water_82
+    name: Kitchen
+  - entity: binary_sensor.water_59
+    name: Attic
+show_state: false

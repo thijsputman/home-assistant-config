@@ -1,0 +1,14 @@
+type: entities
+entities:
+  - entity: sensor.9292_ov_einhoven_centraal
+    name: Eindhoven Centraal
+    icon: mdi:bus-marker
+  - entity: sensor.9292_ov_einhoven_centraal_future_1
+    icon: mdi:bus
+    name: Eindhoven Centraal
+  - entity: sensor.9292_ov_einhoven_airport
+    name: Eindhoven Airport
+    icon: mdi:bus-marker
+  - entity: sensor.9292_ov_einhoven_airport_future_1
+    icon: mdi:bus
+    name: Eindhoven Airport
