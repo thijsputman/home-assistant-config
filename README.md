@@ -28,9 +28,10 @@ chmod +x .git/hooks/pre-commit
 ## Further Reading
 
 - [`📄 TODO`](./TODO)
-- [`📁 lovelace/`](./lovelace/README.md)
-- [`📁 extras/`](./extras/README.md)
+- [`📁 custom_components/`](./custom_components/README.md)
 - [`📁 docs/`](./docs/README.md)
+- [`📁 extras/`](./extras/README.md)
+- [`📁 lovelace/`](./lovelace/README.md)
 
 ## License
 

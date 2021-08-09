@@ -9,7 +9,7 @@ if [ -n "$files" ] ; then
 
   # Read all staged changes into the $MAPFILE array
   # Caveat: This lints the on-disk files (i.e. unstaged changes in these files
-  # are also linted) – the sheer simplicity of the below solution outways this
+  # are also linted) – the sheer simplicity of the below solution outweighs this
   # minor drawback...
   readarray -t <<< "$files"
   npx prettier --check --ignore-unknown "${MAPFILE[@]}"
