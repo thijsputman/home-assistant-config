@@ -1,0 +1,56 @@
+- alias: 📱 | ✉️ Ping? Pong! (received "ping?")
+  id: 249b657c-fd79-4ba4-b1a8-1040df15eb39
+  trigger:
+    - platform: state
+      entity_id: sensor.gammu_received_authenticated_command
+  condition:
+    # Using a template condition (instead of a static state) to allow greater
+    # flexibility in matching the command. Cannot use the template condition as
+    # trigger as that would prevent triggering if the same command is received
+    # again (which is a valid use-case).
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.gammu_received_authenticated_command')
+            is match('^ping\?( |$)')
+        }}
+  action:
+    - service: script.sms_notification
+      data:
+        phoneNumber: >-
+          {{
+            state_attr('sensor.gammu_received_authenticated_command', 'number')
+          }}
+        message: 🏓 Pong!
+- alias: 📱 | ✉️ Status update (received "status")
+  id: a8a8de72-902b-4ab1-8c1b-ce4ad1a1dae5
+  trigger:
+    - platform: state
+      entity_id: sensor.gammu_received_authenticated_command
+  condition:
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.gammu_received_authenticated_command')
+            is match('^status( |$)')
+        }}
+  action:
+    - service: script.sms_notification
+      data:
+        phoneNumber: >-
+          {{
+            state_attr('sensor.gammu_received_authenticated_command', 'number')
+          }}
+        message: >-
+          {% set result = namespace(sensors=[]) %}
+          {% for state in states.binary_sensor |
+            selectattr('attributes.device_class', 'in',
+              ['smoke', 'moisture', 'motion', 'opening']
+            )
+          %}
+            {% if state.state == 'on' %}
+              {% set result.sensors = result.sensors + [state.name] %}
+            {% endif %}
+          {% endfor %}
+          🛰️ Active binary sensors:
+          \n\n◾ {{ result.sensors | join('\n◾ ') }}

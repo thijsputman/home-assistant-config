@@ -319,3 +319,95 @@ persistent_notification:
   mode: parallel
   max: 50
   icon: mdi:message-outline
+sms_notification:
+  alias: SMS notification
+  description: >-
+    Send an SMS notification to one or more mobile numbers.
+  fields:
+    targetDevices:
+      description: Predefined groups of mobile numbers to target
+      required: false
+      default: all
+      selector:
+        select:
+          options:
+            - all # All devices
+            - my # Only my personal device(s)
+    phoneNumber:
+      description: >-
+        Send to the provided phone number instead (overrides targetDevices).
+        Only accepts Dutch mobile phone numbers.
+      required: false
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    message:
+      required: true
+      selector:
+        text:
+          multiline: true
+  variables:
+    numbers_all: !secret gammu_numbers_all
+    numbers_my: !secret gammu_numbers_my
+    numbers: >-
+      {% if phoneNumber is defined %}
+        {% if phoneNumber is search('^<\+316[0-9]{8}>$') %}
+          {{
+            [ phoneNumber | regex_findall_index('^<(\+316[0-9]{8})>$') ]
+          }}
+        {% else %}
+          {{ [] }}
+        {% endif %}
+      {% elif targetDevices == 'my' %}
+        {{ numbers_my }}
+      {% else %}
+        {{ numbers_all }}
+      {% endif %}
+  sequence:
+    - condition: template
+      value_template: >-
+        {{ numbers | length > 0 }}
+    - service: mqtt.publish
+      data:
+        topic: gammu/send
+        payload_template: >-
+          {#
+            There is a bit of trickery here to ensure the phone numbers survive
+            intact: By concatenating with double-quotes _inside_ the Jinja
+            template statement we prevent the phone number (+316...) from being
+            interpreted as an integer (316...).
+          #}
+          {
+            "number": {{ '"' ~ numbers | join(';') ~ '"' }},
+            "text": "{{ message }}"
+          }
+    - wait_for_trigger:
+        - platform: state
+          # Cannot directly check the state of the success-attribute as it is
+          # most likely already/still "true" from a previous send operation...
+          entity_id: sensor.gammu_sent_message
+      timeout: 60
+      continue_on_timeout: true
+    - choose:
+        - conditions:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: sensor.gammu_sent_message
+                  attribute: success
+                  state: false
+                # If no result is received within 60 seconds, assume failure
+                - condition: template
+                  value_template: >-
+                    {{ wait.trigger is none }}
+          # For now just log the failure; I'm not sure how useful it is to retry
+          # sending the message...
+          sequence:
+            - service: system_log.write
+              data:
+                level: warning
+                message: >-
+                  Failed to send SMS message "{{ message }}" to
+                    {{ '"' ~ numbers | join('; ') ~ '"' }}.
+      # Success – NOP
+      default: [] # yamllint disable-line rule:brackets
+  mode: queued

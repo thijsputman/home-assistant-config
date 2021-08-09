@@ -18,6 +18,7 @@ recorder:
       - sensor.ups_nominal_real_power
       - sensor.power_86 # Raw measurement (see *_actual)
       - sensor.power_88 # ↑
+      - sensor.gammu_received_unprocessed_message
     entity_globs:
       - sensor.dd_wrt_*_total_octets
       - sensor.dd_wrt_*_bps
@@ -25,8 +26,6 @@ recorder:
       - sensor.9292_*
       - sensor.pi_hole_ads_*
       - sensor.ups_battery_run*
-      - sensor.gammu_sent_*
-      - sensor.gammu_received_*
       # Utility Meter – DSMR
       - sensor.daily_energy_*
       - sensor.monthly_energy_*

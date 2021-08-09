@@ -1,14 +1,119 @@
+# Received and sent messages – using trigger-based template sensors as we update
+# both state and attributes using the same MQTT topic (which is not possible
+# with a regular MQTT sensor).
+- trigger:
+    - platform: mqtt
+      topic: gammu/received
+  sensor:
+    name: Gammu received (message)
+    unique_id: 773a0ad1-5f99-4271-8711-cd5faf2b6515
+    icon: mdi:message-arrow-left-outline
+    attributes:
+      # Wrap phone number in "<...>" to prevent issues with them getting
+      # interpreted as an integers
+      number: >-
+        <{{ trigger.payload_json.number }}>
+      datetime: >-
+        {{ trigger.payload_json.datetime | as_datetime }}
+    state: >-
+      {# "state" Maximum length is 255 characters #}
+      {{
+        trigger.payload_json.text |
+          truncate(250, killwords=False, end='...', leeway=0)
+      }}
+- trigger:
+    - platform: mqtt
+      topic: gammu/sent
+  sensor:
+    name: Gammu sent (message)
+    unique_id: dbcbbc71-433d-4d48-a3b6-d9e38da373c6
+    icon: mdi:message-arrow-right-outline
+    attributes:
+      number: >-
+        <{{ trigger.payload_json.number }}>
+      datetime: >-
+        {{ trigger.payload_json.datetime | as_datetime }}
+      success: >-
+        {% if trigger.payload_json.result == 'success' %}
+          {{ true }}
+        {% else %}
+          {{ false }}
+        {% endif %}
+    state: >-
+      {{
+        trigger.payload_json.text |
+          truncate(250, killwords=False, end='...', leeway=0)
+      }}
+# Track the number of messages received over a 10-minute interval
+- trigger:
+    - platform: state
+      entity_id: sensor.gammu_received_message
+    - platform: time_pattern
+      minutes: /10
+      id: reset
+  sensor:
+    name: Gammu received (message count)
+    unique_id: 24aa5d78-0f5a-4829-b3a3-baac0ae15e3b
+    icon: mdi:forum
+    unit_of_measurement: msg
+    state: >-
+      {% if trigger.id == 'reset' %}
+        {{ 0 }}
+      {% else %}
+        {{
+          states('sensor.gammu_received_message_count')|int + 1
+        }}
+      {% endif %}
+# The below sensors use template triggers to trigger on specific message
+# contents. This works nicely, but has one major caveat: If subsequent messages
+# match the same template trigger, the sensor won't trigger (as the template
+# remains "true"; it needs to transition from "false" to "true" to trigger).
+# To achieve this, we store the incoming message in a pre-processing sensor
+# that – once a message is processed – returns to "unavailable" and as such
+# ensures all template triggers are set to "false".
+- trigger:
+    - platform: state
+      entity_id: sensor.gammu_received_message
+      id: incoming
+    # List all (mutually exclusive) additional processing triggers – ensure they
+    # don't trigger on "unavailable" or we'll end up in live-lock...
+    - platform: state
+      entity_id: sensor.gammu_credit_vodafone
+    - platform: state
+      entity_id: sensor.gammu_received_authenticated_command
+  sensor:
+    name: Gammu received (unprocessed message)
+    unique_id: 389c514a-d57c-4958-a727-3033e283ffb9
+    icon: mdi:message-settings-outline
+    availability: >-
+      {{ trigger.id == 'incoming' }}
+    attributes:
+      number: >-
+        {% if trigger.id == 'incoming' %}
+          {{ state_attr('sensor.gammu_received_message', 'number') }}
+        {% endif %}
+      datetime: >-
+        {% if trigger.id == 'incoming' %}
+          {{ state_attr('sensor.gammu_received_message', 'datetime') }}
+        {% endif %}
+    state: >-
+      {% if trigger.id == 'incoming' %}
+        {{ states('sensor.gammu_received_message') }}
+      {% else %}
+        unavailable
+      {% endif %}
 # Using a prepaid Vodafone NL SIM – after each transaction Vodafone sends an SMS
-# with the remaining credit. This is read by the below template sensor so
-# warnings can be issued if/when the credit should be topped up...
+# with the remaining credit (and a slightly differently worded message when the
+# credit is topped up 🤐). This is read by the below template sensor so warnings
+# can be issued when the credit should be topped up...
 - trigger:
     - platform: template
       value_template: >-
         {{
-          states('sensor.gammu_received_message') is
-            search('Je tegoed is nu [0-9]+\.[0-9]+ euro.', ignorecase=False)
-          and states('sensor.gammu_received_message') is
-            match('<Vodafone>', ignorecase=False)
+          states('sensor.gammu_received_unprocessed_message') is
+            search('Je tegoed is nu (?:Euro |)[0-9]+[.,]{1}[0-9]+(?: euro|)\.')
+          and state_attr('sensor.gammu_received_unprocessed_message', 'number')
+            == '<Vodafone>'
         }}
   sensor:
     name: Gammu credit (Vodafone)
@@ -16,11 +121,56 @@
     icon: mdi:cellphone-message
     unit_of_measurement: €
     state: >-
+      {#
+        Somehow Home Assistant/Jinja interprets the comma ensures all as
+        indicating the result is a list – replace comma with dot to ensure we
+        end up with the correct number...
+      #}
       {{
-        states('sensor.gammu_received_message') |
+        states('sensor.gammu_received_unprocessed_message') |
           regex_findall_index(
-            find='Je tegoed is nu ([0-9]+\.[0-9]+) euro.',
-            index=0,
-            ignorecase=False
-          ) | round (2)
+            'Je tegoed is nu (?:Euro |)([0-9]+[.,]{1}[0-9]+)(?: euro|)\.') |
+            replace(',', '.') | round (2)
       }}
+# Commands are accepted via SMS. To prevent abuse, the commands have to come
+# from an authorised phone number _and_ contain a pre-shared secret. This sensor
+# only triggers when these conditions are met.
+# Additionally, only 10 messages per 10-minute time interval are accepted to
+# mitigate the risk of brute-forcing the phone numbers and/or the pre-shared
+# secret (at the cost of a denial-of-service attack). If this threshold is
+# exceeded, the sensor becomes unavailable.
+- trigger:
+    - platform: template
+      # See "📄 ./secrets_empty.yaml" for example logic
+      value_template: !secret gammu_eval
+  sensor:
+    name: Gammu received (authenticated command)
+    unique_id: 923a6400-f058-405f-8139-423e2b449830
+    icon: mdi:message-text-lock-outline
+    availability: >-
+      {{
+        states('sensor.gammu_received_message_count')|int <= 10
+      }}
+    attributes:
+      number: >-
+        {% if states('sensor.gammu_received_message_count')|int <= 10 %}
+          {{
+            state_attr('sensor.gammu_received_unprocessed_message', 'number')
+          }}
+        {% endif %}
+      datetime: >-
+        {% if states('sensor.gammu_received_message_count')|int <= 10 %}
+          {{
+            state_attr('sensor.gammu_received_unprocessed_message', 'datetime')
+          }}
+        {% endif %}
+    state: >-
+      {% if states('sensor.gammu_received_message_count')|int <= 10 %}
+        {# Remove secret; trim and lowercase – eases further processing #}
+        {{
+          states('sensor.gammu_received_unprocessed_message') |
+            regex_replace('#.*?#', '') | trim | lower
+        }}
+      {% else %}
+        unavailable
+      {% endif %}

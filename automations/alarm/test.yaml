@@ -1,4 +1,4 @@
-- alias: 🚨 | 📣 Test the sirens (first Monday at 12:00)
+- alias: 🚨 | 📣 Test the sirens (1st Monday of the month at 12:00)
   id: 6125cbba-0fd0-448a-917e-10f00402c32f
   description: ""
   trigger:
@@ -24,10 +24,13 @@
           tag: siren_test
           title: 📣 Home alarm siren will sound at 12:00:30
           message: >-
-            To test the sirens, the alarms will sound for 1 second followed by
-            a 10 second delay and then sound for 2 seconds. After this, all
-            alarm devices' lights will blink for 3 minutes to allow for a visual
-            inspection...
+            <p>To test the sirens, they will sound for 1 second followed by a 10
+            second delay and then sound for 2 seconds. After this, all alarm
+            devices' lights will blink for 3 minutes to allow for a visual
+            inspection...</p>
+            <p>Additionally, directly after the sirens stop sounding you should
+            receive an SMS message from Home Assistant allowing you to validate
+            the SMS notification service is also working as intended...</p>
     # Wait for 10 minutes and 30 seconds – this ensures our test coincides with
     # the monthly test of the public alarm sirens in The Netherlands. These
     # sirens are tested every first Monday of the month at 12:00 for 1 minute
@@ -55,6 +58,18 @@
       data:
         mode: none
     - delay: 2
+    # Send SMS without blocking script's execution
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          targetDevices: all
+          message: >-
+            📱🧪 SMS notification service test!
+            \nPlease respond to this message to validate Home Assistant's SMS
+            response capability:
+            \n\n➡️✉️ #secret# ping?
     - service: script.sirens
       data:
         mode: blink
