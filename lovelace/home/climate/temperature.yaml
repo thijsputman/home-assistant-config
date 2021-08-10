@@ -1,10 +1,16 @@
 type: custom:mod-card
 card_mod:
-  style: |
-    ha-card {
-      background: var(--llh-mod-card-background);
-      box-shadow: var(--llh-mod-card-box-shadow);
-    }
+  style:
+    .: |
+      ha-card {
+        background: var(--llh-mod-card-background);
+        box-shadow: var(--llh-mod-card-box-shadow);
+      }
+    hui-vertical-stack-card$: |
+      mini-graph-card + mini-graph-card,
+      mini-graph-card + hui-weather-forecast-card{
+        margin: 0px !important;
+      }
 report_size: 2
 card:
   type: vertical-stack
@@ -123,3 +129,16 @@ card:
           show_legend: false
           y_axis: secondary
           smoothing: false
+    - type: weather-forecast
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            box-shadow: unset;
+            border-radius: 0px;
+            background-color: #D4D4D4;
+            --weather-icon-cloud-front-color: aliceblue;
+            --weather-icon-cloud-back-color: lightsteelblue;
+          }
+      entity: !secret weather_home
+      show_forecast: false

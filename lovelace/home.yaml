@@ -58,8 +58,7 @@ views:
       - type: vertical-stack
         cards:
           - !include home/climate/temperature.yaml
-          - type: weather-forecast
-            entity: !secret weather_home
+          - !include home/climate/co2.yaml
   # Lights
   - title: Lights
     path: lights

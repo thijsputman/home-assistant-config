@@ -1,0 +1,43 @@
+type: custom:mini-graph-card
+name: CO₂ density (past 48h)
+icon: mdi:molecule-co2
+hour24: true
+hours_to_show: 48
+points_per_hour: 1
+cache: true
+decimals: 0
+show:
+  labels: true
+  labels_secondary: false
+state_map:
+  - value: "off"
+  - value: "on"
+entities:
+  - entity: sensor.qingping_air_monitor_lite_bedroom_environment_co2_density
+    name: Bedroom
+    show_points: false
+    show_fill: false
+  - entity: sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+    name: Living room
+    show_points: false
+    show_fill: false
+  - entity: sensor.xiaomi_miot_environment_co2_density
+    name: Attic
+    show_points: false
+    show_fill: false
+  - color: dimgray
+    entity: sensor.time_of_day_numeric
+    name: Night
+    show_line: false
+    show_points: false
+    show_legend: false
+    y_axis: secondary
+    smoothing: false
+  - color: dimgray
+    entity: input_boolean.everyone_asleep
+    name: Night
+    show_line: false
+    show_points: false
+    show_legend: false
+    y_axis: secondary
+    smoothing: false
