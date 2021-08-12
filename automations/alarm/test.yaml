@@ -66,10 +66,10 @@
         variables:
           targetDevices: all
           message: >-
-            📱🧪 SMS notification service test!
+            🧪 SMS notification service test!
             \nPlease respond to this message to validate Home Assistant's SMS
             response capability:
-            \n\n➡️✉️ #secret# ping?
+            \n\n✉️ #secret# ping?
     - service: script.sirens
       data:
         mode: blink

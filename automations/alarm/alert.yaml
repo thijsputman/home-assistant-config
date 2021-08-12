@@ -237,6 +237,14 @@
   action:
     - service: script.turn_on
       target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            🚨 Home Alarm sounding!
+            \nThe Home Alarm is sounding – there's someone in the house!
+    - service: script.turn_on
+      target:
         entity_id: script.persistent_notification
       data:
         variables:

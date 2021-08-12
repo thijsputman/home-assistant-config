@@ -165,7 +165,7 @@
   mode: restart
 # Stop Home Assistant (mainly to prevent database corruption) if a power failure
 # appears imminent
-- alias: 🚧 | 🔋 Stop Home Assistant (UPS low power)
+- alias: 🚧 | 🔋 Stop Home Assistant (UPS 🔋 < 10%)
   id: e7dcf99d-a13d-43ed-a828-d19335c94787
   trigger:
     - platform: numeric_state
@@ -176,6 +176,15 @@
       entity_id: sensor.ups_status
       state: On Battery Battery Discharging
   action:
+    # Block on sending the SMS notification (to prevent shutting down Home
+    # Assistant before the message is send)
+    - service: script.sms_notification
+      data:
+        targetDevices: my
+        message: >-
+          🔋 UPS low power!
+          \nUPS battery level below 10%; power failure appears imminent –
+          stopping Home Assistant...
     - service: system_log.write
       data:
         level: critical

@@ -9,6 +9,15 @@
       to: "on"
   condition: []
   action:
+    # Don't block on the SMS notification
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            💧 Leak detected!
+            \n{{ trigger.to_state.attributes.friendly_name }} detected water!
     # Explicitly block any further runs of this automation while the
     # notification is up (i.e. once a notification is up, no additional
     # notifications are raised)
@@ -17,7 +26,7 @@
         group: calamity
         channel: Alert
         criticalNotification: true
-        title: Leak detected!
+        title: 💧 Leak detected!
         message: >-
           {{ trigger.to_state.attributes.friendly_name }} detected water!
   mode: single
@@ -75,6 +84,15 @@
       to: "on"
   condition: []
   action:
+    # Don't block on the SMS notification
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            🔥 Smoke detected!
+            \n{{ trigger.to_state.attributes.friendly_name }} detected smoke!
     # Explicitly block any further runs of this automation while the
     # notification is up
     - service: script.persistent_notification
@@ -83,7 +101,7 @@
         channel: Critical
         importance: high
         criticalNotification: true
-        title: Smoke detected!
+        title: 🔥 Smoke detected!
         message: >-
           {{ trigger.to_state.attributes.friendly_name }} detected smoke!
   mode: single
