@@ -1,5 +1,6 @@
 tts_p20:
   alias: TTS P20HD
+  icon: mdi:text-to-speech
   sequence:
     - service: notify.mobile_app_p20hd_eea
       data:
@@ -11,13 +12,13 @@ tts_p20:
           ttl: 0
           priority: high
   mode: single
-  icon: mdi:text-to-speech
 persistent_notification:
   alias: Persistent notification
   description: >-
     Create a persistent notification on both mobile devices and in the Lovelace
     UI. Dismiss on mobile device dismisses in Lovelace; optionally the other way
     way around too.
+  icon: mdi:message-outline
   fields:
     targetDevices:
       description: Mobile device(s) to target
@@ -318,11 +319,11 @@ persistent_notification:
                     {{ tag }}
   mode: parallel
   max: 50
-  icon: mdi:message-outline
 sms_notification:
   alias: SMS notification
   description: >-
     Send an SMS notification to one or more mobile numbers.
+  icon: mdi:cellphone-message
   fields:
     targetDevices:
       description: Predefined groups of mobile numbers to target
@@ -336,7 +337,8 @@ sms_notification:
     phoneNumber:
       description: >-
         Send to the provided phone number instead (overrides targetDevices).
-        Only accepts Dutch mobile phone numbers.
+        Only accepts Dutch mobile phone numbers and a limited set of Vodafone
+        service numbers.
       required: false
       selector:
         text: # yamllint disable-line rule:empty-values
@@ -350,7 +352,11 @@ sms_notification:
     numbers_my: !secret gammu_numbers_my
     numbers: >-
       {% if phoneNumber is defined %}
-        {% if phoneNumber is search('^<\+316[0-9]{8}>$') %}
+        {# Predefined Vodafone numbers #}
+        {% if phoneNumber in [4000] %}
+          {{ [ phoneNumber ] }}
+        {# Dutch mobile phone numbers #}
+        {% elif phoneNumber is search('^<\+316[0-9]{8}>$') %}
           {{
             [ phoneNumber | regex_findall_index('^<(\+316[0-9]{8})>$') ]
           }}
@@ -375,10 +381,14 @@ sms_notification:
             intact: By concatenating with double-quotes _inside_ the Jinja
             template statement we prevent the phone number (+316...) from being
             interpreted as an integer (316...).
+            Additionally, the newlines should _not_ be escaped (they should be
+            interpreted as actual newlines by Gammu to allow for linebreaks in
+            the SMS message). Replacing them back after JSON-encoding requires
+            each slash to be escaped with another slash...
           #}
           {
             "number": {{ '"' ~ numbers | join(';') ~ '"' }},
-            "text": "{{ message }}"
+            "text": {{ message | to_json | replace('\\\\n', '\\n') }}
           }
     - wait_for_trigger:
         - platform: state
@@ -406,8 +416,11 @@ sms_notification:
               data:
                 level: warning
                 message: >-
-                  Failed to send SMS message "{{ message }}" to
-                    {{ '"' ~ numbers | join('; ') ~ '"' }}.
-      # Success – NOP
-      default: [] # yamllint disable-line rule:brackets
+                  Unable to send SMS message "{{ message }}" to
+                    {{ '"' ~ numbers | join('; ') ~ '"' }}:
+                  {% if wait.trigger is none %}
+                    Request timed-out after 60 seconds
+                  {% else %}
+                    {{ states('sensor.gammu_sent_message') }}
+                  {% endif %}
   mode: queued

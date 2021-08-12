@@ -30,9 +30,13 @@
     icon: mdi:message-arrow-right-outline
     attributes:
       number: >-
-        <{{ trigger.payload_json.number }}>
+        {% if trigger.payload_json.number is defined  %}
+          <{{ trigger.payload_json.number }}>
+        {% endif %}
       datetime: >-
-        {{ trigger.payload_json.datetime | as_datetime }}
+        {% if trigger.payload_json.datetime is defined  %}
+          {{ trigger.payload_json.datetime | as_datetime }}
+        {% endif %}
       success: >-
         {% if trigger.payload_json.result == 'success' %}
           {{ true }}
@@ -40,10 +44,19 @@
           {{ false }}
         {% endif %}
     state: >-
-      {{
-        trigger.payload_json.text |
-          truncate(250, killwords=False, end='...', leeway=0)
-      }}
+      {% if trigger.payload_json.result is match('error : ') %}
+        {{
+          trigger.payload_json.result | replace('error : ', '') | capitalize |
+            truncate(250, killwords=False, end='...', leeway=0)
+        }}
+      {% elif trigger.payload_json.text is defined %}
+        {{
+          trigger.payload_json.text |
+            truncate(250, killwords=False, end='...', leeway=0)
+        }}
+      {% else %}
+        unknown
+      {% endif %}
 # Track the number of messages received over a 10-minute interval
 - trigger:
     - platform: state
@@ -84,7 +97,6 @@
   sensor:
     name: Gammu received (unprocessed message)
     unique_id: 389c514a-d57c-4958-a727-3033e283ffb9
-    icon: mdi:message-settings-outline
     availability: >-
       {{ trigger.id == 'incoming' }}
     attributes:
@@ -120,6 +132,11 @@
     unique_id: da953887-8930-4701-9d82-621950eb9a44
     icon: mdi:cellphone-message
     unit_of_measurement: €
+    attributes:
+      last_credit: >-
+        {% if states('sensor.gammu_credit_vodafone') | float > 0 %}
+          {{ states('sensor.gammu_credit_vodafone') }}
+        {% endif %}
     state: >-
       {#
         Somehow Home Assistant/Jinja interprets the comma ensures all as
