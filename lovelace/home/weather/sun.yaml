@@ -31,7 +31,7 @@ card:
       show:
         labels: true
         labels_secondary: false
-      decimals: 1
+      decimals: 0
       entities:
         - entity: sensor.weewx_solar_irradiance
           show_points: false
@@ -58,7 +58,7 @@ card:
       group_by: date
       hour24: true
       aggregate_func: max
-      decimals: 1
+      decimals: 0
       height: 90
       lower_bound: 0
       show:

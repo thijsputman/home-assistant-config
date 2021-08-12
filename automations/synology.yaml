@@ -13,6 +13,7 @@
         - sensor.ds1815_drive_7_status
         - sensor.ds1815_drive_8_status
       from: normal
+      for: "00:10:00"
   condition: []
   action:
     # Explicitly block any further runs of this automation while the
