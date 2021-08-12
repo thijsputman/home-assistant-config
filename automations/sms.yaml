@@ -251,7 +251,7 @@
       value_template: >-
         {{
           states('sensor.gammu_received_authenticated_command')
-            is match('^ping\?( |$)')
+            is match('^ping\??( |$)')
         }}
   action:
     - service: script.sms_notification
@@ -284,12 +284,81 @@
           {% set result = namespace(sensors=[]) %}
           {% for state in states.binary_sensor |
             selectattr('attributes.device_class', 'in',
-              ['smoke', 'moisture', 'motion', 'opening']
+              ['smoke', 'moisture', 'motion', 'opening', 'vibration']
             )
           %}
             {% if state.state == 'on' %}
               {% set result.sensors = result.sensors + [state.name] %}
             {% endif %}
           {% endfor %}
-          🛰️ Active binary sensors:
-          \n\n◾ {{ result.sensors | join('\n◾ ') }}
+          📡 Active binary sensors:
+          \n\n🔸 {{ result.sensors | join('\n🔸 ') }}
+- alias: >-
+    🚨 | ✉️ Alarm arm away, disarm or silence
+      (received "alarm [arm|disarm|silence]")
+  id: 36d36c51-35b1-44ac-9820-f54dec96ca8f
+  trigger:
+    - platform: state
+      entity_id: sensor.gammu_received_authenticated_command
+  condition:
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.gammu_received_authenticated_command')
+            is match('^alarm( |$)')
+        }}
+  action:
+    - variables:
+        alarmAction: >-
+          {{
+            states('sensor.gammu_received_authenticated_command') |
+              regex_findall_index('^alarm ?(|arm|disarm|silence)(?: |$)')
+          }}
+    - choose:
+        - conditions: >-
+            {{ alarmAction == 'arm' }}
+          sequence:
+            - service: alarm_control_panel.alarm_arm_night
+              entity_id: alarm_control_panel.home_alarm
+              data: {}
+        - conditions: >-
+            {{ alarmAction == 'disarm' }}
+          sequence:
+            - service: alarm_control_panel.alarm_disarm
+              data:
+                code: !secret alarm_code
+              entity_id: alarm_control_panel.home_alarm
+        - conditions: >-
+            {{ alarmAction == 'silence' }}
+          sequence:
+            - service: script.sirens
+              data:
+                mode: none
+    - service: script.sms_notification
+      data:
+        phoneNumber: >-
+          {{
+            state_attr('sensor.gammu_received_authenticated_command', 'number')
+          }}
+        message: >-
+          {%-
+            if states('alarm_control_panel.home_alarm') in
+              ['triggered', 'pending']
+          -%}
+            🚨 Home alarm is {{ states('alarm_control_panel.home_alarm') }}!
+          {%- else -%}
+            🛡️ Home alarm is {{ states('alarm_control_panel.home_alarm') }}
+          {%- endif -%}
+          {%- if alarmAction in ['arm', 'disarm', 'silence'] -%}
+            \nYou requested the Home alarm to be {%
+                if alarmAction == 'arm' -%}
+              changed to "Armed away"-mode.
+            {%- elif alarmAction == 'disarm' -%}
+              changed to "Disarmed"-mode.
+            {%- elif alarmAction == 'silence' -%}
+              silenced...
+            {%- endif %} To further control the alarm:
+          {%- else -%}
+            \nTo further control the alarm:
+          {%- endif -%}
+          \n\n✉️ #secret# alarm [arm|disarm|silence]
