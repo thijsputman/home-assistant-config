@@ -22,7 +22,7 @@
                   \nVodafone prepaid credit is
                   € {{ states('sensor.gammu_credit_vodafone') }} –
                   time to top it up:
-                  \n\n✉️ #secret# credit top up [5|10|20|30|40|50]
+                  \n\n✉️ #secret# credit top up 5|10|20|30|40|50
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -39,7 +39,7 @@
             Vodafone prepaid credit is
             € {{ states('sensor.gammu_credit_vodafone') }} –
             to top-up using the actions below, or SMS:
-            <br><br>✉️ #secret# credit top up [5|10|20|30|40|50]
+            <br><br>✉️ #secret# credit top up 5|10|20|30|40|50
     # Top-up initiated from phone notification
     - wait_for_trigger:
         - platform: event
@@ -144,9 +144,57 @@
               ) | round(0)
             }} – total credit is now
             € {{ states('sensor.gammu_credit_vodafone') }}.
+- alias: 📱 | ✉️ Ping? Pong! (received "ping?")
+  id: 249b657c-fd79-4ba4-b1a8-1040df15eb39
+  trigger:
+    - platform: state
+      entity_id: sensor.gammu_received_authenticated_command
+  condition:
+    # Using a template condition (instead of a static state) to allow greater
+    # flexibility in matching the command. Cannot use the template condition as
+    # trigger as that would prevent triggering if the same command is received
+    # again (which is a valid use-case).
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.gammu_received_authenticated_command')
+            is match('^ping\??( |$)')
+        }}
+  action:
+    - service: script.sms_notification
+      data:
+        phoneNumber: >-
+          {{
+            state_attr('sensor.gammu_received_authenticated_command', 'number')
+          }}
+        message: 🏓 Pong!
+- alias: 📱 | ✉️ List available commands (received "help|commands")
+  id: ac9bad86-5ed6-41b5-b276-95dce78cdd3b
+  trigger:
+    - platform: state
+      entity_id: sensor.gammu_received_authenticated_command
+  condition:
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.gammu_received_authenticated_command')
+            is match('^(help|commands?)( |$)')
+        }}
+  action:
+    - service: script.sms_notification
+      data:
+        phoneNumber: >-
+          {{
+            state_attr('sensor.gammu_received_authenticated_command', 'number')
+          }}
+        message: >-
+          ✉️ #secret# status [camera]
+          \n✉️ #secret# alarm [arm|disarm|silence]
+          \n✉️ #secret# credit top up 5|10|20|30|40|50
+          \n✉️ #secret# ping?
 # Top-up via SMS (in case of no Internet connectivity)
 - alias: >-
-    📱 | ✉️ Top-up prepaid credit (received "credit top up [5|10|20|30|40|50]")
+    📱 | ✉️ Top-up prepaid credit (received "credit top up 5|10|20|30|40|50")
   id: cf444f7f-6ce8-4fed-a45a-9f416838fbff
   trigger:
     - platform: state
@@ -378,15 +426,20 @@
               ['triggered', 'pending']
           -%}
             🚨 Home alarm is {{ states('alarm_control_panel.home_alarm') }}!
+          {%-
+            elif states('alarm_control_panel.home_alarm') == 'disarmed'
+          -%}
+            🔓 Home alarm is disarmed
           {%- else -%}
-            🛡️ Home alarm is {{ states('alarm_control_panel.home_alarm') }}
+            🛡️ Home alarm is in "{{ states('alarm_control_panel.home_alarm') |
+              capitalize }}"-mode
           {%- endif -%}
           {%- if alarmAction in ['arm', 'disarm', 'silence'] -%}
             \nYou requested the Home alarm to be {%
                 if alarmAction == 'arm' -%}
               changed to "Armed away"-mode.
             {%- elif alarmAction == 'disarm' -%}
-              changed to "Disarmed"-mode.
+              disarmed.
             {%- elif alarmAction == 'silence' -%}
               silenced...
             {%- endif %} To further control the alarm:

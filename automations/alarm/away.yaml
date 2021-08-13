@@ -67,7 +67,7 @@
           group: home alarm
           channel: Notification
           criticalNotification: true
-          title: 🛡️ Home alarm disarmed
+          title: 🔓 Home alarm disarmed
           message: >-
             The Home alarm just changed into "Disarmed"-mode
             {%- set result = namespace(people=[]) -%}
