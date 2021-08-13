@@ -57,7 +57,8 @@
       {% else %}
         unknown
       {% endif %}
-# Track the number of messages received over a 10-minute interval
+# Track the number of messages received over a 10-minute interval (excluding
+# Vodafone's service messages)
 - trigger:
     - platform: state
       entity_id: sensor.gammu_received_message
@@ -73,9 +74,20 @@
       {% if trigger.id == 'reset' %}
         {{ 0 }}
       {% else %}
-        {{
-          states('sensor.gammu_received_message_count')|int + 1
-        }}
+        {# Ignore service messages from Vodafone #}
+        {% if state_attr('sensor.gammu_received_message', 'number') ==
+          '<Vodafone>' %}
+          {{ states('sensor.gammu_received_message_count')|int }}
+        {# Prevent the sensor from initialising at 1 (instead of 0) #}
+        {% elif states('sensor.gammu_received_message') == 'unknown' and
+            state_attr('sensor.gammu_received_message', 'number') == None
+        %}
+          {{ states('sensor.gammu_received_message_count')|int }}
+        {% else %}
+          {{
+            states('sensor.gammu_received_message_count')|int + 1
+          }}
+        {% endif %}
       {% endif %}
 # The below sensors use template triggers to trigger on specific message
 # contents. This works nicely, but has one major caveat: If subsequent messages
@@ -152,10 +164,11 @@
 # Commands are accepted via SMS. To prevent abuse, the commands have to come
 # from an authorised phone number _and_ contain a pre-shared secret. This sensor
 # only triggers when these conditions are met.
-# Additionally, only 10 messages per 10-minute time interval are accepted to
-# mitigate the risk of brute-forcing the phone numbers and/or the pre-shared
-# secret (at the cost of a denial-of-service attack). If this threshold is
-# exceeded, the sensor becomes unavailable.
+# Additionally, if more than 10 messages (messages _not_ authenticated commands)
+# are received in a 10-minute interval, the sensor becomes unavailable for the
+# remainder of the interval. This is to mitigate the risk of brute-forcing the
+# authorised phone numbers and/or the pre-shared secret (at the cost of enabling
+# denial-of-service attacks).
 - trigger:
     - platform: template
       # See "📄 ./secrets_empty.yaml" for example logic
