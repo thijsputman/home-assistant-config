@@ -34,10 +34,7 @@
     - platform: state
       entity_id: alarm_control_panel.home_alarm
       to: armed_away
-  condition:
-    - condition: state
-      entity_id: group.openclose_all
-      state: "off"
+  condition: []
   action:
     - service: script.turn_on
       target:
