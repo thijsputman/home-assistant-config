@@ -163,6 +163,88 @@
     - delay: 30
     - event: template_reloaded
   mode: restart
+- alias: 📱/🚨 | 🔋 Notify on power outage (UPS 🔋 < 75%)
+  id: 8ff8c413-b877-41af-bc9d-8e72b1b9bcab
+  trigger:
+    # This happens after running without power for about 10 minutes
+    - platform: numeric_state
+      entity_id: sensor.ups_battery_charge
+      below: 75
+  condition:
+    - condition: state
+      entity_id: sensor.ups_status
+      state: On Battery Battery Discharging
+    # If Home Alarm is "Armed away", a different – more aggressive – approach is
+    # taken...
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          targetDevices: my
+          message: >-
+            🔋 Home Assistant running on battery power!
+            \nUPS battery level below 75% and discharging; there appears to be a
+            a power outage! {%
+              if states.sensor.ups_status is defined -%}
+              UPS has been running on battery power for {{
+                  relative_time(states.sensor.ups_status.last_changed)
+                }} and has {{
+                  states('sensor.ups_battery_runtime_minutes')
+                }} minutes of runtime remaining...
+            {%- endif -%}
+    # If someone is home, also sound the alarm. The ZigBee controller is
+    # connected to the UPS; the sirens have backup batteries so most likely
+    # this'll work... 🤞
+    - condition: state
+      entity_id: group.family
+      state: home
+    - service: script.turn_on
+      target:
+        entity_id: script.sirens
+      data:
+        # Short pulses for 2 minutes; just to get people's attention
+        variables:
+          mode: pulse
+          ontime: 120
+  mode: single
+- alias: 📱 | 📡 Notify on loss of (Internet-)connectivity
+  id: aef11607-656e-41cc-8eb8-f2f18959ebeb
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.google_dns_ping
+      from: "on"
+      to: "off"
+      for: "00:02:00"
+    - platform: state
+      entity_id: binary_sensor.remote_ui
+      from: "on"
+      to: "off"
+      for: "00:02:00"
+  action:
+    - service: script.sms_notification
+      data:
+        targetDevices: my
+        message: >-
+          {% if trigger.to_state.entity_id == 'binary_sensor.remote_ui' %}
+            📡 Home Assistant lost connectivity!
+            \nHome Assistant appears to have lost connection with Nabu Casa.
+          {%
+            elif trigger.to_state.entity_id == 'binary_sensor.google_dns_ping'
+          %}
+            📡 Home Assistant lost Internet-connectivity!
+            \nHome Assistant is unable to ping Google's Public DNS.
+          {% endif %} To inspect the state of the house:
+          \n\n✉️ #secret# status [camera]
+          \n\nTo check and control the Home alarm:
+          \n\n✉️ #secret# alarm [arm|disarm|silence]
+  mode: single
 # Stop Home Assistant (mainly to prevent database corruption) if a power failure
 # appears imminent
 - alias: 🚧 | 🔋 Stop Home Assistant (UPS 🔋 < 10%)

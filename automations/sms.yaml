@@ -287,6 +287,9 @@
   mode: restart
 - alias: 📱 | ✉️ Status update (received "status [camera]")
   id: a8a8de72-902b-4ab1-8c1b-ce4ad1a1dae5
+  variables:
+    arlo_connection_state: !secret aarlo_connected_sensor
+    tado_connection_state: !secret tado_ib1_connection_state
   trigger:
     - platform: state
       entity_id: sensor.gammu_received_authenticated_command
@@ -367,7 +370,18 @@
                     replace('_', '_last_')) ~']'
                 ] %}
               {% endfor %}
-              📡 Active binary sensors:
+              📡 Connectivity:\n\n{{
+                '✅' if states('binary_sensor.google_dns_ping') == 'on'
+                  else '⛔' }} Internet ({{state_attr(
+                    'binary_sensor.google_dns_ping', 'round_trip_time_avg'
+                  ) | float | round(1) }} ms)\n{{
+                '✅' if states('binary_sensor.remote_ui') == 'on'
+                  else '⛔' }} Nabu Casa\n{{
+                '✅' if states(arlo_connection_state) == 'on'
+                  else '⛔' }} Arlo\n{{
+                '✅' if states(tado_connection_state) == 'on'
+                  else '⛔' }} tadoº\n\n
+              🤖 Active binary sensors:
               \n\n🔸 {{ result.sensors | join('\\n🔸 ') }}
               \n\n📹 Status of cameras:
               \n\n🔸 {{ result.cameras | join('\\n🔸 ') }}
