@@ -237,31 +237,7 @@
           }} – total credit is now
           € {{ states('sensor.gammu_credit_vodafone') }}.
   mode: restart
-- alias: 📱 | ✉️ Ping? Pong! (received "ping?")
-  id: 249b657c-fd79-4ba4-b1a8-1040df15eb39
-  trigger:
-    - platform: state
-      entity_id: sensor.gammu_received_authenticated_command
-  condition:
-    # Using a template condition (instead of a static state) to allow greater
-    # flexibility in matching the command. Cannot use the template condition as
-    # trigger as that would prevent triggering if the same command is received
-    # again (which is a valid use-case).
-    - condition: template
-      value_template: >-
-        {{
-          states('sensor.gammu_received_authenticated_command')
-            is match('^ping\??( |$)')
-        }}
-  action:
-    - service: script.sms_notification
-      data:
-        phoneNumber: >-
-          {{
-            state_attr('sensor.gammu_received_authenticated_command', 'number')
-          }}
-        message: 🏓 Pong!
-- alias: 📱 | ✉️ Status update (received "status")
+- alias: 📱 | ✉️ Status update (received "status [camera]")
   id: a8a8de72-902b-4ab1-8c1b-ce4ad1a1dae5
   trigger:
     - platform: state
@@ -274,25 +250,81 @@
             is match('^status( |$)')
         }}
   action:
-    - service: script.sms_notification
-      data:
-        phoneNumber: >-
+    - variables:
+        statusAction: >-
           {{
-            state_attr('sensor.gammu_received_authenticated_command', 'number')
+            states('sensor.gammu_received_authenticated_command') |
+              regex_findall_index('^status ?(|camera)(?: |$)')
           }}
-        message: >-
-          {% set result = namespace(sensors=[]) %}
-          {% for state in states.binary_sensor |
-            selectattr('attributes.device_class', 'in',
-              ['smoke', 'moisture', 'motion', 'opening', 'vibration']
-            )
-          %}
-            {% if state.state == 'on' %}
-              {% set result.sensors = result.sensors + [state.name] %}
-            {% endif %}
-          {% endfor %}
-          📡 Active binary sensors:
-          \n\n🔸 {{ result.sensors | join('\n🔸 ') }}
+    - choose:
+        - conditions: >-
+            {{ statusAction == 'camera' }}
+          sequence:
+            - service: script.sms_notification
+              data:
+                phoneNumber: >-
+                  {{
+                    state_attr('sensor.gammu_received_authenticated_command',
+                      'number')
+                  }}
+                message: >-
+                  {% set result = namespace(cameras=[]) %}
+                  {% for state in states.camera |
+                    selectattr('attributes.brand', 'eq', 'Netgear Arlo')
+                  %}
+                    {% if state.attributes.last_video is defined %}
+                      {% set result.cameras = result.cameras + [
+                        '🎞️ ' ~ state.name ~
+                        ' – latest video: ' ~ state.attributes.last_video
+
+                      ] %}
+                    {% endif %}
+                      {% set result.cameras = result.cameras + [
+                        '🖼️ ' ~ state.name ~
+                        ' – latest thumbnail: ' ~ state.attributes.last_thumbnail
+                      ] %}
+                  {% endfor %}
+                  📹 Latest camera footage:
+                  \n\n{{ result.cameras | join('\\n\\n') }}
+      default:
+        - service: script.sms_notification
+          data:
+            phoneNumber: >-
+              {{
+                state_attr('sensor.gammu_received_authenticated_command',
+                  'number')
+              }}
+            message: >-
+              {% set result = namespace(sensors=[], cameras=[]) %}
+              {% for state in states.binary_sensor |
+                selectattr('attributes.device_class', 'in',
+                  ['smoke', 'moisture', 'motion', 'opening', 'vibration']
+                )
+              %}
+                {% if state.state == 'on' %}
+                  {% set result.sensors = result.sensors + [state.name] %}
+                {% endif %}
+              {% endfor %}
+              {% for state in states.camera |
+                selectattr('attributes.brand', 'eq', 'Netgear Arlo')
+              %}
+                {#
+                  Last active retrieval is a bit crude – but hey, it works!
+                #}
+                {% set result.cameras = result.cameras + [
+                  state.name ~ ': ' ~ state.state | capitalize ~
+                  ' (' ~ state.attributes.battery_level ~ '%)' ~
+
+                  ' [' ~ states('sensor.' ~ state.object_id |
+                    replace('_', '_last_')) ~']'
+                ] %}
+              {% endfor %}
+              📡 Active binary sensors:
+              \n\n🔸 {{ result.sensors | join('\\n🔸 ') }}
+              \n\n📹 Status of cameras:
+              \n\n🔸 {{ result.cameras | join('\\n🔸 ') }}
+              \n\nRetrieve latest camera footage:
+              \n\n✉️ #secret# status camera
 - alias: >-
     🚨 | ✉️ Alarm arm away, disarm or silence
       (received "alarm [arm|disarm|silence]")
