@@ -64,23 +64,24 @@
           group: home alarm
           channel: Notification
           criticalNotification: true
-          title: 🔓 Home alarm disarmed
+          title: 🔓 Home Alarm disarmed
           message: >-
-            The Home alarm just changed into "Disarmed"-mode
+            The Home Alarm just got disarmed
             {%- set result = namespace(people=[]) -%}
             {%- for person in expand('group.family') |
                 selectattr('state', '==', 'home') -%}
+                  {# Firstname only; remove everything after first space #}
                   {%- set result.people = result.people +
-                    [person.name | truncate(10, False, '', 0) ] -%}
+                    [person.name | regex_replace(' .*$', '') ] -%}
             {%- endfor -%}
-            {%- if result.people | length > 0 -%}
-              ; {{ result.people | join(' and ')
+            {%- if result.people | length > 0
+              %} – {{ result.people | join(' and ')
               }} {% if result.people | length > 1 -%}
                 are home
-              {% else -%}
+              {%- else -%}
                 is home
-              {% endif %}
-            {% endif %}
+              {%- endif -%}
+            {%- endif -%}.
 # Presence (i.e. motion) sensors are used to turn on lights – the sensors are
 # not well-positioned for intruder detection. Still, if no-one is home, there's
 # no harm in making them trigger the alarm...

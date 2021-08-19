@@ -315,7 +315,8 @@
   mode: single
 - alias: 🚨 | 📱 Notify on alarm disarmed
   id: d06c2a3e-f1a7-41c2-9bf3-d29c6c352c93
-  description: ""
+  variables:
+    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
@@ -326,6 +327,34 @@
         - disarmed
   condition: []
   action:
+    - variables:
+        actor: >-
+          {%- if trigger is defined and
+              trigger.to_state.context.user_id is defined -%}
+            {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
+              from the tablet in the Kitchen
+            {% else %}
+              {%- set persons = states.person | selectattr(
+                'attributes.user_id', 'eq', trigger.to_state.context.user_id
+              ) | list -%}
+              {%- if persons | count == 1 %}
+                {# Firstname only; remove everything after first space #}
+                by {{
+                  persons[0].attributes.friendly_name |
+                  regex_replace(' .*$', '')
+                }}
+              {%- endif -%}
+            {%- endif -%}
+          {%- endif -%}
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            🔓 Home Alarm disarmed
+            \nThe Home Alarm just got disarmed
+            {%- if actor != '' %} {{ actor }} {%- endif -%}.
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -335,18 +364,10 @@
           channel: Alert
           lovelaceDismiss: false
           criticalNotification: true
-          title: 🚨 Home Alarm disarmed
+          title: 🔓 Home Alarm disarmed
           message: >-
             The Home Alarm just got disarmed
-            {%- if trigger is defined and
-                trigger.to_state.context.user_id is defined -%}
-              {%- set persons = states.person | selectattr(
-                'attributes.user_id', 'eq', trigger.to_state.context.user_id
-              ) | list -%}
-              {%- if persons | count == 1
-                %} by {{ persons[0].attributes.friendly_name }}
-              {%- endif -%}
-            {%- endif -%}.
+            {%- if actor != '' %} {{ actor }} {%- endif -%}.
 - alias: 🚨 | 💡 Lights on (triggered alarm disarmed)
   id: 5132f575-5f3f-43e5-8720-8eddd8c66355
   trigger:
