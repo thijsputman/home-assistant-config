@@ -202,6 +202,22 @@
       to: pending
   condition: []
   action:
+    - variables:
+        # List all possible trigger sensors that are "on" _and_ changed in the
+        # last five minutes. This prevents listing sensors that were "on" to
+        # begin with (e.g. a window left open). Has the potential to include
+        # irrelevant sensors (as not all sensors trigger the alarm under all
+        # circumstances) but offers a good balance between accuracy and
+        # complexity.
+        tripped_sensors: >-
+          {{
+            (
+              expand('group.openclose_all') + expand('group.motion_all') +
+                expand('group.vibration_all')
+            ) | selectattr('state', 'eq', 'on') | selectattr(
+              'last_changed', 'gt', now() - timedelta(minutes=5)
+            ) | list
+          }}
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -211,20 +227,20 @@
           channel: Alert
           criticalNotification: true
           title: 🚨 Home Alarm pending!
-          # The list of sensors includes doors/windows that were already open.
-          # Filtering out those is more trouble than it's worth...
           message: >-
             The Home Alarm just got triggered!
-            If not promptly disarmed, the alarm will sound...<br><br>
-            One of the following sensor(s) triggered the alarm:
-            <ul>
-              <li>
-                {{-
-                  (expand('group.openclose_all') + expand('group.motion_all'))  |
-                    selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
-                  -}}
-              </li>
-            </ul>
+            If not promptly disarmed, the alarm will sound...
+            {%- if tripped_sensors | length > 0 %}
+              <br><br>
+              {%- if tripped_sensors | length == 1 -%}
+                The alarm was triggered by: {{ tripped_sensors[0].name }}
+              {%- else -%}
+                The following sensors triggered the alarm:
+                <br><br>◾ {{
+                  tripped_sensors | join('<br>◾ ', 'name')
+                -}}
+              {%- endif -%}
+            {% endif %}
   mode: single
 - alias: 🚨 | 📱 Notify on alarm sounding
   id: 05a2188b-8940-4311-adfb-bea75a792000
@@ -235,6 +251,21 @@
       to: triggered
   condition: []
   action:
+    - variables:
+        # Largely identical to the previous automation _except_ this lists *all*
+        # sensors changed in the last five minutes (and not only those that are
+        # "on"). It is possible for sensors to transition to "off" in between
+        # triggering and sounding the alarm. This list is thus less accurate
+        # than the one provided in the trigger notification...
+        tripped_sensors: >-
+          {{
+            (
+              expand('group.openclose_all') + expand('group.motion_all') +
+                expand('group.vibration_all')
+            ) |
+            selectattr('last_changed', 'gt', now() - timedelta(minutes=5)) |
+            list
+          }}
     - service: script.turn_on
       target:
         entity_id: script.sms_notification
@@ -242,7 +273,18 @@
         variables:
           message: >-
             🚨 Home Alarm sounding!
-            \nThe Home Alarm is sounding – there's someone in the house!
+            {% if tripped_sensors | length > 0
+            %}\nThe Home Alarm is sounding – there's someone in the house!
+              \n\n
+              {%- if tripped_sensors | length == 1 -%}
+                The alarm was triggered by: {{ tripped_sensors[0].name }}
+              {%- else -%}
+                The following sensors triggered the alarm:
+                \n\n◾ {{
+                  tripped_sensors | join('\n\n◾ ', 'name')
+                -}}
+              {%- endif -%}
+            {% endif %}
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -255,7 +297,21 @@
           criticalNotification: true
           title: 🚨 Home Alarm sounding!
           message: >-
-            The Home Alarm is sounding – there's someone in the house!
+            The Home Alarm is sounding
+            {%- if tripped_sensors | length > 0
+              %} – there's someone in the house!
+              <br><br>
+              {%- if tripped_sensors | length == 1 -%}
+                The alarm was triggered by: {{ tripped_sensors[0].name }}
+              {%- else -%}
+                The following sensors triggered the alarm:
+                <br><br>◾ {{
+                  tripped_sensors | join('<br>◾ ', 'name')
+                -}}
+              {%- endif -%}
+            {%- else -%}
+              .
+            {%- endif -%}
   mode: single
 - alias: 🚨 | 📱 Notify on alarm disarmed
   id: d06c2a3e-f1a7-41c2-9bf3-d29c6c352c93

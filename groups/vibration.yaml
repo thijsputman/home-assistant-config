@@ -1,0 +1,8 @@
+vibration_all:
+  name: All vibration sensors
+  icon: mdi:vibrate
+  entities:
+    - binary_sensor.vibration_43
+    - binary_sensor.vibration_106
+    - binary_sensor.vibration_102
+    - binary_sensor.vibration_122
