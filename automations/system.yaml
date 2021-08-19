@@ -163,19 +163,16 @@
     - delay: 30
     - event: template_reloaded
   mode: restart
-- alias: 📱/🚨 | 🔋 Notify on power outage (UPS 🔋 < 75%)
+- alias: 📱/🚨 | ⚡ Notify on prolonged power outage (⏰ > 10 minutes)
   id: 8ff8c413-b877-41af-bc9d-8e72b1b9bcab
   trigger:
-    # This happens after running without power for about 10 minutes
-    - platform: numeric_state
-      entity_id: sensor.ups_battery_charge
-      below: 75
+    - platform: state
+      entity_id: binary_sensor.power_outage
+      to: "on"
+      for: "00:10:00"
   condition:
-    - condition: state
-      entity_id: sensor.ups_status
-      state: On Battery Battery Discharging
-    # If Home Alarm is "Armed away", a different – more aggressive – approach is
-    # taken...
+    # If Home Alarm is "Armed away", a different – more immediate – response is
+    # issued...
     - condition: not
       conditions:
         - condition: state
@@ -189,11 +186,9 @@
         variables:
           targetDevices: my
           message: >-
-            🔋 Home Assistant running on battery power!
-            \nUPS battery level below 75% and discharging; there appears to be a
-            a power outage! {%
-              if states.sensor.ups_status is defined -%}
-              UPS has been running on battery power for {{
+            ⚡ There appears to be a power outage!
+            {% if states.sensor.ups_status is defined -%}
+              \nHome Assistant has been running on back-up battery power for {{
                   relative_time(states.sensor.ups_status.last_changed)
                 }} and has {{
                   states('sensor.ups_battery_runtime_minutes')
@@ -254,6 +249,9 @@
       entity_id: sensor.ups_battery_charge
       below: 10
   condition:
+    # This intentionally does _not_ use "binary_sensor.power_outage" as the
+    # below truly relies on the UPS and acts independent from the generalised
+    # concept of a power outage...
     - condition: state
       entity_id: sensor.ups_status
       state: On Battery Battery Discharging

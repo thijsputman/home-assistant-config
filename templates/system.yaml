@@ -1,0 +1,19 @@
+- binary_sensor:
+    # Power outage detection based on back-up UPS. To filter out minor hiccups,
+    # this triggers when the UPS is discharging and battery level dips below
+    # 98%. Under current load this happens after about 40 seconds...
+    - name: Power outage
+      unique_id: 679eb3a5-4052-445c-979c-a72cb5796048
+      device_class: problem
+      icon: mdi:transmission-tower
+      availability: >-
+        {{ states('sensor.ups_status') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {%- if
+          states('sensor.ups_battery_charge')|int < 98 and
+          states('sensor.ups_status') == 'On Battery Battery Discharging'
+        -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}

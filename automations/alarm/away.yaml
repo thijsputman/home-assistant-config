@@ -138,6 +138,35 @@
       data: {}
       entity_id: alarm_control_panel.home_alarm
   mode: single
+- alias: 🚨 | ⚡ Trigger alarm (power outage; "Armed away")
+  id: c9c16198-8524-440f-99ea-0b447c68b798
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.power_outage
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+  action:
+    - service: alarm_control_panel.alarm_trigger
+      data: {}
+      entity_id: alarm_control_panel.home_alarm
+    # A generic "alarm pending" persistent notification is also raised. Since
+    # the power is out, that notification probably won't be received in time /
+    # at all. As such, that notification does not factor in the possibility of
+    # a power outage – this information is conveyed exclusively via the below
+    # SMS.
+    - service: script.sms_notification
+      data:
+        message: >-
+          ⚡ Power outage at home!
+          \nNo-one is home so the Home Alarm has been triggered as a precaution
+          – it will start sounding in 30 seconds. To silence the alarm:
+          \n\n✉️ #secret# alarm silence
+          \n\nTo inspect the status of the house:
+          \n\n✉️ #secret# status
+  mode: single
 - alias: 🚨 | 📱 Notify when back gate opened ("Armed away")
   id: b1825172-d7ab-4114-8c4d-6030c6bae7b6
   trigger:

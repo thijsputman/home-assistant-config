@@ -370,21 +370,23 @@
                     replace('_', '_last_')) ~']'
                 ] %}
               {% endfor %}
-              📡 Connectivity:\n\n{{
+              {{ '⚡ Power is on' if states('binary_sensor.power_outage') ==
+                'off' else '⛔ Power is out!' -}}\n\n
+              📡 Connectivity:\n\n{{-
                 '✅' if states('binary_sensor.google_dns_ping') == 'on'
-                  else '⛔' }} Internet ({{state_attr(
+                  else '⛔' }} Internet ({{- state_attr(
                     'binary_sensor.google_dns_ping', 'round_trip_time_avg'
-                  ) | float | round(1) }} ms)\n{{
+                  ) | float | round(1) }} ms)\n{{-
                 '✅' if states('binary_sensor.remote_ui') == 'on'
-                  else '⛔' }} Nabu Casa\n{{
+                  else '⛔' }} Nabu Casa\n{{-
                 '✅' if states(arlo_connection_state) == 'on'
-                  else '⛔' }} Arlo\n{{
+                  else '⛔' }} Arlo\n{{-
                 '✅' if states(tado_connection_state) == 'on'
                   else '⛔' }} tadoº\n\n
               🤖 Active binary sensors:
-              \n\n🔸 {{ result.sensors | join('\\n🔸 ') }}
+              \n\n🔸 {{ result.sensors | join('\\n🔸 ') -}}
               \n\n📹 Status of cameras:
-              \n\n🔸 {{ result.cameras | join('\\n🔸 ') }}
+              \n\n🔸 {{ result.cameras | join('\\n🔸 ') -}}
               \n\nRetrieve latest camera footage:
               \n\n✉️ #secret# status camera
 - alias: >-
