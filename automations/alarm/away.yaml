@@ -182,30 +182,67 @@
   action:
     - service: script.turn_on
       target:
-        entity_id: script.sms_notification
-      data:
-        variables:
-          message: >-
-            🚨 The back gate was just opened!
-            \nThere could be someone in the garden; check the camera feed...
-    - service: script.turn_on
-      target:
         entity_id: script.persistent_notification
       data:
         variables:
           group: home alarm
           channel: Alert
-          lovelaceDismiss: false
+          tag: alert_away_back_gate
           criticalNotification: true
           title: 🚨 Back gate opened!
           message: >-
             The back gate was just opened!
-            There could be someone in the garden; check the camera feed...
+            There could be someone in the garden – check the camera feed...
             {% if states('sensor.time_of_day') != 'day' -%}
               <br><br>As a precaution, the garden and downstairs lights might
               have been automatically switched on – please check them after
               resolving the incident...
             {% endif %}
+    - choose:
+        # Only send an SMS message if the alarm has been armed for *more* than
+        # 12 hours. This limits the number of false positives by only sending
+        # SMS messages when we're away from home longer than during a normal
+        # working day (e.g. weekend trip or vacation).
+        - conditions:
+            - condition: template
+              value_template: >-
+                {%
+                  if states.alarm_control_panel.home_alarm.last_changed
+                    is defined
+                %}
+                  {{
+                    states.alarm_control_panel.home_alarm.last_changed <
+                      now() - timedelta(hours=12)
+                  }}
+                {# Err on the side of caution #}
+                {% else %}
+                  true
+                {% endif %}
+          sequence:
+            - service: script.turn_on
+              target:
+                entity_id: script.sms_notification
+              data:
+                variables:
+                  message: >-
+                    🚨 The back gate was just opened!
+                    \nThere could be someone in the garden –
+                    check the camera feed:
+                    \n\n✉️ #secret# status camera
+    # If the alarm is disarmed within 2 minutes, dismiss the notification as it
+    # was a false positive
+    - wait_for_trigger:
+        - platform: state
+          entity_id: alarm_control_panel.home_alarm
+          from: armed_away
+          to: disarmed
+      timeout: "00:02:00"
+      continue_on_timeout: false
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: alert_away_back_gate
+  mode: single
+  max_exceeded: silent
 - alias: 🚨 | 💡 Lights on when back gate opened ("Armed away")
   id: 9684f5d2-8d26-429f-bb08-aa5deeb23c50
   trigger:
@@ -223,48 +260,56 @@
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
   action:
-    # Stagger the lights to give the appearance of someone manually switching
-    # them on...
-    - delay: 2
     - service: hue.hue_activate_scene
       data:
         group_name: Garden
         scene_name: Active
-    - delay: 5
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: light.kitchen
-              state: "off"
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                scene_name: Bright (custom)
-      default: []
-    - delay: 1
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: light.living_room
-              state: "off"
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Living room
-                scene_name: Active
-      default: []
-    # To prevent the Garden lights from staying on unnecessarily, switch them
-    # off when it gets light outside – the inside lights will have already been
-    # switched off by a "regular" light automation at this point
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Kitchen
+        scene_name: Bright (custom)
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Active
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Evening
+    # Wait for 2 minutes to ensure this is not a false positive
     - wait_for_trigger:
         - platform: state
-          entity_id: sensor.time_of_day
-          from: dawn
-          to: day
-    - service: light.turn_off
-      data:
-        entity_id: light.garden
+          entity_id: alarm_control_panel.home_alarm
+          from: armed_away
+          to: disarmed
+      timeout: "00:02:00"
+      continue_on_timeout: true
+    - choose:
+        # In case of false positive, switch the garden lights back to a more
+        # agreeable setting
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ wait.trigger.platform == 'state' }}
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Garden
+                scene_name: Ambiance
+      # In case it is _not_ a false positive, prevent the Garden lights from
+      # staying on indefinitely. Switch them off when it gets light outside –\
+      # the inside lights will have already been switched off by a "regular"
+      # automation at this point...
+      default:
+        - wait_for_trigger:
+            - platform: state
+              entity_id: sensor.time_of_day
+              from: dawn
+              to: day
+        - service: light.turn_off
+          data:
+            entity_id: light.garden
+  mode: restart
 - alias: 🚨 | 💡 Hallway and Kitchen lights on ("Armed away" → disarmed; door open)
   id: 23900a05-e8bd-4296-a8fe-fdcaa53caedf
   trigger:
