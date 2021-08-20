@@ -232,19 +232,34 @@
       data:
         targetDevices: my
         message: >-
-          {% if trigger.to_state.entity_id == 'binary_sensor.remote_ui' %}
+          {%- if trigger.to_state.entity_id == 'binary_sensor.remote_ui' -%}
             📡 Home Assistant lost connectivity!
             \nHome Assistant appears to have lost connection with Nabu Casa.
-          {%
+          {%-
             elif trigger.to_state.entity_id == 'binary_sensor.google_dns_ping'
-          %}
+          -%}
             📡 Home Assistant lost Internet-connectivity!
             \nHome Assistant is unable to ping Google's Public DNS.
-          {% endif %} To inspect the state of the house:
+          {%- endif %} To inspect the state of the house:
           \n\n✉️ #secret# status [camera]
-          \n\nTo check and control the Home alarm:
+          \n\nTo check and control the Home Alarm:
           \n\n✉️ #secret# alarm [arm|disarm|silence]
+    # Wait for connectivity to be restored – simultaneously blocks subsequent
+    # connectivity triggers from resending the SMS
+    - wait_for_trigger:
+        - platform: template
+          value_template: >-
+            {{ states(trigger.to_state.entity_id) == 'on' }}
+          for: "00:02:00"
+      timeout: "12:00:00"
+      continue_on_timeout: false
+    - service: script.sms_notification
+      data:
+        targetDevices: my
+        message: >-
+          📡 Home Assistant connectivity restored
   mode: single
+  max_exceeded: silent
 # Stop Home Assistant (mainly to prevent database corruption) if a power failure
 # appears imminent
 - alias: 🚧 | 🔋 Stop Home Assistant (UPS 🔋 < 10%)
