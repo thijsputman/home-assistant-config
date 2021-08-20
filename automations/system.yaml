@@ -16,7 +16,7 @@
               [state.name ~ ': ' ~ state.state ~ '%'] %}
         {% endif %}
       {% endfor %}
-      {{ result.sensors | join('</li><li>') }}
+      {{ result.sensors }}
   trigger:
     - platform: time
       at: "10:00:00"
@@ -24,7 +24,7 @@
     # Only on Saturday if there are battery-levels below 20%
     - condition: template
       value_template: >-
-        {{ now().isoweekday() == 6 and sensors != '' }}
+        {{ now().isoweekday() == 6 and sensors | length > 0 }}
   action:
     - service: script.turn_on
       target:
@@ -36,7 +36,10 @@
           targetDevices: my
           title: 🔋 Low sensor battery
           message: >-
-            <ul><li>{{sensors}}</li><ul>
+            The following sensors have a battery level below 20%:
+            <br><br>◾ {{
+              sensors | join('<br>◾ ')
+            -}}
   mode: single
 - alias: 📱 Notify on integration failure (unknown/unavailable-state)
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12
@@ -150,7 +153,9 @@
 # state after reloading the "Template Entities" configuration, fire a
 # "template_reloaded" event shortly after this happens so that these sensors
 # can trigger to update themselves
-- alias: 🚧 Trigger template_reloaded-event ("Template Entities" configuration reloaded)
+- alias: >-
+    🚧 Trigger template_reloaded-event
+    ("Template Entities" configuration reloaded)
   id: bc006b3a-0ea9-4596-9521-b6424a986872
   trigger:
     - platform: event

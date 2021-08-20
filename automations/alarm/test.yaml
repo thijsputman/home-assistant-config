@@ -22,15 +22,15 @@
           channel: Alert
           group: home alarm
           tag: siren_test
-          title: 📣 Home alarm siren will sound at 12:00:30
+          title: 📣 Home Alarm siren will sound at 12:00:30
           message: >-
-            <p>To test the sirens, they will sound for 1 second followed by a 10
+            To test the sirens, they will sound for 1 second followed by a 10
             second delay and then sound for 2 seconds. After this, all alarm
             devices' lights will blink for 3 minutes to allow for a visual
-            inspection...</p>
-            <p>Additionally, directly after the sirens stop sounding you should
+            inspection...<br><br>
+            Additionally, directly after the sirens stop sounding you should
             receive an SMS message from Home Assistant allowing you to validate
-            the SMS notification service is also working as intended...</p>
+            the SMS notification service is working as intended...
     # Wait for 10 minutes and 30 seconds – this ensures our test coincides with
     # the monthly test of the public alarm sirens in The Netherlands. These
     # sirens are tested every first Monday of the month at 12:00 for 1 minute

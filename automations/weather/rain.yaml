@@ -33,7 +33,7 @@
           {%- endif -%}
           {%- if is_state('binary_sensor.openclose_33', 'on')
             %} attic window
-            {%- endif -%}.
+          {%- endif -%}.
     - service: script.tts_p20
       data:
         message: >-

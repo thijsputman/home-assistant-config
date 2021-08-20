@@ -20,14 +20,10 @@
           title: 🚪 Doors and/or windows left open!
           message: >-
             The following doors and/or windows are still open:
-            <ul>
-              <li>
-                {{-
-                  expand('group.openclose_all') |
-                    selectattr('state', 'eq', 'on') | join('</li><li>', 'name')
-                  -}}
-              </li>
-            </ul>
+            <br><br>◾ {{
+              expand('group.openclose_all') | selectattr('state', 'eq', 'on') |
+                join('<br>◾ ', 'name')
+            -}}
 - alias: 🚨 | 📱 Notify on "Armed away"
   id: e23e2cf8-502d-4e28-8758-9ab11b5fee14
   trigger:
@@ -44,9 +40,9 @@
           group: home alarm
           channel: Notification
           criticalNotification: true
-          title: 🛡️ Home alarm armed
+          title: 🛡️ Home Alarm armed
           message: >-
-            The Home alarm just changed into "Armed away"-mode
+            The Home Alarm just changed into "Armed away"-mode.
 - alias: 🚨 | 📱 Notify on "Disarmed"
   id: a78d71df-f5a9-49f1-a584-18d5260e88db
   trigger:

@@ -283,8 +283,8 @@ persistent_notification:
         - conditions: >-
             {{
               wait.trigger.event.data.action == 'DISMISS_' ~ context.id or
-                wait.trigger.event.data.action == 'ACTION_1_' ~ tag or
-                wait.trigger.event.data.action == 'ACTION_2_' ~ tag
+              wait.trigger.event.data.action == 'ACTION_1_' ~ tag or
+              wait.trigger.event.data.action == 'ACTION_2_' ~ tag
             }}
           sequence:
             # Remove persistent notification from Lovelace

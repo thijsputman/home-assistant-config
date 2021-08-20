@@ -441,17 +441,17 @@
             if states('alarm_control_panel.home_alarm') in
               ['triggered', 'pending']
           -%}
-            🚨 Home alarm is {{ states('alarm_control_panel.home_alarm') }}!
+            🚨 Home Alarm is {{ states('alarm_control_panel.home_alarm') }}!
           {%-
             elif states('alarm_control_panel.home_alarm') == 'disarmed'
           -%}
-            🔓 Home alarm is disarmed
+            🔓 Home Alarm is disarmed
           {%- else -%}
-            🛡️ Home alarm is in "{{ states('alarm_control_panel.home_alarm') |
+            🛡️ Home Alarm is in "{{ states('alarm_control_panel.home_alarm') |
               capitalize }}"-mode
           {%- endif -%}
           {%- if alarmAction in ['arm', 'disarm', 'silence'] -%}
-            \nYou requested the Home alarm to be {%
+            \nYou requested the Home Alarm to be {%
                 if alarmAction == 'arm' -%}
               changed to "Armed away"-mode.
             {%- elif alarmAction == 'disarm' -%}
