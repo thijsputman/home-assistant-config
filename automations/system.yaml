@@ -48,6 +48,8 @@
     # Entities that require Internet-connectivity to function
     online:
       - !secret tado_ib1_connection_state
+      - !secret tado_wr1_connection_state
+      - !secret tado_wr2_connection_state
       - !secret aarlo_connected_sensor
       - vacuum.neato_d7
       - switch.pi_hole
@@ -57,15 +59,28 @@
         - sensor.power_consumption
         - sensor.weewx_outside_temperature
         - sensor.weewx_outside_temperature_balcony
-        - light.range_extender_2 # deCONZ
-        - sensor.hue_dimmer_switch_1_battery_level
         - !secret tado_ib1_connection_state
+        - !secret tado_wr1_connection_state
+        - !secret tado_wr2_connection_state
         - climate.tado_smart_thermostat
         - !secret aarlo_connected_sensor
         - vacuum.neato_d7
         - switch.pi_hole
         - binary_sensor.ds1815_security_status
         - media_player.pi0_speaker_bedroom
+        - media_player.nvidia_shield_tv
+        - sensor.pi4_1_minute_load
+        - sensor.pi4_sandbox_1_minute_load
+        - sensor.dvb_t_signal_strength
+        - sensor.gammu_signal_strength
+        # For deCONZ, Hue, Broadlink and Xiaomi Miot (respectively) monitor a
+        # single sensor/device and assume its state is respective for that of
+        # the entire integration. Might cause false positives, but there doesn't
+        # appear to be a better way of handling this...
+        - sensor.power_88
+        - sensor.hue_dimmer_switch_1_battery_level
+        - remote.broadlink_living_room_remote
+        - sensor.qingping_air_monitor_lite_living_room_environment_co2_density
       to:
         - unknown
         - unavailable
@@ -88,8 +103,8 @@
         - sensor.miflora_calathea_living_room_light
       for: "04:00:00"
   condition:
-    # We should either be online (i.e. the Remote UI is connected), or the entity
-    # in question should _not_ require Internet-connectivity to function
+    # We should either be online (i.e. the Remote UI is connected), or the
+    # entity in question should _not_ require Internet-connectivity to function
     - condition: or
       conditions:
         - condition: state
@@ -97,7 +112,7 @@
           state: "on"
         - condition: template
           value_template: >-
-            {{ not trigger.entity_id in online }}
+            {{ trigger.entity_id not in online }}
   action:
     - service: script.turn_on
       target:
@@ -106,13 +121,31 @@
         variables:
           group: general
           channel: Notification
+          tag: >-
+            {{ context.id }}
           targetDevices: my
           title: 💥 Potential integration failure
           message: >-
-            {{ trigger.to_state.attributes.friendly_name }} has been in an
+            {{ trigger.to_state.name }} has been in an
             {{ trigger.to_state.state }}-state for
             {{ relative_time(trigger.to_state.last_changed) }}.
-  mode: single
+    # Dismiss notification if/when the failure clears
+    - wait_for_trigger:
+        - platform: template
+          value_template: >-
+            {{
+              states(trigger.to_state.entity_id)
+                not in ['unknown', 'unavailable']
+            }}
+          for: "00:10:00"
+      timeout: "12:00:00"
+      continue_on_timeout: false
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: >-
+          {{ context.id }}
+  mode: parallel
+  max: 10
 # The Recorder's SQLite-database is on a separate NVMe USB-drive that – although
 # generally stable – occasionally disconnects. It reconnects right away and the
 # filesystem is automatically remounted, but Docker doesn't take very kindly to
