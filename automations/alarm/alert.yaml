@@ -216,7 +216,7 @@
                 expand('group.vibration_all')
             ) | selectattr('state', 'eq', 'on') | selectattr(
               'last_changed', 'gt', now() - timedelta(minutes=5)
-            ) | list
+            ) | map(attribute='name') | list
           }}
     - service: script.turn_on
       target:
@@ -233,11 +233,11 @@
             {%- if tripped_sensors | length > 0 %}
               <br><br>
               {%- if tripped_sensors | length == 1 -%}
-                The alarm was triggered by: {{ tripped_sensors[0].name }}
+                The alarm was triggered by: {{ tripped_sensors[0] }}
               {%- else -%}
                 The following sensors triggered the alarm:
                 <br><br>◾ {{
-                  tripped_sensors | join('<br>◾ ', 'name')
+                  tripped_sensors | join('<br>◾ ')
                 -}}
               {%- endif -%}
             {% endif %}
@@ -264,7 +264,7 @@
                 expand('group.vibration_all')
             ) |
             selectattr('last_changed', 'gt', now() - timedelta(minutes=5)) |
-            list
+            map(attribute='name') | list
           }}
     - service: script.turn_on
       target:
@@ -277,11 +277,11 @@
             %}\nThe Home Alarm is sounding – there's someone in the house!
               \n\n
               {%- if tripped_sensors | length == 1 -%}
-                The alarm was triggered by: {{ tripped_sensors[0].name }}
+                The alarm was triggered by: {{ tripped_sensors[0] }}
               {%- else -%}
                 The following sensors triggered the alarm:
                 \n\n◾ {{
-                  tripped_sensors | join('\n\n◾ ', 'name')
+                  tripped_sensors | join('\n\n◾ ')
                 -}}
               {%- endif -%}
             {% endif %}
@@ -302,11 +302,11 @@
               %} – there's someone in the house!
               <br><br>
               {%- if tripped_sensors | length == 1 -%}
-                The alarm was triggered by: {{ tripped_sensors[0].name }}
+                The alarm was triggered by: {{ tripped_sensors[0] }}
               {%- else -%}
                 The following sensors triggered the alarm:
                 <br><br>◾ {{
-                  tripped_sensors | join('<br>◾ ', 'name')
+                  tripped_sensors | join('<br>◾ ')
                 -}}
               {%- endif -%}
             {%- else -%}
