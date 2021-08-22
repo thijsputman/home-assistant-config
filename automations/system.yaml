@@ -6,12 +6,13 @@
       - sensor.p20hd_eea_battery_level
       - sensor.sm_g930f_battery_level
       - sensor.gm1913_battery_level
-    # Courtesy of https://gist.github.com/sbyx/1f6f434f0903b872b84c4302637d0890
     sensors: >-
       {% set result = namespace(sensors=[]) %}
       {% for state in states.sensor |
-          selectattr('attributes.device_class', '==', 'battery') %}
-        {% if not state.entity_id in exclude and state.state | int(100) < 20 %}
+          selectattr('attributes.device_class', '==', 'battery') |
+          rejectattr('state.entity_id', 'in', exclude) %}
+        {# Cannot use "selectattr" as a numeric comparison is needed #}
+        {% if state.state | int(100) < 20 %}
             {% set result.sensors = result.sensors +
               [state.name ~ ': ' ~ state.state ~ '%'] %}
         {% endif %}
@@ -92,10 +93,11 @@
         - unknown
         - unavailable
       for: "01:00:00"
-    # Mi Flora (MQTT) sensors stop updating altogether – the light/lux
-    # measurements appear most variable (they keep changing slightly, even when
-    # it's dark). If they stop changing, most probably the bt-mqtt-gateway
-    # has failed...
+    # Mi Flora (via bt-mqtt-gateway) sensors stop updating altogether – the
+    # light/lux measurements appear most variable (they keep changing slightly,
+    # even when it's dark). If these stop changing, most probably the Mi Flora
+    # sensor has failed. There's no viable "last seen" attribute we to use, so
+    # this is the best approach currently available.
     - platform: state
       entity_id:
         - sensor.miflora_strelitzia_attic_light
@@ -126,9 +128,13 @@
           targetDevices: my
           title: 💥 Potential integration failure
           message: >-
-            {{ trigger.to_state.name }} has been in an
-            {{ trigger.to_state.state }}-state for
-            {{ relative_time(trigger.to_state.last_changed) }}.
+            {{ trigger.to_state.name }}
+            {% if trigger.entity_id is match('sensor\.miflora_') %}
+              has not changed
+            {% else %}
+              has been in an {{ trigger.to_state.state }}-state
+            {% endif %}
+            for {{ relative_time(trigger.to_state.last_changed) }}.
     # Dismiss notification if/when the failure clears
     - wait_for_trigger:
         - platform: template

@@ -9,6 +9,12 @@
       entity_id: group.openclose_all
       state: "on"
   action:
+    - variables:
+        doors_windows: >-
+          {{
+            expand('group.openclose_all') | selectattr('state', 'eq', 'on') |
+            map(attribute='name') | list
+          }}
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -19,11 +25,14 @@
           criticalNotification: true
           title: 🚪 Doors and/or windows left open!
           message: >-
-            The following doors and/or windows are still open:
-            <br><br>◾ {{
-              expand('group.openclose_all') | selectattr('state', 'eq', 'on') |
-                join('<br>◾ ', 'name')
-            -}}
+            {%- if doors_windows | length == 1 -%}
+              {{ doors_windows[0] }} is still open
+            {%- else -%}
+              The following doors and/or windows are still open:
+              <br><br>◾ {{
+                doors_windows | join('<br>◾ ')
+              -}}
+            {%- endif -%}
 - alias: 🚨 | 📱 Notify on "Armed away"
   id: e23e2cf8-502d-4e28-8758-9ab11b5fee14
   trigger:
