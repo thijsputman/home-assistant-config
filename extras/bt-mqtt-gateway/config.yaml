@@ -12,7 +12,7 @@ manager:
     update_all:
       topic: homeassistant/status
       payload: online
-  command_timeout: 35
+  command_timeout: 60
   command_retries: 0
   update_retries: 0
   workers:
@@ -23,5 +23,5 @@ manager:
           calathea_living_room: C0:FF:EE:12:34:56
           strelitzia_attic: C0:FF:EE:12:34:56
         topic_prefix: miflora
-        per_device_timeout: 6
+        per_device_timeout: 30
       update_interval: 1200
