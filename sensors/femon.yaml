@@ -5,7 +5,7 @@
   icon: mdi:signal-cellular-2
   value_template: >-
     {{ value | round(0) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: femon/snr
   name: DVB-T signal-to-noise ratio
@@ -13,4 +13,4 @@
   icon: mdi:signal-cellular-2
   value_template: >-
     {{ value | round(0) }}
-  expire_after: 120
+  expire_after: 180

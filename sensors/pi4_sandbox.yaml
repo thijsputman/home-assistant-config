@@ -64,4 +64,4 @@
   device_class: power
   value_template: >-
     {{ value | round(2) }}
-  expire_after: 120
+  expire_after: 180

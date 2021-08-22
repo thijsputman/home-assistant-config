@@ -5,7 +5,7 @@
   device_class: temperature
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/extraTemp1_C
   name: WeeWX outside temperature (Balcony)
@@ -13,7 +13,7 @@
   device_class: temperature
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/dewpoint_C
   name: WeeWX outside dewpoint
@@ -21,7 +21,7 @@
   device_class: temperature
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/heatindex_C
   name: WeeWX heat index
@@ -29,7 +29,7 @@
   device_class: temperature
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/windchill_C
   name: WeeWX wind chill
@@ -37,7 +37,7 @@
   device_class: temperature
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/pressure_mbar
   name: WeeWX outside pressure
@@ -45,7 +45,7 @@
   device_class: pressure
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/outHumidity
   name: WeeWX outside humidity
@@ -53,7 +53,7 @@
   device_class: humidity
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/extraHumid1
   name: WeeWX outside humidity (Balcony)
@@ -61,35 +61,37 @@
   device_class: humidity
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/windSpeed_kph
   name: WeeWX wind speed
   unit_of_measurement: m/s
   value_template: >-
     {{ (value | float / 3.6) | round(2) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/windGust_kph
   name: WeeWX wind gust
   unit_of_measurement: m/s
   value_template: >-
     {{ (value | float / 3.6) | round(2) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/beaufort_count
   name: WeeWX wind speed (beaufort)
   unit_of_measurement: Bft
   value_template: >-
     {{ value | round(0) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/windDir
   name: WeeWX wind direction
   unit_of_measurement: °
   value_template: >-
     {{ value | round(0) }}
-  expire_after: 120
+  # Wind direction is only reported when it changes – a somewhat longer expiry
+  # time prevents (many) small gaps in the data...
+  expire_after: 1800
 # Due to the placement of the weather station, the wind direction is rather
 # jittery. The below filter smooths out the measurements as bit. It's using a
 # moving average instead of low-pass filter as the input time series is
@@ -109,7 +111,8 @@
   unit_of_measurement: °
   value_template: >-
     {{ value | round(0) }}
-  expire_after: 120
+  # Idem...
+  expire_after: 1800
 - platform: filter
   name: WeeWX wind gust direction (filtered)
   entity_id: sensor.weewx_wind_gust_direction
@@ -124,34 +127,34 @@
   unit_of_measurement: W/m²
   value_template: >-
     {{ value | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/UV
   name: WeeWX UV index
   value_template: >-
     {{ value | round(0) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/rain_cm
   name: WeeWX rain
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/hourRain_cm
   name: WeeWX rain (hour)
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/rainRate_cm_per_hour
   name: WeeWX rain rate (hour)
   unit_of_measurement: mm/h
   value_template: >-
     {{ (value | float * 10) | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: integration
   source: sensor.weewx_rain_hour
   name: weewx_rain_total
@@ -164,14 +167,14 @@
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(1) }}
-  expire_after: 120
+  expire_after: 180
 - platform: mqtt
   state_topic: weewx/ET_cm
   name: WeeWX evapotranspiration
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(4) }}
-  expire_after: 120
+  expire_after: 180
 - platform: integration
   source: sensor.weewx_evapotranspiration
   name: weewx_evapotranspiration_total
