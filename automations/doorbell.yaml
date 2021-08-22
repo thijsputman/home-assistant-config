@@ -84,17 +84,16 @@
       to: "on"
   condition:
     - condition: state
-      entity_id:
-        - binary_sensor.aarlo_motion_front
-        - sensor.aarlo_recent_activity_front
+      entity_id: binary_sensor.aarlo_motion_front
       state: "on"
   action:
     - wait_for_trigger:
         - platform: event
           event_type: aarlo_capture_updated
       timeout: 60
-      # If no capture comes in within 1 minute, it was (most likely) already
-      # taken before the doorbell was rang...
+      # If no capture comes in within one minute, it was (most likely) already
+      # taken before the doorbell rang – continue and send the previously
+      # available thumbnail...
       continue_on_timeout: true
     - service: script.turn_on
       target:
