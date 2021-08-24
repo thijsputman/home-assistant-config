@@ -1,6 +1,5 @@
 - alias: 💡 | 👋 Kitchen counter & cupboards toggle (motion detected)
   id: ff4ddb05-91d8-431d-9226-b51e0bbd9b36
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.presence_53
@@ -26,6 +25,12 @@
             - condition: numeric_state
               entity_id: sensor.lightlevel_55
               below: 200
+    # Don't bother switching on the lights if the alarm is "Armed away"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
   action:
     - service: hue.hue_activate_scene
       data:
@@ -43,7 +48,7 @@
           states('binary_sensor.presence_53') != 'on' and
           states('binary_sensor.presence_105') != 'on'
         }}
-    - delay: 120
+    - delay: 300
       # If the scene for "Kitchen counter & cupboards" is still "Activity",
       # no changes were made to the lighting. We can safely restore the previous
       # scene for the "Kitchen" as a whole...
@@ -85,7 +90,13 @@
       entity_id: binary_sensor.presence_60
       from: "off"
       to: "on"
-  condition: []
+  condition:
+    # Don't bother switching on the lights if the alarm is "Armed away"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
   action:
     - service: light.turn_on
       data:
@@ -106,17 +117,33 @@
   max_exceeded: silent
 - alias: 💡 | 👋 Basement light toggle (motion detected)
   id: 7a1ebf52-c69e-4bf5-8670-0b32bba52600
-  description: ""
-  use_blueprint:
-    path: homeassistant/motion_light.yaml
-    input:
-      motion_entity: binary_sensor.presence_50
-      light_target:
-        entity_id: light.basement
-      no_motion_wait: 60
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.presence_50
+      from: "off"
+      to: "on"
+  condition:
+    # Don't bother switching on the lights if the alarm is "Armed away"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
+  action:
+    - service: light.turn_on
+      entity_id: light.basement
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.presence_50
+          from: "on"
+          to: "off"
+    - delay: 60
+    - service: light.turn_off
+      entity_id: light.basement
+  mode: restart
+  max_exceeded: silent
 - alias: 💡 | 👋 Wardrobe light toggle (motion detected)
   id: f30e4af7-6b31-4062-8f12-25fde6ae3577
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.presence_63
@@ -126,6 +153,12 @@
     - condition: numeric_state
       entity_id: sensor.lightlevel_65
       below: 50
+    # Don't bother switching on the lights if the alarm is "Armed away"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
   action:
     - service: light.turn_on
       data:
@@ -157,6 +190,12 @@
     - condition: numeric_state
       entity_id: sensor.lightlevel_bathroom
       below: 200
+    # Don't bother switching on the lights if the alarm is "Armed away"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
   action:
     - choose:
         # Make the light a bit kinder on the eyes late at night
@@ -204,6 +243,12 @@
     - condition: state
       entity_id: timer.attic_hallway_motion_pause
       state: idle
+    # Don't bother switching on the lights if the alarm is "Armed away"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
   action:
     - choose:
         # Upstairs
