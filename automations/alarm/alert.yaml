@@ -37,6 +37,95 @@
       data: {}
       entity_id: alarm_control_panel.home_alarm
   mode: single
+- alias: 🚨 | 👋 Trigger alarm (motion detected in Hallway/staircase)
+  id: 84cdd8f4-00e3-4bc1-8fc7-8344ba722c19
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.presence_91 # Attic stairs/hallway
+        - binary_sensor.presence_92 # Attic stairs/hallway
+        - binary_sensor.presence_123 # Downstairs hallway
+        - binary_sensor.presence_125 # Downstairs hallway
+        - binary_sensor.presence_121 # Stairs
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_night
+  action:
+    # Only continue if the motion sensor in the first floor hallway _hasn't_
+    # changed (i.e. been active) in the past fifteen minutes. The idea here is
+    # that if we're home, all motion at night will start in the first floor
+    # hallway (i.e. by someone leaving their bedroom). With this condition in
+    # place, a small trip around the house during the night should not trigger
+    # the alarm...
+    - condition: template
+      value_template: >-
+        {{
+          states.binary_sensor.presence_127 is defined and
+          states.binary_sensor.presence_127.last_changed <=
+            now() - timedelta(minutes=15)
+        }}
+    # WIP – send a notification instead of triggering the alarm...
+    # - service: alarm_control_panel.alarm_trigger
+    #   data: {}
+    #   entity_id: alarm_control_panel.home_alarm
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          targetDevices: my
+          channel: Alert
+          group: home alarm
+          title: 🧪 Motion detected in Hallway/staircase!
+          message: >-
+            {{ trigger.from_state.name }} tripped the alarm...
+  mode: single
+- alias: 🚨 | 👋 Trigger alarm (vibration detected)
+  id: b5f4a4ba-dc7b-49e3-afe6-6f6762a3031f
+  trigger:
+    # Vibration sensors could be made more sensitive by triggering on changes to
+    # their "tiltangle" and "orientation" attributes. In that case the alarm
+    # would also trigger when the sensor transitions to/from "unavailable" which
+    # is undesirable (and complex to guard against).
+    # As such the sensor's baseline vibration detection is used (which means you
+    # need to somewhat more forcefully bump into an office chair to trigger the
+    # alarm 😉).
+    - platform: state
+      entity_id:
+        - binary_sensor.vibration_106 # Office chair
+        - binary_sensor.vibration_102 # Office chair
+        - binary_sensor.vibration_122 # Drawer with wallets and (car) keys
+      from: "off"
+      to: "on"
+  condition:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_night
+  action:
+    # WIP – send a notification instead of triggering the alarm...
+    # - service: alarm_control_panel.alarm_trigger
+    #   data: {}
+    #   entity_id: alarm_control_panel.home_alarm
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          targetDevices: my
+          channel: Alert
+          group: home alarm
+          title: 🧪 Vibration detected!
+          message: >-
+            {{ trigger.from_state.name }} tripped the alarm...
+  mode: single
 - alias: 🚨 | 🔊 Sound the alarm (alarm triggered)
   id: 714cfa44-bce7-41f8-be78-9891769fef74
   description: ""
@@ -121,7 +210,7 @@
         kelvin: 6500
       entity_id: light.bedroom
   mode: single
-- alias: 🚨 | 💡 Flash lights (pending alarm; Front / Kitchen door open)
+- alias: 🚨 | 💡 Flash lights (pending alarm)
   id: 4416cb36-8291-41ae-8c62-7a246fdc9d2d
   description: ""
   trigger:
@@ -130,9 +219,12 @@
       to: pending
   condition: []
   action:
+    # The below assumes the alarm is always triggered by a single state change.
+    # Technically speaking not necessarily true – though practically speaking
+    # sufficient.
     - choose:
+        # Front door opened
         - conditions:
-            # Front door
             - condition: state
               entity_id: binary_sensor.openclose_16
               state: "on"
@@ -143,8 +235,8 @@
                 entity_id:
                   - light.hue_filament_bulb_1_5
                   - light.hue_filament_bulb_1_4
+        # Kitchen door opened
         - conditions:
-            # Kitchen door
             - condition: state
               entity_id: binary_sensor.openclose_12
               state: "on"
@@ -155,6 +247,33 @@
                 entity_id:
                   - light.spot_4_kitchen_garden_side
                   - light.spot_3_kitchen
+        # Hallway/staircase motion detected (when someone home)
+        - conditions:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: group.motion_hallway
+                  state: "on"
+                - condition: state
+                  entity_id: group.motion_attic
+                  state: "on"
+            - condition: state
+              entity_id: group.family
+              state: home
+          sequence:
+            - service: light.turn_on
+              data:
+                flash: long
+                entity_id:
+                  - light.hallway
+                  - light.attic
+            # The Attic staircase relay doesn't support flash – instead of
+            # rapidly toggling the relay (*click*, *click*, *click*, *click*),
+            # switch it off and gently flash the lights in the Attic proper to
+            # reach roughly the same effect...
+            - service: light.turn_off
+              data:
+                entity_id: light.attic_hallway
       default: []
   mode: single
 - alias: 🚨 | 💡 Garden lights on (alarm pending)

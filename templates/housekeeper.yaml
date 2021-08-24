@@ -3,3 +3,11 @@
       unique_id: c34f4e95-59a8-4a34-a06d-91e8c37c7f64
       icon: mdi:spray-bottle
       state: !secret housekeeper_present_eval
+    - name: Neato active (Attic)
+      unique_id: 0f9ef692-0325-4766-8bdd-301765c97e97
+      icon: mdi:robot-vacuum-variant
+      state: !secret neato_active_attic_eval
+    - name: Neato active (First floor)
+      unique_id: fcc17cfc-6249-4c8c-bd75-5a32264e13cc
+      icon: mdi:robot-vacuum-variant
+      state: !secret neato_active_first_floor_eval

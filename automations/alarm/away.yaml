@@ -87,65 +87,96 @@
                 is home
               {%- endif -%}
             {%- endif -%}.
-# Presence (i.e. motion) sensors are used to turn on lights – the sensors are
-# not well-positioned for intruder detection. Still, if no-one is home, there's
-# no harm in making them trigger the alarm...
 - alias: 🚨 | 👋 Trigger alarm (motion detected; "Armed away")
   id: 358bd339-33e4-4c0a-a92e-0682346e48a1
   trigger:
+    # Not all motion sensors are optimally positioned for intruder detection
+    # (e.g. the one triggering the light in the toilet probably won't catch a
+    # burglar). Still, if no-one is home, there's no harm in having all of them
+    # trigger the alarm...
     - platform: state
+      # N.B. This list of entities is duplicated further down
       entity_id:
-        - binary_sensor.presence_50
-        - binary_sensor.presence_53
-        - binary_sensor.presence_60
-        - binary_sensor.presence_63
-        - binary_sensor.presence_68
-        - binary_sensor.presence_71
-        - binary_sensor.presence_91
-        - binary_sensor.presence_92
-        - binary_sensor.presence_105
-        - binary_sensor.presence_121
+        - binary_sensor.presence_50 # Basement
+        - binary_sensor.presence_53 # Kitchen counter
+        - binary_sensor.presence_60 # Toilet
+        - binary_sensor.presence_63 # Wardrobe
+        - binary_sensor.presence_68 # Bathroom
+        - binary_sensor.presence_71 # Bathroom
+        - binary_sensor.presence_91 # Attic stairs/hallway
+        - binary_sensor.presence_92 # Attic stairs/hallway
+        - binary_sensor.presence_105 # Kitchen counter
+        - binary_sensor.presence_121 # Stairs
+        - binary_sensor.presence_123 # Downstairs hallway
+        - binary_sensor.presence_125 # Downstairs hallway
+        - binary_sensor.presence_127 # Upstairs hallway
       from: "off"
       to: "on"
   condition:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
-    # Ignore motion sensor in Attic while Neato is active
+    # Ignore motion sensor in Attic while Neato is active – Neato's LIDAR uses
+    # infrared and thus triggers (PIR) motion sensors...
     - condition: or
       conditions:
         - condition: state
           entity_id: binary_sensor.presence_91
           state: "off"
-        - condition: not
-          conditions:
-            - condition: time
-              after: "11:30:00"
-              before: "14:30:00"
-              weekday: [mon, thu] # yamllint disable-line rule:brackets
-    # Ignore motion sensor on first floor while Neato is active
+        - condition: state
+          entity_id: binary_sensor.neato_active_attic
+          state: "off"
+    # Ignore motion sensors on first floor while Neato is active
     - condition: or
       conditions:
         - condition: state
-          entity_id: binary_sensor.presence_63
+          entity_id:
+            - binary_sensor.presence_63
+            - binary_sensor.presence_127
           state: "off"
-        - condition: not
-          conditions:
-            - condition: or
-              conditions:
-                - condition: time
-                  after: "11:00:00"
-                  before: "16:00:00"
-                  weekday: mon
-                - condition: time
-                  after: "13:00:00"
-                  before: "18:00:00"
-                  weekday: thu
+        - condition: state
+          entity_id: binary_sensor.neato_active_first_floor
+          state: "off"
   action:
+    # Wait up to five minutes for either the same or another motion sensor to
+    # trigger. This prevents false positives (e.g. due to Sun light or heat) –
+    # if someone is really moving around the house it's highly likely they'll
+    # trigger another sensor within this timeframe...
+    # There remains a slight possibility for a false positive when the initial
+    # trigger occurs while one of the Neato units is active. The below triggers
+    # don't account for that – would make things overly complex.
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.presence_50
+            - binary_sensor.presence_53
+            - binary_sensor.presence_60
+            - binary_sensor.presence_63
+            - binary_sensor.presence_68
+            - binary_sensor.presence_71
+            - binary_sensor.presence_91
+            - binary_sensor.presence_92
+            - binary_sensor.presence_105
+            - binary_sensor.presence_121
+            - binary_sensor.presence_123
+            - binary_sensor.presence_125
+            - binary_sensor.presence_127
+          from: "off"
+          to: "on"
+        # Additionally, if the triggered sensor stays "on" for more than 2
+        # minutes also assume it got triggered twice (if triggered once the
+        # sensor stays "on" for 90 seconds at most)
+        - platform: template
+          value_template: >-
+            {{ states(trigger.entity_id) == 'on' }}
+          for: 120
+      timeout: 300
+      continue_on_timeout: false
     - service: alarm_control_panel.alarm_trigger
       data: {}
       entity_id: alarm_control_panel.home_alarm
   mode: single
+  max_exceeded: silent
 - alias: 🚨 | ⚡ Trigger alarm (power outage; "Armed away")
   id: c9c16198-8524-440f-99ea-0b447c68b798
   trigger:
