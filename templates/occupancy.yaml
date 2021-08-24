@@ -1,9 +1,9 @@
 # Office chairs occupancy (proxy for Attic occupancy)
 - trigger:
     # Using vibration sensors on the office chairs to infer occupancy of the
-    # Attic (i.e. the "Office" 😉) – the vibration itself is not strong enough,
-    # but changes to either orientation or tilt angle indicate someone is moving
-    # around in the chair...
+    # Attic (i.e. the "Office" 😉) – the vibration itself is not always strong
+    # enough, but changes to either orientation or tilt angle indicate someone
+    # is moving around in the chair...
     - platform: state
       entity_id:
         - binary_sensor.vibration_102
@@ -13,7 +13,7 @@
       entity_id:
         - binary_sensor.vibration_102
         - binary_sensor.vibration_106
-      attribute: orientation
+      attribute: tiltangle
   binary_sensor:
     name: Occupancy (Office chairs)
     unique_id: 3ff1e67a-37ba-443c-b390-e9d2bdf4b07f

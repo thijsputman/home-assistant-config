@@ -140,7 +140,7 @@
         - platform: template
           value_template: >-
             {{
-              states(trigger.to_state.entity_id)
+              states(trigger.entity_id)
                 not in ['unknown', 'unavailable']
             }}
           for: "00:10:00"
@@ -157,11 +157,6 @@
 # filesystem is automatically remounted, but Docker doesn't take very kindly to
 # this: All containers using the volume need to be stopped and only then (once
 # they're all down) restarted for the volume to become accessible again...
-# The Raspberry Pi 4 is quite picky where it comes to its USB-drives: The one
-# I'm currently using has historically been stable (not 100% though, which is
-# why it's not the boot-volume). Recently I've discovered that – given the right
-# atmospheric conditions – touching it causes a static shock which reconnects
-# the drive... ⚡
 - alias: 📱 Notify on Recorder-component failure (System Log)
   id: 28b00ed1-a3b0-4d7f-97bc-b1faf3b446d1
   trigger:
@@ -271,11 +266,11 @@
       data:
         targetDevices: my
         message: >-
-          {%- if trigger.to_state.entity_id == 'binary_sensor.remote_ui' -%}
+          {%- if trigger.entity_id == 'binary_sensor.remote_ui' -%}
             📡 Home Assistant lost connectivity!
             \nHome Assistant appears to have lost connection with Nabu Casa.
           {%-
-            elif trigger.to_state.entity_id == 'binary_sensor.google_dns_ping'
+            elif trigger.entity_id == 'binary_sensor.google_dns_ping'
           -%}
             📡 Home Assistant lost Internet-connectivity!
             \nHome Assistant is unable to ping Google's Public DNS.
@@ -288,7 +283,7 @@
     - wait_for_trigger:
         - platform: template
           value_template: >-
-            {{ states(trigger.to_state.entity_id) == 'on' }}
+            {{ states(trigger.entity_id) == 'on' }}
           for: "00:02:00"
       timeout: "12:00:00"
       continue_on_timeout: false

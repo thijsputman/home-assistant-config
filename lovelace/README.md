@@ -23,7 +23,7 @@ custom CSS.
 - `paper-buttons-row.js?v=0.6.0`
 - `simple-thermostat.js?v=2.4.2`
 - `slider-entity-row.js?v=17.1.0`
-- `vacuum-card.js?v=1.23.0`
+- `vacuum-card.js?v=1.24.0`
 
 ## Custom CSS
 

@@ -16,15 +16,15 @@ openclose_all:
   name: All doors & windows
   icon: mdi:home-variant-outline
   entities:
-    - binary_sensor.openclose_12
-    - binary_sensor.openclose_16
-    - binary_sensor.openclose_17
-    - binary_sensor.openclose_33
-    - binary_sensor.openclose_36
-    - binary_sensor.openclose_18
-    - binary_sensor.openclose_19
-    - binary_sensor.openclose_20
-    - binary_sensor.openclose_8
-    - binary_sensor.openclose_14
-    - binary_sensor.openclose_15
-    - binary_sensor.openclose_34
+    - binary_sensor.openclose_12 # Kitchen
+    - binary_sensor.openclose_16 # Front door
+    - binary_sensor.openclose_17 # Bathroom
+    - binary_sensor.openclose_33 # Attic
+    - binary_sensor.openclose_36 # Kitchen
+    - binary_sensor.openclose_18 # Bedroom
+    - binary_sensor.openclose_19 # Bedroom
+    - binary_sensor.openclose_20 # Bedroom
+    - binary_sensor.openclose_8 # Living room
+    - binary_sensor.openclose_14 # Living room
+    - binary_sensor.openclose_15 # Living room
+    - binary_sensor.openclose_34 # Back gate

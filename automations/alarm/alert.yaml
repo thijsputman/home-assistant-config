@@ -3,24 +3,24 @@
   description: ""
   trigger:
     - platform: state
-      # Not using groups of sensors – They will trigger "off" → "on" if one of
-      # their members transitions from "unavailable" → "on", which leads to false
-      # alarms...
+      # Not using a group of sensors – this will trigger "off" → "on" if one of
+      # their members transitions from "unavailable" → "on", which leads to
+      # false alarms...
       # Furthermore, listing the individual entities is relevant as some
       # doors/windows might intentionally be left open – using a group would
-      # obscure all further state transitions.
+      # obscure all further transitions to the "on"-state.
       entity_id:
-        - binary_sensor.openclose_12
-        - binary_sensor.openclose_16
-        - binary_sensor.openclose_17
-        - binary_sensor.openclose_33
-        - binary_sensor.openclose_36
-        - binary_sensor.openclose_18
-        - binary_sensor.openclose_19
-        - binary_sensor.openclose_20
-        - binary_sensor.openclose_8
-        - binary_sensor.openclose_14
-        - binary_sensor.openclose_15
+        - binary_sensor.openclose_12 # Kitchen
+        - binary_sensor.openclose_16 # Front door
+        - binary_sensor.openclose_17 # Bathroom
+        - binary_sensor.openclose_33 # Attic
+        - binary_sensor.openclose_36 # Kitchen
+        - binary_sensor.openclose_18 # Bedroom
+        - binary_sensor.openclose_19 # Bedroom
+        - binary_sensor.openclose_20 # Bedroom
+        - binary_sensor.openclose_8 # Living room
+        - binary_sensor.openclose_14 # Living room
+        - binary_sensor.openclose_15 # Living room
       from: "off"
       to: "on"
   condition:
