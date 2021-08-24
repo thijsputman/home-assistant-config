@@ -1,0 +1,5 @@
+- binary_sensor:
+    - name: Housekeeper present
+      unique_id: c34f4e95-59a8-4a34-a06d-91e8c37c7f64
+      icon: mdi:spray-bottle
+      state: !secret housekeeper_present_eval

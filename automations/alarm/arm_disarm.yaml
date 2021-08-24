@@ -78,7 +78,7 @@
   description: ""
   trigger:
     - platform: state
-      entity_id: input_boolean.housekeeper_present
+      entity_id: binary_sensor.housekeeper_present
       from: "off"
       to: "on"
   condition:
@@ -96,7 +96,7 @@
   description: ""
   trigger:
     - platform: state
-      entity_id: input_boolean.housekeeper_present
+      entity_id: binary_sensor.housekeeper_present
       from: "on"
       to: "off"
   condition:

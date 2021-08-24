@@ -1,6 +1,0 @@
-housekeeper_present:
-  name: Housekeeper present
-  icon: mdi:spray-bottle
-  # Toggle off at Home Assistant restart to prevent erroneously getting stuck in
-  # "Housekeeper present"-mode
-  initial: false
