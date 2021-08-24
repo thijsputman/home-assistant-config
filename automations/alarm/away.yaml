@@ -232,8 +232,8 @@
             The back gate was just opened!
             There could be someone in the garden – check the camera feed...
             {% if states('sensor.time_of_day') != 'day' -%}
-              <br><br>As a precaution, the garden and downstairs lights might
-              have been automatically switched on – please check them after
+              <br><br>As a precaution, the garden and downstairs lights have
+              been automatically switched on – please check their state after
               resolving the incident...
             {% endif %}
     - choose:
@@ -314,36 +314,68 @@
       data:
         group_name: Hallway
         scene_name: Evening
-    # Wait for 2 minutes to ensure this is not a false positive
+    # Wait for 2 minutes to ensure this is not a false alarm
     - wait_for_trigger:
         - platform: state
+          id: false_alarm
           entity_id: alarm_control_panel.home_alarm
           from: armed_away
           to: disarmed
+        # Short-circuit when the alarm gets triggered
+        - platform: state
+          entity_id: alarm_control_panel.home_alarm
+          to: triggered
       timeout: "00:02:00"
       continue_on_timeout: true
     - choose:
-        # In case of false positive, switch the garden lights back to a more
-        # agreeable setting
+        # In case of false alarm, switch the Garden lights back to a more
+        # agreeable setting – we assume someone is home and won't further
+        # attempt to control any of the lights...
         - conditions:
             - condition: template
               value_template: >-
-                {{ wait.trigger.platform == 'state' }}
+                {{
+                  wait.trigger is not none and
+                  wait.trigger.id == 'false_alarm'
+                }}
           sequence:
             - service: hue.hue_activate_scene
               data:
                 group_name: Garden
                 scene_name: Ambiance
-      # In case it is _not_ a false positive, prevent the Garden lights from
-      # staying on indefinitely. Switch them off when it gets light outside –\
-      # the inside lights will have already been switched off by a "regular"
-      # automation at this point...
+      # Otherwise, prevent the Garden lights from staying on indefinitely.
+      # Switch them off when it gets light outside – the inside lights are
+      # switched off at dawn as part of normal flow...
       default:
+        # Automations in "📄 ./automations/alarm/alert.yaml" take over when the
+        # alarm gets triggered – no need to continue
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: alarm_control_panel.home_alarm
+              state: triggered
         - wait_for_trigger:
             - platform: state
+              id: daytime
               entity_id: sensor.time_of_day
               from: dawn
               to: day
+            # Short-circuit when alarm gets triggered or the Garden lights
+            # switch off – no need to keep waiting
+            - platform: state
+              entity_id: alarm_control_panel.home_alarm
+              to: triggered
+            - platform: state
+              entity_id: light.garden
+              from: "on"
+              to: "off"
+          timeout: "24:00:00"
+          continue_on_timeout: false
+        - condition: template
+          value_template: >-
+            {{
+              wait.trigger.id == 'daytime'
+            }}
         - service: light.turn_off
           data:
             entity_id: light.garden
