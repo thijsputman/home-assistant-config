@@ -37,26 +37,6 @@
   version: 2c
   accept_errors: true
   unit_of_measurement: KiB
-- platform: template
-  sensors:
-    pi4_memory_available:
-      value_template: >
-        {{ ((
-              (states('sensor.pi4_memavailreal_raw')|int) +
-              (states('sensor.pi4_memcached_raw')|int) +
-              (states('sensor.pi4_membuffer_raw')|int)
-            )|float/1000) | round(0)
-        }}
-      unit_of_measurement: MiB
-      friendly_name: Pi4 memory available
-    pi4_memory_used_percentage:
-      value_template: >
-        {{  (
-              (1 - (states('sensor.pi4_memory_available')|float)/4096) * 100
-            ) | round(2)
-        }}
-      unit_of_measurement: "%"
-      friendly_name: Pi4 memory used (percentage)
 - platform: mqtt
   state_topic: tc66c/pi4/power_W
   name: Pi4 Power usage
