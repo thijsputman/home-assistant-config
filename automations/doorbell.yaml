@@ -1,6 +1,5 @@
 - alias: 💡 | 🚪 Blink Attic lights (doorbell rang)
   id: e08720ba-f27a-4308-aeef-275c606872b6
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.vibration_43
@@ -19,7 +18,6 @@
   mode: single
 - alias: 📱 | 🚪 Notify devices at home (doorbell rang; auto-dismissed)
   id: dd5d2646-26e3-4c71-aa3c-b7f49151606e
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.vibration_43
@@ -40,24 +38,48 @@
           title: 🚪 Someone's at the front door!
           message: >-
             The doorbell just rang...
-    # Auto-dismiss when front door opens or after 2 minutes
+    # Wait up to one minutes for the front door to open
     - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.openclose_16
           from: "off"
           to: "on"
-      timeout: 120
+      timeout: 60
       continue_on_timeout: true
-    # Also causes the notification to be dismissed from all mobile devices
-    - service: persistent_notification.dismiss
-      data:
-        notification_id: doorbell
+    - choose:
+        # The door was not opened (i.e. the timer expired), update notification
+        # with the latest Arlo capture
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ wait.trigger is none }}
+          sequence:
+            - service: script.turn_on
+              target:
+                entity_id: script.persistent_notification
+              data:
+                variables:
+                  group: doorbell
+                  channel: Notification
+                  tag: doorbell
+                  targetDevices: home
+                  title: 🚪 Missed someone at the front door...
+                  message: >-
+                    Arlo captured the situation:
+                  image: >-
+                    {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
+      # Otherwise (i.e. the door was opened) dismiss the notification
+      default:
+        - service: persistent_notification.dismiss
+          data:
+            notification_id: doorbell
   mode: single
   max_exceeded: silent
 - alias: 📹 | 🚪 Arlo snapshot (doorbell rang)
   id: dbfbeeab-04a2-404f-8771-5109ec19f729
-  description: ""
   trigger:
+    # Sensor stays active for 60 seconds, so there's no need to guard against
+    # multiple triggers in rapid succession...
     - platform: state
       entity_id: binary_sensor.vibration_43
       from: "off"
@@ -70,13 +92,15 @@
           entity_id: camera.aarlo_front
           state: recording
   action:
-    - service: aarlo.camera_request_snapshot
-      data: {}
+    - service: aarlo.camera_request_snapshot_to_file
+      data:
+        filename: >-
+          /config/var/doorbell/
+            {{- now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') -}}.jpg
       entity_id: camera.aarlo_front
   mode: single
 - alias: 📱 | 🚪 Send Arlo capture (camera active when doorbell rang)
   id: a811aa28-9084-4158-87b4-a063e9b8358c
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.vibration_43

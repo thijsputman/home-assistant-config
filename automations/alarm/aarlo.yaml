@@ -1,6 +1,5 @@
 - alias: 📹 | ⏰ Arm Arlo "Armed Home" (daily at 22:30)
   id: 093a7fa4-2045-4c7e-a8fb-2ff211c44213
-  description: ""
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
@@ -26,7 +25,6 @@
   mode: restart
 - alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
   id: 6fcafedb-78df-4fa4-a7ac-80aec0750cd1
-  description: ""
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
@@ -57,7 +55,6 @@
   mode: restart
 - alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
   id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
-  description: ""
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
@@ -75,7 +72,6 @@
   mode: restart
 - alias: 📹 | ⏳ Pause Arlo "Armed Home" (timer started)
   id: ed2ae249-369f-4503-9122-21a5e49e1c21
-  description: ""
   trigger:
     - platform: event
       event_type:
@@ -103,7 +99,6 @@
   mode: single
 - alias: 📹 | ⏳ Resume Arlo "Armed Home" (timer ended)
   id: 71bb747a-25c5-416a-a98d-66c33789a702
-  description: ""
   trigger:
     - platform: event
       event_type:
@@ -122,7 +117,6 @@
   mode: single
 - alias: 📹 | ⏰/🤖 Arlo snapshot (every 2 hours / Home Assistant start; "Home Alarm" state)
   id: 769a4449-f68b-4403-a09b-87b81cbe1581
-  description: ""
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
@@ -138,31 +132,59 @@
         - disarmed
         - armed_night
         - armed_away
-  condition:
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id:
-            - camera.aarlo_back
-            - camera.aarlo_front
-          state: recording
+  condition: []
   action:
-    # Wait up to 5 minutes for Aarlo to be connected – to cope with the fact
-    # that, at Home Assistant start, Aarlo is probably not connected yet...
+    # Wait up to 5 minutes for Arlo to connect – cope with the fact that, at
+    # Home Assistant start, Arlo is not connected yet...
     - wait_template: >-
         {{ states(aarlo_connected_sensor) == 'on' }}
       timeout: 300
       continue_on_timeout: false
+    # Back camera
+    - choose:
+        - conditions:
+            # Don't disturb an active recording session
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: camera.aarlo_back
+                  state: recording
+          sequence:
+            - service: aarlo.camera_request_snapshot
+              data: {}
+              entity_id: camera.aarlo_back
+    # Front camera
+    #
+    # In case of a regular/timed snapshot, ensure at least five minutes have
+    # passed since the doorbell last rang (the 4-minute time delta is
+    # intentional as the sensor remains active for 1 minute). This prevents a
+    # "race condition" where we overwrite the doorbell capture with a regular
+    # capture too quickly (and send out the wrong capture in doorbell related
+    # notifications).
+    - wait_template: >-
+        {{
+          trigger.platform != 'time_pattern' or (
+            states.binary_sensor.vibration_43 is defined and
+            states.binary_sensor.vibration_43.last_changed <=
+              now() - timedelta(minutes=4)
+          )
+        }}
+      timeout: 300
+      # If timer expires, update snapshot regardless
+      continue_on_timeout: true
+    # Don't disturb an active recording session
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: camera.aarlo_front
+          state: recording
     - service: aarlo.camera_request_snapshot
       data: {}
-      entity_id:
-        - camera.aarlo_back
-        - camera.aarlo_front
+      entity_id: camera.aarlo_front
   mode: single
   max_exceeded: silent
 - alias: 📹 | ⏰ Arlo store daily garden snapshot (at dawn and dusk)
   id: e56ad77e-9f8e-43f7-9fe6-6b2678a86df6
-  description: ""
   trigger:
     - platform: state
       entity_id: sensor.time_of_day
