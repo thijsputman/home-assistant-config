@@ -113,19 +113,11 @@
       {{ trigger.id == 'incoming' }}
     attributes:
       number: >-
-        {% if trigger.id == 'incoming' %}
-          {{ state_attr('sensor.gammu_received_message', 'number') }}
-        {% endif %}
+        {{ state_attr('sensor.gammu_received_message', 'number') }}
       datetime: >-
-        {% if trigger.id == 'incoming' %}
-          {{ state_attr('sensor.gammu_received_message', 'datetime') }}
-        {% endif %}
+        {{ state_attr('sensor.gammu_received_message', 'datetime') }}
     state: >-
-      {% if trigger.id == 'incoming' %}
-        {{ states('sensor.gammu_received_message') }}
-      {% else %}
-        unavailable
-      {% endif %}
+      {{ states('sensor.gammu_received_message') }}
 # Using a prepaid Vodafone NL SIM – after each transaction Vodafone sends an SMS
 # with the remaining credit (and a slightly differently worded message when the
 # credit is topped up 🤐). This is read by the below template sensor so warnings
@@ -177,6 +169,8 @@
     name: Gammu received (authenticated command)
     unique_id: 923a6400-f058-405f-8139-423e2b449830
     icon: mdi:message-text-lock-outline
+    # Out of an abundance of caution, the availability-condition is repeated in
+    # all attribute and state templates...
     availability: >-
       {{
         states('sensor.gammu_received_message_count')|int <= 10

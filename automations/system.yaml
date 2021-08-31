@@ -10,7 +10,7 @@
       {% set result = namespace(sensors=[]) %}
       {% for state in states.sensor |
           selectattr('attributes.device_class', '==', 'battery') |
-          rejectattr('state.entity_id', 'in', exclude) %}
+          rejectattr('entity_id', 'in', exclude) %}
         {# Cannot use "selectattr" as a numeric comparison is needed #}
         {% if state.state | int(100) < 20 %}
             {% set result.sensors = result.sensors +
@@ -128,13 +128,13 @@
           targetDevices: my
           title: 💥 Potential integration failure
           message: >-
-            {{ trigger.to_state.name }}
-            {% if trigger.entity_id is match('sensor\.miflora_') %}
-              has not changed
-            {% else %}
-              has been in an {{ trigger.to_state.state }}-state
-            {% endif %}
-            for {{ relative_time(trigger.to_state.last_changed) }}.
+            {{- trigger.to_state.name -}}
+            {%- if trigger.entity_id is match('sensor\.miflora_')
+              %} has not changed
+            {%- else
+              %} has been in an {{ trigger.to_state.state }}-state
+            {%- endif %} for {{
+              relative_time(trigger.to_state.last_changed) }}.
     # Dismiss notification if/when the failure clears
     - wait_for_trigger:
         - platform: template
