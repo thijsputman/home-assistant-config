@@ -1,4 +1,4 @@
-- alias: 📱 Sensor low battery notification (🔋 < 20%)
+- alias: 📱 Sensor low battery notification (🔋 < 10%)
   id: bf5935e5-b716-4bfd-8949-71b01b4f484f
   variables:
     # Exclude mobile devices
@@ -12,7 +12,7 @@
           selectattr('attributes.device_class', '==', 'battery') |
           rejectattr('entity_id', 'in', exclude) %}
         {# Cannot use "selectattr" as a numeric comparison is needed #}
-        {% if state.state | int(100) < 20 %}
+        {% if state.state | int(100) < 10 %}
             {% set result.sensors = result.sensors +
               [state.name ~ ': ' ~ state.state ~ '%'] %}
         {% endif %}
@@ -22,7 +22,7 @@
     - platform: time
       at: "10:00:00"
   condition:
-    # Only on Saturday if there are battery-levels below 20%
+    # Only on Saturday if there are battery-levels below 10%
     - condition: template
       value_template: >-
         {{ now().isoweekday() == 6 and sensors | length > 0 }}
@@ -37,7 +37,7 @@
           targetDevices: my
           title: 🔋 Low sensor battery
           message: >-
-            The following sensors have a battery level below 20%:
+            The following sensors have a battery level below 10%:
             <br><br>◾ {{
               sensors | join('<br>◾ ')
             -}}
