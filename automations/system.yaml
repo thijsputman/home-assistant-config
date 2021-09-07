@@ -255,12 +255,16 @@
       entity_id: binary_sensor.google_dns_ping
       from: "on"
       to: "off"
-      for: "00:02:00"
+      # Ping updates once per minute – trigger when two consecutive pings fail
+      # (with a bit of margin to account for longer ping times).
+      for: "00:02:30"
     - platform: state
       entity_id: binary_sensor.remote_ui
       from: "on"
       to: "off"
-      for: "00:02:00"
+      # Remote UI appears to drop offline for a couple minutes every now and
+      # then, so this is a bit less trigger happy.
+      for: "00:10:00"
   action:
     - service: script.sms_notification
       data:
@@ -284,7 +288,7 @@
         - platform: template
           value_template: >-
             {{ states(trigger.entity_id) == 'on' }}
-          for: "00:02:00"
+          for: "00:02:30"
       timeout: "12:00:00"
       continue_on_timeout: false
     - service: script.sms_notification
