@@ -140,5 +140,5 @@ card:
             --weather-icon-cloud-front-color: aliceblue;
             --weather-icon-cloud-back-color: lightsteelblue;
           }
-      entity: !secret weather_home
+      entity: weather.buienradar
       show_forecast: false
