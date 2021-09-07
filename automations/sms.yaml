@@ -414,7 +414,7 @@
         - conditions: >-
             {{ alarmAction == 'arm' }}
           sequence:
-            - service: alarm_control_panel.alarm_arm_night
+            - service: alarm_control_panel.alarm_arm_away
               entity_id: alarm_control_panel.home_alarm
               data: {}
         - conditions: >-
@@ -448,7 +448,7 @@
             🔓 Home Alarm is disarmed
           {%- else -%}
             🛡️ Home Alarm is in "{{ states('alarm_control_panel.home_alarm') |
-              capitalize }}"-mode
+              replace('_', ' ') | capitalize }}"-mode
           {%- endif -%}
           {%- if alarmAction in ['arm', 'disarm', 'silence'] -%}
             \nYou requested the Home Alarm to be {%

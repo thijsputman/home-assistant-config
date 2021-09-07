@@ -7,7 +7,7 @@
       from: "off"
       to: "on"
   condition:
-    # Prevent overruling "Armed Away"
+    # Prevent overruling "Armed away"
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: disarmed
@@ -25,7 +25,7 @@
       from: "on"
       to: "off"
   condition:
-    # Prevent overruling "Armed Away"
+    # Prevent overruling "Armed away"
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: armed_night
@@ -50,6 +50,9 @@
         - condition: state
           entity_id: alarm_control_panel.home_alarm
           state: armed_away
+    - condition: state
+      entity_id: binary_sensor.housekeeper_present
+      state: "off"
   action:
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.home_alarm

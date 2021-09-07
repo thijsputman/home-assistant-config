@@ -27,7 +27,7 @@ card:
       conditions:
         - entity: !secret aarlo_connected_sensor
           state: "on"
-        # Hide Aarlo controls if the Home Alarm is either in "Armed Away"-mode
+        # Hide Aarlo controls if the Home Alarm is either in "Armed away"-mode
         # or pending/triggered to prevent tampering with the cameras
         - entity: alarm_control_panel.home_alarm
           state_not: armed_away
