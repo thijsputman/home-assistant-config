@@ -123,13 +123,16 @@
       data: {}
       entity_id: switch.smart_plug_9
   mode: single
-- alias: 🌡️ | ⏰ Close-in boiler Legionella protection (twice-weekly when everyone away)
+- alias: 🌡️ | ⏰ Close-in boiler Legionella-prevention (twice-weekly when on holiday)
   id: 19d9594e-6bea-4854-b5b1-19bd07dfe33c
   description: ""
   trigger:
     - platform: time
       at: "02:00:00"
   condition:
+    - condition: state
+      entity_id: binary_sensor.vacation_mode
+      state: "on"
     # On Tuesdays and Saturdays (i.e. twice-weekly)
     - condition: template
       value_template: >-
@@ -137,9 +140,6 @@
     - condition: state
       entity_id: switch.smart_plug_9
       state: "off"
-    - condition: state
-      entity_id: group.family
-      state: not_home
   action:
     # Toggle on for three hours (i.e. at least two heating cycles) – this should
     # heat the water sufficiently to prevent a Legionella hazard

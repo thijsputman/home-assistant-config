@@ -237,25 +237,13 @@
               resolving the incident...
             {% endif %}
     - choose:
-        # Only send an SMS message if the alarm has been armed for *more* than
-        # 12 hours. This limits the number of false positives by only sending
-        # SMS messages when we're away from home longer than during a normal
-        # working day (e.g. weekend trip or vacation).
+        # Only send an SMS message when in Vacation-mode. This limits the number
+        # of false alarms by only sending SMS messages when we're away from home
+        # longer than during a normal working day.
         - conditions:
-            - condition: template
-              value_template: >-
-                {%
-                  if states.alarm_control_panel.home_alarm.last_changed
-                    is defined
-                %}
-                  {{
-                    states.alarm_control_panel.home_alarm.last_changed <
-                      now() - timedelta(hours=12)
-                  }}
-                {# Err on the side of caution #}
-                {% else %}
-                  true
-                {% endif %}
+            - condition: state
+              entity_id: binary_sensor.vacation_mode
+              state: "on"
           sequence:
             - service: script.turn_on
               target:
