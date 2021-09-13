@@ -344,7 +344,6 @@
         entity_id: climate.tado_attic_ac
 - alias: ❄️ | 🚪 Airco – Attic off (window open)
   id: 717e590f-b4d7-4cf9-8efd-c540f5ea3298
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.openclose_33
@@ -377,7 +376,6 @@
     # change doesn't overrule the off-state (and thus switches on the airco
     # regardless of the fact the window is still open)
     - service: climate.turn_off
-      data: {}
       target:
         entity_id: climate.tado_attic_ac
     - service: script.turn_on
@@ -389,12 +387,19 @@
           channel: Notification
           group: climate
           tag: airco_attic_window
+          action_1: Switch off Airco
           title: ❄️ Attic airco switched off – the window is open
           message: >-
             Please close the window in the Attic to allow the airco to switch
             back to {{ last_hvac_mode }}-mode...
-    # Wait for the window to close
     - wait_for_trigger:
+        # Action from mobile notification
+        - platform: event
+          id: switch_off
+          event_type: mobile_app_notification_action
+          event_data:
+            action: ACTION_1_airco_attic_window
+        # Window closed
         - platform: state
           entity_id: binary_sensor.openclose_33
           from: "on"
@@ -404,6 +409,14 @@
     - service: persistent_notification.dismiss
       data:
         notification_id: airco_attic_window
+    # Only restore the Airco's state if the window was closed, otherwise keep
+    # the Airco switched off. Other triggers will attempt to restore the Airco
+    # to auto-mode later on (all guarded by "window closed"-conditions).
+    - condition: template
+      value_template: >-
+        {{
+          wait.trigger is not none and wait.trigger.id != 'switch_off'
+        }}
     # Use the (online) tadoº integration to restore so we can properly restore
     # hvac- and swing-modes (even though it's slow to update its state, commands
     # come through without delay)...
