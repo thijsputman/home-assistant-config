@@ -14,6 +14,7 @@ lights_all:
   icon: mdi:lightbulb-group-outline
   entities:
     - light.attic
+    - light.attic_hallway
     - light.basement
     - light.bathroom
     - light.bedroom
