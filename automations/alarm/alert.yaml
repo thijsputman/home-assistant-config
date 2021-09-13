@@ -1,6 +1,5 @@
 - alias: 🚨 Trigger alarm (door / window opened)
   id: cb55dcf5-9182-482c-9d3a-ce14387709b5
-  description: ""
   trigger:
     - platform: state
       # Not using a group of sensors – this will trigger "off" → "on" if one of
@@ -128,7 +127,6 @@
   mode: single
 - alias: 🚨 | 🔊 Sound the alarm (alarm triggered)
   id: 714cfa44-bce7-41f8-be78-9891769fef74
-  description: ""
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
@@ -142,7 +140,6 @@
   mode: restart
 - alias: 🚨 | 🔊 Stop sounding the alarm (alarm trigger ended)
   id: 06b3864d-3f70-45d7-96fa-6c30fa2576c2
-  description: ""
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
@@ -155,7 +152,6 @@
   mode: single
 - alias: 🚨 | 🕹️ Silence the alarm (Bedroom Smart Switches)
   id: 830121ea-907f-4234-be81-b4acce05c1bc
-  description: ""
   trigger:
     # Bedside Smart Switches
     - device_id: da1237666189a9a364fa383795ba532d
@@ -188,31 +184,8 @@
         ontime: 180
   mode: single
   max_exceeded: silent
-- alias: 🚨 | 💡 Bedroom lights on (everyone asleep; alarm triggered)
-  id: 45a353ab-e5c4-459c-a2ca-ac0d6a5e3aa8
-  description: ""
-  trigger:
-    - platform: state
-      entity_id: alarm_control_panel.home_alarm
-      to: triggered
-  condition:
-    - condition: state
-      entity_id: input_boolean.everyone_asleep
-      state: "on"
-    # Only useful if there's someone home (i.e. asleep in the bedroom)
-    - condition: state
-      entity_id: group.family
-      state: home
-  action:
-    - service: light.turn_on
-      data:
-        brightness: 255
-        kelvin: 6500
-      entity_id: light.bedroom
-  mode: single
-- alias: 🚨 | 💡 Flash lights (pending alarm)
+- alias: 🚨 | 💡 Flash indoor lights (alarm pending)
   id: 4416cb36-8291-41ae-8c62-7a246fdc9d2d
-  description: ""
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
@@ -276,8 +249,92 @@
                 entity_id: light.attic_hallway
       default: []
   mode: single
-- alias: 🚨 | 💡 Garden lights on (alarm triggered)
+- alias: 🚨 | 💡 Front and Back door to maximum brightness (alarm pending)
+  id: 1aa3f46d-2703-419b-829c-64ee68e461a0
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: pending
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+  action:
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Front & back door
+        scene_name: Bright
+    # Turn the lights off if the alarm disarms
+    - wait_for_trigger:
+        - platform: state
+          id: disarmed
+          entity_id: alarm_control_panel.home_alarm
+          to: disarmed
+        # Short-circuit if the light-state changes
+        - platform: state
+          id: abort
+          entity_id: light.front_back_door
+      timeout: "24:00:00"
+      continue_on_timeout: false
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id != 'abort' }}
+    - service: light.turn_off
+      data:
+        entity_id: light.front_back_door
+  mode: restart
+- alias: 🚨 | 💡 Garden lights to maximum brightness (back gate opened)
+  id: b937fe69-27ce-49dd-b720-4fb34907ba66
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.openclose_34
+      from: "off"
+      to: "on"
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - armed_night
+        - armed_away
+  action:
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Garden
+        scene_name: Active
+    # Wait for 5 minutes to ensure this is not a false alarm
+    - wait_for_trigger:
+        - platform: state
+          entity_id: alarm_control_panel.home_alarm
+          to: disarmed
+        # Short-circuit if the alarm gets triggered
+        - platform: state
+          id: abort
+          entity_id: alarm_control_panel.home_alarm
+          to: triggered
+      timeout: "00:05:00"
+      continue_on_timeout: false
+    # In case of false alarm, switch the Garden lights back to a more
+    # agreeable setting
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id != 'abort' }}
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Garden
+        scene_name: Ambiance
+  mode: single
+  max_exceeded: silent
+- alias: 🚨 | 💡 All indoor lights to maximum brightness (alarm triggered)
   id: af18c5c4-4619-485f-8ff0-97ce63c7e42f
+  variables:
+    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
@@ -289,10 +346,10 @@
           entity_id: sensor.time_of_day
           state: day
   action:
-    - service: hue.hue_activate_scene
+    - service: script.hue_activate_scene_house
       data:
-        group_name: Garden
-        scene_name: Active
+        scene_name: Alarm
+    # Wait for the alarm to disarm or for the start of dawn
     - wait_for_trigger:
         - platform: state
           id: disarmed
@@ -300,72 +357,46 @@
           to: disarmed
         - platform: state
           entity_id: sensor.time_of_day
-          from: dawn
-          to: day
-        # Short-circuit when the Garden lights switch off
-        - platform: state
-          entity_id: light.garden
-          from: "on"
-          to: "off"
+          from: night
+          to: dawn
       timeout: "24:00:00"
       continue_on_timeout: false
-    # If someone is home _and_ manually disarmed the alarm via Lovelace, don't
-    # do anything (i.e. leave the Garden lights on). In all other cases (either
-    # the alarm got disarmed via other means, or it is light outside) switch off
-    # the Garden lights.
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: group.family
-          state: home
-        - condition: template
-          value_template: >-
-            {{
-              wait.trigger.id == 'disarmed' and
-              wait.trigger.to_state.context.user_id is not none
-            }}
-    - service: light.turn_off
-      data:
-        entity_id: light.garden
-  mode: restart
-- alias: 🚨 | 💡 Lights on (triggered alarm disarmed when someone home)
-  id: 5132f575-5f3f-43e5-8720-8eddd8c66355
-  trigger:
-    - platform: state
-      entity_id: alarm_control_panel.home_alarm
-      from: triggered
-      to: disarmed
-  condition:
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: sensor.time_of_day
-          state: day
-    # Someone should be home _and_ have manually disarmed the alarm via
-    # Lovelace – this prevents the lights from switching on if the alarm is
-    # disarmed remotely (and/or automatically)
-    - condition: state
-      entity_id: group.family
-      state: home
-    - condition: template
-      value_template: >-
-        {{ trigger.to_state.context.user_id is not none }}
-  action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen
-        scene_name: Bright (custom)
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: Active
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Hallway
-        scene_name: Bright
+    - choose:
+        # If the alarm is disarmed from the tablet in the Kitchen, or someone is
+        # home when it gets disarmed, keep all lights on – switch some of them
+        # to a more agreeable setting though.
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ wait.trigger.id == 'disarmed' }}
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: group.family
+                  state: home
+                - condition: template
+                  value_template: >-
+                    {{
+                      wait.trigger.to_state.context.user_id ==
+                        tablet_kitchen_user_id
+                    }}
+          sequence:
+            - service: script.hue_activate_scene_house
+              data:
+                scene_name: Active
+      # Otherwise, switch the house back to regular "Ambiance"/Evening-mode.
+      # An automation in "📄 automations/lights/dawn.yaml" switches off all
+      # "Ambiance"/Evening-mode lights just after sunrise. By switching the
+      # house back to this mode when the alarm is disarmed _or_ at dawn (which
+      # is well _before_ sunrise), we ensure all lights are properly switched
+      # off after sunrise (without duplicating any logic).
+      default:
+        - service: script.hue_activate_scene_house
+          data:
+            scene_name: Ambiance
+  mode: single
 - alias: 🚨 | 📱 Notify on alarm pending
   id: 601cb512-c43b-4155-b58f-122441d49d22
-  description: ""
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
@@ -403,7 +434,8 @@
             {%- if tripped_sensors | length > 0 %}
               <br><br>
               {%- if tripped_sensors | length == 1 -%}
-                The alarm was triggered by: {{ tripped_sensors[0] }}
+                The alarm was triggered by
+                <strong>{{ tripped_sensors[0] }}</strong>.
               {%- else -%}
                 The following sensors triggered the alarm:
                 <br><br>◾ {{
@@ -414,7 +446,6 @@
   mode: single
 - alias: 🚨 | 📱 Notify on alarm sounding
   id: 05a2188b-8940-4311-adfb-bea75a792000
-  description: ""
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
@@ -447,7 +478,8 @@
             %}\nThe Home Alarm is sounding – there's someone in the house!
               \n\n
               {%- if tripped_sensors | length == 1 -%}
-                The alarm was triggered by: {{ tripped_sensors[0] }}
+                The alarm was triggered by
+                <strong>{{ tripped_sensors[0] }}</strong>.
               {%- else -%}
                 The following sensors triggered the alarm:
                 \n\n◾ {{

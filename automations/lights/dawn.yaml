@@ -1,6 +1,5 @@
 - alias: 💡 | ⏰ Inside lights on (when dark at «wakeup» time)
   id: 4ad4a1ef-cc9c-4193-b212-f7dbfa20cd72
-  description: ""
   trigger:
     - platform: time
       at: input_datetime.wakeup
@@ -27,7 +26,6 @@
               data:
                 group_name: Living room
                 scene_name: Ambiance
-      default: []
     - choose:
         - conditions:
             - condition: state
@@ -38,7 +36,6 @@
               data:
                 group_name: Kitchen
                 scene_name: Ambiance
-      default: []
     - choose:
         - conditions:
             - condition: state
@@ -49,11 +46,9 @@
               data:
                 group_name: Hallway
                 scene_name: Evening
-      default: []
   mode: single
-- alias: 💡 | ⏰ Inside lights off (daily just after dawn)
+- alias: 💡 | ⏰ Inside lights off (daily just after sunrise)
   id: 314514eb-0cce-4519-833d-40300537a27b
-  description: ""
   trigger:
     - platform: state
       entity_id: sensor.time_of_day
@@ -71,11 +66,33 @@
         - condition: state
           entity_id: light.hallway
           state: "on"
+        - condition: state
+          entity_id: light.front_back_door
+          state: "on"
+        - condition: state
+          entity_id: light.guestroom
+          state: "on"
   action:
     - service: light.turn_off
-      data: {}
       entity_id:
         - light.living_room
         - light.kitchen
         - light.hallway
+        - light.front_back_door
+        - light.guestroom
+  mode: single
+- alias: 💡 | ⏰ Garden lights off (daily at civil dawn)
+  id: bca8278d-d0b5-41a6-a828-8310255cb93d
+  trigger:
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: night
+      to: dawn
+  condition:
+    - condition: state
+      entity_id: light.garden
+      state: "on"
+  action:
+    - service: light.turn_off
+      entity_id: light.garden
   mode: single

@@ -52,7 +52,7 @@
           title: 🛡️ Home Alarm armed
           message: >-
             The Home Alarm just changed into "Armed away"-mode.
-- alias: 🚨 | 📱 Notify on "Disarmed"
+- alias: 🚨 | 📱 Notify on alarm disarmed ("Armed away")
   id: a78d71df-f5a9-49f1-a584-18d5260e88db
   trigger:
     - platform: state
@@ -255,21 +255,22 @@
                     \nThere could be someone in the garden –
                     check the camera feed:
                     \n\n✉️ #secret# status camera
-    # If the alarm is disarmed within 2 minutes, dismiss the notification as it
-    # was a false positive
+    # If the alarm is disarmed within 5 minutes, dismiss the notification as it
+    # was a false positive. This is aligned with the false alarm timeout for the
+    # Garden lights as defined in "📄 automations/alarm/alert.yaml".
     - wait_for_trigger:
         - platform: state
           entity_id: alarm_control_panel.home_alarm
           from: armed_away
           to: disarmed
-      timeout: "00:02:00"
+      timeout: "00:05:00"
       continue_on_timeout: false
     - service: persistent_notification.dismiss
       data:
         notification_id: alert_away_back_gate
   mode: single
   max_exceeded: silent
-- alias: 🚨 | 💡 Lights on when back gate opened ("Armed away")
+- alias: 🚨 | 💡 Downstairs lights maximum brightness (back gate opened; "Armed away")
   id: 9684f5d2-8d26-429f-bb08-aa5deeb23c50
   trigger:
     - platform: state
@@ -277,6 +278,7 @@
       from: "off"
       to: "on"
   condition:
+    # This automation (intentionally) doesn't have a lot of guard conditions
     - condition: not
       conditions:
         - condition: state
@@ -288,10 +290,6 @@
   action:
     - service: hue.hue_activate_scene
       data:
-        group_name: Garden
-        scene_name: Active
-    - service: hue.hue_activate_scene
-      data:
         group_name: Kitchen
         scene_name: Bright (custom)
     - service: hue.hue_activate_scene
@@ -301,74 +299,20 @@
     - service: hue.hue_activate_scene
       data:
         group_name: Hallway
-        scene_name: Evening
-    # Wait for 2 minutes to ensure this is not a false alarm
-    - wait_for_trigger:
-        - platform: state
-          id: false_alarm
-          entity_id: alarm_control_panel.home_alarm
-          from: armed_away
-          to: disarmed
-        # Short-circuit when the alarm gets triggered
-        - platform: state
-          entity_id: alarm_control_panel.home_alarm
-          to: triggered
-      timeout: "00:02:00"
-      continue_on_timeout: true
-    - choose:
-        # In case of false alarm, switch the Garden lights back to a more
-        # agreeable setting – we assume someone is home and won't further
-        # attempt to control any of the lights...
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{
-                  wait.trigger is not none and
-                  wait.trigger.id == 'false_alarm'
-                }}
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Garden
-                scene_name: Ambiance
-      # Otherwise, prevent the Garden lights from staying on indefinitely.
-      # Switch them off when it gets light outside – the inside lights are
-      # switched off at dawn as part of normal flow...
-      default:
-        # Automations in "📄 ./automations/alarm/alert.yaml" take over when the
-        # alarm gets triggered – no need to continue
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: alarm_control_panel.home_alarm
-              state: triggered
-        - wait_for_trigger:
-            - platform: state
-              id: daytime
-              entity_id: sensor.time_of_day
-              from: dawn
-              to: day
-            # Short-circuit when alarm gets triggered or the Garden lights
-            # switch off – no need to keep waiting
-            - platform: state
-              entity_id: alarm_control_panel.home_alarm
-              to: triggered
-            - platform: state
-              entity_id: light.garden
-              from: "on"
-              to: "off"
-          timeout: "24:00:00"
-          continue_on_timeout: false
-        - condition: template
-          value_template: >-
-            {{
-              wait.trigger.id == 'daytime'
-            }}
-        - service: light.turn_off
-          data:
-            entity_id: light.garden
-  mode: restart
-- alias: 🚨 | 💡 Hallway and Kitchen lights on ("Armed away" → disarmed; door open)
+        scene_name: Bright
+    - service: light.turn_on
+      data:
+        brightness: 255
+        entity_id: light.hue_filament_bulb_1 # Light above the Kitchen door
+    # The delay below is to prevent DoS-ing the system by rapidly opening and
+    # closing the back gate...
+    - delay: 60
+    # A regular automation switches the inside lights (including the one outside
+    # above the Kitchen door) off at dawn, so there's no need to account for
+    # that here.
+  mode: single
+  max_exceeded: silent
+- alias: 🚨 | 💡 Downstairs lights on ("Armed away" → disarmed; door open)
   id: 23900a05-e8bd-4296-a8fe-fdcaa53caedf
   trigger:
     - platform: state
@@ -381,14 +325,6 @@
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: light.kitchen
-          state: "off"
-        - condition: state
-          entity_id: light.hallway
-          state: "off"
   action:
     # Wait five minutes for either the Front or Kitchen door to open – presence
     # detection might have disarmed the alarm earlier than one would've done
@@ -404,13 +340,17 @@
       continue_on_timeout: false
     - service: hue.hue_activate_scene
       data:
-        group_name: Hallway
-        scene_name: Evening
-    - service: hue.hue_activate_scene
-      data:
         group_name: Kitchen
         scene_name: Ambiance
-- alias: 🚨 | 💡 Hallway and Kitchen lights on ("Armed away" → pending → disarmed)
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Ambiance
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Evening
+- alias: 🚨 | 💡 Downstairs lights on ("Armed away" → pending → disarmed)
   id: 84d125f9-e88c-4bce-81e7-6f08a04f5afe
   trigger:
     - platform: state
@@ -423,14 +363,6 @@
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: light.kitchen
-          state: "off"
-        - condition: state
-          entity_id: light.hallway
-          state: "off"
   action:
     - wait_for_trigger:
         - platform: state
@@ -443,9 +375,13 @@
       continue_on_timeout: false
     - service: hue.hue_activate_scene
       data:
-        group_name: Hallway
-        scene_name: Evening
-    - service: hue.hue_activate_scene
-      data:
         group_name: Kitchen
         scene_name: Ambiance
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Ambiance
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Evening

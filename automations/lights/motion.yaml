@@ -25,12 +25,13 @@
             - condition: numeric_state
               entity_id: sensor.lightlevel_55
               below: 200
-    # Don't bother switching on the lights if the alarm is "Armed away"
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_away
+    # Only switch on the lights under normal circumstances (i.e. the alarm is
+    # either disarmed or "Armed night")
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - disarmed
+        - armed_night
   action:
     - service: hue.hue_activate_scene
       data:
@@ -91,12 +92,13 @@
       from: "off"
       to: "on"
   condition:
-    # Don't bother switching on the lights if the alarm is "Armed away"
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_away
+    # Only switch on the lights under normal circumstances (i.e. the alarm is
+    # either disarmed or "Armed night")
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - disarmed
+        - armed_night
   action:
     - service: light.turn_on
       data:
@@ -123,12 +125,13 @@
       from: "off"
       to: "on"
   condition:
-    # Don't bother switching on the lights if the alarm is "Armed away"
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_away
+    # Only switch on the lights under normal circumstances (i.e. the alarm is
+    # either disarmed or "Armed night")
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - disarmed
+        - armed_night
   action:
     - service: light.turn_on
       entity_id: light.basement
@@ -153,12 +156,13 @@
     - condition: numeric_state
       entity_id: sensor.lightlevel_65
       below: 50
-    # Don't bother switching on the lights if the alarm is "Armed away"
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_away
+    # Only switch on the lights under normal circumstances (i.e. the alarm is
+    # either disarmed or "Armed night")
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - disarmed
+        - armed_night
   action:
     - service: light.turn_on
       data:
@@ -190,12 +194,13 @@
     - condition: numeric_state
       entity_id: sensor.lightlevel_bathroom
       below: 200
-    # Don't bother switching on the lights if the alarm is "Armed away"
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_away
+    # Only switch on the lights under normal circumstances (i.e. the alarm is
+    # either disarmed or "Armed night")
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - disarmed
+        - armed_night
   action:
     - choose:
         # Make the light a bit kinder on the eyes late at night
@@ -243,12 +248,13 @@
     - condition: state
       entity_id: timer.attic_hallway_motion_pause
       state: idle
-    # Don't bother switching on the lights if the alarm is "Armed away"
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_away
+    # Only switch on the lights under normal circumstances (i.e. the alarm is
+    # either disarmed or "Armed night")
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - disarmed
+        - armed_night
   action:
     - choose:
         # Upstairs

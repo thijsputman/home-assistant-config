@@ -17,3 +17,164 @@ hue_activate_scene_living_room_kitchen:
             {{ scene_name }}
           {% endif %}
   mode: single
+# Convenience method for controlling full house lighting. Mainly used by alarm
+# automations to reduce their length/complexity. Somewhat aligned with the
+# automations in "📄 automations/lights/dawn.yaml" to ensure lights don't stay
+# on unnecessarily after dawn.
+hue_activate_scene_house:
+  alias: Hue activate scene – House
+  icon: mdi:home-lightbulb-outline
+  fields:
+    scene_name:
+      description: Scene name
+      required: true
+      default: Ambiance
+      selector:
+        select:
+          options:
+            - Alarm
+            - Active
+            - Ambiance
+  sequence:
+    - variables:
+        # Default to "Ambiance"
+        scene_name: >-
+          {%
+            if scene_name is defined and scene_name in
+              ['Alarm', 'Active', 'Ambiance']
+          %}
+            {{ scene_name }}
+          {% else %}
+            Ambiance
+          {% endif %}
+    # Ground floor
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Kitchen
+        scene_name: >-
+          {% if scene_name in ['Alarm', 'Active'] %}
+            Bright (custom)
+          {% else %}
+            Ambiance
+          {% endif %}
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: >-
+          {% if scene_name in ['Alarm', 'Active'] %}
+            Active
+          {% else %}
+            Ambiance
+          {% endif %}
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: >-
+          {% if scene_name in ['Alarm', 'Active'] %}
+            Bright
+          {% else %}
+            Evening
+          {% endif %}
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Garden
+        scene_name: >-
+          {% if scene_name == 'Alarm' %}
+            Active
+          {% else %}
+            Ambiance
+          {% endif %}
+    # Slightly rate-limit the Hue API – should be able to handle around 10
+    # commands per second, but let's not push it...
+    - delay: 2
+    # First floor
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ scene_name in ['Alarm', 'Active'] }}
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Bedroom
+                scene_name: >-
+                  {% if scene_name in 'Alarm' %}
+                    Concentrate
+                  {% else %}
+                    Bright
+                  {% endif %}
+      default:
+        - service: light.turn_off
+          data:
+            entity_id: light.bedroom
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ scene_name == 'Alarm' }}
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Bathroom
+                scene_name: Concentrate
+      default:
+        - service: light.turn_off
+          data:
+            entity_id: light.bathroom
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ scene_name == 'Alarm' }}
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Wardrobe
+                scene_name: Bright
+      default:
+        - service: light.turn_off
+          data:
+            entity_id: light.wardrobe
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Guestroom
+        scene_name: >-
+          {% if scene_name in ['Alarm', 'Active'] %}
+            Bright
+          {% else %}
+            Ambiance
+          {% endif %}
+    # Attic
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ scene_name in ['Alarm', 'Active'] }}
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Attic
+                scene_name: >-
+                  {% if scene_name in 'Alarm' %}
+                    Concentrate
+                  {% else %}
+                    Bright
+                  {% endif %}
+      default:
+        - service: light.turn_off
+          data:
+            entity_id: light.attic
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ scene_name == 'Alarm' }}
+          sequence:
+            - service: light.turn_on
+              data:
+                entity_id: light.attic_hallway
+      default:
+        - service: light.turn_off
+          data:
+            entity_id: light.attic_hallway
+  mode: single
