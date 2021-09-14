@@ -1,6 +1,5 @@
 - alias: 💡 | ✈️ Inside lights off when everyone away (daily between 23:00 - 01:00)
   id: 9b24fc0b-fc61-432c-b881-aa2b644a2efe
-  description: ""
   trigger:
     - platform: time
       at: "23:00:00"
@@ -15,11 +14,9 @@
       entity_id: group.family
       state: not_home
     - service: script.lights_out
-      data: {}
   mode: single
 - alias: 💡 | ✈️ Attic lights on when everyone away (most weekdays at dusk)
   id: 10746e4d-a051-42c0-afb0-79b375ac17d2
-  description: ""
   trigger:
     - platform: state
       entity_id: sensor.time_of_day
@@ -57,10 +54,9 @@
         group_name: Attic
         scene_name: Away
   mode: single
+# N.B. This automation's name is used in the previous automation!
 - alias: 💡 | ✈️ Attic lights off when everyone away (weekdays between 19:00 - 20:00)
   id: 7b9daada-513f-43c8-8715-10568d2d16a9
-  # N.B. This automation's name is used in the previous automation!
-  description: ""
   trigger:
     - platform: time
       at: "19:00:00"
@@ -78,6 +74,5 @@
       entity_id: group.family
       state: not_home
     - service: light.turn_off
-      data: {}
       entity_id: light.attic
   mode: single

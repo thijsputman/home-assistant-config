@@ -1,6 +1,5 @@
 - alias: 🎄 | ✈️ Christmas tree on (Living Room lights on / someone home)
   id: 1f000056-9ced-4832-a6a0-4cbb93fb381e
-  description: ""
   trigger:
     # Follow the Living Room lights (only when someone is home)
     - platform: state
@@ -25,12 +24,10 @@
       state: "off"
   action:
     - service: switch.turn_on
-      data: {}
       entity_id: switch.on_off_plug_in_unit_6
   mode: single
 - alias: 🎄 | 💡/✈️ Christmas tree off (Living Room lights off / everyone away)
   id: 7d791dff-0c3d-4774-91e6-648ff3348e53
-  description: ""
   trigger:
     - platform: state
       entity_id: group.family
@@ -47,12 +44,10 @@
       state: "on"
   action:
     - service: switch.turn_off
-      data: {}
       entity_id: switch.on_off_plug_in_unit_6
   mode: single
 - alias: 🎄 | ⏰ Christmas star on (dusk)
   id: cc862e68-ace8-4bc6-b78b-26db199d5ba2
-  description: ""
   trigger:
     - platform: state
       entity_id: sensor.time_of_day
@@ -61,12 +56,10 @@
   condition: []
   action:
     - service: switch.turn_on
-      data: {}
       entity_id: switch.on_off_plug_in_unit_7
   mode: single
 - alias: 🎄 | ⏰ Christmas star off (dawn)
   id: 1f6b28e7-a390-4385-9d3d-52c756cb648f
-  description: ""
   trigger:
     - platform: state
       entity_id: sensor.time_of_day
@@ -75,6 +68,5 @@
   condition: []
   action:
     - service: switch.turn_off
-      data: {}
       entity_id: switch.on_off_plug_in_unit_7
   mode: single

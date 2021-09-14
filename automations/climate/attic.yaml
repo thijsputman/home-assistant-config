@@ -1,6 +1,5 @@
 - alias: 🌡️ | 💡 Attic heating on (Attic lights on)
   id: e5978d8a-cfec-4b8d-a78d-03e973de84ae
-  description: ""
   trigger:
     - platform: state
       entity_id: light.attic
@@ -23,7 +22,6 @@
   mode: single
 - alias: 🌡️ | 🤖 Attic heating retain setpoint (while lights are on)
   id: 4e9442c0-9b22-441a-9f3c-13fee3cedd52
-  description: ""
   # This is primarily to prevent the tado°-schedule from switching the Attic
   # heating off on weekdays at 19:00 (while the lights is still on). Manual
   # adjustments also trigger this automation, but since it only triggers below
@@ -51,7 +49,6 @@
   mode: single
 - alias: 🌡️ | 💡 Attic heating off (Attic lights off)
   id: 19c32aa8-2c41-4026-ba1a-798a34a2bf6b
-  description: ""
   trigger:
     - platform: state
       entity_id: light.attic
@@ -70,7 +67,6 @@
   mode: single
 - alias: 🌡️ | ⏰ Attic heating off (weekdays when lights remain off)
   id: fc16d0c4-d9ea-48da-ad28-ca9f83065f5d
-  description: ""
   trigger:
     - platform: time
       at: "09:00:00"
@@ -109,7 +105,6 @@
   mode: single
 - alias: 🌡️ | ✈️ Attic heating off (tado° from Away- to Home-mode)
   id: d8587843-f45f-48cc-811a-e7dbf346a31f
-  description: ""
   trigger:
     # When tado° transitions from Away- to Home-mode, it restores all schedules
     # and thus potentially switches the Attic radiator on...
@@ -137,7 +132,6 @@
   mode: single
 - alias: 🌡️ | 🤖 Attic heating off (Living room thermostat lowered)
   id: 529a20b2-7b28-4cf7-84c3-72c5d851d853
-  description: ""
   trigger:
     # Mainly intended as a fail-safe to ensure the Attic radiator (which can
     # control the cv-boiler by itself) doesn't stay on throughout the night...
@@ -165,7 +159,6 @@
 # persists, which is not possible via HomeKit.
 - alias: 🌡️ | 🤖 Attic heating operation mode (follow Living room thermostat)
   id: da50685d-7a61-470c-96d0-07c6ee84a53b
-  description: ""
   trigger:
     - platform: state
       entity_id: climate.tado_living_room
@@ -184,7 +177,6 @@
   mode: single
 - alias: ❄️ | 👀 Airco – Attic enable schedule (occupied; "Airco active" on)
   id: f3bd94fa-4646-4c70-9e0d-fd7288579bfe
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.occupancy_attic
@@ -226,7 +218,6 @@
 # leaving the airco on unintentionally...
 - alias: ❄️ | 👀 Airco – Attic off (unoccupied; "Airco active" off)
   id: 426b173e-cef1-4e6d-a7f0-a1249db7c745
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.occupancy_attic
@@ -251,7 +242,6 @@
   mode: single
 - alias: ❄️ | 🌡️ Airco – Attic enable schedule (🌡️ < 25ºC when occupied)
   id: 0669c656-3142-4572-8e4b-30e9c65b4761
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.temperature_3
@@ -280,7 +270,6 @@
   mode: single
 - alias: ❄️ | ⏰ Airco – Attic off (daily at 09:00 when remains unoccupied)
   id: bc7a77e4-3fad-4b78-a2aa-91b0e507681a
-  description: ""
   trigger:
     - platform: time
       at: "09:00:00"
@@ -317,7 +306,6 @@
   mode: single
 - alias: ❄️ | ⏰ Airco – Attic enable schedule (daily at 01:00)
   id: 63196195-97ca-473b-860d-1394b54ea6ed
-  description: ""
   trigger:
     - platform: time
       at: "01:00:00"

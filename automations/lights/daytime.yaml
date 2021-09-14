@@ -1,6 +1,5 @@
 - alias: 💡 | ⛅ Kitchen lights on during daytime (☀️ < 80 lux)
   id: 5b3387c6-763b-47da-b938-1eaefcd0ffd1
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_47
@@ -58,7 +57,6 @@
   mode: single
 - alias: 💡 | ⛅ Kitchen lights off during daytime (☀️ > 90 lux)
   id: 2c48592e-2d8b-42f1-880b-44183ffc442a
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_47
@@ -88,7 +86,6 @@
   mode: single
 - alias: 💡 | ⛅ Living room lights on during daytime (☀️ < 25 lux)
   id: 05a5eb32-be80-4130-a561-d21015851ae8
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_46
@@ -124,7 +121,6 @@
   mode: single
 - alias: 💡 | ⛅ Living room lights off during daytime (☀️ > 30 lux)
   id: 21a8d2ce-746d-460a-9c65-b9ddf4f1b3b1
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_46
@@ -143,7 +139,6 @@
   mode: single
 - alias: 💡 | ⛅ Hallway (downstairs) lights on during daytime (☀️ < 40 lux)
   id: 1815106e-2684-4397-8fe8-73711ca6e7b5
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_48
@@ -181,7 +176,6 @@
   mode: single
 - alias: 💡 | ⛅ Hallway (downstairs) lights off during daytime (☀️ > 60 lux)
   id: 9b941157-f359-4d69-a19c-eaa242f6faf3
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_48
@@ -206,7 +200,6 @@
   mode: single
 - alias: 💡 | ⛅ Hallway (upstairs) lights on during daytime (☀️ < 30 lux)
   id: 6fcf79b7-be12-4990-b2dd-21d8a85b4987
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_upstairs_hallway
@@ -239,7 +232,6 @@
   mode: single
 - alias: 💡 | ⛅ Hallway (upstairs) lights off during daytime (☀️ > 50 lux)
   id: 14585406-3c8d-4c76-902a-af71e509e95d
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.lightlevel_upstairs_hallway

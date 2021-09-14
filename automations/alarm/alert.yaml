@@ -33,7 +33,6 @@
           state: armed_night
   action:
     - service: alarm_control_panel.alarm_trigger
-      data: {}
       entity_id: alarm_control_panel.home_alarm
   mode: single
 - alias: 🚨 | 👋 Trigger alarm (motion detected in Hallway/staircase)
@@ -68,7 +67,6 @@
         }}
     # WIP – send a notification instead of triggering the alarm...
     # - service: alarm_control_panel.alarm_trigger
-    #   data: {}
     #   entity_id: alarm_control_panel.home_alarm
     - service: script.turn_on
       target:
@@ -112,7 +110,6 @@
   action:
     # WIP – send a notification instead of triggering the alarm...
     # - service: alarm_control_panel.alarm_trigger
-    #   data: {}
     #   entity_id: alarm_control_panel.home_alarm
     - service: script.turn_on
       target:
@@ -249,7 +246,6 @@
             - service: light.turn_off
               data:
                 entity_id: light.attic_hallway
-      default: []
   mode: single
 - alias: 🚨 | 💡 Front and Back door to maximum brightness (alarm pending)
   id: 1aa3f46d-2703-419b-829c-64ee68e461a0

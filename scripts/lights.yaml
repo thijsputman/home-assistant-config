@@ -2,7 +2,6 @@ lights_out:
   alias: Lights out
   sequence:
     - service: light.turn_off
-      data: {}
       entity_id:
         - light.living_room
         - light.attic
@@ -52,7 +51,6 @@ lights_out:
                 entity_id:
                   - light.bathroom
                   - light.wardrobe
-      default: []
     - service: light.turn_off
       data:
         entity_id: light.kitchen
@@ -84,7 +82,6 @@ lights_out:
       value_template: >-
         {{ rooms_on != '' }}
     - service: light.turn_off
-      data: {}
       target:
         entity_id: >-
           {{ rooms_on }}

@@ -173,7 +173,6 @@
       timeout: 300
       continue_on_timeout: false
     - service: alarm_control_panel.alarm_trigger
-      data: {}
       entity_id: alarm_control_panel.home_alarm
   mode: single
   max_exceeded: silent
@@ -189,7 +188,6 @@
       state: armed_away
   action:
     - service: alarm_control_panel.alarm_trigger
-      data: {}
       entity_id: alarm_control_panel.home_alarm
     # A generic "alarm pending" persistent notification is also raised. Since
     # the power is out, that notification probably won't be received in time /

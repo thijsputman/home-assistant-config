@@ -22,7 +22,6 @@
       state: "off"
   action:
     - service: light.turn_off
-      data: {}
       target:
         entity_id:
           - light.extended_color_light_1_3

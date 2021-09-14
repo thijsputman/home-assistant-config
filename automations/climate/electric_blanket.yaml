@@ -1,6 +1,5 @@
 - alias: 🌡️ | ⏰ Electric blanket on (daily at 22:30 when someone home)
   id: f712246a-1aba-4efe-8834-9cd9a62f706c
-  description: ""
   trigger:
     - platform: time
       at: "22:30:00"
@@ -10,12 +9,10 @@
       entity_id: group.family
   action:
     - service: switch.turn_on
-      data: {}
       entity_id: switch.on_off_plug_in_unit_3
   mode: single
 - alias: 🌡️ | 💡 Electric blanket off (20 minutes after Bedroom lights off)
   id: e5b75f79-e60f-4d3e-b354-29a3622567ba
-  description: ""
   trigger:
     - platform: state
       entity_id: light.bedroom
@@ -33,12 +30,10 @@
       state: "on"
   action:
     - service: switch.turn_off
-      data: {}
       entity_id: switch.on_off_plug_in_unit_3
   mode: restart
 - alias: 🌡️ | ⏰ Electric blanket off (after 2 hours)
   id: ba757313-c28b-4533-be3f-897d47e18c35
-  description: ""
   trigger:
     - platform: state
       entity_id: switch.on_off_plug_in_unit_3
@@ -47,6 +42,5 @@
   condition: []
   action:
     - service: switch.turn_off
-      data: {}
       entity_id: switch.on_off_plug_in_unit_3
   mode: single

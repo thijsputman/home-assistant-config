@@ -1,6 +1,5 @@
 - alias: 💡 | 📺 Dim lights (Shield TV playing)
   id: c136b7ec-1a71-49d3-b000-efddfcd4b433
-  description: ""
   trigger:
     - platform: state
       entity_id: media_player.nvidia_shield_tv
@@ -34,7 +33,6 @@
               data:
                 group_name: Kitchen
                 scene_name: Movie
-      default: []
     - choose:
         - conditions:
             - condition: state
@@ -45,11 +43,9 @@
               data:
                 group_name: Hallway
                 scene_name: Movie
-      default: []
   mode: single
 - alias: 💡 | 📺 Restore lights (Shield TV on/paused)
   id: 586f5ad1-0c79-4213-820d-9e6ed587d540
-  description: ""
   trigger:
     - platform: state
       entity_id: media_player.nvidia_shield_tv
@@ -109,7 +105,6 @@
               data:
                 group_name: Kitchen
                 scene_name: Ambiance
-      default: []
     - choose:
         - conditions:
             - condition: state
@@ -120,11 +115,9 @@
               data:
                 group_name: Hallway
                 scene_name: Evening
-      default: []
   mode: single
 - alias: 💡 | 📺 Restore lights (Shield TV off)
   id: 42a90454-8626-47c7-9f83-fb8d7ded0453
-  description: ""
   trigger:
     - platform: state
       entity_id: media_player.nvidia_shield_tv
@@ -167,7 +160,6 @@
               data:
                 group_name: Kitchen
                 scene_name: Ambiance
-      default: []
     - choose:
         - conditions:
             - condition: state
@@ -178,5 +170,4 @@
               data:
                 group_name: Hallway
                 scene_name: Evening
-      default: []
   mode: single

@@ -1,6 +1,5 @@
 - alias: 🚨 | 📣 Test the sirens (1st Monday of the month at 12:00)
   id: 6125cbba-0fd0-448a-917e-10f00402c32f
-  description: ""
   trigger:
     - platform: time
       at: "11:50:00"

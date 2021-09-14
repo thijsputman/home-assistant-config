@@ -21,7 +21,6 @@
         {{ states(aarlo_connected_sensor) == 'on' }}
     - service: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
-      data: {}
   mode: restart
 - alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
   id: 6fcafedb-78df-4fa4-a7ac-80aec0750cd1
@@ -46,12 +45,10 @@
           sequence:
             - service: alarm_control_panel.alarm_arm_night
               entity_id: !secret aarlo_control_panel
-              data: {}
       # Armed "Away" is stricter than armed "Night", so we default to that...
       default:
         - service: alarm_control_panel.alarm_arm_away
           entity_id: !secret aarlo_control_panel
-          data: {}
   mode: restart
 - alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
   id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
@@ -67,7 +64,6 @@
     - wait_template: >-
         {{ states(aarlo_connected_sensor) == 'on' }}
     - service: alarm_control_panel.alarm_disarm
-      data: {}
       entity_id: !secret aarlo_control_panel
   mode: restart
 - alias: 📹 | ⏳ Pause Arlo "Armed Home" (timer started)
@@ -95,7 +91,6 @@
       default:
         - service: alarm_control_panel.alarm_disarm
           entity_id: !secret aarlo_control_panel
-          data: {}
   mode: single
 - alias: 📹 | ⏳ Resume Arlo "Armed Home" (timer ended)
   id: 71bb747a-25c5-416a-a98d-66c33789a702
@@ -113,7 +108,6 @@
   action:
     - service: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
-      data: {}
   mode: single
 - alias: 📹 | ⏰/🤖 Arlo snapshot (every 2 hours / Home Assistant start; "Home Alarm" state)
   id: 769a4449-f68b-4403-a09b-87b81cbe1581
@@ -151,7 +145,6 @@
                   state: recording
           sequence:
             - service: aarlo.camera_request_snapshot
-              data: {}
               entity_id: camera.aarlo_back
     # Front camera
     #
@@ -179,7 +172,6 @@
           entity_id: camera.aarlo_front
           state: recording
     - service: aarlo.camera_request_snapshot
-      data: {}
       entity_id: camera.aarlo_front
   mode: single
   max_exceeded: silent

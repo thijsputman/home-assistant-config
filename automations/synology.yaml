@@ -1,6 +1,5 @@
 - alias: 📱 Notify on drive status-change (Synology DSM)
   id: 61293aa4-55ee-4b25-a79e-92787fd18e05
-  description: ""
   trigger:
     - platform: state
       entity_id:

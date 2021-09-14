@@ -1,6 +1,5 @@
 - alias: 🚨 | 💤 Alarm arm night (everyone asleep)
   id: c7465f32-cd4f-49e0-a675-4ef234a80eac
-  description: ""
   trigger:
     - platform: state
       entity_id: input_boolean.everyone_asleep
@@ -14,11 +13,9 @@
   action:
     - service: alarm_control_panel.alarm_arm_night
       entity_id: alarm_control_panel.home_alarm
-      data: {}
   mode: single
 - alias: 🚨 | 💤 Alarm disarm (everyone awake)
   id: 33aaf958-65a3-42ed-9b0a-07966a049482
-  description: ""
   trigger:
     - platform: state
       entity_id: input_boolean.everyone_asleep
@@ -37,7 +34,6 @@
   mode: single
 - alias: 🚨 | ✈️ Alarm arm away (everyone away)
   id: 4cb07e27-5af6-4a81-b51c-dc35372c3deb
-  description: ""
   trigger:
     - platform: state
       entity_id: group.family
@@ -56,11 +52,9 @@
   action:
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.home_alarm
-      data: {}
   mode: single
 - alias: 🚨 | ✈️ Alarm disarm (someone home)
   id: 1b7d2951-39c5-41d1-bcac-9acdf31c1173
-  description: ""
   trigger:
     - platform: state
       entity_id: group.family
@@ -78,7 +72,6 @@
   mode: single
 - alias: 🚨 | 🧹 Alarm disarm (housekeeper comes when everyone away)
   id: 3e6dc009-efd8-4c15-bb6d-52430aa7d32c
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.housekeeper_present
@@ -96,7 +89,6 @@
   mode: single
 - alias: 🚨 | 🧹 Alarm arm away (housekeeper leaves when everyone away)
   id: 5cf9fd2b-f126-4a13-a637-213be05d1cea
-  description: ""
   trigger:
     - platform: state
       entity_id: binary_sensor.housekeeper_present
@@ -109,5 +101,4 @@
   action:
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.home_alarm
-      data: {}
   mode: single

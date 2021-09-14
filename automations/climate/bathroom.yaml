@@ -22,7 +22,6 @@
                   above: 60.0
               timeout: "00:05:00"
               continue_on_timeout: false
-      default: []
     - service: light.turn_on
       data:
         entity_id: light.smart_relay_1

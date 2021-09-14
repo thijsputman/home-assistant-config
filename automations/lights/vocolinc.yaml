@@ -1,6 +1,5 @@
 - alias: 💡 | 🤖 VOCOlinc Living room light on (aroma diffuser on)
   id: 2e702914-5d9a-432a-8b8e-06d80ee2cdbf
-  description: ""
   trigger:
     - platform: state
       entity_id: humidifier.vocolinc_flb_living_room
@@ -36,7 +35,6 @@
   mode: single
 - alias: 💡 | 🤖 VOCOlinc Living room light off (aroma diffuser off)
   id: dee9b3f1-4ffb-40de-b133-6dee43208b0d
-  description: ""
   trigger:
     - platform: state
       entity_id: humidifier.vocolinc_flb_living_room
@@ -48,7 +46,6 @@
       state: "on"
   action:
     - service: light.turn_off
-      data: {}
       target:
         entity_id: light.vocolinc_flb_living_room
   mode: single

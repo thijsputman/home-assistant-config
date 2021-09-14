@@ -1,6 +1,5 @@
 - alias: 💡 | 🕹️ Turn on Attic hallway lights (Dimmer Switch)
   id: 26a80c46-4ba4-4721-b650-6b0fccf034ef
-  description: ""
   mode: single
   trigger:
     - device_id: c7a32fb1be6494d32caafb27134fee28
@@ -14,12 +13,10 @@
       target:
         entity_id: light.attic_hallway
     - service: timer.start
-      data: {}
       target:
         entity_id: timer.attic_hallway_motion_pause
 - alias: 💡 | 🕹️ Cycle through Attic hallway gangs (Dimmer Switch)
   id: 1d18a07f-cd2b-49ac-bcd8-ab48089558c9
-  description: ""
   mode: single
   trigger:
     - device_id: c7a32fb1be6494d32caafb27134fee28
@@ -67,7 +64,6 @@
               - light.smart_relay_4
 - alias: 💡 | 🕹️ Turn off Attic hallway lights (Dimmer Switch)
   id: d248cca1-d887-40b2-966a-5bbc2ebd84dd
-  description: ""
   mode: single
   trigger:
     - device_id: c7a32fb1be6494d32caafb27134fee28
@@ -78,7 +74,6 @@
   condition: []
   action:
     - service: timer.cancel
-      data: {}
       target:
         entity_id: timer.attic_hallway_motion_pause
     - service: light.turn_off
@@ -86,7 +81,6 @@
         entity_id: light.attic_hallway
 - alias: 💡 | ⏳ Turn off Attic hallway lights (timer finished)
   id: b4a35562-ea3c-4e01-9d4e-ee0f3fead943
-  description: ""
   mode: single
   trigger:
     - platform: event

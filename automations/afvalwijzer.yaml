@@ -1,6 +1,5 @@
 - alias: 📱 | ⏰ Trash reminder (Black and Green bins)
   id: 992518b0-4f2f-4a35-b262-c882d6330996
-  description: ""
   trigger:
     # Remind at 21:00 the day _before_ pickup
     - platform: time
@@ -36,7 +35,6 @@
   mode: single
 - alias: 📱 | ⏰ Trash reminder (Paper)
   id: 1f0e4981-921e-426f-a77d-05a1e6b8f478
-  description: ""
   trigger:
     # Remind at 08:30 on the day of pickup
     - platform: time

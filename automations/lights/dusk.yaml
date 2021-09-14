@@ -1,7 +1,6 @@
 # N.B. This automation's name is used later in the file!
 - alias: 💡 | ⏰ Garden lights on (daily at civil dusk)
   id: 8fa0a6d4-f80a-4312-8669-9f5525bbf3d5
-  description: ""
   trigger:
     - platform: state
       entity_id: sensor.time_of_day
@@ -19,7 +18,6 @@
   mode: single
 - alias: 💡 | ⏰ Inside lights on (daily just before sunset)
   id: 0ca01a00-8847-41f1-b852-70f4c4a49275
-  description: ""
   trigger:
     - platform: state
       entity_id: sensor.time_of_day
@@ -43,7 +41,6 @@
               data:
                 group_name: Living room
                 scene_name: Ambiance
-      default: []
     # Kitchen
     - choose:
         - conditions:
@@ -60,7 +57,6 @@
               data:
                 group_name: Kitchen
                 scene_name: Ambiance
-      default: []
     # Hallway – turn on lights regardless of their state. The daytime light
     # automation most likely already switched them on; the below ensures they
     # don't get stuck at their – too high – daytime brightness level...
@@ -84,11 +80,9 @@
               data:
                 group_name: Guestroom
                 scene_name: Evening
-      default: []
   mode: single
 - alias: 💡 | ⏰ Garden lights off (daily after 23:00)
   id: 99711cfd-e1c7-47d8-83af-94876e126b6c
-  description: ""
   trigger:
     - platform: time
       at: "23:00:00"
@@ -116,14 +110,12 @@
           0
         {% endif %}
     - service: light.turn_off
-      data: {}
       entity_id:
         - light.garden
         - light.hue_filament_bulb_1 # Back door
   mode: single
 - alias: 💡 | ⏰ Front door light off (daily at 22:30)
   id: dc5c6595-78d3-43c9-94ab-24ddd2a4073d
-  description: ""
   trigger:
     - platform: time
       at: "22:30:00"
@@ -133,5 +125,4 @@
       state: "on"
   action:
     - service: light.turn_off
-      data: {}
       entity_id: light.hue_filament_bulb_1_2
