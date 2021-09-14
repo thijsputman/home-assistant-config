@@ -11,7 +11,7 @@
 /www/custom-jsm
 /var
 /home-assistant_v2.db*
-/home-assistant.log
+/home-assistant.log*
 
 # Privacy sensitive
 /secrets.yaml
