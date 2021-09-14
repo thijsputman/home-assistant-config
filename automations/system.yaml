@@ -42,80 +42,36 @@
               sensors | join('<br>◾ ')
             -}}
   mode: single
-- alias: 📱 Notify on integration failure (unknown/unavailable-state)
+- alias: 📱 Notify on device failure (unavailable/unknown/none-state)
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12
-  description: ""
-  variables:
-    # Entities that require Internet-connectivity to function
-    online:
-      - !secret tado_ib1_connection_state
-      - !secret tado_wr1_connection_state
-      - !secret tado_wr2_connection_state
-      - !secret aarlo_connected_sensor
-      - vacuum.neato_d7
-      - switch.pi_hole
   trigger:
     - platform: state
-      entity_id:
-        - sensor.power_consumption
-        - sensor.weewx_outside_temperature
-        - sensor.weewx_outside_temperature_balcony
-        - !secret tado_ib1_connection_state
-        - !secret tado_wr1_connection_state
-        - !secret tado_wr2_connection_state
-        - climate.tado_smart_thermostat
-        - !secret aarlo_connected_sensor
-        - vacuum.neato_d7
-        - switch.pi_hole
-        - binary_sensor.ds1815_security_status
-        - media_player.pi0_speaker_bedroom
-        - media_player.nvidia_shield_tv
-        - sensor.pi4_1_minute_load
-        - sensor.pi4_sandbox_1_minute_load
-        - sensor.dvb_t_signal_strength
-        - sensor.gammu_signal_strength
-        # For deCONZ, Hue, Broadlink and Xiaomi Miot (respectively) monitor a
-        # single sensor/device and assume its state is respective for that of
-        # the entire integration. Might cause false positives, but there doesn't
-        # appear to be a better way of handling this...
-        - sensor.power_88
-        - sensor.hue_dimmer_switch_1_battery_level
-        - remote.broadlink_living_room_remote
-        - sensor.qingping_air_monitor_lite_living_room_environment_co2_density
-      to:
-        - unknown
-        - unavailable
-      for: "00:10:00"
-    # Gas consumption updates once per hour
-    - platform: state
-      entity_id: sensor.gas_consumption
-      to:
-        - unknown
-        - unavailable
-      for: "01:00:00"
-    # Mi Flora (via bt-mqtt-gateway) sensors stop updating altogether – the
-    # light/lux measurements appear most variable (they keep changing slightly,
-    # even when it's dark). If these stop changing, most probably the Mi Flora
-    # sensor has failed. There's no viable "last seen" attribute we to use, so
-    # this is the best approach currently available.
-    - platform: state
-      entity_id:
-        - sensor.miflora_strelitzia_attic_light
-        - sensor.miflora_bonsai_living_room_light
-        - sensor.miflora_calathea_living_room_light
-      for: "04:00:00"
+      entity_id: sensor.failed_devices
   condition:
-    # We should either be online (i.e. the Remote UI is connected), or the
-    # entity in question should _not_ require Internet-connectivity to function
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.remote_ui
-          state: "on"
-        - condition: template
-          value_template: >-
-            {{ trigger.entity_id not in online }}
+    # Guard against an invalid state in the sensor (as any state change triggers
+    # the automation)
+    - condition: template
+      value_template: >-
+        {{ states('sensor.failed_devices') not in ['unknown', 'unavailable'] }}
+    # Don't notify if there's no Internet- or Nabu Casa-connectivity (a likely
+    # cause of failures). Once the connectivity issue(s) clear, any persistent
+    # failures will show up in the next notification...
+    - condition: state
+      entity_id: binary_sensor.google_dns_ping
+      state: "on"
+    - condition: state
+      entity_id: binary_sensor.remote_ui
+      state: "on"
   action:
+    - variables:
+        devices: >-
+          {% set result = namespace(devices=[]) %}
+          {% set devices = states('sensor.failed_devices') | from_json %}
+          {%- for device in devices -%}
+            {% set result.devices = result.devices +
+              [device_attr(device, 'name')] %}
+          {%- endfor -%}
+          {{ result.devices }}
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -123,35 +79,15 @@
         variables:
           group: general
           channel: Notification
-          tag: >-
-            {{ context.id }}
+          tag: device_failure
           targetDevices: my
-          title: 💥 Potential integration failure
+          title: 💥 Device failure(s)
           message: >-
-            {{- trigger.to_state.name -}}
-            {%- if trigger.entity_id is match('sensor\.miflora_')
-              %} has not changed
-            {%- else
-              %} has been in an {{ trigger.to_state.state }}-state
-            {%- endif %} for {{
-              relative_time(trigger.to_state.last_changed) }}.
-    # Dismiss notification if/when the failure clears
-    - wait_for_trigger:
-        - platform: template
-          value_template: >-
-            {{
-              states(trigger.entity_id)
-                not in ['unknown', 'unavailable']
-            }}
-          for: "00:10:00"
-      timeout: "12:00:00"
-      continue_on_timeout: false
-    - service: persistent_notification.dismiss
-      data:
-        notification_id: >-
-          {{ context.id }}
-  mode: parallel
-  max: 10
+            The following device(s) appear to have (partially) failed:<br>
+            <br><br>◾ {{
+              devices | join('<br>◾ ')
+            -}}
+  mode: restart
 # The Recorder's SQLite-database is on a separate NVMe USB-drive that – although
 # generally stable – occasionally disconnects. It reconnects right away and the
 # filesystem is automatically remounted, but Docker doesn't take very kindly to

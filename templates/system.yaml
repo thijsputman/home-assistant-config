@@ -17,6 +17,42 @@
         {%- else -%}
           off
         {%- endif -%}
+# JSON-encoded list of failed devices – renders every 5 minutes. The list is
+# sorted and deduplicated so the sensor state only changes if a device becomes
+# (un)available.
+- trigger:
+    - platform: time_pattern
+      hours: "*"
+      minutes: /5
+      seconds: 0
+    - platform: event
+      event_type: template_reloaded
+  sensor:
+    - name: Failed devices
+      unique_id: b35c9d1a-715b-4216-a620-6308c47e0e8f
+      icon: mdi:toy-brick-remove-outline
+      # Find all devices that have one or more entities in the "unavailable"-,
+      # "unknown"- or "none"-state. A small number of entity IDs is excluded as
+      # their state can be one of these under normal circumstances (mainly
+      # seems to apply to Mobile App entities).
+      # The goal of this sensor is to detect failed devices and integrations,
+      # entities that do not belong to a device are thus excluded.
+      state: >-
+        {{
+          states |
+          selectattr('state', 'in',
+            [
+              'unavailable',
+              'unknown',
+              'none'
+            ]
+          ) |
+          map(attribute='entity_id') |
+          reject('search',
+            '^sensor\..+_(charger_type|next_alarm|do_not_disturb_sensor)$') |
+          map('device_id') |
+          unique | reject('none') | list | sort | to_json
+        }}
 # If the Home Alarm is in "Armed away"-mode for more than 16 hours, enable
 # Vacation-mode – indicating we are away from home longer than on a regular
 # working day.
