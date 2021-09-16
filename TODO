@@ -3,19 +3,50 @@
 # ToDo
 
 - [General](#general)
+  - [Bugs](#bugs)
+  - [Features](#features)
 - [Lovelace](#lovelace)
 - [tado°](#tado)
 - [Lights](#lights)
 - [Alarm](#alarm)
+- [Hardware](#hardware)
 
 ## General
+
+### Bugs
+
+- [ ] The `sensor.consumption_ups` (Riemann sum integral) deviates a lot from
+      its expected daily total (sometimes reporting less than 30% of what it
+      should be) every couple of days – investigate...
+- [ ] Reset the wakeup alarm trigger time (i.e. set it to the correct time for
+      tomorrow) regardless of whether the alarm was actually triggered...
+- [ ] Switch off "Everyone asleep" when coming home with somebody already asleep
+      (i.e. alarm is "Armed night" and "Everyone asleep" is on). This way it
+      gets re-enabled when the person that came home goes to bed (and the alarm
+      – which was disabled when that person came home – is also automatically
+      armed again).
+- [ ] The notification of device failure excludes a handful of "custom"
+      devices/implementations, find alternative way(s) of monitoring these
+  - WeeWX – monitor a handful of (reliably updating) sensors
+  - The Mi Flora sensors (connected via `bt2mqtt`) stop reporting data when they
+    fail, but under normal operation they might also not report updated data for
+    quite some time... Add an automation that "invalidates" these devices after
+    none of their sensors updates over a 24-hour window? This sensor can be used
+    to trigger a failure notification.
+
+### Features
 
 - [ ] Move all icon customisations for sensors defined in YAML from
       `📄 customize.yaml` to their respective YAML files
   - And where possible, add `unique_id` such that customisation from the UI
     becomes possible
 - [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
-      `light_x`, `openclose_y`, the other half already have sensible names)
+      `light_x`, `openclose_y`, the other half already have descriptive names)
+  - Some other things are also inconsistent (e.g. `power_xxx` versus
+    `xxx_power`)
+  - Rename `sensor.xiaomi_miot_environment_co2_density` to match with the other
+    Qingping senors (will cause a loss of history, so do this after all
+    measurements have stabilised)
 - [ ] State attributes store history too, so there's no need to create template
       sensors if they're purely used for graphing in dashboards
       (`mini-graph-card` can graph attributes) or in other automations (use a
@@ -44,25 +75,29 @@
   - ✔️ Channels and grouping/threading
   - ✔️ Support for attachments/images
   - Change the click-action based on the notification context
+  - Allow mobile notifications to be dismissed even if `lovelaceDismiss` is
+    _not_ enabled; this is currently impossible. See
+    `📄 automations/alarm/away.yaml` for an example of where this causes a
+    (highly theoretical 😉) vulnerability
 - [ ] Use generic names for the mobile devices registered through the "Mobile
       App" integration (`gm1913`, `sm_g930f` and `p20hd_eea`). Knowing the model
       numbers of these devices allows one to deduce the vendor prefixes of their
       WiFi and Bluetooth MAC addresses, which in turn _could_ be used to
       pinpoint the exact location of the house (if the combination of the three
       device types is unique enough – which it might).
-- [ ] Add a "Guest-mode" toggle to stop (most of) the automations that run when
-      no-one is at home from triggering
 - [ ] Experiment with using the amount of rain and the (WeeWX calculated)
       evapotranspiration to indicate whether the garden should be watered
   - For now just graphing the daily delta between the two to get a bit of a
     feeling on how the data moves
-  - Added `sensor.weewx_rain_day` (the daily rain tally kept by WeeWX itself) to
-    compare against (i.e. validate the accuracy of) the integral calculation
+  - ~~Added `sensor.weewx_rain_day` (the daily rain tally kept by WeeWX itself)
+    to compare against (i.e. validate the accuracy of) the integral
+    calculation~~ The computed integral appears acceptably close to the value
+    reported by WeeWX itself
 - [ ] It could be nice to also track water consumption. See for example
       <https://www.ztatz.nl/p1-monitor-watermeter/>
   - Apart from tracking consumption, it could also serve as an (early) warning
     in case of water leaks
-- [ ] Add a power consumption sensor to the "multimedia outlet" in the Living
+- [ ] Use the power consumption sensor for the "multimedia hub" in the Living
       room to detect if the projector is on (in which case certain lighting
       automation should be disabled) – as an addition to the Android TV based
       automations (which work wonderfully, but only when the Shield TV is active
@@ -70,11 +105,37 @@
 - [ ] Enable the `retain`-attribute for all MQTT-topics (either by updating the
       publishing logic, or by manually toggling the attribute on the MQTT server
       itself?)
+- [ ] Send a notification when the washing machine/dryer is done
+- [ ] Use VLC (instead of native Android notifications) for TTS on the tablet in
+      the Kitchen – has a much more natural voice
+  - Additionally, extend TTS to the speaker in the Bedroom?
+- [ ] Further extend SMS functionalities:
+  - Control lighting (status; switch rooms on and off)
+  - Control heating/airco (status; switch heating/airco on and off)
+- [ ] Add tilt sensors to all "tilting" windows (both horizontal and vertical)
+  - Use these (in addition to the `openclose` sensors) to detect a potential
+    break-in (i.e. windows can be left ajar and still trigger the alarm)
+  - Use these (_instead of_ the `openclose` sensors) to warn when windows are
+    open and it starts to rain (i.e. don't warn if a window ajar; it's probably
+    left open intentionally)
+  - Perhaps provide a warning when the Attic window is fully closed (in
+    principle it's ventilation hatch should always be open) – same for the
+    Bedroom, when we go to bed at least one of the windows should be ajar...
+    This could be via TTS when all lights are switched off before going to bed
 
 ## Lovelace
 
 - [ ] Refine the wakeup alarm card: Clearer state indication and visually
       combine the alarm time setting with the mute setting
+- [ ] Provide a button to disable the siren in the Lovelace UI (in case of a
+      "non-break in" event)
+  - Should only be available when alarm is disarmed or "Armed night"
+- [ ] SMS functionality: Show cellular reception and credit remaining
+- [ ] Provide a visual indication of the Remote UI (Nabu Casa) status.
+      Connection issues there otherwise might go unnoticed for some time (while
+      they do mess with the Mobile App functionalities)
+- [ ] Add an overview of motion/vibration sensors
+  - Perhaps create separate Security-dashboard?
 
 ## tado°
 
@@ -90,6 +151,10 @@
       to be switched of manually when Tado transitions from Away- to Home-mode
       (otherwise it reverts back to its schedule and switches on even though
       no-one is present in the Attic)
+- [ ] Implement proper controls for the Airco in the Bedroom (most probably
+      delayed till next Summer, there wasn't any need for it this year 🌦️😢)
+  - Use Broadlink IR-blaster to control fan direction and some other advanced
+    options not available in tado° (in response to tado° actions)
 
 ## Lights
 
@@ -103,7 +168,9 @@
       "Ambiance", trigger counter motion sensor, switch Kitchen to "Bright
       (Custom)" (while motion sensor is still active). After motion clears,
       Kitchen switches back to "Ambiance" instead of to "Bright (Custom")
-- [ ] Use "Light Group" instead of regular groups for grouping lights
+- [ ] Use "Light Group" instead of regular groups for grouping lights (where
+      applicable – only makes sense when the group of lights needs (advanced)
+      light control, not necessary for basic operations (i.e. on/off).
 - [ ] Failure mode for Bathroom motion-sensing automation: If the light-level
       falls below its threshold while a motion sensors remains triggered, the
       light will never come on (as the automation doesn't restart until the
@@ -115,13 +182,56 @@
       detected scene does not change (most likely the overall change is too
       small – might require a specific exception)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
+- [ ] Make the switches next to the bed control the Bedroom lights (toggle off
+      when on; on when off – cycle through various other modes with a long
+      press?)
+- [ ] Use the motion sensors in the Hallway to trigger the lights (mainly at
+      night, after everyone went to bed)
 
 ## Alarm
 
-- [ ] Provide a button to disable the siren in the Lovelace UI (in case of a
-      "non-burglary" event)
-- [ ] Replace the notifications ("motion detected when away") from the Arlo-app
-      with "native" Home Assistant notifications (mainly beneficial if this
-      allows to include a snapshot directly in the notification)
-  - For testing purposes currently implemented as "doorbell rang when
-    away"-notification
+- [ ] Provide a toggle to disable the nightly auto-arming of the alarm (or maybe
+      that's just part of "Guest"-mode?)
+- [ ] Add a "Guest-mode" toggle to stop (most of) the automations that run when
+      no-one is at home from triggering
+  - Create proxy template binary sensor for the "Everyone away"-state (instead
+    of using `group.family` directly; "Guest"-mode stops `group.family` from
+    automatically setting "Everyone away"). Setting the alarm to "Arm away"
+    should enable "Everyone away". This sensor can then be used to control the
+    alarm _and_ all other things that should (not) happen when no-one is
+    home....
+  - Perhaps this should also disable some of the "stricter" alarm triggers
+    (vibration and motion during "Armed night"; maybe even the `openclose`
+    sensors)?
+- [ ] Send notifications (with snapshot/thumbnail) if Arlo records something
+      when "Armed away"
+  - Replaces the "native" Arlo notifications
+  - Perhaps provide a summary of Arlo recordings every morning?
+  - 🚀 Way out there: Use a machine-learned model to classify the camera
+    snapshots and send notifications only if there's something out of the
+    ordinary going on...
+- [ ] Keep an eye on
+      <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/alarmsystems/>
+
+## Hardware
+
+- [ ] The Heiman Zigbee alarm-"sensor" in the Wardrobe drops off the
+      Zigbee-network every half hour (comes back after a couple minutes). When
+      it does this, it takes the Xiaomi Zigbee smart-plug (connected to the
+      Airco) in the Bedroom with it... Verify the problem is caused by the
+      alarm-sensor, if so, buy a new one / find an alternative solution
+- [ ] The Xiaomi two-gang Zigbee relay in the Attic hallway sometimes refuses to
+      switch off one of its gangs (always the same). The Zigbee network thinks
+      the light is off (it's actually still on); turning it off again properly
+      turns off the light.
+- [ ] Both the Qingping and Broadlink devices need Internet-connectivity to be
+      set up . Once they're up and running they are managed fully locally – no
+      need for Internet-connectivity. Block their MAC addresses in the router to
+      prevent them from "phoning home" (actually, more to prevent people from
+      "phoning in" through them).
+- [ ] The Bluetooth-stack on the Pi0 in the Bedroom appears to crash roughly
+      (but reliably) 24 hours after reboot. Restarting it manually (and
+      subsequently restarting the `bt2mqtt`-container) makes it run reliably
+      till the next boot...
+  - Investigate? Perhaps don't bother and simply restart the entire stack every
+    24 hours or so?

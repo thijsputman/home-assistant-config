@@ -19,3 +19,5 @@
   CET the values were computed differently (higher derivative over a shorter
   timespan) compared to the values as previously computed by the DSMR
   integration.
+- **18-7-2021 15:00 CET** – No data for `sensor.weewx_wind_speed` recorded (due
+  to a climbing plant getting in the way). Resolved on 21-7-2021 @ 18:00 CET.
