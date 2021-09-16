@@ -357,6 +357,9 @@ sms_notification:
       selector:
         text: # yamllint disable-line rule:empty-values
     message:
+      description: >-
+        To insert newlines into the message, use a "\n" string literal (actual
+        newlines are removed prior to sending).
       required: true
       selector:
         text:
@@ -402,7 +405,12 @@ sms_notification:
           #}
           {
             "number": {{ '"' ~ numbers | join(';') ~ '"' }},
-            "text": {{ message | to_json | replace('\\\\n', '\\n') }}
+            "text": {{
+              message |
+              regex_replace(' ?\n ?', '') |
+              to_json |
+              replace('\\\\n', '\\n')
+            }}
           }
     - wait_for_trigger:
         - platform: state

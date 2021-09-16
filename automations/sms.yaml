@@ -18,11 +18,11 @@
               data:
                 targetDevices: my
                 message: >-
-                  💸 Top-up Vodafone prepaid credit!
-                  \nVodafone prepaid credit is
+                  💸 Top-up Vodafone prepaid credit!\n
+                  Vodafone prepaid credit is
                   € {{ states('sensor.gammu_credit_vodafone') }} –
-                  time to top it up:
-                  \n\n✉️ #secret# credit top up 5|10|20|30|40|50
+                  time to top it up:\n\n
+                  ✉️ #secret# credit top up 5|10|20|30|40|50
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -188,10 +188,10 @@
             state_attr('sensor.gammu_received_authenticated_command', 'number')
           }}
         message: >-
-          ✉️ #secret# status [camera]
-          \n✉️ #secret# alarm [arm|disarm|silence]
-          \n✉️ #secret# credit top up 5|10|20|30|40|50
-          \n✉️ #secret# ping?
+          ✉️ #secret# status [camera]\n
+          ✉️ #secret# alarm [arm|disarm|silence]\n
+          ✉️ #secret# credit top up 5|10|20|30|40|50\n
+          ✉️ #secret# ping?
 # Top-up via SMS (in case of no Internet connectivity)
 - alias: >-
     📱 | ✉️ Top-up prepaid credit (received "credit top up 5|10|20|30|40|50")
@@ -254,8 +254,8 @@
               'number')
           }}
         message: >-
-          💸 Vodafone prepaid credit top-up link
-          \nTop-up the prepaid credit with € {{ credit }}:
+          💸 Vodafone prepaid credit top-up link\n
+          Top-up the prepaid credit with € {{ credit }}:
           {{ top_up_link }}
     - wait_for_trigger:
         - platform: template
@@ -276,7 +276,7 @@
           }}
         message: >-
           💸 Vodafone prepaid credit topped-up
-          \nVodafone credit was topped-up with
+          Vodafone credit was topped-up with\n
           € {{
             (
               states('sensor.gammu_credit_vodafone') | float -
@@ -335,8 +335,8 @@
                         ' – latest thumbnail: ' ~ state.attributes.last_thumbnail
                       ] %}
                   {% endfor %}
-                  📹 Latest camera footage:
-                  \n\n{{ result.cameras | join('\\n\\n') }}
+                  📹 Latest camera footage:\n\n
+                  {{ result.cameras | join('\\n\\n') }}
       default:
         - service: script.sms_notification
           data:
@@ -371,24 +371,24 @@
                 ] %}
               {% endfor %}
               {{ '⚡ Power is on' if states('binary_sensor.power_outage') ==
-                'off' else '⛔ Power is out!' -}}\n\n
-              📡 Connectivity:\n\n{{-
-                '✅' if states('binary_sensor.google_dns_ping') == 'on'
-                  else '⛔' }} Internet ({{- state_attr(
+                'off' else '⛔ Power is out!' }}\n\n
+              📡 Connectivity:\n\n
+                {{ '✅' if states('binary_sensor.google_dns_ping') == 'on'
+                  else '⛔' }} Internet ({{ state_attr(
                     'binary_sensor.google_dns_ping', 'round_trip_time_avg'
-                  ) | float | round(1) }} ms)\n{{-
-                '✅' if states('binary_sensor.remote_ui') == 'on'
-                  else '⛔' }} Nabu Casa\n{{-
-                '✅' if states(arlo_connection_state) == 'on'
-                  else '⛔' }} Arlo\n{{-
-                '✅' if states(tado_connection_state) == 'on'
+                  ) | float | round(1) }} ms)\n
+                {{ '✅' if states('binary_sensor.remote_ui') == 'on'
+                  else '⛔' }} Nabu Casa\n
+                {{ '✅' if states(arlo_connection_state) == 'on'
+                  else '⛔' }} Arlo\n
+                {{ '✅' if states(tado_connection_state) == 'on'
                   else '⛔' }} tadoº\n\n
-              🤖 Active binary sensors:
-              \n\n🔸 {{ result.sensors | join('\\n🔸 ') -}}
-              \n\n📹 Status of cameras:
-              \n\n🔸 {{ result.cameras | join('\\n🔸 ') -}}
-              \n\nRetrieve latest camera footage:
-              \n\n✉️ #secret# status camera
+              🤖 Active binary sensors:\n\n
+              🔸 {{ result.sensors | join('\\n🔸 ') }}\n\n
+              📹 Status of cameras:\n\n
+              🔸 {{ result.cameras | join('\\n🔸 ') }}\n\n
+              Retrieve latest camera footage:\n\n
+              ✉️ #secret# status camera
 - alias: >-
     🚨 | ✉️ Alarm arm away, disarm or silence
       (received "alarm [arm|disarm|silence]")
@@ -436,29 +436,30 @@
             state_attr('sensor.gammu_received_authenticated_command', 'number')
           }}
         message: >-
-          {%-
+          {%
             if states('alarm_control_panel.home_alarm') in
               ['triggered', 'pending']
-          -%}
-            🚨 Home Alarm is {{ states('alarm_control_panel.home_alarm') }}!
-          {%-
+          %}
+            🚨 Home Alarm is {{ states('alarm_control_panel.home_alarm') }}!\n
+          {%
             elif states('alarm_control_panel.home_alarm') == 'disarmed'
-          -%}
-            🔓 Home Alarm is disarmed
-          {%- else -%}
-            🛡️ Home Alarm is in "{{ states('alarm_control_panel.home_alarm') |
-              replace('_', ' ') | capitalize }}"-mode
-          {%- endif -%}
-          {%- if alarmAction in ['arm', 'disarm', 'silence'] -%}
-            \nYou requested the Home Alarm to be {%
-                if alarmAction == 'arm' -%}
-              changed to "Armed away"-mode.
+          %}
+            🔓 Home Alarm is disarmed\n
+          {% else %}
+            🛡️ Home Alarm is in "{{
+                states('alarm_control_panel.home_alarm') | replace('_', ' ') |
+                capitalize
+              }}"-mode\n
+          {% endif %}
+          {% if alarmAction in ['arm', 'disarm', 'silence'] %}
+            You requested the Home Alarm to be
+            {% if alarmAction == 'arm' -%}
+              changed to "Armed away"-mode.\n\n
             {%- elif alarmAction == 'disarm' -%}
-              disarmed.
+              disarmed.\n\n
             {%- elif alarmAction == 'silence' -%}
-              silenced...
-            {%- endif %} To further control the alarm:
-          {%- else -%}
-            \nTo further control the alarm:
+              silenced...\n\n
+            {%- endif %}
           {%- endif -%}
-          \n\n✉️ #secret# alarm [arm|disarm|silence]
+          To further control the alarm:\n\n
+          ✉️ #secret# alarm [arm|disarm|silence]
