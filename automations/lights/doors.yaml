@@ -18,11 +18,15 @@
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-    # Abort if the light is already on at maximum brightness
-    - condition: numeric_state
-      entity_id: light.hue_filament_bulb_1_2
-      attribute: brightness
-      below: 255
+    # Only continue if the light is not yet at maximum brightness – cannot use
+    # a regular state/attribute condition as the "brightness" attribute is
+    # missing when the light is off.
+    - condition: template
+      value_template: >-
+        {{
+          state_attr('light.hue_filament_bulb_1_2', 'brightness')
+            | int(-1) < 255
+        }}
   action:
     - variables:
         light_state: >-
@@ -91,11 +95,13 @@
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-    # Abort if the light is already on at maximum brightness
-    - condition: numeric_state
-      entity_id: light.hue_filament_bulb_1
-      attribute: brightness
-      below: 255
+    # Only continue if the light is not yet at maximum brightness
+    - condition: template
+      value_template: >-
+        {{
+          state_attr('light.hue_filament_bulb_1', 'brightness')
+            | int(-1) < 255
+        }}
   action:
     - variables:
         light_state: >-
