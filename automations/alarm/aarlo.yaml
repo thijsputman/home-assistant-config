@@ -192,19 +192,19 @@
       id: noon
       entity_id: sun.sun
       attribute: rising
-      from: "on"
-      to: "off"
+      from: true
+      to: false
     - platform: state
       id: midnight
       entity_id: sun.sun
       attribute: rising
-      from: "off"
-      to: "on"
+      from: false
+      to: true
   condition: []
   action:
     - variables:
         filename: >-
-          -{{ trigger.id }}-{{-
+          {{ trigger.id }}-{{-
             now() | as_timestamp | timestamp_custom('%Y%m%d%H%M')
           -}}.jpg
     # Front
