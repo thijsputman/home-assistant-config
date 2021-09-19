@@ -270,27 +270,19 @@ persistent_notification:
                 {% else %}
                   {{ tag }}_NO_DISMISS
                 {% endif %}
-        # Script called again with same tag (no-op; end this run) – scripts can
-        # be invoked in two ways; trigger on either...
+        # Another persistent notification with the same notification ID (i.e.
+        # tag) was created. End this run to prevent running out of parellel
+        # executions; the new script run takes over management of this
+        # notification ID's actions.
         - platform: event
+          id: noop
           event_type: call_service
           event_data:
-            domain: script
-            service: persistent_notification
+            domain: persistent_notification
+            service: create
             service_data:
-              tag: >-
+              notification_id: >-
                 {{ tag }}
-        - platform: event
-          event_type: call_service
-          event_data:
-            domain: script
-            service: turn_on
-            service_data:
-              entity_id:
-                - script.persistent_notification
-              variables:
-                tag: >-
-                  {{ tag }}
       timeout: "24:00:00"
       continue_on_timeout: false
     - choose:
