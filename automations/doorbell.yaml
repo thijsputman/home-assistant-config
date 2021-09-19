@@ -92,11 +92,20 @@
           entity_id: camera.aarlo_front
           state: recording
   action:
+    - variables:
+        filename: >-
+          -{{ now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') }}.jpg
+        time_of_day: >-
+          {% set time_of_day = states('sensor.time_of_day') %}
+          {% if time_of_day in ['day', 'dusk', 'night', 'dawn'] %}
+            -{{ time_of_day }}
+          {% else %}
+            -unknown
+          {% endif %}
     - service: aarlo.camera_request_snapshot_to_file
       data:
         filename: >-
-          /config/var/doorbell/
-            {{- now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') -}}.jpg
+          /config/var/doorbell/front{{ time_of_day ~ filename }}
       entity_id: camera.aarlo_front
   mode: single
 - alias: 📱 | 🚪 Send Arlo capture (camera active when doorbell rang)
