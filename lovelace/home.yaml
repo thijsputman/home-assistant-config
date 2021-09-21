@@ -11,6 +11,7 @@ views:
         cards:
           - !include home/security/alarm_panel.yaml
           - !include home/security/occupancy.yaml
+          - !include home/security/housekeeper.yaml
       - type: vertical-stack
         cards:
           - !include home/security/aarlo_front.yaml

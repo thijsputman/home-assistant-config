@@ -1,0 +1,11 @@
+type: glance
+entities:
+  - entity: binary_sensor.housekeeper_present
+    name: Housekeeper
+  - entity: vacuum.neato_d7
+    name: Living room
+  - entity: binary_sensor.neato_active_first_floor
+    name: First floor
+  - entity: binary_sensor.neato_active_first_floor
+    name: Attic
+show_state: false
