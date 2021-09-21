@@ -1,9 +1,63 @@
-type: glance
-entities:
-  - entity: binary_sensor.fire_81
-    name: Smoke
-  - entity: binary_sensor.water_82
-    name: Kitchen
-  - entity: binary_sensor.water_59
-    name: Attic
-show_state: false
+type: custom:mod-card
+card_mod:
+  style:
+    hui-horizontal-stack-card$: |
+      :host div#root > *{
+        flex: 1 0 auto;
+      }
+      :host div#root > :last-child{
+        flex: 0 0 auto !important;
+      }
+report_size: 1
+card:
+  type: horizontal-stack
+  cards:
+    - type: glance
+      entities:
+        - entity: binary_sensor.fire_81
+          name: Smoke
+        - entity: binary_sensor.water_82
+          name: Kitchen
+        - entity: binary_sensor.water_59
+          name: Attic
+      show_state: false
+    - type: conditional
+      conditions:
+        - entity: alarm_control_panel.home_alarm
+          state_not: pending
+        - entity: alarm_control_panel.home_alarm
+          state_not: triggered
+      card:
+        type: button
+        card_mod:
+          style: |
+            ha-card {
+              width: 90px;
+            }
+            {%- if states('script.sirens') == 'on' -%}
+              ha-card ha-icon{
+                animation: flash 0.8s ease-in-out infinite;
+              }
+            {%- endif -%}
+            @keyframes flash {
+              0% {
+                color: var(--warning-color);
+              }
+              50% {
+                color: var(--error-color);
+              }
+              100% {
+                color: var(--warning-color);
+              }
+            }
+        name: Silence the Alarm
+        show_name: false
+        icon: mdi:alarm-light-off
+        entity: script.sirens
+        tap_action:
+          action: call-service
+          service: script.sirens
+          service_data:
+            mode: none
+        hold_action:
+          action: more-info

@@ -127,9 +127,6 @@
 
 - [ ] Refine the wakeup alarm card: Clearer state indication and visually
       combine the alarm time setting with the mute setting
-- [ ] Provide a button to disable the siren in the Lovelace UI (in case of a
-      "non-break in" event)
-  - Should only be available when alarm is disarmed or "Armed night"
 - [ ] SMS functionality: Show cellular reception and credit remaining
 - [ ] Provide a visual indication of the Remote UI (Nabu Casa) status.
       Connection issues there otherwise might go unnoticed for some time (while
