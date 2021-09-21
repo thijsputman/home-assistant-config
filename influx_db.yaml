@@ -54,6 +54,11 @@ include:
     - sensor.ups_power
     - sensor.power_108 # Television (i.e. Multimedia hub)
     - sensor.power_sonair_combined
+    # Internet / Network
+    - sensor.google_dns_roundtrip_time
+    - sensor.dd_wrt_1_wan_in_mbps
+    - sensor.dd_wrt_1_wan_out_mbps
+    - sensor.pi_hole_dns_unique_clients
 component_config:
   # Don't push entity_id-attribute (i.e. names of group members) for the
   # family group; keeps the data in InfluxDB free of PII...
