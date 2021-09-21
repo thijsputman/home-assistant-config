@@ -139,8 +139,8 @@
           state: "off"
   action:
     # Wait up to five minutes for either the same or another motion sensor to
-    # trigger. This prevents false positives (e.g. due to Sun light or heat) –
-    # if someone is really moving around the house it's highly likely they'll
+    # trigger. This prevents false positives (e.g. due to Sunlight or heat) – if
+    # someone is really moving around the house it's highly likely they'll
     # trigger another sensor within this timeframe...
     # There remains a slight possibility for a false positive when the initial
     # trigger occurs while one of the Neato units is active. The below triggers
@@ -163,13 +163,6 @@
             - binary_sensor.presence_127
           from: "off"
           to: "on"
-        # Additionally, if the triggered sensor stays "on" for more than 2
-        # minutes also assume it got triggered twice (if triggered once the
-        # sensor stays "on" for 90 seconds at most)
-        - platform: template
-          value_template: >-
-            {{ states(trigger.entity_id) == 'on' }}
-          for: 120
       timeout: 300
       continue_on_timeout: false
     - service: alarm_control_panel.alarm_trigger
