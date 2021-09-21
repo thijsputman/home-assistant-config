@@ -109,7 +109,9 @@
     - service: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
   mode: single
-- alias: 📹 | ⏰/🤖 Snapshot (every 2 hours / Home Assistant start; "Home Alarm" state)
+- alias: >-
+    📹 | ⏰/🤖 Snapshot (every 2 hours / HA start; "Home Alarm"-state;
+    Arlo connected)
   id: 769a4449-f68b-4403-a09b-87b81cbe1581
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
@@ -126,10 +128,16 @@
         - disarmed
         - armed_night
         - armed_away
+    # Other triggers can pre-empt this one; that's no problem. The script will
+    # wait (a while) for Arlo to connect.
+    - platform: state
+      entity_id: !secret aarlo_connected_sensor
+      to: "on"
   condition: []
   action:
-    # Wait up to 5 minutes for Arlo to connect – cope with the fact that, at
-    # Home Assistant start, Arlo is not connected yet...
+    # Arlo should be connected; wait up to 5 minutes for Arlo to connect. Mainly
+    # to cope with the fact that – at Home Assistant start – Arlo might not be
+    # connected yet...
     - wait_template: >-
         {{ states(aarlo_connected_sensor) == 'on' }}
       timeout: 300
@@ -147,7 +155,6 @@
             - service: aarlo.camera_request_snapshot
               entity_id: camera.aarlo_back
     # Front camera
-    #
     # In case of a regular/timed snapshot, ensure at least five minutes have
     # passed since the doorbell last rang (the 4-minute time delta is
     # intentional as the sensor remains active for 1 minute). This prevents a
