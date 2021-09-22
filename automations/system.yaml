@@ -65,13 +65,7 @@
   action:
     - variables:
         devices: >-
-          {% set result = namespace(devices=[]) %}
-          {% set devices = states('sensor.failed_devices') | from_json %}
-          {%- for device in devices -%}
-            {% set result.devices = result.devices +
-              [device_attr(device, 'name')] %}
-          {%- endfor -%}
-          {{ result.devices }}
+          {{ states('sensor.failed_devices') | from_json }}
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification

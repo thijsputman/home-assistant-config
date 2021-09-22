@@ -18,8 +18,10 @@
           off
         {%- endif -%}
 # JSON-encoded list of failed devices – renders every 5 minutes. The list is
-# sorted and deduplicated so the sensor state only changes if a device becomes
-# (un)available.
+# sorted and deduplicated so this sensor's state only changes if a device
+# becomes (un)available. Device can be either "native" Home Assistant devices
+# or manual groups of related sensors (either template-entities or sensors added
+# by integrations that don't provide devices).
 - trigger:
     - platform: time_pattern
       hours: "*"
@@ -31,15 +33,14 @@
     - name: Failed devices
       unique_id: b35c9d1a-715b-4216-a620-6308c47e0e8f
       icon: mdi:toy-brick-remove-outline
-      # Find all devices that have one or more entities in the "unavailable"-,
-      # "unknown"- or "none"-state. A small number of entity IDs is excluded as
-      # their state can be one of these under normal circumstances (mainly
-      # seems to apply to Mobile App entities).
-      # The goal of this sensor is to detect failed devices and integrations,
-      # entities that do not belong to a device are thus excluded.
+      # Find all "devices" that have one or more entities in the "unavailable"-,
+      # "unknown"- or "none"-state. If an actual device is not available, we
+      # attempt to manually group the sensor(s). Only if we're unable to group
+      # are the individual sensors included in the list.
       state: >-
-        {{
-          states |
+        {% set result = namespace(devices=[]) %}
+        {%
+          set entity_ids = states |
           selectattr('state', 'in',
             [
               'unavailable',
@@ -47,11 +48,69 @@
               'none'
             ]
           ) |
-          map(attribute='entity_id') |
-          reject('search',
-            '^sensor\..+_(charger_type|next_alarm|do_not_disturb_sensor)$') |
-          map('device_id') |
-          unique | reject('none') | list | sort | to_json
+          map(attribute='entity_id') | list
+        %}
+        {% for entity_id in entity_ids %}
+          {% set matched = 'unknown' %}
+          {% if device_id(entity_id) == None %}
+            {# WeeWX #}
+            {% if entity_id is search('^sensor\.weewx_.+$') %}
+              {% set matched = 'WeeWX' %}
+            {# Pi4 #}
+            {% elif entity_id is search('^sensor\.pi4_.+$') %}
+              {% if entity_id is search('_sandbox_') %}
+                {% set matched = 'Pi4 Sandbox' %}
+              {% else %}
+                {% set matched = 'Pi4' %}
+              {% endif %}
+            {# Aarlo #}
+            {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+$') %}
+              {% set matched = 'Aarlo' %}
+            {# tadoº #}
+            {% elif entity_id is search('^sensor.tado_smart_.+$') %}
+              {# Ignored; derived from HomeKit Controller #}
+            {# Gammu #}
+            {% elif entity_id is search('^sensor\.gammu_.+$') %}
+              {# Only signal-strength is always available #}
+              {% if entity_id == 'sensor.gammu_signal_strength' %}
+                {% set matched = 'Gammu' %}
+              {% endif %}
+            {# Afvalwijzer #}
+            {% elif entity_id is search('^sensor\.afvalwijzer_.+$') %}
+              {% if entity_id is not search('(today|tomorrow)') %}
+                {% set matched = 'Afvalwijzer' %}
+              {% endif %}
+            {# 9292 OV #}
+            {% elif entity_id is search('^sensor\.9292_ov_.+$') %}
+              {% set matched = '9292 OV' %}
+            {# Plant sensors #}
+            {% elif entity_id is search('^plant\..+$') %}
+              {# Ignored; derived from MQTT devices #}
+            {# Failed devices (this sensor) #}
+            {% elif entity_id == 'sensor.failed_devices' %}
+              {# Ignored #}
+            {# Others; ungrouped #}
+            {% else %}
+              {% set matched = state_attr(entity_id, 'friendly_name') %}
+            {% endif %}
+          {% else %}
+            {#
+              Several "Mobile App"-related sensors can be unavailable/unknown
+              under normal circumstances; these entity IDs are ignored...
+            #}
+            {%
+              if entity_id is not search(
+                '^sensor\..+_(charger_type|next_alarm|do_not_disturb_sensor)$'
+              )
+            %}
+              {% set matched = device_attr(device_id(entity_id), 'name') %}
+            {% endif %}
+          {% endif %}
+          {% set result.devices = result.devices + [matched] %}
+        {% endfor %}
+        {{
+          result.devices | reject('eq', 'unknown') |
+            unique | list | sort | to_json
         }}
 # If the Home Alarm is in "Armed away"-mode for more than 16 hours, enable
 # Vacation-mode – indicating we are away from home longer than on a regular
