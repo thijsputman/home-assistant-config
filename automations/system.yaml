@@ -53,10 +53,6 @@
     - condition: template
       value_template: >-
         {{ states('sensor.failed_devices') not in ['unknown', 'unavailable'] }}
-    # Only notify if there are failures
-    - condition: template
-      value_template: >-
-        {{ states('sensor.failed_devices') | from_json | length > 0 }}
     # Don't notify if there's no Internet- or Nabu Casa-connectivity (a likely
     # cause of failures). Once the connectivity issue(s) clear, any persistent
     # failures will show up in the next notification...
@@ -67,24 +63,35 @@
       entity_id: binary_sensor.remote_ui
       state: "on"
   action:
-    - variables:
-        devices: >-
-          {{ states('sensor.failed_devices') | from_json }}
-    - service: script.turn_on
-      target:
-        entity_id: script.persistent_notification
-      data:
-        variables:
-          group: general
-          channel: Notification
-          tag: device_failure
-          targetDevices: my
-          title: 💥 Device failure(s)
-          message: >-
-            The following device(s) appear to have (partially) failed:<br>
-            <br><br>◾ {{
-              devices | join('<br>◾ ')
-            -}}
+    - choose:
+        # If there are no (more) failures, dismiss the notification
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ states('sensor.failed_devices') | from_json | length == 0 }}
+          sequence:
+            - service: persistent_notification.dismiss
+              data:
+                notification_id: device_failure
+      default:
+        - variables:
+            devices: >-
+              {{ states('sensor.failed_devices') | from_json }}
+        - service: script.turn_on
+          target:
+            entity_id: script.persistent_notification
+          data:
+            variables:
+              group: general
+              channel: Notification
+              tag: device_failure
+              targetDevices: my
+              title: 💥 Device failure(s)
+              message: >-
+                The following device(s) appear to have (partially) failed:<br>
+                <br><br>◾ {{
+                  devices | join('<br>◾ ')
+                -}}
   mode: restart
 # The Recorder's SQLite-database is on a separate NVMe USB-drive that – although
 # generally stable – occasionally disconnects. It reconnects right away and the

@@ -120,9 +120,20 @@
           {% endif %}
           {% set result.devices = result.devices + [matched] %}
         {% endfor %}
+        {#
+          A state's value can be at most 255 characters. Truncate JSON output to
+          245 characters and append a "closing" ellipsis – the regex is used to
+          cope with the edge cases where the brute force replace causes invalid
+          JSON...
+          Not very graceful, but given the limited control structures available
+          in Jinja the below is much simpler than trying to properly implement
+          this in the preceding for-loop.
+        #}
         {{
           result.devices | reject('eq', 'unknown') |
-            unique | list | sort | to_json
+            unique | list | sort | to_json |
+            truncate(245, true, '..."]') |
+            regex_replace('",? ?"?..."]$', '..."]')
         }}
 # If the Home Alarm is in "Armed away"-mode for more than 16 hours, enable
 # Vacation-mode – indicating we are away from home longer than on a regular
