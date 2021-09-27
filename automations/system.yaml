@@ -53,6 +53,10 @@
     - condition: template
       value_template: >-
         {{ states('sensor.failed_devices') not in ['unknown', 'unavailable'] }}
+    # Only notify if there are failures
+    - condition: template
+      value_template: >-
+        {{ states('sensor.failed_devices') | from_json | length > 0 }}
     # Don't notify if there's no Internet- or Nabu Casa-connectivity (a likely
     # cause of failures). Once the connectivity issue(s) clear, any persistent
     # failures will show up in the next notification...

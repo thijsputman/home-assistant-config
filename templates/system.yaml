@@ -55,7 +55,13 @@
           {% if device_id(entity_id) == None %}
             {# WeeWX #}
             {% if entity_id is search('^sensor\.weewx_.+$') %}
-              {% set matched = 'WeeWX' %}
+              {#
+                Ignore wind direction sensors; they become unavailable if wind
+                speed equals zero
+              #}
+              {% if entity_id is not search('_wind_.*direction') %}
+                {% set matched = 'WeeWX' %}
+              {% endif %}
             {# Pi4 #}
             {% elif entity_id is search('^sensor\.pi4_.+$') %}
               {% if entity_id is search('_sandbox_') %}
@@ -65,7 +71,15 @@
               {% endif %}
             {# Aarlo #}
             {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+$') %}
-              {% set matched = 'Aarlo' %}
+              {#
+                The "recent activity"-sensors appear to initialise "unknown" if
+                Home Assistant is restarted while the cameras are inactive...
+              #}
+              {% if entity_id is not
+                search('sensor\.aarlo_recent_activity_.+')
+              %}
+                {% set matched = 'Aarlo' %}
+              {% endif %}
             {# tadoº #}
             {% elif entity_id is search('^sensor.tado_smart_.+$') %}
               {# Ignored; derived from HomeKit Controller #}
