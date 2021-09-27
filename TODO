@@ -6,7 +6,7 @@
   - [Bugs](#bugs)
   - [Features](#features)
 - [Lovelace](#lovelace)
-- [tado°](#tado)
+- [Climate](#climate)
 - [Lights](#lights)
 - [Alarm](#alarm)
 - [Hardware](#hardware)
@@ -133,8 +133,9 @@
       they do mess with the Mobile App functionalities)
 - [ ] Add an overview of motion/vibration sensors
   - Perhaps create separate Security-dashboard?
+- [ ] Add visual indication of "Vacation-mode"
 
-## tado°
+## Climate
 
 - [x] ~~Create several "backstops" (controlled via HomeKit) to ensure heating is
       properly controlled when there is no access to the online Tado service~~
@@ -152,6 +153,8 @@
       delayed till next Summer, there wasn't any need for it this year 🌦️😢)
   - Use Broadlink IR-blaster to control fan direction and some other advanced
     options not available in tado° (in response to tado° actions)
+- [ ] Switch on Sonair ventilator in Living Room when CO₂ level gets too high
+      (speed 8 at 900 PPM; speed 10 at 1100 PPM)
 
 ## Lights
 

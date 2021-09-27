@@ -6,6 +6,6 @@ entities:
     name: Living room
   - entity: binary_sensor.neato_active_first_floor
     name: First floor
-  - entity: binary_sensor.neato_active_first_floor
+  - entity: binary_sensor.neato_active_attic
     name: Attic
 show_state: false

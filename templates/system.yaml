@@ -27,8 +27,6 @@
       hours: "*"
       minutes: /5
       seconds: 0
-    - platform: event
-      event_type: template_reloaded
   sensor:
     - name: Failed devices
       unique_id: b35c9d1a-715b-4216-a620-6308c47e0e8f
