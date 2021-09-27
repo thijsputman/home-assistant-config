@@ -1,43 +1,31 @@
-- alias: 🌦️ | 📱/🔊 Announce when it is raining (windows open)
+- alias: 🌦️ | 📱/🔊 Notify Attic window is open (starts raining)
   id: 4dd59c72-309a-441a-b97c-07a69c6898da
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.weewx_rain_rate_hour
       above: 2.0
   condition:
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.openclose_19
-          state: "on"
-        - condition: state
-          entity_id: binary_sensor.openclose_20
-          state: "on"
-        - condition: state
-          entity_id: binary_sensor.openclose_33
-          state: "on"
+    - condition: state
+      entity_id: sensor.attic_window_position
+      state:
+        - ajar
+        - open
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
-    - variables:
-        message: >-
-          It is raining outside, please close the
-          {%- if is_state('binary_sensor.openclose_19', 'on') or
-            is_state('binary_sensor.openclose_20', 'on')
-              %} bedroom window
-              {%- if is_state('binary_sensor.openclose_33', 'on')
-                %} and the
-              {%- endif -%}
-          {%- endif -%}
-          {%- if is_state('binary_sensor.openclose_33', 'on')
-            %} attic window
-          {%- endif -%}.
-    - service: script.tts_p20
-      data:
-        message: >-
-          {{ message }}
+    - choose:
+        # Only announce it's raining via TTS if the window is fully open
+        - conditions:
+            - condition: state
+              entity_id: sensor.attic_window_position
+              state: open
+          sequence:
+            - service: script.tts_p20
+              data:
+                message: >-
+                  It's raining!
+                  Check the Attic window to ensure it's not raining in...
     # Explicitly block any further runs of this automation while the
     # notification is up (i.e. once a notification is up, no additional
     # notifications are raised)
@@ -47,52 +35,43 @@
         channel: Alert
         targetDevices: home
         criticalNotification: true
-        tag: rain
-        title: ☔ It is raining outside
+        tag: rain-attic
+        title: ☔ It's raining!
         message: >-
-          {{ message }}
+          Check the Attic window to ensure it's not raining in...
   mode: single
   max_exceeded: silent
-- alias: 🌦️ | 📱 Dismiss notification (rain stopped)
+- alias: 🌦️ | 📱 Dismiss Attic window notification (stops raining)
   id: 0bfb45f6-5516-4f37-86f1-d7bb7af88e94
-  description: ""
   trigger:
     - platform: numeric_state
       entity_id: sensor.weewx_rain_rate_hour
       below: 2.0
-      for: "00:20:00"
+      for: "00:10:00"
   condition: []
   action:
     - service: persistent_notification.dismiss
       data:
-        notification_id: rain
+        notification_id: rain-attic
   mode: single
-- alias: 🌦️ | 📱 Dismiss notification (windows closed)
+- alias: 🌦️ | 📱 Dismiss Attic window notification (window closed)
   id: dd524898-9606-4c30-b7dc-d061515ee6bc
-  description: ""
   trigger:
     - platform: state
-      entity_id:
-        - binary_sensor.openclose_19
-        - binary_sensor.openclose_20
-        - binary_sensor.openclose_33
-      from: "on"
-      to: "off"
+      entity_id: sensor.attic_window_position
+      from:
+        - ajar
+        - open
+      to:
+        - ajar-locked
+        - closed-ventilate
+        - closed
   condition:
     - condition: numeric_state
       entity_id: sensor.weewx_rain
       above: 0
-    - condition: state
-      entity_id: binary_sensor.openclose_19
-      state: "off"
-    - condition: state
-      entity_id: binary_sensor.openclose_20
-      state: "off"
-    - condition: state
-      entity_id: binary_sensor.openclose_33
-      state: "off"
   action:
     - service: persistent_notification.dismiss
       data:
-        notification_id: rain
+        notification_id: rain-attic
   mode: single
