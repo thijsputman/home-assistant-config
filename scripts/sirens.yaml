@@ -50,9 +50,10 @@ sirens:
           max: 300
   sequence:
     - variables:
-        alarm_devices:
-          - switch.warning_device_8
-          - switch.warning_device_13
+        alarm_devices: >-
+          {{
+            expand('group.alarm_devices') | map(attribute='entity_id') | list
+          }}
         # Default to "none" (i.e. stop the sirens)
         mode: >-
           {%
