@@ -19,7 +19,11 @@ card:
             margin-bottom: 0px !important;
           }
           ha-card ha-icon[data-state=off]{
-            color: var(--disabled-text-color) !important;
+            {%- if states('switch.smart_plug_13_2') == 'off' -%}
+              color: var(--disabled-text-color) !important;
+            {%- else -%}
+              color: #44739e !important;
+            {%- endif -%}
           }
           ha-card ha-icon[data-state=on]{
             color: var(--success-color) !important;

@@ -19,7 +19,7 @@ card:
             margin-bottom: 0px !important;
           }
           ha-card ha-icon[data-state=off]{
-            color: var(--disabled-text-color) !important;
+            color: #44739e !important;
           }
           ha-card ha-icon[data-state=on]{
             color: var(--success-color) !important;
