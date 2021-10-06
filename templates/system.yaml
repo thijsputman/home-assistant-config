@@ -133,7 +133,7 @@
           result.devices | reject('eq', 'unknown') |
             unique | list | sort | to_json |
             truncate(245, true, '..."]') |
-            regex_replace('",? ?"?..."]$', '..."]')
+            regex_replace('",? ?"?\.\.\."]$', '..."]')
         }}
 # If the Home Alarm is in "Armed away"-mode for more than 16 hours, enable
 # Vacation-mode – indicating we are away from home longer than on a regular
