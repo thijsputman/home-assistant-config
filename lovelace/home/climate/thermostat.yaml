@@ -117,6 +117,21 @@ card:
               width: 90%;
               text-align: right;
             }
+            {% if states('climate.tado_attic') == 'off' %}
+              ha-card section.body div.sensors
+                div.sensor-value:nth-last-of-type(1){
+                display: inline-block;
+                vertical-align: text-bottom;
+                width: 2.0em;
+                height: 1.25em;
+                overflow: hidden;
+              }
+              ha-card section.body div.sensors
+                div.sensor-value:nth-last-of-type(1)::before{
+                content: "off\a\a";
+                white-space: pre;
+              }
+            {% endif %}
         entity: climate.tado_smart_thermostat
         header: false
         hide:
@@ -128,10 +143,13 @@ card:
             name: heating
           - entity: sensor.tado_attic_heating
             name: heating – Attic
-          - entity: climate.tado_smart_radiator_attic
+          # Cannot use the temperature-attribute of climate.tado_attic – when
+          # switched off the attribute is undefined causing the entire card
+          # to crash/disappear...
+          # Additionally, there's a bit of magic in the custom CSS (above) which
+          # turns the "unknown ºC" reading into "off" in this case.
+          - entity: sensor.tado_smart_radiator_attic_setpoint
             name: setpoint – Attic
-            attribute: temperature
-            unit: °C
     # central heating – operation mode
     - type: conditional
       conditions:

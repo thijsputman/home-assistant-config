@@ -31,6 +31,11 @@
       entity_id: group.family
       from: not_home
       to: home
+      # Tado integration's state doesn't update instantly (even when changes are
+      # made through the integration) – wait for a short while to ensure the
+      # integration catches up correctly. Otherwise a (very) short trip outside
+      # could leave tado° stuck in "Away" mode.
+      for: "00:01:00"
   condition:
     - condition: state
       entity_id: climate.tado_living_room
@@ -60,7 +65,7 @@
       state: heat
     - condition: numeric_state
       entity_id: sensor.tado_smart_thermostat_setpoint
-      above: 18.0
+      above: 16.0
   action:
     # Control tado° via HomeKit
     - service: climate.set_temperature
