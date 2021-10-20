@@ -1,6 +1,4 @@
 alarm_devices:
   name: Alarm devices
   icon: mdi:alarm-bell
-  entities:
-    - switch.warning_device_4
-    - switch.warning_device_13
+  entities: !secret alarm_devices

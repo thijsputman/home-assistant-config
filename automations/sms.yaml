@@ -117,11 +117,11 @@
     - platform: template
       value_template: >-
         {{
-          state_attr('sensor.gammu_credit_vodafone', 'last_credit') | float > 0
-            and
-          states('sensor.gammu_credit_vodafone') | float -
-            state_attr('sensor.gammu_credit_vodafone', 'last_credit') | float
-          >= 5
+          state_attr('sensor.gammu_credit_vodafone', 'last_credit') |
+            float(default=0) > 0
+          and states('sensor.gammu_credit_vodafone') | float(default=0) -
+          state_attr('sensor.gammu_credit_vodafone', 'last_credit') |
+            float(default=0) >= 5
         }}
   condition: []
   action:

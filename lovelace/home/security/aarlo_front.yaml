@@ -21,6 +21,7 @@ card:
               {%- if states('binary_sensor.aarlo_armed_front') == 'on' -%}
                 border: 3px solid var(--label-badge-red);
               {%- elif
+                states('sensor.aarlo_last_front') != 'unknown' and
                 strptime(
                   now().year ~ ' ' ~ states('sensor.aarlo_last_front'),
                   '%Y %m-%d %H:%M'

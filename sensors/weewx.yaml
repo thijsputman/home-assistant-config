@@ -159,7 +159,6 @@
   source: sensor.weewx_rain_hour
   name: weewx_rain_total
   round: 1
-  unit: mm
   unit_time: h
 - platform: mqtt
   state_topic: weewx/dayRain_cm
@@ -179,5 +178,4 @@
   source: sensor.weewx_evapotranspiration
   name: weewx_evapotranspiration_total
   round: 4
-  unit: mm
   unit_time: min
