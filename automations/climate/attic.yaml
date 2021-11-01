@@ -119,7 +119,7 @@
       to: home
       # Hold the state for a short while to ensure HomeKit (which we use for
       # radiator control) catches up with the online state...
-      for: "00:01:00"
+      for: "00:02:00"
   condition:
     # Only relevant if the Attic radiator is on
     - condition: numeric_state

@@ -35,7 +35,7 @@
       # made through the integration) – wait for a short while to ensure the
       # integration catches up correctly. Otherwise a (very) short trip outside
       # could leave tado° stuck in "Away" mode.
-      for: "00:01:00"
+      for: "00:02:00"
   condition:
     - condition: state
       entity_id: climate.tado_living_room

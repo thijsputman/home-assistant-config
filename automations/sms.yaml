@@ -144,9 +144,9 @@
                 {{ '✅' if states(tado_connection_state) == 'on'
                   else '⛔' }} tadoº\n\n
               🤖 Active binary sensors:\n\n
-              🔸 {{ result.sensors | join('\\n🔸 ') }}\n\n
+              ◾ {{ result.sensors | join('\\n◾ ') }}\n\n
               📹 Status of cameras:\n\n
-              🔸 {{ result.cameras | join('\\n🔸 ') }}\n\n
+              ◾ {{ result.cameras | join('\\n◾ ') }}\n\n
               Retrieve latest camera footage:\n\n
               ✉️ #secret# status camera
 - alias: >-

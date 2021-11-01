@@ -178,3 +178,4 @@
     - service: media_player.media_stop
       entity_id: media_player.pi0_speaker_bedroom
   mode: single
+  max_exceeded: silent

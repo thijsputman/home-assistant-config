@@ -504,7 +504,7 @@
               {%- else -%}
                 The following sensors triggered the alarm:
                 \n\n◾ {{
-                  tripped_sensors | join('\n\n◾ ')
+                  tripped_sensors | join('\\n◾ ')
                 -}}
               {%- endif -%}
             {% endif %}
