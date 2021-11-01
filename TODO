@@ -25,14 +25,15 @@
       gets re-enabled when the person that came home goes to bed (and the alarm
       – which was disabled when that person came home – is also automatically
       armed again).
-- [ ] The notification of device failure excludes a handful of "custom"
-      devices/implementations, find alternative way(s) of monitoring these
-  - WeeWX – monitor a handful of (reliably updating) sensors
-  - The Mi Flora sensors (connected via `bt2mqtt`) stop reporting data when they
-    fail, but under normal operation they might also not report updated data for
-    quite some time... Add an automation that "invalidates" these devices after
-    none of their sensors updates over a 24-hour window? This sensor can be used
-    to trigger a failure notification.
+- [ ] The Mi Flora sensors (connected via `bt2mqtt`) stop reporting data when
+      they fail, but under normal operation they might also not report updated
+      data for quite some time... Add an automation that "invalidates" these
+      devices after none of their sensors updates over a 24-hour window? This
+      way a failure will (eventually) show up through the generic "device
+      failure"-automation
+- [ ] Update all `float` and `int` casts/filters in template sensors to cope
+      with the fact that upon initialisation `states(...)` might return
+      `unknown`/`unavailable`.
 
 ### Features
 
@@ -143,6 +144,9 @@
     yet, the Tado online service has been rock-solid...
 - [ ] See if it's possible to better combine Attic thermostat/heating and airco
       automations – there's currently a lot of (semi-)identical stuff there...
+- [ ] Reset the Attic radiator back to "scheduled mode" every night (similar to
+      what happens with the Airco) to ensure it keeps following the schedule
+      regardless of what happened the day before
 - [ ] Just like the heating in the Attic, the airco unit most likely also needs
       to be switched off manually when Tado transitions from Away- to Home-mode
       (otherwise it reverts back to its schedule and switches on even though
@@ -194,20 +198,41 @@
 
 - [ ] Provide a toggle to disable the nightly auto-arming of the alarm (or maybe
       that's just part of "Guest"-mode?)
+- [ ] Create proxy template binary sensor for the "Everyone away"-state (instead
+      of using `group.family` directly; "Guest"-mode stops `group.family` from
+      automatically setting "Everyone away"). Setting the alarm to "Arm away"
+      should enable "Everyone away". This sensor can then be used to control the
+      alarm _and_ all other things that should (not) happen when no-one is
+      home....
+  - The template sensor should trigger when devices leave the home WiFi. If
+    triggered this way, also check GPS state (which _initially_ is leading). An
+    identical, but delayed, trigger re-evaluates this decision; _ignoring_ the
+    GPS state. GPS is convenient, but error-prone (updates slowly/not at all due
+    to Android (battery) issues; requires remote-UI connection – which is 99%,
+    but not 100% stable). To prevent short WiFi drops from wreaking havoc, we
+    rely on GPS. After a while it becomes better to assume to GPS has bugged out
+    and trust the WiFi. This solution isn't without its false positives either,
+    but they will be less problematic than _not_ triggering "Everyone away" at
+    all...
+  - Some more elaborate notifications might be in place to provide hints as to
+    _why_ "Everyone away" was enabled/disabled.
 - [ ] Add a "Guest-mode" toggle to stop (most of) the automations that run when
       no-one is at home from triggering
-  - Create proxy template binary sensor for the "Everyone away"-state (instead
-    of using `group.family` directly; "Guest"-mode stops `group.family` from
-    automatically setting "Everyone away"). Setting the alarm to "Arm away"
-    should enable "Everyone away". This sensor can then be used to control the
-    alarm _and_ all other things that should (not) happen when no-one is
-    home....
+  - Requires "Everyone away"-state template binary sensor (see above)
   - Perhaps this should also disable some of the "stricter" alarm triggers
     (vibration and motion during "Armed night"; maybe even the `openclose`
     sensors)?
+- [ ] When coming home after dark: Switch off the Attic light. Occupancy
+      simulation turns them on; it's not something you realises (i.e. manually
+      switch off) when you get back home. Leaving them on causes Attic occupancy
+      to trigger and the heating/Airco to inadvertently switch on upon coming
+      home.
 - [ ] Send notifications (with snapshot/thumbnail) if Arlo records something
       when "Armed away"
   - Replaces the "native" Arlo notifications
+  - Snapshots should be stored locally (as the URL provided by Arlo always
+    represents the _latest_ snapshot, not the specific snapshot at the point in
+    time the URL was retrieved)
   - Perhaps provide a summary of Arlo recordings every morning?
   - 🚀 Way out there: Use a machine-learned model to classify the camera
     snapshots and send notifications only if there's something out of the
