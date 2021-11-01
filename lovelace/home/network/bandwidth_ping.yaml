@@ -22,7 +22,7 @@ card:
             box-shadow: unset;
             border-radius: 0px;
           }
-      name: Internet bandwidth & ping (past 8h)
+      name: Internet bandwidth & roundtrip time (past 8h)
       icon: mdi:wan
       hour24: true
       points_per_hour: 8
@@ -52,9 +52,6 @@ card:
             background-color: #F2F9FD;
             border-radius: 0px;
           }
-          ha-card div.states{
-            padding-bottom: 0px;
-          }
       hour24: true
       hours_to_show: 8
       points_per_hour: 10
@@ -70,7 +67,24 @@ card:
         icon: false
       decimals: 1
       entities:
+        - entity: sensor.dd_wrt_1_google_dns_roundtrip_time
+          unit: ms – to Google Public DNS
+          show_graph: false
         - entity: sensor.google_dns_roundtrip_time
+          name: Pi4
+          unit: ms – to Google Public DNS
+          color: lightgrey
+          show_points: false
+          show_fill: false
+        - entity: sensor.dd_wrt_2_google_dns_roundtrip_time
+          name: DD-WRT-2
+          unit: ms – to Google Public DNS
+          color: salmon
+          show_points: false
+          show_fill: false
+        - entity: sensor.dd_wrt_1_google_dns_roundtrip_time
+          name: DD-WRT-1
+          unit: ms – to Google Public DNS
           color: "#E74C3C"
           show_points: false
           show_fill: false

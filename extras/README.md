@@ -3,6 +3,7 @@
 Some extras I'm using in combination with my Home Assistant instance.
 
 - [TC66C – MQTT Bridge](https://github.com/thijsputman/tc66c-mqtt)
+- [`📁 dd-wrt`](./dd-wrt/) – DD-WRT related
 - [`📁 femon`](./femon/) – DVB-T frontend signal monitor
 - [`📁 cold-storage`](./cold-storage/) – Used "once upon a time"; archived for
   now

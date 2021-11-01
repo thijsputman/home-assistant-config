@@ -55,7 +55,7 @@ include:
     - sensor.power_108 # Television (i.e. Multimedia hub)
     - sensor.power_sonair_combined
     # Internet / Network
-    - sensor.google_dns_roundtrip_time
+    - sensor.dd_wrt_1_google_dns_roundtrip_time
     - sensor.dd_wrt_1_wan_in_mbps
     - sensor.dd_wrt_1_wan_out_mbps
     - sensor.pi_hole_dns_unique_clients

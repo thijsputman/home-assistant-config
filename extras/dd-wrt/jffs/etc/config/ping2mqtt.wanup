@@ -1,0 +1,3 @@
+#!/usr/bin/env sh
+
+sh /jffs/usr/local/bin/ping2mqtt.sh mqtt_host mqtt_topic &
