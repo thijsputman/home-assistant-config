@@ -1,0 +1,239 @@
+- alias: 📱 | 💸 Reminder to top-up prepaid credit (credit low)
+  id: 260c182b-f9e8-4784-b2f1-f4e2e82253e3
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.gammu_credit_vodafone
+      below: 5
+    - platform: numeric_state
+      entity_id: sensor.gammu_credit_vodafone
+      below: 2
+  condition: []
+  action:
+    - choose:
+        # Credit fell below € 2 – send an SMS reminder too
+        - conditions: >-
+            {{ states('sensor.gammu_credit_vodafone') | float < 2 }}
+          sequence:
+            - service: script.sms_notification
+              data:
+                targetDevices: my
+                message: >-
+                  💸 Top-up Vodafone prepaid credit!\n
+                  Vodafone prepaid credit is
+                  € {{ states('sensor.gammu_credit_vodafone') }} –
+                  time to top it up:\n\n
+                  ✉️ #secret# credit top up 5|10|20|30|40|50
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: general
+          channel: Notification
+          tag: vodafone_credit
+          action_1: Top-up € 5
+          action_2: € 10
+          targetDevices: my
+          title: 💸 Top-up Vodafone prepaid credit
+          message: >-
+            Vodafone prepaid credit is
+            € {{ states('sensor.gammu_credit_vodafone') }} –
+            to top-up using the actions below, or SMS:
+            <br><br>✉️ #secret# credit top up 5|10|20|30|40|50
+    # Top-up initiated from phone notification
+    - wait_for_trigger:
+        - platform: event
+          id: top_up_5
+          event_type: mobile_app_notification_action
+          event_data:
+            action: ACTION_1_vodafone_credit
+        - platform: event
+          id: top_up_10
+          event_type: mobile_app_notification_action
+          event_data:
+            action: ACTION_2_vodafone_credit
+      timeout: "00:20:00"
+      continue_on_timeout: false
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id in ['top_up_5', 'top_up_10'] }}
+    - variables:
+        credit: >-
+          {% if wait.trigger.id == 'top_up_5' %}
+            5
+          {% elif wait.trigger.id == 'top_up_10' %}
+            10
+          {% endif %}
+    # Don't block on sending the request to Vodafone (we might be too late
+    # setting up the trigger)
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          phoneNumber: 4000
+          message: >-
+            {{ credit }} EURO
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.gammu_received_message
+      timeout: 120
+      continue_on_timeout: false
+    - variables:
+        top_up_link: >-
+          {%
+            if states('sensor.gammu_received_message') is
+              search('https:\/\/opwaarderen\.vodafone\.nl\/.*?(?: |$)')
+            and state_attr('sensor.gammu_received_message', 'number')
+              == '<Vodafone>'
+          %}
+            {{
+              states('sensor.gammu_received_message') |
+                regex_findall_index(
+                  '(https:\/\/opwaarderen\.vodafone\.nl\/.*?)(?: |$)')
+            }}
+          {% endif %}
+    - condition: template
+      value_template: >-
+        {{ top_up_link is not none }}
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: general
+          channel: Notification
+          tag: vodafone_credit
+          targetDevices: my
+          title: 💸 Vodafone prepaid credit top-up link
+          message: >-
+            Top-up the Vodafone prepaid credit with € {{ credit }}:
+            {{ top_up_link }}
+  mode: restart
+- alias: 📱 | 💸 Prepaid credit top-up confirmation (credit increased)
+  id: d532d891-6752-418b-ae12-43b405979f3c
+  trigger:
+    # Increase with € 5 or more indicates prepaid credit was topped-up
+    - platform: template
+      value_template: >-
+        {{
+          state_attr('sensor.gammu_credit_vodafone', 'last_credit') |
+            float(default=0) > 0
+          and states('sensor.gammu_credit_vodafone') | float(default=0) -
+          state_attr('sensor.gammu_credit_vodafone', 'last_credit') |
+            float(default=0) >= 5
+        }}
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: general
+          channel: Notification
+          tag: vodafone_credit
+          targetDevices: my
+          title: 💸 Vodafone prepaid credit topped-up
+          message: >-
+            Vodafone credit was topped-up with
+            € {{
+              (
+                states('sensor.gammu_credit_vodafone') | float -
+                state_attr('sensor.gammu_credit_vodafone', 'last_credit') | float
+              ) | round(0)
+            }} – total credit is now
+            € {{ states('sensor.gammu_credit_vodafone') }}.
+# Top-up via SMS (in case of no Internet connectivity)
+- alias: >-
+    📱 | ✉️ Top-up prepaid credit (received "credit top up 5|10|20|30|40|50")
+  id: cf444f7f-6ce8-4fed-a45a-9f416838fbff
+  trigger:
+    - platform: state
+      entity_id: sensor.gammu_received_authenticated_command
+  condition:
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.gammu_received_authenticated_command')
+            is match('^credit top.?up (5|10|20|30|40|50)( |$)')
+        }}
+  action:
+    - variables:
+        credit: >-
+          {{
+            states('sensor.gammu_received_authenticated_command') |
+              regex_findall_index('^credit top.?up (5|10|20|30|40|50)(?: |$)')
+          }}
+    - condition: template
+      value_template: >-
+        {{ credit in [5, 10, 20, 30, 40, 50] }}
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          phoneNumber: 4000
+          message: >-
+            {{ credit }} EURO
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.gammu_received_message
+      timeout: 120
+      continue_on_timeout: false
+    - variables:
+        top_up_link: >-
+          {%
+            if states('sensor.gammu_received_message') is
+              search('https:\/\/opwaarderen\.vodafone\.nl\/.*?(?: |$)')
+            and state_attr('sensor.gammu_received_message', 'number')
+              == '<Vodafone>'
+          %}
+            {{
+              states('sensor.gammu_received_message') |
+                regex_findall_index(
+                  '(https:\/\/opwaarderen\.vodafone\.nl\/.*?)(?: |$)')
+            }}
+          {% endif %}
+    - condition: template
+      value_template: >-
+        {{ top_up_link is not none }}
+    - service: script.sms_notification
+      data:
+        phoneNumber: >-
+          {{
+            state_attr('sensor.gammu_received_authenticated_command',
+              'number')
+          }}
+        message: >-
+          💸 Vodafone prepaid credit top-up link\n
+          Top-up the prepaid credit with € {{ credit }}:
+          {{ top_up_link }}
+    - wait_for_trigger:
+        - platform: template
+          value_template: >-
+            {{
+              states('sensor.gammu_credit_vodafone') | float -
+                state_attr('sensor.gammu_credit_vodafone', 'last_credit') | float
+              >= 5
+            }}
+      timeout: "00:20:00"
+      continue_on_timeout: false
+    - service: script.sms_notification
+      data:
+        phoneNumber: >-
+          {{
+            state_attr('sensor.gammu_received_authenticated_command',
+              'number')
+          }}
+        message: >-
+          💸 Vodafone prepaid credit topped-up
+          Vodafone credit was topped-up with\n
+          € {{
+            (
+              states('sensor.gammu_credit_vodafone') | float -
+              state_attr('sensor.gammu_credit_vodafone', 'last_credit') | float
+            ) | round(0)
+          }} – total credit is now
+          € {{ states('sensor.gammu_credit_vodafone') }}.
+  mode: restart
