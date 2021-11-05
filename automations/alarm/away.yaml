@@ -72,6 +72,7 @@
           title: 🔓 Home Alarm disarmed
           message: >-
             The Home Alarm just got disarmed
+            {#- List everyone currently at home -#}
             {%- set result = namespace(people=[]) -%}
             {%- for person in expand('group.family') |
                 selectattr('state', '==', 'home') -%}
@@ -85,6 +86,23 @@
                 are home
               {%- else -%}
                 is home
+              {%- endif -%}
+            {#-
+              If no-one is home, attempt to identify who manually disarmed the
+              alarm. Most likely that person entered the house before their
+              presence was detected...
+            -#}
+            {%- elif trigger is defined and
+                trigger.to_state.context.user_id is defined -%}
+              {%- set persons = states.person | selectattr(
+                'attributes.user_id', 'eq', trigger.to_state.context.user_id
+              ) | list -%}
+              {%- if persons | count == 1 %}
+                {# Firstname only; remove everything after first space #}
+                by {{-
+                  persons[0].attributes.friendly_name |
+                  regex_replace(' .*$', '')
+                -}}
               {%- endif -%}
             {%- endif -%}.
 - alias: 🚨 | 👋 Trigger alarm (motion detected; "Armed away")
