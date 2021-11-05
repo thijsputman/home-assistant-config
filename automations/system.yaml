@@ -98,7 +98,7 @@
 # filesystem is automatically remounted, but Docker doesn't take very kindly to
 # this: All containers using the volume need to be stopped and only then (once
 # they're all down) restarted for the volume to become accessible again...
-- alias: 📱 Notify on Recorder-component failure (System Log)
+- alias: 📱 | 💽 Notify on Recorder-component failure
   id: 28b00ed1-a3b0-4d7f-97bc-b1faf3b446d1
   trigger:
     platform: event
