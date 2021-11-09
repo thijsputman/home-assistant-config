@@ -2,20 +2,36 @@
   sensors:
     lightlevel_bathroom:
       value_template: >-
-        {{ ((
-              (states('sensor.lightlevel_70')|float) +
-              (states('sensor.lightlevel_73')|float)
-            )|float / 2) | round(1)
+        {{
+          (
+            (
+              states('sensor.lightlevel_70')|float(0) +
+              states('sensor.lightlevel_73')|float(0)
+            ) / 2
+          ) | round(1)
+        }}
+      availability_template: >-
+        {{
+          states('sensor.lightlevel_70') in ['unknown', 'unavailable'] or
+          states('sensor.lightlevel_73') in ['unknown', 'unavailable']
         }}
       unit_of_measurement: lx
       friendly_name: Light-level (Bathroom)
       icon_template: hass:brightness-5
     lightlevel_upstairs_hallway:
       value_template: >-
-        {{ ((
-              (states('sensor.lightlevel_bathroom')|float) +
-              (states('sensor.lightlevel_65')|float)
-            )|float / 2) | round(1)
+        {{
+          (
+            (
+              states('sensor.lightlevel_bathroom')|float(0) +
+              states('sensor.lightlevel_65')|float(0)
+            ) / 2
+          ) | round(1)
+        }}
+      availability_template: >-
+        {{
+          states('sensor.lightlevel_bathroom') in ['unknown', 'unavailable'] or
+          states('sensor.lightlevel_65') in ['unknown', 'unavailable']
         }}
       unit_of_measurement: lx
       friendly_name: Light-level (Upstairs hallway)

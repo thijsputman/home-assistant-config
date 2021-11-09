@@ -34,7 +34,7 @@
         # Just do a simple numeric correction here
         current: >-
           {{
-            (state_attr('sensor.power_88', 'current')|float * 0.88)|round(0)
+            (state_attr('sensor.power_88', 'current')|float(0) * 0.88)|round(0)
           }}
     consumption_87_actual:
       friendly_name: Consumption 87 [actual]
@@ -66,7 +66,7 @@
         # Just do a simple numeric correction here
         current: >-
           {{
-            (state_attr('sensor.power_86', 'current')|float * 0.88)|round(0)
+            (state_attr('sensor.power_86', 'current')|float(0) * 0.88)|round(0)
           }}
     consumption_85_actual:
       friendly_name: Consumption 85 [actual]

@@ -55,9 +55,9 @@
       state: >-
         {{
           (
-            states('sensor.consumption_111') | float +
-            states('sensor.consumption_114') | float +
-            states('sensor.consumption_116') | float
+            states('sensor.consumption_111') | float(0) +
+            states('sensor.consumption_114') | float(0) +
+            states('sensor.consumption_116') | float(0)
           ) | round(2)
         }}
     - name: Monthly costs (Sonair – combined)
@@ -113,7 +113,7 @@
         {{ states('sensor.power_108') not in ['unknown', 'unavailable'] }}
       # Idle/standby consumption is anywhere between 5 and 20 Watt
       state: >-
-        {%- if states('sensor.power_108')|float > 20 -%}
+        {%- if states('sensor.power_108')|float(0) > 20 -%}
           on
         {%- else -%}
           off
@@ -129,7 +129,7 @@
             ['unknown', 'unavailable']
         }}
       state: >-
-        {%- if states('sensor.power_sonair_combined')|int > 0 -%}
+        {%- if states('sensor.power_sonair_combined')|int(0) > 0 -%}
           on
         {%- else -%}
           off
@@ -143,7 +143,7 @@
         {{ states('sensor.power_117') not in ['unknown', 'unavailable'] }}
       # Idle/standby consumption is below 5 Watt
       state: >-
-        {%- if states('sensor.power_117')|float > 5 -%}
+        {%- if states('sensor.power_117')|float(0) > 5 -%}
           on
         {%- else -%}
           off
