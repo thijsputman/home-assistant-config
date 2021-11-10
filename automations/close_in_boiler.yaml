@@ -37,6 +37,7 @@
     - service: switch.turn_off
       entity_id: switch.smart_plug_9
   mode: single
+  max_exceeded: silent
 - alias: 🌡️ | ✈️ Close-in boiler off (everyone away)
   id: ca6fb857-6ff7-4ac7-b960-4e527d9897a2
   trigger:

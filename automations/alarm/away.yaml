@@ -97,12 +97,10 @@
               {%- set persons = states.person | selectattr(
                 'attributes.user_id', 'eq', trigger.to_state.context.user_id
               ) | list -%}
-              {%- if persons | count == 1 %}
-                {# Firstname only; remove everything after first space #}
-                by {{-
-                  persons[0].attributes.friendly_name |
-                  regex_replace(' .*$', '')
-                -}}
+              {%- if persons | count == 1 -%}
+                {#- Firstname only; remove everything after first space -#}
+                by {{ persons[0].attributes.friendly_name |
+                  regex_replace(' .*$', '') -}}
               {%- endif -%}
             {%- endif -%}.
 - alias: 🚨 | 👋 Trigger alarm (motion detected; "Armed away")
