@@ -49,7 +49,7 @@ card:
               padding-bottom: 4px !important;
               white-space: nowrap;
             }
-          ha-icon$ ha-svg-icon$: |
+          ha-state-icon$ ha-icon$ ha-svg-icon$: |
             :host{
               width: auto !important;
             }

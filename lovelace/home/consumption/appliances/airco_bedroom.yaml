@@ -18,14 +18,14 @@ card:
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
           }
-          ha-card ha-icon[data-state=off]{
+          ha-card ha-state-icon[data-state=off]{
             {%- if states('switch.smart_plug_2') == 'off' -%}
               color: var(--disabled-text-color) !important;
             {%- else -%}
               color: #44739e !important;
             {%- endif -%}
           }
-          ha-card ha-icon[data-state=on]{
+          ha-card ha-state-icon[data-state=on]{
             color: var(--success-color) !important;
           }
           ha-card span{

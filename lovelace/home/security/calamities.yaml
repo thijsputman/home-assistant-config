@@ -35,7 +35,7 @@ card:
               width: 90px;
             }
             {%- if states('script.sirens') == 'on' -%}
-              ha-card ha-icon{
+              ha-card ha-state-icon{
                 animation: flash 0.8s ease-in-out infinite;
               }
             {%- endif -%}

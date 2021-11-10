@@ -25,7 +25,7 @@ card:
             }
           div.entity:
             $:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 :host::after{
                   font-weight: bold;
                   font-variant-position: super;
@@ -34,7 +34,7 @@ card:
         - entity: sensor.dd_wrt_1_1_minute_load
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 :host::after{
                   content: "1"
                 }
@@ -42,7 +42,7 @@ card:
         - entity: sensor.dd_wrt_2_1_minute_load
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 :host::after{
                   content: "2"
                 }

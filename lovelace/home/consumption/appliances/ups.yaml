@@ -18,10 +18,10 @@ card:
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
           }
-          ha-card ha-icon{
+          ha-card ha-state-icon{
             color: #44739e;
           }
-          ha-card ha-icon[data-state=Online]{
+          ha-card ha-state-icon[data-state=Online]{
             color: var(--success-color) !important;
           }
           ha-card span{

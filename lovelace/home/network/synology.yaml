@@ -23,7 +23,7 @@ card:
         - entity: binary_sensor.ds1815_security_status
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('binary_sensor.ds1815_security_status') == 'on' -%}
                   :host{
                     color: var(--error-color);
@@ -48,7 +48,7 @@ card:
             }
           div.entity:
             $:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 :host::after{
                   font-weight: bold;
                   font-variant-position: super;
@@ -58,7 +58,7 @@ card:
           icon: mdi:harddisk
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('sensor.ds1815_drive_1_status') != 'normal' -%}
                   :host{
                     color: var(--error-color);
@@ -71,7 +71,7 @@ card:
           icon: mdi:harddisk
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('sensor.ds1815_drive_2_status') != 'normal' -%}
                   :host{
                     color: var(--error-color);
@@ -84,7 +84,7 @@ card:
           icon: mdi:harddisk
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('sensor.ds1815_drive_3_status') != 'normal' -%}
                   :host{
                     color: var(--error-color);
@@ -97,7 +97,7 @@ card:
           icon: mdi:harddisk
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('sensor.ds1815_drive_4_status') != 'normal' -%}
                   :host{
                     color: var(--error-color);
@@ -110,7 +110,7 @@ card:
           icon: mdi:harddisk
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('sensor.ds1815_drive_5_status') != 'normal' -%}
                   :host{
                     color: var(--error-color);
@@ -123,7 +123,7 @@ card:
           icon: mdi:harddisk
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('sensor.ds1815_drive_6_status') != 'normal' -%}
                   :host{
                     color: var(--error-color);
@@ -136,7 +136,7 @@ card:
           icon: mdi:harddisk
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('sensor.ds1815_drive_7_status') != 'normal' -%}
                   :host{
                     color: var(--error-color);
@@ -149,7 +149,7 @@ card:
           icon: mdi:harddisk
           card_mod:
             style:
-              state-badge$ ha-icon$: |
+              state-badge$ ha-state-icon$: |
                 {%- if states('sensor.ds1815_drive_8_status') != 'normal' -%}
                   :host{
                     color: var(--error-color);
