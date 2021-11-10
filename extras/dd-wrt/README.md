@@ -42,8 +42,13 @@ By default the `ping-host` is `8.8.8.8` (Google Public DNS) and `count` is `4`.
 The script will run indefinitely; pinging and publishing to MQTT (approximately)
 once per minute.
 
-The script uses a (highly naive) locking approach to prevent spawning multiple
+The script uses a (naive) locking approach to prevent spawning multiple
 instances (as WAN up can occur an infinite number of times on a running DD-WRT
 unit). A lock-file is written to `/tmp` (non-persistent storage; cleared at
-reboot) and upon start the script will abort if the lock-file is present. If the
-script crashes, the lock-file remains (i.e. should be manually cleared).
+reboot) and upon start the script will abort if the lock-file is present.
+
+When receiving `INT`, `HUP`, `TERM` or `EXIT` the script will attempt to remove
+the lock-file. This covers the most common termination scenarios and thus
+entails the lock-file should be removed in those cases. The `EXIT` trap
+specifically should ensure the script cleans up after itself in case one of the
+commands it attempts to execute fails.
