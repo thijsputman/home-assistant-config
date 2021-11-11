@@ -80,6 +80,8 @@
     _not_ enabled; this is currently impossible. See
     `📄 automations/alarm/away.yaml` for an example of where this causes a
     (highly theoretical 😉) vulnerability
+  - It appears that dismissing (i.e. "swiping away") notifications on Android
+    raises an event on the Home Assistant side too – useful to act on this?
 - [ ] Use generic names for the mobile devices registered through the "Mobile
       App" integration (`gm1913`, `sm_g930f` and `p20hd_eea`). Knowing the model
       numbers of these devices allows one to deduce the vendor prefixes of their
