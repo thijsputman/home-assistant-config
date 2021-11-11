@@ -33,7 +33,7 @@ stats:
     - attribute: clean_area
       unit: m²
       subtitle: cleaned area
-actions:
+shortcuts:
   - name: Clean the Kitchen
     service: neato.custom_cleaning
     service_data:
@@ -42,7 +42,7 @@ actions:
       navigation: 1
       category: 4
       zone: Kitchen
-    icon: mdi:pot-steam
+    icon: hue:room-kitchen
   - name: Clean the Lunch area
     service: neato.custom_cleaning
     service_data:
@@ -51,7 +51,7 @@ actions:
       navigation: 1
       category: 4
       zone: Family room
-    icon: mdi:silverware-fork-knife
+    icon: hue:room-dining
   - name: Clean the Ensuite
     service: neato.custom_cleaning
     service_data:
@@ -69,4 +69,4 @@ actions:
       navigation: 1
       category: 4
       zone: Living room
-    icon: mdi:sofa
+    icon: hue:room-living

@@ -1,21 +1,21 @@
 light.living_room:
-  icon: mdi:sofa
+  icon: hue:room-living
 light.kitchen:
-  icon: mdi:pot-steam
+  icon: hue:room-kitchen
 light.hallway:
-  icon: mdi:door
+  icon: hue:room-hallway
 light.garden:
-  icon: mdi:nature
+  icon: hue:room-outdoors
 light.bedroom:
-  icon: mdi:bed-king
+  icon: hue:room-bedroom
 light.guestroom:
-  icon: mdi:bed-queen
+  icon: hue:room-guestroom
 light.wardrobe:
-  icon: mdi:wardrobe
+  icon: hue:room-closet
 light.attic:
-  icon: mdi:home-roof
+  icon: hue:room-attic
 light.front_back_door:
-  icon: mdi:outdoor-lamp
+  icon: hue:wall-econic-lantern-top
 sensor.pi4_1_minute_load:
   icon: mdi:chip
 sensor.dd_wrt_1_1_minute_load:
@@ -37,13 +37,13 @@ sensor.daily_energy:
 sensor.monthly_energy:
   icon: mdi:counter
 light.basement:
-  icon: mdi:package-variant
+  icon: hue:room-storage
 light.toilet:
-  icon: mdi:paper-roll-outline
+  icon: hue:room-toilet
 sensor.pi4_sandbox_1_minute_load:
   icon: mdi:chip
 light.bathroom:
-  icon: mdi:shower
+  icon: hue:room-bathroom
 sensor.weewx_wind_direction_filtered:
   icon: mdi:compass
 sensor.weewx_wind_gust_direction_filtered:
@@ -63,6 +63,6 @@ sensor.weewx_solar_irradiance:
 sensor.weewx_rain_hour:
   icon: mdi:weather-rainy
 light.attic_hallway:
-  icon: mdi:stairs
+  icon: hue:room-stairs
 sensor.binary_airco_attic:
   icon: mdi:hvac

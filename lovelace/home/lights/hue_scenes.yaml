@@ -7,7 +7,7 @@ cards:
     show_name: false
     show_state: true
     icon_height: 36px
-    icon: mdi:pot-steam
+    icon: hue:room-kitchen
   - type: button
     tap_action:
       action: more-info
@@ -23,7 +23,7 @@ cards:
     show_name: false
     show_state: true
     icon_height: 36px
-    icon: mdi:sofa
+    icon: hue:room-living
   - type: button
     tap_action:
       action: more-info
@@ -31,5 +31,5 @@ cards:
     show_name: false
     show_state: true
     icon_height: 36px
-    icon: mdi:nature
+    icon: hue:room-outdoors
 square: false
