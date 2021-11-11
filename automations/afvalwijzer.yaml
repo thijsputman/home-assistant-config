@@ -5,12 +5,8 @@
     - platform: time
       at: "21:00:00"
   condition:
-    - condition: numeric_state
-      entity_id: sensor.afvalwijzer_next_in_days
-      below: 2
-      above: 0
     - condition: state
-      entity_id: sensor.afvalwijzer_next_item
+      entity_id: sensor.afvalwijzer_tomorrow
       state:
         - restafval
         - gft
@@ -26,12 +22,12 @@
           title: ♻️ Trash reminder
           message: >-
             Don't forget to put the
-              {%- if is_state('sensor.afvalwijzer_next_item', 'restafval')
-                %} Black bin
-              {%- elif is_state('sensor.afvalwijzer_next_item', 'gft')
-                %} Green bin
+              {%- if is_state('sensor.afvalwijzer_tomorrow', 'restafval')
+                %} <strong>black</strong>
+              {%- elif is_state('sensor.afvalwijzer_tomorrow', 'gft')
+                %} <strong>green</strong>
               {%- endif
-            %} outside!
+            %} bin outside!
   mode: single
 - alias: 📱 | ⏰ Trash reminder (Paper)
   id: 1f0e4981-921e-426f-a77d-05a1e6b8f478
@@ -40,11 +36,8 @@
     - platform: time
       at: "08:30:00"
   condition:
-    - condition: numeric_state
-      entity_id: sensor.afvalwijzer_next_in_days
-      below: 1
     - condition: state
-      entity_id: sensor.afvalwijzer_next_item
+      entity_id: sensor.afvalwijzer_today
       state: papier
   action:
     - service: script.turn_on
@@ -56,5 +49,5 @@
           channel: Reminder
           group: trash
           title: 📦 Trash reminder
-          message: Don't forget to put the paper outside!
+          message: Don't forget to put the <strong>paper</strong> outside!
   mode: single

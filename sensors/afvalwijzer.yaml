@@ -2,5 +2,4 @@
   provider: mijnafvalwijzer
   postal_code: !secret afvalwijzer_postcode
   street_number: !secret afvalwijzer_nummer
-  include_date_today: true
   default_label: none
