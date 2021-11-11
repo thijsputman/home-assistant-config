@@ -10,10 +10,14 @@ tags_attributes:
 default_measurement: units
 include:
   entities:
-    - sensor.power_consumption
+    - sensor.power_tariff
+    - sensor.power_consumption # kW
+    - sensor.energy_consumption_tarif_1 # off-peak (kWh)
+    - sensor.energy_consumption_tarif_2 # peak (kWh)
     - sensor.gas_consumption # cumulative
     - sensor.hourly_gas_consumption # computed; prefer "gas_consumption"
     - group.family # occupancy
+    - binary_sensor.vacation_mode
     - sensor.time_of_day
     # WeeWX
     - sensor.weewx_outside_temperature
