@@ -40,6 +40,10 @@ card:
           name: Balcony
           show_points: false
           show_fill: false
+        - entity: sensor.weewx_outside_temperature_greenhouse
+          name: Greenhouse
+          show_points: false
+          show_fill: false
         - entity: sensor.temperature_27
           name: Shed
           show_points: false

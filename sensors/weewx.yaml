@@ -15,6 +15,14 @@
     {{ value | round(1) }}
   expire_after: 180
 - platform: mqtt
+  state_topic: weewx/extraTemp2_C
+  name: WeeWX outside temperature (Greenhouse)
+  unit_of_measurement: °C
+  device_class: temperature
+  value_template: >-
+    {{ value | round(1) }}
+  expire_after: 180
+- platform: mqtt
   state_topic: weewx/dewpoint_C
   name: WeeWX outside dewpoint
   unit_of_measurement: °C
@@ -57,6 +65,14 @@
 - platform: mqtt
   state_topic: weewx/extraHumid1
   name: WeeWX outside humidity (Balcony)
+  unit_of_measurement: "%"
+  device_class: humidity
+  value_template: >-
+    {{ value | round(1) }}
+  expire_after: 180
+- platform: mqtt
+  state_topic: weewx/extraHumid2
+  name: WeeWX outside humidity (Greenhouse)
   unit_of_measurement: "%"
   device_class: humidity
   value_template: >-
