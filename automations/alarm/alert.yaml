@@ -367,10 +367,16 @@
           entity_id: sensor.time_of_day
           state: day
   action:
-    - service: script.hue_activate_scene_house
+    # Don't block on activating the lights – this ensures the subsequent wait-
+    # for-trigger is active as fast as possible; otherwise it's possible to
+    # disarm the alarm prior to the trigger being active...
+    - service: script.turn_on
+      target:
+        entity_id: script.hue_activate_scene_house
       data:
-        scene_name: Alarm
-    # Wait for the alarm to disarm or for the start of dawn
+        variables:
+          scene_name: Alarm
+    # Wait for the alarm to disarm or for dawn
     - wait_for_trigger:
         - platform: state
           id: disarmed

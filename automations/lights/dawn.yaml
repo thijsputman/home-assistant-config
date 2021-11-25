@@ -47,7 +47,7 @@
                 group_name: Hallway
                 scene_name: Evening
   mode: single
-- alias: 💡 | ⏰ Inside lights off (daily just after sunrise)
+- alias: 💡 | ⏰ Inside lights off (daily at sunrise)
   id: 314514eb-0cce-4519-833d-40300537a27b
   trigger:
     - platform: state
@@ -88,6 +88,12 @@
       entity_id: sensor.time_of_day
       from: night
       to: dawn
+    # Run again at sunrise – other automations might trigger the lights during
+    # twilight; here we ensure they are switched off properly again
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
   condition:
     - condition: state
       entity_id: light.garden

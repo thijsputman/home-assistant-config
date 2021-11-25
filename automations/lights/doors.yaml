@@ -178,13 +178,17 @@
         - platform: template
           value_template: >-
             {{ is_state(trigger.entity_id, 'off') }}
-    # Keep the lights on for an additional 5 minutes _or_ until we transition
-    # from dusk to night (at which point we abort as the lights should stay on)
+    # Keep the lights on for an additional 5 minutes – abort if we transition
+    # from dusk to night (lights should stay on) or if the lights get switched
+    # off (nothing more to do)
     - wait_for_trigger:
         - platform: state
           entity_id: sensor.time_of_day
           from: dusk
           to: night
+        - platform: state
+          entity_id: light.garden
+          to: "off"
       timeout: "00:05:00"
       continue_on_timeout: true
     - condition: template

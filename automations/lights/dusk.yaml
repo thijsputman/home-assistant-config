@@ -16,7 +16,7 @@
         group_name: Garden
         scene_name: Ambiance
   mode: single
-- alias: 💡 | ⏰ Inside lights on (daily just before sunset)
+- alias: 💡 | ⏰ Inside lights on (daily at sunset)
   id: 0ca01a00-8847-41f1-b852-70f4c4a49275
   trigger:
     - platform: state
