@@ -142,7 +142,7 @@ hue_activate_scene_house:
           {% if scene_name in ['Alarm', 'Active'] %}
             Bright
           {% else %}
-            Ambiance
+            Evening
           {% endif %}
     # Attic
     - choose:

@@ -32,7 +32,7 @@
         light_state: >-
           {{ states('light.hue_filament_bulb_1_2') }}
         light_brightness: >-
-          {{ state_attr('light.hue_filament_bulb_1_2', 'brightness')|int }}
+          {{ state_attr('light.hue_filament_bulb_1_2', 'brightness') | int(0) }}
     - service: light.turn_on
       data:
         brightness: 255
@@ -68,7 +68,7 @@
         - conditions:
             - condition: template
               value_template: >-
-                {{ light_state == 'on' }}
+                {{ light_state == 'on' and light_brightness > 0 }}
           sequence:
             - service: light.turn_on
               data:
@@ -107,7 +107,7 @@
         light_state: >-
           {{ states('light.hue_filament_bulb_1') }}
         light_brightness: >-
-          {{ state_attr('light.hue_filament_bulb_1', 'brightness')|int }}
+          {{ state_attr('light.hue_filament_bulb_1', 'brightness') | int(0) }}
     - service: light.turn_on
       data:
         brightness: 255
@@ -132,7 +132,7 @@
         - conditions:
             - condition: template
               value_template: >-
-                {{ light_state == 'on' }}
+                {{ light_state == 'on' and light_brightness > 0 }}
           sequence:
             - service: light.turn_on
               data:

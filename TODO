@@ -125,11 +125,11 @@
     principle it's ventilation hatch should always be open) – same for the
     Bedroom, when we go to bed at least one of the windows should be ajar...
     This could be via TTS when all lights are switched off before going to bed
+- [ ] ⬆️ Long-pressing the buttons next to the bed should snooze the wakeup
+      alarm (i.e. set it to go off again in 20 minutes)
 
 ## Lovelace
 
-- [ ] Refine the wakeup alarm card: Clearer state indication and visually
-      combine the alarm time setting with the mute setting
 - [ ] SMS functionality: Show cellular reception and credit remaining
 - [ ] Provide a visual indication of the Remote UI (Nabu Casa) status.
       Connection issues there otherwise might go unnoticed for some time (while
@@ -140,10 +140,13 @@
 
 ## Climate
 
-- [x] ~~Create several "backstops" (controlled via HomeKit) to ensure heating is
-      properly controlled when there is no access to the online Tado service~~
-  - On hold till the first time this actually turns out to be an issue. As of
-    yet, the Tado online service has been rock-solid...
+- [ ] Create several "backstops" (controlled via HomeKit) to ensure heating is
+      properly controlled when there is no access to the online Tado service
+  - ~~On hold till the first time this actually turns out to be an issue. As of
+    yet, the Tado online service has been rock-solid...~~
+  - It appears Tado's schedule is enforced _remotely_ (i.e. if there's no active
+    Internet connection, the scheduled settings are _not_ applied). Thus, sadly,
+    the schedule should be enforced/backstopped locally via HomeKit...
 - [ ] See if it's possible to better combine Attic thermostat/heating and airco
       automations – there's currently a lot of (semi-)identical stuff there...
 - [ ] Reset the Attic radiator back to "scheduled mode" every night (similar to
@@ -190,16 +193,13 @@
       detected scene does not change (most likely the overall change is too
       small – might require a specific exception)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
-- [ ] Make the switches next to the bed control the Bedroom lights (toggle off
+- [ ] ⬆️ Make the buttons next to the bed control the Bedroom lights (toggle off
       when on; on when off – cycle through various other modes with a long
       press?)
-- [ ] Use the motion sensors in the Hallway to trigger the lights (mainly at
-      night, after everyone went to bed)
 
 ## Alarm
 
-- [ ] Provide a toggle to disable the nightly auto-arming of the alarm (or maybe
-      that's just part of "Guest"-mode?)
+- [ ] ⬆️ Provide a toggle to disable the nightly auto-arming of the alarm
 - [ ] Create proxy template binary sensor for the "Everyone away"-state (instead
       of using `group.family` directly; "Guest"-mode stops `group.family` from
       automatically setting "Everyone away"). Setting the alarm to "Arm away"
