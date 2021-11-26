@@ -22,6 +22,8 @@
     - service: input_boolean.turn_on
       entity_id: input_boolean.everyone_asleep
   mode: single
+# The "everyone awake"-transition is intended to only happen once per day (at
+# the first "wakeup" time of the day)
 - alias: 💤 | ⏰ Everyone awake (daily at «wakeup» time)
   id: dfe729c9-436a-4fdb-8970-b68492d9a1a2
   trigger:
@@ -35,15 +37,21 @@
     - service: input_boolean.turn_off
       entity_id: input_boolean.everyone_asleep
   mode: single
-- alias: 💤 Set next «wakeup» (everyone awake)
+- alias: 💤 Set next «wakeup» (at «wakeup» time)
   id: 01d828d8-da3e-432c-8beb-0f20392d2f8e
   trigger:
-    - platform: state
-      entity_id: input_boolean.everyone_asleep
-      from: "on"
-      to: "off"
-  condition: []
+    - platform: time
+      at: input_datetime.wakeup
+  condition:
+    - condition: state
+      entity_id: timer.wakeup_grace_time
+      state: idle
   action:
+    # The "grace-time" timer prevents the alarm (and related logic) from,
+    # _unintentionally_ running multiple times in the same day. This occurs
+    # when today's alarm triggers _before_ tomorrow's preset alarm time (as
+    # defined below). If the alarm is to sound a second time during the same
+    # day, simple cancel the timer...
     - service: timer.start
       entity_id: timer.wakeup_grace_time
     - choose:
@@ -85,7 +93,7 @@
           }}
       entity_id: input_datetime.wakeup_light_start
   mode: single
-- alias: 💡 | 💤 Wakeup light bedroom (daily at «wakeup light start» time)
+- alias: 💡 | 💤 Wakeup light bedroom (at «wakeup light start» time)
   id: 8dfa00b1-9749-4b77-b0c9-7eceaf146bf6
   trigger:
     - platform: time
@@ -113,7 +121,7 @@
     - service: light.turn_off
       entity_id: light.bedroom
   mode: single
-- alias: 💤 | 🔊 Wakeup alarm bedroom (daily at «wakeup» time)
+- alias: 💤 | 🔊 Wakeup alarm bedroom (at «wakeup» time)
   id: 4f9e08f9-b352-4945-b788-215e301ef883
   # N.B. This automation's name is used in the next automation!
   trigger:
@@ -166,15 +174,15 @@
       value_template: >-
         {{
           (as_timestamp(now())|int - as_timestamp(
-            state_attr('automation.wakeup_alarm_bedroom_daily_at_wakeup_time',
+            state_attr('automation.wakeup_alarm_bedroom_at_wakeup_time',
               'last_triggered')
           ) | int(0) ) <= 90
         }}
   action:
     - service: automation.turn_off
-      entity_id: automation.wakeup_alarm_bedroom_daily_at_wakeup_time
+      entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
     - service: automation.turn_on
-      entity_id: automation.wakeup_alarm_bedroom_daily_at_wakeup_time
+      entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
     - service: media_player.media_stop
       entity_id: media_player.pi0_speaker_bedroom
   mode: single

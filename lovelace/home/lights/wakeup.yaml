@@ -1,14 +1,45 @@
-type: horizontal-stack
-cards:
-  - type: entities
-    entities:
-      - entity: input_datetime.wakeup
-  - type: button
-    entity: input_boolean.wakeup_alarm_mute
-    tap_action:
-      action: toggle
-    show_state: false
-    show_icon: true
-    show_name: false
-    icon_height: 48px
-    icon: mdi:volume-off
+type: custom:mod-card
+card_mod:
+  style:
+    hui-horizontal-stack-card$: |
+      :host div#root > *{
+        flex: 1 0 auto;
+      }
+      :host div#root > :first-child{
+        flex: 4 0 auto !important;
+      }
+report_size: 1
+card:
+  type: horizontal-stack
+  cards:
+    - type: entities
+      entities:
+        - entity: input_datetime.wakeup
+    - type: button
+      entity: input_boolean.wakeup_alarm_mute
+      tap_action:
+        action: toggle
+      show_state: false
+      show_icon: true
+      show_name: false
+      icon_height: 48px
+      icon: mdi:volume-off
+    - type: button
+      card_mod:
+        style: |
+          ha-card ha-state-icon[data-state="active"]{
+            color: var(--error-color) !important;
+          }
+      entity: timer.wakeup_grace_time
+      show_state: false
+      show_icon: true
+      show_name: false
+      icon_height: 48px
+      icon: mdi:history
+      tap_action:
+        action: call-service
+        service: timer.cancel
+        service_data:
+          entity_id: timer.wakeup_grace_time
+      hold_action:
+        action: more-info
