@@ -11,20 +11,37 @@
     - service: switch.turn_on
       entity_id: switch.on_off_plug_in_unit_3
   mode: single
-- alias: 🌡️ | 💡 Electric blanket off (20 minutes after Bedroom lights off)
+- alias: 🌡️ | 💡 Electric blanket off (Bedroom lights off / everyone asleep)
   id: e5b75f79-e60f-4d3e-b354-29a3622567ba
   trigger:
     - platform: state
+      id: bedroom_lights_off
       entity_id: light.bedroom
       from: "on"
       to: "off"
       for: "00:20:00"
-    # Also turn off when everyone is asleep (fail-safe)
+    # Also turn off when everyone is asleep
     - platform: state
+      id: everyone_asleep
       entity_id: input_boolean.everyone_asleep
       from: "off"
       to: "on"
   condition:
+    - condition: or
+      conditions:
+        # Only act if the lights are switched off _after_ 23:00 (counting in the
+        # 20-minute trigger delay) – this aims to prevent prematurely switching
+        # off the blanket if there's activity in the Bedroom between 22:30 and
+        # 23:00. We _do_ want to switch the blanket on at 22:30 as it needs a
+        # while to heat up the bed...
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: bedroom_lights_off
+            - condition: time
+              after: "23:20:00"
+        - condition: trigger
+          id: everyone_asleep
     - condition: state
       entity_id: switch.on_off_plug_in_unit_3
       state: "on"
@@ -32,13 +49,13 @@
     - service: switch.turn_off
       entity_id: switch.on_off_plug_in_unit_3
   mode: restart
-- alias: 🌡️ | ⏰ Electric blanket off (after 2 hours)
+- alias: 🌡️ | ⏰ Electric blanket off (after 3 hours)
   id: ba757313-c28b-4533-be3f-897d47e18c35
   trigger:
     - platform: state
       entity_id: switch.on_off_plug_in_unit_3
       to: "on"
-      for: "02:00:00"
+      for: "03:00:00"
   condition: []
   action:
     - service: switch.turn_off
