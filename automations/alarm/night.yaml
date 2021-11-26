@@ -1,0 +1,57 @@
+- alias: >-
+    🚨 | 👋 Trigger alarm (motion detected in Hallway/staircase; "Armed night")
+  id: 84cdd8f4-00e3-4bc1-8fc7-8344ba722c19
+  trigger:
+    - platform: state
+      # N.B. This list of entities is duplicated further down
+      entity_id:
+        - binary_sensor.presence_91 # Attic stairs/hallway
+        - binary_sensor.presence_92 # Attic stairs/hallway
+        - binary_sensor.presence_123 # Downstairs hallway
+        - binary_sensor.presence_125 # Downstairs hallway
+        - binary_sensor.presence_121 # Stairs
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_night
+    # Only trigger if the motion sensor in the upstairs hallway _hasn't_
+    # changed (i.e. been active) in the past fifteen minutes. The idea here is
+    # that if we're home, all motion at night will start on the upstairs hallway
+    # (i.e. by someone leaving their bedroom). With this condition in place, a
+    # small trip around the house during the night should not trigger the
+    # alarm...
+    - condition: template
+      value_template: >-
+        {{
+          states.binary_sensor.presence_127 is defined and
+          states.binary_sensor.presence_127.last_changed <=
+            now() - timedelta(minutes=15)
+        }}
+  action:
+    # Wait up to five minutes for either the same or another motion sensor to
+    # trigger. This prevents false positives (e.g. due to Sunlight or heat) – if
+    # someone is really moving around the house it's highly likely they'll
+    # trigger another sensor within this timeframe...
+    # The upstairs hallway sensor (which is not part of the original trigger) is
+    # included here. This creates a slight (but acceptable) chance of false
+    # positive if one starts moving around at the same time as the original
+    # false positive trigger.
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.presence_91
+            - binary_sensor.presence_92
+            - binary_sensor.presence_123
+            - binary_sensor.presence_125
+            - binary_sensor.presence_121
+            - binary_sensor.presence_127 # Upstairs hallway
+          from: "off"
+          to: "on"
+      timeout: 300
+      continue_on_timeout: false
+    - service: alarm_control_panel.alarm_trigger
+      entity_id: alarm_control_panel.home_alarm
+  mode: single
+  max_exceeded: silent
