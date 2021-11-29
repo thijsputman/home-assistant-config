@@ -157,19 +157,32 @@
             entity_id: media_player.pi0_speaker_bedroom
           - delay: "00:00:20"
   mode: single
-- alias: 💤 | 🕹️ Snooze wakeup alarm (Bedroom Smart Switches)
+- alias: 💤 | 🕹️ Silence/snooze wakeup alarm (Bedroom Smart Switches)
   id: 3c49fa1c-db0a-44ea-8fb3-8e57c515e310
   trigger:
-    # Bedside Smart Switches
     - device_id: da1237666189a9a364fa383795ba532d
+      id: remote_button_short_press
       domain: deconz
       platform: device
       type: remote_button_short_press
       subtype: turn_on
     - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      id: remote_button_short_press
       domain: deconz
       platform: device
       type: remote_button_short_press
+      subtype: turn_on
+    - device_id: da1237666189a9a364fa383795ba532d
+      id: remote_button_double_press
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      id: remote_button_double_press
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
       subtype: turn_on
   condition:
     # Only act if the wakeup alarm is sounding (i.e. in the ±90 seconds after
@@ -183,11 +196,26 @@
           ) | int(0) ) <= 90
         }}
   action:
+    # Silence the alarm
     - service: automation.turn_off
-      entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
+      target:
+        entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
     - service: automation.turn_on
-      entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
+      target:
+        entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
     - service: media_player.media_stop
-      entity_id: media_player.pi0_speaker_bedroom
+      target:
+        entity_id: media_player.pi0_speaker_bedroom
+    # If _not_ double-pressed, wait 20 minutes and sound the alarm again
+    - condition: not
+      conditions:
+        - condition: trigger
+          id: remote_button_double_press
+    - delay: "00:20:00"
+    - service: automation.trigger
+      target:
+        entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
+      data:
+        skip_condition: false
   mode: single
   max_exceeded: silent
