@@ -80,6 +80,39 @@
         code: !secret alarm_code
       entity_id: alarm_control_panel.home_alarm
   mode: single
+# If the alarm gets disarmed when "everyone['s] asleep" and someone is/gets
+# home, it's safe to assume not everyone's asleep anymore... 😉
+- alias: >-
+    🚨 | 💤 Everyone awake (alarm disarmed when «everyone [at home] asleep»)
+  id: daec5087-59f1-4307-9b8c-5739d579a97b
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: disarmed
+  condition:
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "on"
+  action:
+    - choose:
+        # Should only run if someone is home. If no-one's home, wait up to five
+        # minutes for a state change (the alarm might have been disabled
+        # manually; wait for presence detection to catch up...)
+        - conditions:
+            - condition: state
+              entity_id: group.family
+              state: not_home
+          sequence:
+            - wait_for_trigger:
+                - platform: state
+                  entity_id: group.family
+                  from: not_home
+                  to: home
+              timeout: "00:05:00"
+              continue_on_timeout: false
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.everyone_asleep
+  mode: single
 - alias: 🚨 | 🧹 Alarm disarm (housekeeper comes when everyone away)
   id: 3e6dc009-efd8-4c15-bb6d-52430aa7d32c
   trigger:

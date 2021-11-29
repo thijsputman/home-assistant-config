@@ -13,6 +13,9 @@
       entity_id: group.light_inside_rooms
   condition:
     - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: state
       entity_id: group.light_inside_rooms
       state: "off"
     - condition: state
@@ -22,8 +25,9 @@
     - service: input_boolean.turn_on
       entity_id: input_boolean.everyone_asleep
   mode: single
-# The "everyone awake"-transition is intended to only happen once per day (at
-# the first "wakeup" time of the day)
+# The "everyone awake"-transition fires once daily as a result of people waking
+# up (at the first "wakeup" time of the day). Note that there are other events
+# (irrespective of "wakeup" time) that can trigger this transition too...
 - alias: 💤 | ⏰ Everyone awake (daily at «wakeup» time)
   id: dfe729c9-436a-4fdb-8970-b68492d9a1a2
   trigger:

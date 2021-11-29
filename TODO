@@ -18,13 +18,6 @@
 - [ ] The `sensor.consumption_ups` (Riemann sum integral) deviates a lot from
       its expected daily total (sometimes reporting less than 30% of what it
       should be) every couple of days – investigate...
-- [ ] Reset the wakeup alarm trigger time (i.e. set it to the correct time for
-      tomorrow) regardless of whether the alarm was actually triggered...
-- [ ] Switch off "Everyone asleep" when coming home with somebody already asleep
-      (i.e. alarm is "Armed night" and "Everyone asleep" is on). This way it
-      gets re-enabled when the person that came home goes to bed (and the alarm
-      – which was disabled when that person came home – is also automatically
-      armed again).
 - [ ] The Mi Flora sensors (connected via `bt2mqtt`) stop reporting data when
       they fail, but under normal operation they might also not report updated
       data for quite some time... Add an automation that "invalidates" these

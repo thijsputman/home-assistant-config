@@ -1,15 +1,12 @@
 - alias: 💡 | ⏰ Inside lights on (dark outside when everyone wakes up)
   id: 4ad4a1ef-cc9c-4193-b212-f7dbfa20cd72
   trigger:
-    # The trigger on "everyone asleep" (and not "wakeup time") is intentional:
-    # Everyone asleep toggles once per day (at the first "wakeup time"), the
-    # wakeup time itself can happen multiple times daily (occupants getting up
-    # at different times; snoozing the alarm; etc.) – the lights should only go
-    # on once though...
-    - platform: state
-      entity_id: input_boolean.everyone_asleep
-      from: "on"
-      to: "off"
+    # The "wakeup" time can happen multiple times during a morning cycle; as we
+    # only act if lights are off, there's little harm in running this automation
+    # multiple times (could actually be useful: Someone getting up early might
+    # have switched the lights off on their way out the door).
+    - platform: time
+      at: input_datetime.wakeup
   condition:
     - condition: or
       conditions:
