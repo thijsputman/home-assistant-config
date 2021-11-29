@@ -6,6 +6,9 @@
       from: "off"
       to: "on"
   condition:
+    - condition: state
+      entity_id: input_boolean.alarm_auto_arm_night
+      state: "on"
     # Prevent overruling "Armed away"
     - condition: state
       entity_id: alarm_control_panel.home_alarm
@@ -31,6 +34,13 @@
       data:
         code: !secret alarm_code
       entity_id: alarm_control_panel.home_alarm
+    # Re-enable "Auto-arm Home Alarm at night"
+    - condition: state
+      entity_id: input_boolean.alarm_auto_arm_night
+      state: "off"
+    - service: input_boolean.turn_on
+      target:
+        entity_id: input_boolean.alarm_auto_arm_night
   mode: single
 - alias: 🚨 | ✈️ Alarm arm away (everyone away)
   id: 4cb07e27-5af6-4a81-b51c-dc35372c3deb

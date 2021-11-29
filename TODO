@@ -199,7 +199,6 @@
 
 ## Alarm
 
-- [ ] ⬆️ Provide a toggle to disable the nightly auto-arming of the alarm
 - [ ] Create proxy template binary sensor for the "Everyone away"-state (instead
       of using `group.family` directly; "Guest"-mode stops `group.family` from
       automatically setting "Everyone away"). Setting the alarm to "Arm away"
