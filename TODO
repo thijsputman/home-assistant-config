@@ -184,9 +184,9 @@
       detected scene does not change (most likely the overall change is too
       small – might require a specific exception)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
-- [ ] ⬆️ Make the buttons next to the bed control the Bedroom lights (toggle off
-      when on; on when off – cycle through various other modes with a long
-      press?)
+- [ ] Have the buttons next to the bed control the Bedroom lights
+  - ✔️ Toggle off when on; on when off
+  - Cycle through various other modes (with long press?)
 
 ## Alarm
 
