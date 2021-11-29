@@ -171,7 +171,7 @@
           sequence:
             - service: light.turn_on
               data:
-                brightness: 60
+                brightness: 40
                 kelvin: 2200
               entity_id: light.wardrobe
       default:
@@ -264,7 +264,7 @@
   action:
     - service: light.turn_on
       data:
-        brightness: 60
+        brightness: 40
       entity_id: light.upstairs_hallway
     - wait_for_trigger:
         - platform: state

@@ -40,6 +40,8 @@
               id: bedroom_lights_off
             - condition: time
               after: "23:20:00"
+              # Required to ensure the window spans across midnight
+              before: "02:00:00"
         - condition: trigger
           id: everyone_asleep
     - condition: state

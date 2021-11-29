@@ -6,6 +6,10 @@ homeassistant:
     - /config/var
     - /nvme/var
 
+frontend:
+  extra_module_url:
+    - /local/custom-jsm/card-mod.js?v=3.1.1
+
 system_log:
   fire_event: true
 

@@ -187,6 +187,9 @@
 - [ ] Have the buttons next to the bed control the Bedroom lights
   - ✔️ Toggle off when on; on when off
   - Cycle through various other modes (with long press?)
+- [ ] Containerize the Fireplace Node.js code; create some helpers scripts in
+      Home Assistant to facilitate the switching on/off (mainly so that their
+      previous state gets automatically restored)
 
 ## Alarm
 
@@ -254,3 +257,5 @@
       till the next boot...
   - Investigate? Perhaps don't bother and simply restart the entire stack every
     24 hours or so?
+- [ ] Replace the upstairs Hallway and Guestroom bulbs with Hue filament bulbs
+      (and remove the Zigbee-units from the power-sockets)
