@@ -1,0 +1,41 @@
+- sensor:
+    - name: Lightlevel (Bathroom)
+      unique_id: 8a10b9e9-b758-4eb3-9fc5-a550993f46b9
+      unit_of_measurement: lx
+      icon: hass:brightness-5
+      availability: >-
+        {{
+          states('sensor.lightlevel_70')
+            not in ['unknown', 'unavailable'] and
+          states('sensor.lightlevel_73')
+            not in ['unknown', 'unavailable']
+        }}
+      state: >-
+        {{
+          (
+            (
+              states('sensor.lightlevel_70') | float(0) +
+              states('sensor.lightlevel_73') | float(0)
+            ) / 2
+          ) | round(1)
+        }}
+    - name: Lightlevel (Upstairs hallway)
+      unique_id: 0b7aa8c4-835c-42a8-97e2-37a79361f63e
+      unit_of_measurement: lx
+      icon: hass:brightness-5
+      availability: >-
+        {{
+          states('sensor.lightlevel_bathroom')
+            not in ['unknown', 'unavailable'] and
+          states('sensor.lightlevel_65')
+            not in ['unknown', 'unavailable']
+        }}
+      state: >-
+        {{
+          (
+            (
+              states('sensor.lightlevel_bathroom') | float(0) +
+              states('sensor.lightlevel_65') | float(0)
+            ) / 2
+          ) | round(1)
+        }}
