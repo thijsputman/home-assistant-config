@@ -148,7 +148,9 @@ cards:
                     text-align: right;
                   }
                   ha-card span.value::before{
-                    content: "{{ states('sensor.monthly_energy')|round(2) }} wrap"
+                    content: "{{
+                      states('sensor.monthly_energy') | float(0) | round(2)
+                    }} wrap"
                   }
               entity: sensor.monthly_energy
           columns: 1
@@ -247,7 +249,10 @@ cards:
                     text-align: right;
                   }
                   ha-card span.value::before{
-                    content: "{{ state_attr('sensor.monthly_energy', 'last_period')|round(2) }} wrap"
+                    content: "{{
+                      state_attr('sensor.monthly_energy', 'last_period') |
+                      float(0) | round(2)
+                    }} wrap"
                   }
               entity: sensor.monthly_energy
               attribute: last_period

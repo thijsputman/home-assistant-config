@@ -151,7 +151,9 @@ cards:
                     text-align: right;
                   }
                   ha-card span.value::before{
-                    content: "{{ states('sensor.monthly_gas')|round(2) }} wrap"
+                    content: "{{
+                      states('sensor.monthly_gas') | float(0) | round(2)
+                    }} wrap"
                   }
               entity: sensor.monthly_gas
               unit: m³
@@ -251,7 +253,10 @@ cards:
                     text-align: right;
                   }
                   ha-card span.value::before{
-                    content: "{{ state_attr('sensor.monthly_gas', 'last_period')|round(2) }} wrap"
+                    content: "{{
+                      state_attr('sensor.monthly_gas', 'last_period') |
+                      float(0) | round(2)
+                    }} wrap"
                   }
               entity: sensor.monthly_gas
               attribute: last_period
