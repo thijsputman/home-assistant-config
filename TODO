@@ -24,9 +24,8 @@
       devices after none of their sensors updates over a 24-hour window? This
       way a failure will (eventually) show up through the generic "device
       failure"-automation
-- [ ] Update all `float` and `int` casts/filters in template sensors to cope
-      with the fact that upon initialisation `states(...)` might return
-      `unknown`/`unavailable`.
+- [ ] Remove `monthly_consumption_lights_all` from `📄 utility_meter.yaml`
+      _after_ February 1, 2022 (and don't forget to update Lovelace)
 
 ### Features
 

@@ -75,7 +75,7 @@ card:
         graph: bar
         labels: false
       entities:
-        - entity: sensor.ups_power
+        - entity: sensor.ups_power_usage
           show_graph: false
         - entity: sensor.consumption_ups
           aggregate_func: delta

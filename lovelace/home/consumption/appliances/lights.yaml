@@ -73,9 +73,9 @@ card:
         graph: bar
         labels: false
       entities:
-        - entity: sensor.power_lights_all
+        - entity: sensor.power_all_lights
           show_graph: false
-        - entity: sensor.consumption_lights_all
+        - entity: sensor.consumption_all_lights
           aggregate_func: delta
           color: thistle
           name: Power usage
