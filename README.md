@@ -8,9 +8,11 @@ The _live_ configuration of my personal Home Assistant instance.
 
 ### Linter / Pre-commit hook
 
-A combination of [Prettier](https://prettier.io/) and
+A combination of [Prettier](https://prettier.io/),
+[`markdownlint-cli`](https://github.com/igorshubovych/markdownlint-cli) and
 [`yamllint`](https://github.com/adrienverge/yamllint) is used via a pre-commit
-hook to ensure consistent YAML-formatting.
+hook to ensure consistent formatting and – for YAML and Markdown – more
+elaborate sanity-checking.
 
 To set up this pre-commit hook, follow the below instructions. This assumes NPM
 and Python3/`pip` are installed on your system:

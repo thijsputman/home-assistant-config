@@ -6,3 +6,7 @@ overrides:
       # Ensure Prettier doesn't mess with Jinja2 (i.e. multiline strings in the
       # Home Assistant YAML files)
       proseWrap: preserve
+  - files:
+      - "TODO"
+    options:
+      parser: markdown
