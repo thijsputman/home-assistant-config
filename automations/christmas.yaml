@@ -1,13 +1,13 @@
-- alias: 🎄 | ✈️ Christmas tree on (Living Room lights on / someone home)
+- alias: 🎄 | 💡/✈️ Christmas tree on (Living room Hue scene / someone home)
   id: 1f000056-9ced-4832-a6a0-4cbb93fb381e
   trigger:
-    # Follow the Living Room lights (only when someone is home)
     - platform: state
-      entity_id: light.living_room
-      from: "off"
-      to: "on"
-    # If the Living Room lights are on when someone comes home, switch on the
-    # Christmas tree
+      entity_id: sensor.hue_scene_living_room
+      to:
+        - Daytime
+        - Ambiance
+        - Movie (ambiance)
+        - Active
     - platform: state
       entity_id: group.family
       from: not_home
@@ -17,16 +17,22 @@
       entity_id: group.family
       state: home
     - condition: state
-      entity_id: light.living_room
-      state: "on"
-    - condition: state
-      entity_id: switch.on_off_plug_in_unit_6
+      entity_id: switch.on_off_plug_in_unit_8
       state: "off"
+    # In case of presence trigger, ensure Living room has the correct Hue scene
+    # activated (superfluous for the scene-based trigger)
+    - condition: state
+      entity_id: sensor.hue_scene_living_room
+      state:
+        - Daytime
+        - Ambiance
+        - Movie (ambiance)
+        - Active
   action:
     - service: switch.turn_on
-      entity_id: switch.on_off_plug_in_unit_6
+      entity_id: switch.on_off_plug_in_unit_8
   mode: single
-- alias: 🎄 | 💡/✈️ Christmas tree off (Living Room lights off / everyone away)
+- alias: 🎄 | 💡/✈️ Christmas tree off (Living room Hue scene / everyone away)
   id: 7d791dff-0c3d-4774-91e6-648ff3348e53
   trigger:
     - platform: state
@@ -35,16 +41,18 @@
       to: not_home
       for: "00:05:00"
     - platform: state
-      entity_id: light.living_room
-      from: "on"
-      to: "off"
+      entity_id: sensor.hue_scene_living_room
+      to:
+        - <Off>
+        - <Unknown>
+        - Movie
   condition:
     - condition: state
-      entity_id: switch.on_off_plug_in_unit_6
+      entity_id: switch.on_off_plug_in_unit_8
       state: "on"
   action:
     - service: switch.turn_off
-      entity_id: switch.on_off_plug_in_unit_6
+      entity_id: switch.on_off_plug_in_unit_8
   mode: single
 - alias: 🎄 | ⏰ Christmas star on (dusk)
   id: cc862e68-ace8-4bc6-b78b-26db199d5ba2
@@ -53,7 +61,10 @@
       entity_id: sensor.time_of_day
       from: day
       to: dusk
-  condition: []
+  condition:
+    - condition: state
+      entity_id: switch.on_off_plug_in_unit_7
+      state: "off"
   action:
     - service: switch.turn_on
       entity_id: switch.on_off_plug_in_unit_7
@@ -65,7 +76,10 @@
       entity_id: sensor.time_of_day
       from: night
       to: dawn
-  condition: []
+  condition:
+    - condition: state
+      entity_id: switch.on_off_plug_in_unit_7
+      state: "on"
   action:
     - service: switch.turn_off
       entity_id: switch.on_off_plug_in_unit_7
