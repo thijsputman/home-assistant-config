@@ -132,9 +132,7 @@
 
 ### Development Environment
 
-- [ ] Use `pipx` instead of `pip` to operate on `yamllint` locally
-- [ ] Include `markdownlint-cli` (Node.js) in the pre-commit checks and the
-      GitHub actions
+- [ ] 🎉
 
 ## Lovelace
 

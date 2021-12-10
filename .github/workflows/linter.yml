@@ -16,6 +16,9 @@ jobs:
       - name: Lint with Prettier
         run: |
           npx prettier --check .
+      - name: Lint with MarkdownLint
+        run: |
+          npx markdownlint-cli "**/*.md" TODO
       - name: Install yamllint
         run: |
           pip3 install yamllint

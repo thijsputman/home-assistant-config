@@ -16,7 +16,11 @@ To set up this pre-commit hook, follow the below instructions. This assumes NPM
 and Python3/`pip` are installed on your system:
 
 ```shell
-pip3 install --user yamllint
+pip install --user yamllint
+
+# or, even better
+pip install --user pipx
+pipx install yamllint
 
 {
   echo '#!/bin/sh'
