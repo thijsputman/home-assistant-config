@@ -63,7 +63,7 @@ logger:
     custom_components.xiaomi_miot.sensor:
       - >-
         Got MiioException while fetching the state: Unable to discover the
-        device [a-z0-9_\-]+, mapping:
+        device ?[a-z0-9_\-]*, mapping:
 
 downloader:
   download_dir: var/downloads
