@@ -161,10 +161,6 @@
 
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
-- [ ] The transition from "lights off at dawn" to "daytime lights on when its
-      dark during the day" is not optimal yet. At the moment I'm delaying the
-      latter by 10 seconds to prevent it from interfering with the former, there
-      should be a nicer way to handle that...
 - [ ] Failure mode for Kitchen-counter motion lights: Switch Kitchen to
       "Ambiance", trigger counter motion sensor, switch Kitchen to "Bright
       (Custom)" (while motion sensor is still active). After motion clears,

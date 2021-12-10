@@ -64,6 +64,19 @@
       data:
         group_name: Hallway
         scene_name: Evening
+  mode: single
+# The distinction between "Inside lights" and "House lights" is somewhat
+# arbitrary – it serves to keep the dusk and dawn lighting automations aligned.
+# See "📄 lights/dawn.yaml" for more details...
+- alias: 💡 | ⏰ House lights on (daily at sunset)
+  id: 260c4540-8991-4541-93a2-2c5200733de8
+  trigger:
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  condition: []
+  action:
     # Front and back (i.e. Kitchen) door
     - service: hue.hue_activate_scene
       data:

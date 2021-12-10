@@ -48,7 +48,133 @@
                 group_name: Hallway
                 scene_name: Evening
   mode: single
-- alias: 💡 | ⏰ Inside lights off (daily at sunrise)
+- alias: >-
+    💡 | ⏰ Inside lights off – Living room (daily at sunrise;
+    daytime lighting aware)
+  id: 4adbf84d-a5d3-478a-b422-ea2a3d505c3e
+  trigger:
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+  condition:
+    - condition: state
+      entity_id: light.living_room
+      state: "on"
+  action:
+    # If the light _doesn't_ transition to Daytime within 30 seconds, turn it
+    # off... This allows the daytime lighting automation to take precedence
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.hue_scene_living_room
+          to: Daytime
+      timeout: 30
+      continue_on_timeout: true
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    - service: light.turn_off
+      target:
+        entity_id: light.living_room
+  mode: single
+- alias: >-
+    💡 | ⏰ Inside lights off – Kitchen (daily at sunrise;
+    daytime lighting aware)
+  id: 36c03621-a126-457e-b916-a0af315c7a72
+  trigger:
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+  condition:
+    - condition: state
+      entity_id: light.kitchen
+      state: "on"
+  action:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.hue_scene_kitchen
+          to: Daytime
+      timeout: 30
+      continue_on_timeout: true
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    - service: light.turn_off
+      target:
+        entity_id: light.kitchen
+  mode: single
+- alias: >-
+    💡 | ⏰ Inside lights off – Downstairs hallway (daily at sunrise;
+    daytime lighting aware)
+  id: be42179a-5665-4e50-8a2a-e474386ba982
+  trigger:
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+  condition:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.hue_filament_bulb_1_4
+          state: "on"
+        - condition: state
+          entity_id: light.hue_filament_bulb_1_5
+          state: "on"
+  action:
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - light.hue_filament_bulb_1_4
+            - light.hue_filament_bulb_1_5
+          attribute: brightness
+          to: 128
+      timeout: 30
+      continue_on_timeout: true
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    - service: light.turn_off
+      target:
+        entity_id:
+          - light.hue_filament_bulb_1_4
+          - light.hue_filament_bulb_1_5
+  mode: single
+- alias: >-
+    💡 | ⏰ Inside lights off – Upstairs hallway (daily at sunrise;
+    daytime lighting aware)
+  id: cb13a7e2-2a2a-4788-ac6e-efe09b10d0fe
+  trigger:
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+  condition:
+    - condition: state
+      entity_id: light.upstairs_hallway
+      state: "on"
+  action:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: light.upstairs_hallway
+          attribute: brightness
+          # This value is hard-coded in "📄 light/daytime.yaml"
+          to: 128
+      timeout: 30
+      continue_on_timeout: true
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    - service: light.turn_off
+      target:
+        entity_id: light.upstairs_hallway
+  mode: single
+# The "House lights" and "Garden lights" automations guard against exceptional
+# situations (mainly initiated in "📄 alarm/alert.yaml"). Under normal
+# circumstances they _don't_ run – the lights they switch off should already be
+# off at sunrise...
+- alias: 💡 | ⏰ House lights off (daily at sunrise)
   id: 314514eb-0cce-4519-833d-40300537a27b
   trigger:
     - platform: state
@@ -59,15 +185,6 @@
     - condition: or
       conditions:
         - condition: state
-          entity_id: light.living_room
-          state: "on"
-        - condition: state
-          entity_id: light.kitchen
-          state: "on"
-        - condition: state
-          entity_id: light.hallway
-          state: "on"
-        - condition: state
           entity_id: light.front_back_door
           state: "on"
         - condition: state
@@ -75,22 +192,14 @@
           state: "on"
   action:
     - service: light.turn_off
-      entity_id:
-        - light.living_room
-        - light.kitchen
-        - light.hallway
-        - light.front_back_door
-        - light.guestroom
+      target:
+        entity_id:
+          - light.front_back_door
+          - light.guestroom
   mode: single
-- alias: 💡 | ⏰ Garden lights off (daily at civil dawn)
+- alias: 💡 | ⏰ Garden lights off (daily at sunrise)
   id: bca8278d-d0b5-41a6-a828-8310255cb93d
   trigger:
-    - platform: state
-      entity_id: sensor.time_of_day
-      from: night
-      to: dawn
-    # Run again at sunrise – other automations might trigger the lights during
-    # twilight; here we ensure they are switched off properly again
     - platform: state
       entity_id: sensor.time_of_day
       from: dawn
@@ -101,5 +210,6 @@
       state: "on"
   action:
     - service: light.turn_off
-      entity_id: light.garden
+      target:
+        entity_id: light.garden
   mode: single

@@ -6,22 +6,38 @@
       for: "00:01:00"
       below: 80
     - platform: state
+      id: dawn
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-      for: "00:00:10"
+    - platform: time
+      id: wakeup
+      at: input_datetime.wakeup
   condition:
-    - condition: state
-      entity_id: input_boolean.everyone_asleep
-      state: "off"
+    # In case of the wakeup-trigger, "everyone asleep" isn't relevant (and most
+    # likely still active as there's a race condition between this automation
+    # and the one that toggles "everyone asleep" off)
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "off"
+        - condition: trigger
+          id: wakeup
     - condition: state
       entity_id: sensor.time_of_day
       state: day
     - condition: numeric_state
       entity_id: sensor.lightlevel_47
       below: 80
+    # Don't act if the lights are already on, _unless_ we are running because
+    # of a dawn/wakeup-trigger
     - condition: or
       conditions:
+        - condition: trigger
+          id:
+            - dawn
+            - wakeup
         - condition: state
           entity_id: light.kitchen
           state: "off"
@@ -92,24 +108,38 @@
       for: "00:01:00"
       below: 25
     - platform: state
+      id: dawn
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-      for: "00:00:10"
+    - platform: time
+      id: wakeup
+      at: input_datetime.wakeup
   condition:
-    - condition: state
-      entity_id: input_boolean.everyone_asleep
-      state: "off"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "off"
+        - condition: trigger
+          id: wakeup
     - condition: state
       entity_id: sensor.time_of_day
       state: day
     - condition: numeric_state
       entity_id: sensor.lightlevel_46
       below: 30
-    - condition: state
-      entity_id: light.living_room
-      state: "off"
-    # Don't act if either the TV or the Switch is in-use
+    # Don't act if the lights are already on, _unless_ we are running because
+    # of a dawn/wakeup-trigger
+    - condition: or
+      conditions:
+        - condition: trigger
+          id:
+            - dawn
+            - wakeup
+        - condition: state
+          entity_id: light.living_room
+          state: "off"
     - condition: state
       entity_id: media_player.nvidia_shield_tv
       state: "off"
@@ -145,30 +175,45 @@
       for: "00:01:00"
       below: 40
     - platform: state
+      id: dawn
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-      for: "00:00:10"
+    - platform: time
+      id: wakeup
+      at: input_datetime.wakeup
   condition:
-    - condition: state
-      entity_id: input_boolean.everyone_asleep
-      state: "off"
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "off"
+        - condition: trigger
+          id: wakeup
     - condition: state
       entity_id: sensor.time_of_day
       state: day
     - condition: numeric_state
       entity_id: sensor.lightlevel_48
       below: 40
-    - condition: state
-      entity_id: light.hue_filament_bulb_1_4
-      state: "off"
-    - condition: state
-      entity_id: light.hue_filament_bulb_1_5
-      state: "off"
+    # Don't act if the lights are already on, _unless_ we are running because
+    # of a dawn/wakeup-trigger
+    - condition: or
+      conditions:
+        - condition: trigger
+          id:
+            - dawn
+            - wakeup
+        - condition: state
+          entity_id:
+            - light.hue_filament_bulb_1_4
+            - light.hue_filament_bulb_1_5
+          state: "off"
   action:
     - service: light.turn_on
       data:
-        brightness_pct: 50
+        # This value is hard-coded in "📄 light/dawn.yaml"
+        brightness: 128
       target:
         entity_id:
           - light.hue_filament_bulb_1_4
@@ -206,10 +251,13 @@
       for: "00:01:00"
       below: 30
     - platform: state
+      id: dawn_wakeup
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-      for: "00:00:10"
+    - platform: time
+      id: dawn_wakeup
+      at: input_datetime.wakeup
   condition:
     - condition: state
       entity_id: input_boolean.everyone_asleep
@@ -220,9 +268,14 @@
     - condition: numeric_state
       entity_id: sensor.lightlevel_upstairs_hallway
       below: 30
-    - condition: state
-      entity_id: light.upstairs_hallway
-      state: "off"
+    # In case of the dawn/wakeup-trigger we don't care if the lights are off
+    - condition: or
+      conditions:
+        - condition: trigger
+          id: dawn_wakeup
+        - condition: state
+          entity_id: light.upstairs_hallway
+          state: "off"
   action:
     - service: light.turn_on
       data:
