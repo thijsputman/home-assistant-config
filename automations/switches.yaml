@@ -26,7 +26,7 @@
       data:
         brightness: 255
   mode: single
-- alias: 🕹️ Bedroom lights toggle (Bedroom Smart Switches)
+- alias: 🕹️ Bedroom lights toggle (bedside Smart Switches)
   id: f03f5e56-2eaf-4bc0-8424-d316445b0236
   trigger:
     - device_id: da1237666189a9a364fa383795ba532d
@@ -40,11 +40,13 @@
       type: remote_button_short_press
       subtype: turn_on
   condition:
-    # Don't act during "wakeup grace-time" (i.e. in the morning). The below is
-    # mainly intended to switch the lights off in the evening; don't want it to
-    # interfer with the (wakeup) lights when we're supposed to get up...
+    # Don't act when the wakeup alarm is sounding or snoozed (the light is
+    # supposed to stay on in those cases)
     - condition: state
-      entity_id: timer.wakeup_grace_time
+      entity_id: script.wakeup_alarm
+      state: "off"
+    - condition: state
+      entity_id: timer.wakeup_snooze_time
       state: idle
   action:
     - service: light.toggle

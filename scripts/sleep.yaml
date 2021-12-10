@@ -1,0 +1,19 @@
+wakeup_alarm:
+  alias: Wake-up alarm
+  icon: mdi:alarm-note
+  sequence:
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.pi0_speaker_bedroom
+        volume_level: 0.45
+    - repeat:
+        count: 4
+        sequence:
+          - service: media_player.play_media
+            data:
+              media_content_type: audio/mpeg
+              # cspell: disable-next-line
+              media_content_id: file:/var/lib/mopidy/media/4nsekecn.mp3
+            entity_id: media_player.pi0_speaker_bedroom
+          - delay: "00:00:20"
+  mode: single

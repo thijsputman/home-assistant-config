@@ -103,6 +103,9 @@
     - platform: time
       at: input_datetime.wakeup_light_start
   condition:
+    - condition: state
+      entity_id: light.bedroom
+      state: "off"
     # N.B. Compared to the wakeup alarm automation (below) the omission of the
     # occupancy condition is intentionally (as the daily wakeup light is
     # considered to be part of occupancy simulation)
@@ -121,13 +124,25 @@
         brightness: 240
         transition: 1200
       entity_id: light.bedroom
-    - delay: "02:20:00"
+    # Switch the Bedroom light off after 2 hours (accounting for the wakeup
+    # light duration)
+    - wait_for_trigger:
+        - platform: state
+          entity_id: light.bedroom
+          from: "on"
+          to: "off"
+      timeout: "02:20:00"
+      continue_on_timeout: true
+    # Trigger expired – continue; otherwise we abort (as the light was already
+    # switched off)
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
     - service: light.turn_off
       entity_id: light.bedroom
   mode: single
 - alias: 💤 | 🔊 Wakeup alarm bedroom (at «wakeup» time)
   id: 4f9e08f9-b352-4945-b788-215e301ef883
-  # N.B. This automation's name is used in the next automation!
   trigger:
     - platform: time
       at: input_datetime.wakeup
@@ -142,80 +157,101 @@
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"
   action:
-    - service: media_player.volume_set
-      data:
-        entity_id: media_player.pi0_speaker_bedroom
-        volume_level: 0.45
-    - repeat:
-        count: 4
-        sequence:
-          - service: media_player.play_media
-            data:
-              media_content_type: audio/mpeg
-              # cspell: disable-next-line
-              media_content_id: file:/var/lib/mopidy/media/4nsekecn.mp3
-            entity_id: media_player.pi0_speaker_bedroom
-          - delay: "00:00:20"
+    # Don't block on sounding the alarm
+    - service: script.turn_on
+      target:
+        entity_id: script.wakeup_alarm
+    # Wait for the snooze timer to start or for the "wakeup_alarm_silenced"
+    # event – both indicate interaction with the bedside Smart Switches
+    - wait_for_trigger:
+        - platform: state
+          entity_id: timer.wakeup_snooze_time
+          to: active
+        - platform: event
+          event_type: wakeup_alarm_silenced
+      timeout: 300
+      continue_on_timeout: true
+    # No interaction; sound the alarm again after 5 minutes
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    - service: script.turn_on
+      target:
+        entity_id: script.wakeup_alarm
   mode: single
-- alias: 💤 | 🕹️ Silence/snooze wakeup alarm (Bedroom Smart Switches)
+- alias: 💤 | 🕹️ Snooze wakeup alarm (bedside Smart Switches)
   id: 3c49fa1c-db0a-44ea-8fb3-8e57c515e310
   trigger:
     - device_id: da1237666189a9a364fa383795ba532d
-      id: remote_button_short_press
       domain: deconz
       platform: device
       type: remote_button_short_press
       subtype: turn_on
     - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
-      id: remote_button_short_press
       domain: deconz
       platform: device
       type: remote_button_short_press
       subtype: turn_on
+  condition:
+    - condition: state
+      entity_id: script.wakeup_alarm
+      state: "on"
+  action:
+    # Stop the wakeup alarm – the additional "media_stop" ensures the sound
+    # stops playing right away (instead of at the end of the current play-loop)
+    - service: script.turn_off
+      target:
+        entity_id: script.wakeup_alarm
+    - service: media_player.media_stop
+      data:
+        entity_id: media_player.pi0_speaker_bedroom
+    # The snooze timer allows other automations to modify their behaviour while
+    # the wakeup alarm is snoozed (e.g. the Bedroom light can't be switched off
+    # using the Smart Switches while the wakeup alarm is snoozed)
+    - service: timer.start
+      target:
+        entity_id: timer.wakeup_snooze_time
+    - wait_for_trigger:
+        - platform: event
+          event_type: timer.finished
+          event_data:
+            entity_id: timer.wakeup_snooze_time
+      timeout: "01:00:00"
+      continue_on_timeout: false
+    # Sound the alarm again (non-blocking); ending this run of the automation.
+    # We are now effectively in an alarm loop that can be broken by silencing
+    # the wakeup alarm _or_ by not responding to it at all (hence there's no
+    # risk of a runaway alarm loop).
+    - service: script.turn_on
+      target:
+        entity_id: script.wakeup_alarm
+  mode: single
+  max_exceeded: silent
+- alias: 💤 | 🕹️ Silence wakeup alarm (bedside Smart Switches)
+  id: 01722d26-3705-46c6-91c6-92700b39c4e0
+  trigger:
     - device_id: da1237666189a9a364fa383795ba532d
-      id: remote_button_double_press
       domain: deconz
       platform: device
       type: remote_button_double_press
       subtype: turn_on
     - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
-      id: remote_button_double_press
       domain: deconz
       platform: device
       type: remote_button_double_press
       subtype: turn_on
   condition:
-    # Only act if the wakeup alarm is sounding (i.e. in the ±90 seconds after
-    # its automation started)
-    - condition: template
-      value_template: >-
-        {{
-          (as_timestamp(now())|int - as_timestamp(
-            state_attr('automation.wakeup_alarm_bedroom_at_wakeup_time',
-              'last_triggered')
-          ) | int(0) ) <= 90
-        }}
+    - condition: state
+      entity_id: script.wakeup_alarm
+      state: "on"
   action:
-    # Silence the alarm
-    - service: automation.turn_off
+    - service: script.turn_off
       target:
-        entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
-    - service: automation.turn_on
-      target:
-        entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
+        entity_id: script.wakeup_alarm
     - service: media_player.media_stop
-      target:
-        entity_id: media_player.pi0_speaker_bedroom
-    # If _not_ double-pressed, wait 20 minutes and sound the alarm again
-    - condition: not
-      conditions:
-        - condition: trigger
-          id: remote_button_double_press
-    - delay: "00:20:00"
-    - service: automation.trigger
-      target:
-        entity_id: automation.wakeup_alarm_bedroom_at_wakeup_time
       data:
-        skip_condition: false
+        entity_id: media_player.pi0_speaker_bedroom
+    # Let other automations know the wakeup alarm was silenced
+    - event: wakeup_alarm_silenced
   mode: single
   max_exceeded: silent
