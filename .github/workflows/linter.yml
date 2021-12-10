@@ -15,10 +15,10 @@ jobs:
         uses: actions/checkout@v2
       - name: Lint with Prettier
         run: |
-          npx prettier --check .
+          npx --yes prettier --check .
       - name: Lint with MarkdownLint
         run: |
-          npx markdownlint-cli "**/*.md" TODO
+          npx --yes markdownlint-cli "**/*.md" TODO
       - name: Install yamllint
         run: |
           pip3 install yamllint

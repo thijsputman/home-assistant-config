@@ -12,12 +12,12 @@ if [ -n "$files" ] ; then
   # are also linted) – the sheer simplicity of the below solution outweighs this
   # minor drawback...
   readarray -t <<< "$files"
-  npx prettier --check --ignore-unknown "${MAPFILE[@]}"
+  npx --yes prettier --check --ignore-unknown "${MAPFILE[@]}"
 
   # Have MarkdownLint ignore every file that doesn't end with ".md"
   # Caveat: Files _without_ extension are validated as-if they are Markdown.
   # Works for TODOl doesn't for LICENSE (that's what --no-verify is for 😇).
-  npx markdownlint-cli -q -i "**/*.!(md)" "${MAPFILE[@]}"
+  npx --yes markdownlint-cli --quiet --ignore "**/*.!(md)" "${MAPFILE[@]}"
 
   # Again, but now only for YAML-files (as yamllint assumes all files passed in
   # to be YAML)
