@@ -5,10 +5,14 @@
 - [General](#general)
   - [Bugs](#bugs)
   - [Features](#features)
+  - [Development Environment](#development-environment)
 - [Lovelace](#lovelace)
 - [Climate](#climate)
 - [Lights](#lights)
 - [Alarm](#alarm)
+  - [Bugs](#bugs-1)
+  - [Features](#features-1)
+- [Network](#network)
 - [Hardware](#hardware)
 
 ## General
@@ -17,7 +21,10 @@
 
 - [ ] The `sensor.consumption_ups` (Riemann sum integral) deviates a lot from
       its expected daily total (sometimes reporting less than 30% of what it
-      should be) every couple of days – investigate...
+      should be) every couple of days
+  - Appears to be the result of the UPS power consumption not fluctuating
+    enough. It stays at the same level for long periods; if that happens at the
+    end of the day, the final hours of the day aren't counted...
 - [ ] The Mi Flora sensors (connected via `bt2mqtt`) stop reporting data when
       they fail, but under normal operation they might also not report updated
       data for quite some time... Add an automation that "invalidates" these
@@ -35,8 +42,13 @@
     becomes possible
 - [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
       `light_x`, `openclose_y`, the other half already have descriptive names)
-  - Some other things are also inconsistent (e.g. `power_xxx` versus
-    `xxx_power`)
+  - Some other things are also inconsistent (e.g. `power_xxx` versus `xxx_power`
+    and `consumption_xxx` versus `xxx_consumption`)
+  - Part of the inconsistency is caused by the fact that (new format) template
+    sensors don't allow specifying a `friendly_name` anymore, so the `entity_id`
+    is derived from the `name` and a balance needs to be struck between
+    human-readable and structured (otherwise all friendly names should be
+    (re)defined via the UI)
   - Rename `sensor.xiaomi_miot_environment_co2_density` to match with the other
     Qingping senors (will cause a loss of history, so do this after all
     measurements have stabilised)
@@ -118,6 +130,12 @@
     Bedroom, when we go to bed at least one of the windows should be ajar...
     This could be via TTS when all lights are switched off before going to bed
 
+### Development Environment
+
+- [ ] Use `pipx` instead of `pip` to operate on `yamllint` locally
+- [ ] Include `markdownlint-cli` (Node.js) in the pre-commit checks and the
+      GitHub actions
+
 ## Lovelace
 
 - [ ] SMS functionality: Show cellular reception and credit remaining
@@ -127,6 +145,8 @@
 - [ ] Add an overview of motion/vibration sensors
   - Perhaps create separate Security-dashboard?
 - [ ] Add visual indication of "Vacation-mode"
+- [ ] Add buttons to toggle the entire house to a specific Hue scene ("Alarm",
+      "Active" and "Ambiance")
 
 ## Climate
 
@@ -188,6 +208,26 @@
 
 ## Alarm
 
+### Bugs
+
+- [ ] Arlo snapshots used in notifications should be stored locally. The URL
+      provided by Arlo always represents the _latest_ snapshot, not the specific
+      snapshot at the point in time the URL was retrieved... This is problematic
+      for notifications in Lovelace as they will (after a while) start showing
+      the wrong image
+- [ ] When coming home after dark: Switch off the Attic light. Occupancy
+      simulation turns them on; it's not something you realises (i.e. manually
+      switch off) when you get back home. Leaving them on causes Attic occupancy
+      to trigger and the heating/Airco to inadvertently switch on upon coming
+      home.
+- [ ] When coming home (after dark): Stop the "lights out"-script if its running
+      (used by occupancy simulation automations to turn off the lights). There's
+      a potential race condition where one comes home, switches on some lights
+      just to have them switched off again a couple minutes later by the "Lights
+      out"-script...
+
+### Features
+
 - [ ] Create proxy template binary sensor for the "Everyone away"-state (instead
       of using `group.family` directly; "Guest"-mode stops `group.family` from
       automatically setting "Everyone away"). Setting the alarm to "Arm away"
@@ -212,23 +252,29 @@
   - Perhaps this should also disable some of the "stricter" alarm triggers
     (vibration and motion during "Armed night"; maybe even the `openclose`
     sensors)?
-- [ ] When coming home after dark: Switch off the Attic light. Occupancy
-      simulation turns them on; it's not something you realises (i.e. manually
-      switch off) when you get back home. Leaving them on causes Attic occupancy
-      to trigger and the heating/Airco to inadvertently switch on upon coming
-      home.
 - [ ] Send notifications (with snapshot/thumbnail) if Arlo records something
       when "Armed away"
   - Replaces the "native" Arlo notifications
-  - Snapshots should be stored locally (as the URL provided by Arlo always
-    represents the _latest_ snapshot, not the specific snapshot at the point in
-    time the URL was retrieved)
   - Perhaps provide a summary of Arlo recordings every morning?
   - 🚀 Way out there: Use a machine-learned model to classify the camera
     snapshots and send notifications only if there's something out of the
     ordinary going on...
 - [ ] Keep an eye on
       <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/alarmsystems/>
+
+## Network
+
+- [ ] DD-WRT-1 appears to forget its Virtual AP settings on reboot...
+- [ ] Test (i.e. keep an eye on) whether the ping-scripts on DD-WRT-1 and
+      DD-WRT-2 automatically start on a reboot of the device
+- [ ] Upgrade both DD-WRT units to the latest firmware version
+- [ ] Setup a "devices" VLAN and a separate "devices" WiFi and setup switches
+      and routing in such a way that only Home Assistant's Raspberry Pi can talk
+      to both the _regular_ and the "devices" network
+  - Move all untrusted/"IoT"-type devices to the "devices" network/WiFi
+  - Limit/prevent Internet access for all Qingping and Broadlink devices. It
+    should be easy to toggle this on and off on demand as occasionally Internet
+    connectivity _is_ required to setup/configure these devices
 
 ## Hardware
 
