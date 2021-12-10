@@ -57,8 +57,7 @@
       {% else %}
         unknown
       {% endif %}
-# Track the number of messages received over a 10-minute interval (excluding
-# Vodafone's service messages)
+# Track the number of messages received over a 10-minute interval
 - trigger:
     - platform: state
       entity_id: sensor.gammu_received_message
@@ -74,18 +73,19 @@
       {% if trigger.id == 'reset' %}
         {{ 0 }}
       {% else %}
-        {# Ignore service messages from Vodafone #}
-        {% if state_attr('sensor.gammu_received_message', 'number') ==
-          '<Vodafone>' %}
-          {{ states('sensor.gammu_received_message_count')|int }}
-        {# Prevent the sensor from initialising at 1 (instead of 0) #}
-        {% elif states('sensor.gammu_received_message') == 'unknown' and
+        {% if states('sensor.gammu_received_message') == 'unknown' and
             state_attr('sensor.gammu_received_message', 'number') == None
         %}
-          {{ states('sensor.gammu_received_message_count')|int }}
+          {#
+            If "Gammu received (message)" ends up in an invalid state, don't
+            increment. This mostly happens at startup (and will thus result in
+            a count of zero), but in edge-cases it might happen with a non-zero
+            count – hence the approach chosen...
+          #}
+          {{ states('sensor.gammu_received_message_count') | int(0) }}
         {% else %}
           {{
-            states('sensor.gammu_received_message_count')|int + 1
+            states('sensor.gammu_received_message_count') | int + 1
           }}
         {% endif %}
       {% endif %}

@@ -11,5 +11,12 @@ cheapest provider) and the number of messages (especially when conversing with
 the system) required is such that it quickly became more economical to get an
 unlimited SMS subscription (€ 6 / month at Simyo).
 
+Note that should this ever be reimplemented, the `sms_notification` script's
+`phoneNumber`-parameter needs to be updated to allow sending messages to
+Vodafone's top-up service number (4000). Also, the
+`Gammu received (message count)`-sensor should be updated to ignore messages
+from `<Vodafone>` to prevent overflowing the message counters with (irrelevant)
+service messages.
+
 - [`📄 gammu_prepaid.yaml`](./gammu_prepaid.yaml)
 - [`📄 sms_prepaid.yaml`](./sms_prepaid.yaml)
