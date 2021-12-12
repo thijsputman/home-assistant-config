@@ -35,7 +35,7 @@
   action:
     - service: input_boolean.turn_off
       entity_id: input_boolean.fireplace
-    - delay: 10
+    - delay: 20
     - service: light.turn_off
       entity_id:
         - light.fireplace_1_living_room
@@ -111,10 +111,10 @@
     # The fireplace lights will remain in whatever state they were in
     # when the animation stopped; re-applying the current scene restores
     # them to their proper setting
-    - delay: 10
+    - delay: 20
     - service: hue.hue_activate_scene
       data:
         group_name: Living room
         scene_name: >-
-          {{ sensor.hue_scene_living_room }}
+          {{ states('sensor.hue_scene_living_room') }}
   mode: single
