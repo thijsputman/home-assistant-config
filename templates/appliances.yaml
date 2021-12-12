@@ -20,7 +20,8 @@
                 states('input_number.rate_energy_peak')|float)
             ) | round(2)
           }}
-    # Sonair (combined measurement for all three units)
+    # Sonair – combined measurement for all three Sonair units and the fan in
+    # the Attic
     - name: Power (Sonair – combined)
       unique_id: e036c831-7770-4d3a-9e16-36890fd4ac71
       unit_of_measurement: W
@@ -31,13 +32,15 @@
         {{
           states('sensor.power_110') not in ['unknown', 'unavailable'] or
           states('sensor.power_113') not in ['unknown', 'unavailable'] or
-          states('sensor.power_115') not in ['unknown', 'unavailable']
+          states('sensor.power_115') not in ['unknown', 'unavailable'] or
+          states('sensor.power_149_actual') not in ['unknown', 'unavailable']
         }}
       state: >-
         {{
           states('sensor.power_110') | int(0) +
           states('sensor.power_113') | int(0) +
-          states('sensor.power_115') | int(0)
+          states('sensor.power_115') | int(0) +
+          states('sensor.power_149_actual') | int(0)
         }}
     - name: Consumption (Sonair – combined)
       unique_id: 426baa58-79dd-4714-8713-f55e1a24ade0
@@ -50,14 +53,17 @@
         {{
           states('sensor.consumption_111') not in ['unknown', 'unavailable'] and
           states('sensor.consumption_114') not in ['unknown', 'unavailable'] and
-          states('sensor.consumption_116') not in ['unknown', 'unavailable']
+          states('sensor.consumption_116') not in ['unknown', 'unavailable'] and
+          states('sensor.consumption_148_actual') not in
+            ['unknown', 'unavailable']
         }}
       state: >-
         {{
           (
             states('sensor.consumption_111') | float(0) +
             states('sensor.consumption_114') | float(0) +
-            states('sensor.consumption_116') | float(0)
+            states('sensor.consumption_116') | float(0) +
+            states('sensor.consumption_148_actual') | float(0)
           ) | round(2)
         }}
     - name: Monthly costs (Sonair – combined)

@@ -1,0 +1,120 @@
+# The Blitzwolf BW-SHP13 is the only affordable 16A ZigBee smart-plug on the
+# market that also supports metering – with one major caveat: Its measurements
+# are quite a bit off...
+#
+# Haven't bothered using a multi-meter, but comparing what is reported by the
+# Blitzwolf versus DSMR, the factor of 0.88 mentioned in the below GitHub-issue
+# appears quite accurate. Should be applied to both the power/current and the
+# consumption (i.e. cumulative) measurements.
+# N.B. Factor might be different from plug to plug, so revalidate whenever a
+# new plug is added!
+#
+# See here for detailed discusson:
+#   https://github.com/Koenkk/zigbee2mqtt/issues/3812#issuecomment-651709435
+#   https://github.com/Koenkk/zigbee2mqtt/issues/3812#issuecomment-652637304
+
+- sensor:
+    # Power 88 / Consumption 87 (Dishwasher)
+    - name: Power 88 [actual]
+      unique_id: 77d9127e-b6ba-4e67-8c15-3e7e6c328440
+      device_class: power
+      unit_of_measurement: W
+      state_class: measurement
+      availability: >-
+        {{ states('sensor.power_88') not in ['unknown', 'unavailable'] }}
+      # When idle, the value floats between 0 and 1 Watts
+      state: >-
+        {%- if states('sensor.power_88') | int(0) <= 1 -%}
+          {{ 0 | int }}
+        {%- else -%}
+          {{
+            (states('sensor.power_88') | float(0) * 0.88) | round(0)
+          }}
+        {%- endif -%}
+      attributes:
+        # Just do a simple numeric correction here
+        current: >-
+          {{
+            (state_attr('sensor.power_88', 'current') | float(0) * 0.88) |
+              round(0)
+          }}
+    - name: Consumption 87 [actual]
+      unique_id: 1a7292a2-eda9-4103-88af-cdac856a207e
+      device_class: energy
+      unit_of_measurement: kWh
+      state_class: total_increasing
+      availability: >-
+        {{ states('sensor.consumption_87') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {{
+          (states('sensor.consumption_87') | float(0) * 0.88) | round(2)
+        }}
+    # Power 86 / Consumption 85 (Washing machine)
+    - name: Power 86 [actual]
+      unique_id: 16869c75-a6b0-4f6e-97b1-750a7ea1870a
+      device_class: power
+      unit_of_measurement: W
+      state_class: measurement
+      availability: >-
+        {{ states('sensor.power_86') not in ['unknown', 'unavailable'] }}
+      # When idle, the value floats between 0 and 1 Watts
+      state: >-
+        {%- if states('sensor.power_86') | int(0) <= 1 -%}
+          {{ 0 | int }}
+        {%- else -%}
+          {{
+            (states('sensor.power_86') | float(0) * 0.88) | round(0)
+          }}
+        {%- endif -%}
+      attributes:
+        # Just do a simple numeric correction here
+        current: >-
+          {{
+            (state_attr('sensor.power_86', 'current') | float(0) * 0.88) |
+              round(0)
+          }}
+    - name: Consumption 85 [actual]
+      unique_id: 81380ce1-39ec-4663-a7c3-4898aefc46eb
+      device_class: energy
+      unit_of_measurement: kWh
+      state_class: total_increasing
+      availability: >-
+        {{ states('sensor.consumption_85') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {{
+          (states('sensor.consumption_85') | float(0) * 0.88) | round(2)
+        }}
+    # Power 149 / Consumption 148 (Fan – Attic)
+    - name: Power 149 [actual]
+      unique_id: 474c0589-64c0-4344-80bb-fab97c6a1067
+      device_class: power
+      unit_of_measurement: W
+      state_class: measurement
+      availability: >-
+        {{ states('sensor.power_149') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {%- if states('sensor.power_149') | int(0) <= 0 -%}
+          {{ 0 | int }}
+        {%- else -%}
+          {{
+            (states('sensor.power_149') | float(0) * 0.88) | round(0)
+          }}
+        {%- endif -%}
+      attributes:
+        # Just do a simple numeric correction here
+        current: >-
+          {{
+            (state_attr('sensor.power_149', 'current') | float(0) * 0.88) |
+              round(0)
+          }}
+    - name: Consumption 148 [actual]
+      unique_id: 36d55156-8138-4372-89b8-3a01e35df7ac
+      device_class: energy
+      unit_of_measurement: kWh
+      state_class: total_increasing
+      availability: >-
+        {{ states('sensor.consumption_148') not in ['unknown', 'unavailable'] }}
+      state: >-
+        {{
+          (states('sensor.consumption_148') | float(0) * 0.88) | round(2)
+        }}

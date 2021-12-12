@@ -24,3 +24,5 @@
 - **3-12-2021 12:00 CET** - Renamed `sensor.ups_power` to
   `sensor.ups_power_usage`; renamed `sensor.power_lights_all` to
   `sensor.power_all_lights`
+- **12-12-2021 16:30 CET** – `sensor.power_sonair_combined` now also includes
+  power consumption for the (exhaust) fan in the Attic
