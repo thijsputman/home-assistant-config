@@ -17,14 +17,14 @@ custom CSS.
 - `aarlo-glance.js?v=0.1.4.1`
 - `card-mod.js?v=3.1.1`
 - `compass-card.js?v=1.4.0`
-- `hass-hue-icons.js?v=1.1.8`
+- `hass-hue-icons.js?v=1.1.15`
 - `home-assistant-sun-card.js?v=0.1.4`
 - `logbook-card.js?v=1.4.1`
 - `mini-graph-card-bundle.js?v=0.11.0-dev.4`
-- `paper-buttons-row.js?v=0.6.0`
-- `simple-thermostat.js?v=2.4.2`
+- `paper-buttons-row.js?v=0.6.1`
+- `simple-thermostat.js?v=2.4.3`
 - `slider-entity-row.js?v=17.2.1`
-- `vacuum-card.js?v=2.2.2`
+- `vacuum-card.js?v=2.2.5`
 
 ## Custom CSS
 
