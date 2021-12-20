@@ -7,7 +7,7 @@ style: |
     background-color: #333D4A;
   }
   ha-card img.map{
-    min-height: 300px;
+    height: 375px;
   }
   ha-card .preview .metadata .status-text{
     text-transform: lowercase;
@@ -15,17 +15,19 @@ style: |
   ha-card .stats .stats-block:nth-child(1)::first-letter{
     text-transform: capitalize;
   }
-  ha-card .stats .stats-block:nth-child(1) .stats-subtitle::after{
-    content: " {{ relative_time(
-                    strptime(
-                      state_attr('vacuum.neato_d7', 'clean_stop'),
-                      '%Y-%m-%dT%H:%M:%SZ'
+  {% if state_attr('vacuum.d7_upstairs', 'clean_stop') is not none %}
+    ha-card .stats .stats-block:nth-child(1) .stats-subtitle::after{
+      content: " {{ relative_time(
+                      strptime(
+                        state_attr('vacuum.d7_upstairs', 'clean_stop'),
+                        '%Y-%m-%dT%H:%M:%SZ'
+                      )
                     )
-                  )
-                }} ago";
-  }
-entity: vacuum.neato_d7
-map: camera.neato_d7_cleaning_map
+                  }} ago";
+    }
+  {% endif %}
+entity: vacuum.d7_upstairs
+map: camera.d7_upstairs_cleaning_map
 stats:
   default:
     - attribute: launched_from
@@ -34,39 +36,39 @@ stats:
       unit: m²
       subtitle: cleaned area
 shortcuts:
-  - name: Clean the Kitchen
+  - name: Clean the Bedroom
     service: neato.custom_cleaning
     service_data:
-      entity_id: vacuum.neato_d7
+      entity_id: vacuum.d7_upstairs
       mode: 2
       navigation: 1
       category: 4
-      zone: Kitchen
-    icon: hue:room-kitchen
-  - name: Clean the Lunch area
+      zone: Bedroom
+    icon: hue:room-bedroom
+  - name: Clean the Guestroom
     service: neato.custom_cleaning
     service_data:
-      entity_id: vacuum.neato_d7
+      entity_id: vacuum.d7_upstairs
       mode: 2
       navigation: 1
       category: 4
-      zone: Family room
-    icon: hue:room-dining
-  - name: Clean the Ensuite
+      zone: Guestroom
+    icon: hue:room-guestroom
+  - name: Clean the Wardrobe
     service: neato.custom_cleaning
     service_data:
-      entity_id: vacuum.neato_d7
+      entity_id: vacuum.d7_upstairs
       mode: 2
       navigation: 1
       category: 4
-      zone: Dining room
-    icon: mdi:vanity-light
-  - name: Clean the Living room
+      zone: Wardrobe
+    icon: hue:room-closet
+  - name: Clean the Hallway
     service: neato.custom_cleaning
     service_data:
-      entity_id: vacuum.neato_d7
+      entity_id: vacuum.d7_upstairs
       mode: 2
       navigation: 1
       category: 4
-      zone: Living room
-    icon: hue:room-living
+      zone: Hallway
+    icon: hue:room-other

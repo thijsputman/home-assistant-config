@@ -166,8 +166,13 @@ views:
     path: chores
     badges: []
     cards:
-      - !include home/chores/afvalwijzer.yaml
-      - !include home/chores/neato.yaml
+      - type: horizontal-stack
+        cards:
+          - type: vertical-stack
+            cards:
+              - !include home/chores/neato_downstairs.yaml
+              - !include home/chores/afvalwijzer.yaml
+      - !include home/chores/neato_upstairs.yaml
   # Media
   - title: Media
     path: media
