@@ -63,6 +63,10 @@ include:
     - sensor.dd_wrt_1_wan_in_mbps
     - sensor.dd_wrt_1_wan_out_mbps
     - sensor.pi_hole_dns_unique_clients
+    # Arlo – track battery levels to have some insight into how well they hold
+    # up over time...
+    - sensor.aarlo_battery_level_front
+    - sensor.aarlo_battery_level_back
 component_config:
   # Don't push entity_id-attribute (i.e. names of group members) for the
   # family group; keeps the data in InfluxDB free of PII...

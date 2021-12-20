@@ -90,13 +90,15 @@
             {# Afvalwijzer #}
             {% elif entity_id is search('^sensor\.afvalwijzer_.+$') %}
               {#
-                Turns out Afvalwijzer only provides data for the current
-                calendar year. So, over the course of December, all sensors
-                become "none" until midnight on January 1st...
+                Turns out Afvalwijzer only adds next year's data towards the end
+                of the current calendar year – as a result, over the course of
+                December some sensors run out of data and become "none"/
+                "unavailable"... Solution for now is to ignore Afvalwijzer
+                failures in December.
               #}
               {%
                 if entity_id is not search('(today|tomorrow)') and
-                states(entity_id) != 'none'
+                  now().month != 12
               %}
                 {% set matched = 'Afvalwijzer' %}
               {% endif %}
