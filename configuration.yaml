@@ -130,8 +130,11 @@ aarlo:
   refresh_devices_every: 2
   stream_timeout: 120
   user_agent: linux
-  tfa_source: push
-  tfa_type: PUSH
+  tfa_source: imap
+  tfa_type: email
+  tfa_host: imap.gmail.com:993
+  tfa_username: !secret aarlo_imap_user
+  tfa_password: !secret aarlo_imap_password
   save_media_to: /nvme/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
 
 alarm_control_panel:

@@ -297,19 +297,20 @@
                   {{ 'back' ~ time_of_day ~ filename }}
   mode: parallel
   max: 3
-# Occasionally, the Aarlo-component stops creating (or receiving?) new camera
-# snapshots. Manually activating the camera(s) in  question via the Arlo app
-# often resolves the issue. The below warning seems to be raised whenever this
-# happens...
+  # Occasionally, the Aarlo-component stops creating (or receiving?) new camera
+  # snapshots. Manually activating the camera(s) in question via the Arlo app
+  # often resolves the issue. The below warning seems to be raised whenever this
+  # happens (but, there's not an issue every time it's raised)...
 - alias: 📱 | 📹 Notify on Aarlo-component warning
   id: ce7d26a5-04c0-4897-a58f-e6ad965b1bfc
   trigger:
-    platform: event
-    event_type: system_log_event
-    event_data:
-      level: WARNING
-      name: pyaarlo
-      message: request-error=ConnectionError
+    - platform: event
+      event_type: system_log_event
+      event_data:
+        level: WARNING
+        name: pyaarlo
+        message: >-
+          ['request-error=ConnectionError']
   action:
     # Explicitly block any further runs of this automation while the
     # notification is up (i.e. once a notification is up, no additional
