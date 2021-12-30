@@ -37,7 +37,8 @@
 ### Features
 
 - [ ] Move all icon customisations for sensors defined in YAML from
-      `📄 customize.yaml` to their respective YAML files
+      `📄 customize.yaml` to their respective YAML files; for all other sensors,
+      aim to customise their icons through the UI itself
   - And where possible, add `unique_id` such that customisation from the UI
     becomes possible
 - [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
@@ -77,8 +78,6 @@
     rendering unnecessarily once-per-minute (due to the inclusion of `now()` in
     their templates)
 - [ ] Further enhance the (Android) companion app notifications
-  - ✔️ Channels and grouping/threading
-  - ✔️ Support for attachments/images
   - Change the click-action based on the notification context
   - Allow mobile notifications to be dismissed even if `lovelaceDismiss` is
     _not_ enabled; this is currently impossible. See
@@ -156,7 +155,8 @@
     Internet connection, the scheduled settings are _not_ applied). Thus, sadly,
     the schedule should be enforced/backstopped locally via HomeKit...
 - [ ] See if it's possible to better combine Attic thermostat/heating and airco
-      automations – there's currently a lot of (semi-)identical stuff there...
+      automations – there's currently a lot of (semi-)identical stuff there (and
+      some slightly different approaches aiming to achieve the same thing)...
 - [ ] Reset the Attic radiator back to "scheduled mode" every night (similar to
       what happens with the Airco) to ensure it keeps following the schedule
       regardless of what happened the day before
@@ -170,6 +170,9 @@
     options not available in tado° (in response to tado° actions)
 - [ ] Switch on Sonair ventilator in Living Room when CO₂ level gets too high
       (speed 8 at 900 PPM; speed 10 at 1100 PPM)
+- [ ] Switch on the Attic (exhaust) ventilator when the CO₂ gets above 1,000 PPM
+      in the Attic (and the Attic is occupied). Probably good to also switch it
+      on during the night regardless...
 - [ ] Define template binary sensors for "Living room thermostat on" and "Attic
       radiator on". This is currently hard-coded in multiple automations based
       on temperature setpoints (> 16ºC and 18ºC respectively). Better to
