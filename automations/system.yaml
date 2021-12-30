@@ -5,7 +5,7 @@
     exclude:
       - sensor.p20hd_eea_battery_level
       - sensor.sm_g930f_battery_level
-      - sensor.gm1913_battery_level
+      - sensor.pixel_6_pro_battery_level
     sensors: >-
       {% set result = namespace(sensors=[]) %}
       {% for state in states.sensor |

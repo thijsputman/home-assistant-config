@@ -105,19 +105,21 @@ persistent_notification:
       selector:
         boolean: # yamllint disable-line rule:empty-values
   variables:
-    # The below does not scale well beyond two devices...
+    # The below does not scale well beyond two devices... Also, when changing
+    # phones in the below script, don't forget to update the "All devices"
+    # notify group in "📄 ./configuration.yaml"!
     targetService: >-
       {% if targetDevices in ['home', 'my'] %}
         {% if targetDevices == 'my' %}
-          notify.mobile_app_gm1913
+          notify.mobile_app_pixel_6_pro
         {% elif targetDevices == 'home' %}
           {%
-            if is_state('device_tracker.gm1913', 'home') and
+            if is_state('device_tracker.pixel_6_pro', 'home') and
               is_state('device_tracker.sm_g930f', 'home')
           %}
             notify.all_devices
-          {% elif is_state('device_tracker.gm1913', 'home') %}
-            notify.mobile_app_gm1913
+          {% elif is_state('device_tracker.pixel_6_pro', 'home') %}
+            notify.mobile_app_pixel_6_pro
           {% elif is_state('device_tracker.sm_g930f', 'home') %}
             notify.mobile_app_sm_g930f
           {% endif %}
@@ -162,7 +164,7 @@ persistent_notification:
           targetDevices != 'home' or (
             targetDevices == 'home' and (
               is_state('device_tracker.sm_g930f', 'home') or
-              is_state('device_tracker.gm1913', 'home')
+              is_state('device_tracker.pixel_6_pro', 'home')
             )
           )
         }}

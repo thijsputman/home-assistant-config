@@ -87,9 +87,9 @@
   - It appears that dismissing (i.e. "swiping away") notifications on Android
     raises an event on the Home Assistant side too – useful to act on this?
 - [ ] Use generic names for the mobile devices registered through the "Mobile
-      App" integration (`gm1913`, `sm_g930f` and `p20hd_eea`). Knowing the model
-      numbers of these devices allows one to deduce the vendor prefixes of their
-      WiFi and Bluetooth MAC addresses, which in turn _could_ be used to
+      App" integration (`pixel_6_pro`, `sm_g930f` and `p20hd_eea`). Knowing the
+      model numbers of these devices allows one to deduce the vendor prefixes of
+      their WiFi and Bluetooth MAC addresses, which in turn _could_ be used to
       pinpoint the exact location of the house (if the combination of the three
       device types is unique enough – which it might).
 - [ ] Experiment with using the amount of rain and the (WeeWX calculated)
