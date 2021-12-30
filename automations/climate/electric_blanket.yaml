@@ -1,12 +1,28 @@
-- alias: 🌡️ | ⏰ Electric blanket on (daily at 22:30 when someone home)
+- alias: 🌡️ | ⏰/✈️ Electric blanket on (daily at 22:30 / someone home)
   id: f712246a-1aba-4efe-8834-9cd9a62f706c
   trigger:
     - platform: time
+      id: time
       at: "22:30:00"
+    - platform: state
+      entity_id: group.family
+      from: not_home
+      to: home
   condition:
+    - condition: state
+      entity_id: switch.on_off_plug_in_unit_3
+      state: "off"
     - condition: state
       state: home
       entity_id: group.family
+    # Ignore time-constraint if triggered by time-trigger
+    - condition: or
+      conditions:
+        - condition: trigger
+          id: time
+        - condition: time
+          after: "22:30:00"
+          before: "04:00:00"
   action:
     - service: switch.turn_on
       entity_id: switch.on_off_plug_in_unit_3
