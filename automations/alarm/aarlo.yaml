@@ -56,9 +56,39 @@
     aarlo_connected_sensor: !secret aarlo_connected_sensor
   trigger:
     - platform: state
+      id: alarm_disarmed
       entity_id: alarm_control_panel.home_alarm
       to: disarmed
-  condition: []
+    # Fallback in case Home Alarm wasn't armed during the night
+    - platform: state
+      id: everyone_awake
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
+      # Slight delay to prevent race-condition (the regular trigger fires at
+      # wake-up time too)
+      for: "00:00:30"
+  condition:
+    - condition: or
+      conditions:
+        # Regular trigger
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: alarm_disarmed
+            - condition: state
+              entity_id: !secret aarlo_control_panel
+              state:
+                - armed_away
+                - armed_night
+        # Fallback trigger (only act if Arlo is "Armed Home")
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: everyone_awake
+            - condition: state
+              entity_id: !secret aarlo_control_panel
+              state: armed_home
   action:
     # Wait (indefinitely) for Aarlo to be connected
     - wait_template: >-
