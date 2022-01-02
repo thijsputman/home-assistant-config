@@ -1,4 +1,4 @@
-- alias: 📹 | ⏰ Arm Arlo "Armed Home" (daily at 22:30)
+- alias: 📹 | ⏰ Arm Arlo "Armed home" (daily at 22:30)
   id: 093a7fa4-2045-4c7e-a8fb-2ff211c44213
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
@@ -81,7 +81,7 @@
               state:
                 - armed_away
                 - armed_night
-        # Fallback trigger (only act if Arlo is "Armed Home")
+        # Fallback trigger (only act if Arlo is "Armed home")
         - condition: and
           conditions:
             - condition: trigger
@@ -96,7 +96,7 @@
     - service: alarm_control_panel.alarm_disarm
       entity_id: !secret aarlo_control_panel
   mode: restart
-- alias: 📹 | ⏳ Pause Arlo "Armed Home" (timer started)
+- alias: 📹 | ⏳ Pause Arlo "Armed home" (timer started)
   id: ed2ae249-369f-4503-9122-21a5e49e1c21
   trigger:
     - platform: event
@@ -122,7 +122,7 @@
         - service: alarm_control_panel.alarm_disarm
           entity_id: !secret aarlo_control_panel
   mode: single
-- alias: 📹 | ⏳ Resume Arlo "Armed Home" (timer ended)
+- alias: 📹 | ⏳ Resume Arlo "Armed home" (timer ended)
   id: 71bb747a-25c5-416a-a98d-66c33789a702
   trigger:
     - platform: event

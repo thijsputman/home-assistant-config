@@ -19,6 +19,8 @@
 
 ### Bugs
 
+- [ ] ❗Not all data appears to be ending up in InfluxDB (e.g., the Arlo battery
+      levels are missing?)
 - [ ] The `sensor.consumption_ups` (Riemann sum integral) deviates a lot from
       its expected daily total (sometimes reporting less than 30% of what it
       should be) every couple of days
@@ -33,6 +35,11 @@
       failure"-automation
 - [ ] Remove `monthly_consumption_lights_all` from `📄 utility_meter.yaml`
       _after_ February 1, 2022 (and don't forget to update Lovelace)
+- [ ] If `ERROR: No deconz_event tied to device "..." found` shows up at Home
+      Assistant startup, wait a couple minutes and reload the automations. This
+      ensures all deCONZ device-trigger will work as intended (it happens when
+      the automations are initialised before the deCONZ integration is fully up
+      and running).
 
 ### Features
 
@@ -128,6 +135,9 @@
     principle it's ventilation hatch should always be open) – same for the
     Bedroom, when we go to bed at least one of the windows should be ajar...
     This could be via TTS when all lights are switched off before going to bed
+- [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit; see
+      if any of the additional monitoring automations are required for the
+      upstairs unit too (it appears more stable at the moment)
 
 ### Development Environment
 
@@ -144,6 +154,9 @@
 - [ ] Add visual indication of "Vacation-mode"
 - [ ] Add buttons to toggle the entire house to a specific Hue scene ("Alarm",
       "Active" and "Ambiance")
+- [ ] Create an "Air Quality" dashboard. Move ventilation- and CO₂-related stuff
+      from the "Climate" dashboard; add additional air-quality metrics (e.g.,
+      Attic exhaust fan, Bedroom window)
 
 ## Climate
 
@@ -262,6 +275,9 @@
     ordinary going on...
 - [ ] Keep an eye on
       <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/alarmsystems/>
+- [ ] Create a "Auto-disarm for Housekeeper" toggle (similar to the "Auto-arm at
+      night" toggle) that controls whether the alarm is automatically disabled
+      next time the housekeeper comes by
 
 ## Network
 
@@ -276,6 +292,11 @@
   - Limit/prevent Internet access for all Qingping and Broadlink devices. It
     should be easy to toggle this on and off on demand as occasionally Internet
     connectivity _is_ required to setup/configure these devices
+- [ ] The SSH-key and OpenVPN-certificate used on my phone have the wrong Common
+      Name (namely, that of one of my previous phones)
+- [ ] ❗ E-mail forwarding to SES on Pi4 appears to have stopped working.
+      Investigate; probably also a good moment to switch from `sendmail` to
+      Exim...
 
 ## Hardware
 

@@ -22,6 +22,7 @@ recorder:
       - sensor.ups_nominal_real_power
       - sensor.power_86 # Raw measurement (see *_actual)
       - sensor.power_88 # ↑
+      - sensor.power_149 # ↑
       - sensor.gammu_received_unprocessed_message
       - sensor.failed_devices
     entity_globs:
@@ -52,18 +53,26 @@ logger:
   default: warning
   filters:
     homeassistant.helpers.entity:
-      - ^Update for sensor.9292_ov_[a-z0-9_]+ fails$
-      # These warnings are superfluous – the Neato integration itself generates
-      # critical errors in case something is truly wrong...
-      - ^Update of (sensor|switch|vacuum).neato_[a-z0-9_]+ is taking over [0-9]+ seconds$
+      # The Neato integration generates *a lot* of warnings and errors; most of
+      # them are of temporary nature – the ones that don't are picked up by the
+      # general "device failure" automation.
+      - >-
+        ^Update of (sensor|switch|vacuum).(neato|d7)_[a-z0-9_]+ is taking over
+        [0-9]+ seconds$
+      - ^Updating neato vacuum took longer than the scheduled update interval
+      - >-
+        ^Neato (sensor|switch|vacuum) connection error for
+        '(sensor|switch|vacuum)\.[a-z0-9_]+': Unable to communicate with robot$
       # Xiaomi MIoT
-      - ^Update of sensor.qingping_air_monitor_lite_[a-z0-9_]+ is taking over [0-9]+ seconds$
+      - >-
+        ^Update of sensor.qingping_air_monitor_lite_[a-z0-9_]+ is taking over
+        [0-9]+ seconds$
     # Xiaomi MIoT is somewhat verbose – the above/below warnings/errors trigger
     # multiple times daily, but don't appear to influence functionality...
     custom_components.xiaomi_miot.sensor:
       - >-
-        Got MiioException while fetching the state: Unable to discover the
-        device ?[a-z0-9_\-]*, mapping:
+        Got MiioException while fetching the state: ?
+        (Unable to discover the device )?[a-zA-Z0-9_\-]*, mapping:
 
 downloader:
   download_dir: var/downloads
