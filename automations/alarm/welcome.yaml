@@ -1,0 +1,77 @@
+- alias: 🚨 | 💡 Downstairs lights on (armed → disarmed; door open)
+  id: 23900a05-e8bd-4296-a8fe-fdcaa53caedf
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from:
+        - armed_away
+        - armed_night
+      to: disarmed
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+  action:
+    # Wait five minutes for either the Front or Kitchen door to open – presence
+    # detection might have disarmed the alarm earlier than one would've done
+    # manually, so some extra slack is required...
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.openclose_16 # Front door
+            - binary_sensor.openclose_12 # Kitchen door
+          from: "off"
+          to: "on"
+      timeout: "00:05:00"
+      continue_on_timeout: false
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Kitchen
+        scene_name: Ambiance
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Ambiance
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Evening
+- alias: 🚨 | 💡 Downstairs lights on (armed → pending → disarmed)
+  id: 84d125f9-e88c-4bce-81e7-6f08a04f5afe
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from:
+        - armed_away
+        - armed_night
+      to: pending
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+  action:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: alarm_control_panel.home_alarm
+          from: pending
+          to: disarmed
+      # Delay time for the pending → triggered transition is 30 seconds, so
+      # after 60 seconds it's safe to give up
+      timeout: 60
+      continue_on_timeout: false
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Kitchen
+        scene_name: Ambiance
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living room
+        scene_name: Ambiance
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Hallway
+        scene_name: Evening
