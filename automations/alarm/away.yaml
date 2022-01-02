@@ -132,17 +132,8 @@
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
-    # Ignore motion sensor in Attic while Neato is active – Neato's LIDAR uses
+    # Ignore motion sensors upstairs while Neato is active – Neato's LIDAR uses
     # infrared and thus triggers (PIR) motion sensors...
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: binary_sensor.presence_91
-          state: "off"
-        - condition: state
-          entity_id: binary_sensor.neato_active_attic
-          state: "off"
-    # Ignore motion sensors on first floor while Neato is active
     - condition: or
       conditions:
         - condition: state
@@ -150,9 +141,11 @@
             - binary_sensor.presence_63
             - binary_sensor.presence_127
           state: "off"
-        - condition: state
-          entity_id: binary_sensor.neato_active_first_floor
-          state: "off"
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: vacuum.d7_upstairs
+              state: cleaning
   action:
     # Wait up to five minutes for either the same or another motion sensor to
     # trigger. This prevents false positives (e.g. due to Sunlight or heat) – if
