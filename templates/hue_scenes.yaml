@@ -87,24 +87,8 @@
           <Unknown>
         {% endif %}
       {% endif %}
-    attributes:
-      # Keep track of previous scene; skip if unknown/unavailable, in scene
-      # <Unknown> or identical to the already stored previous scene
-      previous_scene: >-
-        {%
-          if states('sensor.hue_scene_living_room') not in
-            ['unknown', 'unavailable']
-        %}
-          {%
-            if states('sensor.hue_scene_living_room') != '<Unknown>' and
-            states('sensor.hue_scene_living_room') != state_attr(
-              'sensor.hue_scene_living_room', 'previous_scene')
-          %}
-            {{ states('sensor.hue_scene_living_room') }}
-          {% else %}
-            {{ state_attr('sensor.hue_scene_living_room', 'previous_scene') }}
-          {% endif %}
-        {% endif %}
+    availability: >-
+      {{ states('light.living_room') not in ['unknown', 'unavailable'] }}
 # Kitchen counter & cupboards [Hue zone]
 - trigger:
     - platform: state
@@ -166,27 +150,6 @@
         {% endif %}
       {% endif %}
     attributes:
-      # Keep track of previous scene; skip if unknown/unavailable, in scene
-      # <Unknown> or identical to the already stored previous scene
-      previous_scene: >-
-        {%
-          if states('sensor.hue_scene_kitchen_counter_cupboards') not in
-            ['unknown', 'unavailable']
-        %}
-          {%
-            if states('sensor.hue_scene_kitchen_counter_cupboards') !=
-              '<Unknown>' and
-            states('sensor.hue_scene_kitchen_counter_cupboards') != state_attr(
-              'sensor.hue_scene_kitchen_counter_cupboards', 'previous_scene')
-          %}
-            {{ states('sensor.hue_scene_kitchen_counter_cupboards') }}
-          {% else %}
-            {{
-              state_attr(
-                'sensor.hue_scene_kitchen_counter_cupboards', 'previous_scene')
-            }}
-          {% endif %}
-        {% endif %}
       # This attribute does a ping-pong between true and false (changing at
       # every trigger). We need the subsequent Kitchen trigger to fire each time
       # Kitchen counter & cupboards triggers (even if the its state doesn't
@@ -201,6 +164,11 @@
         {% else %}
           {{ true }}
         {% endif %}
+    availability: >-
+      {{
+        states('light.kitchen_counter_cupboards') not in
+          ['unknown', 'unavailable']
+      }}
 # Kitchen [Hue room]
 - trigger:
     # Kitchen relies on the state of Kitchen counter & cupboards, so it should
@@ -223,8 +191,7 @@
           and (
             states('sensor.hue_scene_kitchen') == '<Off>' or (
               states('sensor.hue_scene_kitchen') == '<Unknown>' and
-              state_attr('sensor.hue_scene_kitchen', 'previous_scene')
-                == '<Off>'
+              states('sensor.hue_scene_kitchen_previous') == '<Off>'
             )
           )
         )
@@ -267,24 +234,36 @@
           <Unknown>
         {% endif %}
       {% endif %}
-    attributes:
-      # Keep track of previous scene; skip if unknown/unavailable, in scene
-      # <Unknown> or identical to the already stored previous scene
-      previous_scene: >-
+    availability: >-
+      {{ states('light.kitchen') not in ['unknown', 'unavailable'] }}
+- trigger:
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen
+      to: ~
+  sensor:
+    name: Hue scene (Kitchen) – previous
+    unique_id: 833bdce8-e798-4279-8d0f-a021e7552a6e
+    icon: mdi:movie-filter
+    state: >-
+      {%
+        if trigger.from_state is defined and trigger.from_state.state not in
+          ['unknown', 'unavailable']
+      %}
         {%
-          if states('sensor.hue_scene_kitchen') not in
-            ['unknown', 'unavailable']
+          if states('trigger.from_state.state') != '<Unknown>' and
+          trigger.from_state.state != states(
+            'sensor.hue_scene_kitchen_previous')
         %}
-          {%
-            if states('sensor.hue_scene_kitchen') != '<Unknown>' and
-            states('sensor.hue_scene_kitchen') != state_attr(
-              'sensor.hue_scene_kitchen', 'previous_scene')
-          %}
-            {{ states('sensor.hue_scene_kitchen') }}
-          {% else %}
-            {{ state_attr('sensor.hue_scene_kitchen', 'previous_scene') }}
-          {% endif %}
+          {{ trigger.from_state.state }}
+        {% else %}
+          {{ states('sensor.hue_scene_kitchen_previous') }}
         {% endif %}
+      {% endif %}
+    availability: >-
+      {{
+        trigger.from_state is defined and trigger.from_state.state not in
+          ['unknown', 'unavailable']
+      }}
 # Garden [Hue room]
 - trigger:
     - platform: state
@@ -339,21 +318,5 @@
           <Unknown>
         {% endif %}
       {% endif %}
-    attributes:
-      # Keep track of previous scene; skip if unknown/unavailable, in scene
-      # <Unknown> or identical to the already stored previous scene
-      previous_scene: >-
-        {%
-          if states('sensor.hue_scene_garden') not in
-            ['unknown', 'unavailable']
-        %}
-          {%
-            if states('sensor.hue_scene_garden') != '<Unknown>' and
-            states('sensor.hue_scene_garden') != state_attr(
-              'sensor.hue_scene_garden', 'previous_scene')
-          %}
-            {{ states('sensor.hue_scene_garden') }}
-          {% else %}
-            {{ state_attr('sensor.hue_scene_garden', 'previous_scene') }}
-          {% endif %}
-        {% endif %}
+    availability: >-
+      {{ states('light.garden') not in ['unknown', 'unavailable'] }}
