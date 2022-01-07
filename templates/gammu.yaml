@@ -89,21 +89,20 @@
           }}
         {% endif %}
       {% endif %}
-# The below sensors use template triggers to trigger on specific message
-# contents. This works nicely, but has one major caveat: If subsequent messages
-# match the same template trigger, the sensor won't trigger (as the template
-# remains "true"; it needs to transition from "false" to "true" to trigger).
-# To achieve this, we store the incoming message in a pre-processing sensor
-# that – once a message is processed – returns to "unavailable" and as such
-# ensures all template triggers are set to "false".
+# The sensor(s) below this one use template triggers to trigger on specific
+# message contents. This works nicely, but has one major caveat: If subsequent
+# messages match the same template trigger, the sensor won't trigger (as the
+# template remains "true"; it needs to transition from "false" to "true" to
+# trigger). To achieve this, we store the incoming message in a pre-processing
+# sensor that – once a message is processed – returns to "unavailable" and as
+# sensor ensures all template triggers are set to "false".
 - trigger:
     - platform: state
       entity_id: sensor.gammu_received_message
       id: incoming
-    # List all (mutually exclusive) additional processing triggers – ensure they
-    # don't trigger on "unavailable" or we'll end up in live-lock...
-    - platform: state
-      entity_id: sensor.gammu_credit_vodafone
+    # List all (mutually exclusive) additional processing triggers (i.e. the
+    # sensor(s) below) – ensure they don't trigger on "unavailable" or we'll end
+    # up in live-lock...
     - platform: state
       entity_id: sensor.gammu_received_authenticated_command
   sensor:

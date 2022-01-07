@@ -20,12 +20,24 @@ card:
             ha-card {
               {%- if states('binary_sensor.aarlo_armed_front') == 'on' -%}
                 border: 3px solid var(--label-badge-red);
+              {#
+                Aarlo doesn't include a year in its "last active" sensor. We
+                thus need to check against the past 12-hours _and_ against
+                "the future" – to guard for the case where we erroneously
+                concatenate the current year to a "last active" date in the
+                previous year (under assumption activity is detected at least
+                every so often. At some point this check too will fail, then
+                it's probably easiest to just wave at the camera 😉)...
+              #}
               {%- elif
                 states('sensor.aarlo_last_front') != 'unknown' and
                 strptime(
                   now().year ~ ' ' ~ states('sensor.aarlo_last_front'),
                   '%Y %m-%d %H:%M'
-                ) + timedelta( hours = 12 ) > now().today()
+                ) + timedelta( hours = 12 ) > now().today() and
+                strptime(
+                  now().year ~ ' ' ~ states('sensor.aarlo_last_front'),
+                    '%Y %m-%d %H:%M' ) < now().today()
               -%}
                 border: 3px solid var(--warning-color);
               {%- else -%}

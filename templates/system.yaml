@@ -52,7 +52,7 @@
           {% set matched = 'unknown' %}
           {% if device_id(entity_id) == None %}
             {# WeeWX #}
-            {% if entity_id is search('^sensor\.weewx_.+$') %}
+            {% if entity_id is search('^sensor\.weewx_.+') %}
               {#
                 Ignore wind direction sensors; they become unavailable if wind
                 speed equals zero
@@ -61,14 +61,14 @@
                 {% set matched = 'WeeWX' %}
               {% endif %}
             {# Pi4 #}
-            {% elif entity_id is search('^sensor\.pi4_.+$') %}
+            {% elif entity_id is search('^sensor\.pi4_.+') %}
               {% if entity_id is search('_sandbox_') %}
                 {% set matched = 'Pi4 Sandbox' %}
               {% else %}
                 {% set matched = 'Pi4' %}
               {% endif %}
             {# Aarlo #}
-            {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+$') %}
+            {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+') %}
               {#
                 The "recent activity"-sensors appear to initialise "unknown" if
                 Home Assistant is restarted while the cameras are inactive...
@@ -79,16 +79,16 @@
                 {% set matched = 'Aarlo' %}
               {% endif %}
             {# tadoº #}
-            {% elif entity_id is search('^sensor.tado_smart_.+$') %}
+            {% elif entity_id is search('^sensor.tado_smart_.+') %}
               {# Ignored; derived from HomeKit Controller #}
             {# Gammu #}
-            {% elif entity_id is search('^sensor\.gammu_.+$') %}
+            {% elif entity_id is search('^sensor\.gammu_.+') %}
               {# Only signal-strength is always available #}
               {% if entity_id == 'sensor.gammu_signal_strength' %}
                 {% set matched = 'Gammu' %}
               {% endif %}
             {# Afvalwijzer #}
-            {% elif entity_id is search('^sensor\.afvalwijzer_.+$') %}
+            {% elif entity_id is search('^sensor\.afvalwijzer_.+') %}
               {#
                 Turns out Afvalwijzer only adds next year's data towards the end
                 of the current calendar year – as a result, over the course of
@@ -102,11 +102,11 @@
               %}
                 {% set matched = 'Afvalwijzer' %}
               {% endif %}
-            {# 9292 OV #}
-            {% elif entity_id is search('^sensor\.9292_ov_.+$') %}
-              {% set matched = '9292 OV' %}
+            {# Hue scene heuristic #}
+            {% elif entity_id is search('^sensor\.hue_scene_.+') %}
+              {% set matched = 'Hue scene heuristic' %}
             {# Plant sensors #}
-            {% elif entity_id is search('^plant\..+$') %}
+            {% elif entity_id is search('^plant\..+') %}
               {# Ignored; derived from MQTT devices #}
             {# Failed devices (this sensor) #}
             {% elif entity_id == 'sensor.failed_devices' %}
