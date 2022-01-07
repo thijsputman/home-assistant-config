@@ -1,21 +1,3 @@
-light.living_room:
-  icon: hue:room-living
-light.kitchen:
-  icon: hue:room-kitchen
-light.hallway:
-  icon: hue:room-hallway
-light.garden:
-  icon: hue:room-outdoors
-light.bedroom:
-  icon: hue:room-bedroom
-light.guestroom:
-  icon: hue:room-guestroom
-light.wardrobe:
-  icon: hue:room-closet
-light.attic:
-  icon: hue:room-attic
-light.front_back_door:
-  icon: hue:wall-econic-lantern-top
 sensor.pi4_1_minute_load:
   icon: mdi:chip
 sensor.dd_wrt_1_1_minute_load:
@@ -36,14 +18,8 @@ sensor.daily_energy:
   icon: mdi:counter
 sensor.monthly_energy:
   icon: mdi:counter
-light.basement:
-  icon: hue:room-storage
-light.toilet:
-  icon: hue:room-toilet
 sensor.pi4_sandbox_1_minute_load:
   icon: mdi:chip
-light.bathroom:
-  icon: hue:room-bathroom
 sensor.weewx_wind_direction_filtered:
   icon: mdi:compass
 sensor.weewx_wind_gust_direction_filtered:

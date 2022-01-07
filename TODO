@@ -7,6 +7,10 @@
   - [Features](#features)
   - [Development Environment](#development-environment)
 - [Lovelace](#lovelace)
+- [Notifications](#notifications)
+  - [Mobile](#mobile)
+  - [TTS](#tts)
+  - [SMS](#sms)
 - [Climate](#climate)
 - [Lights](#lights)
 - [Alarm](#alarm)
@@ -45,9 +49,9 @@
 
 - [ ] Move all icon customisations for sensors defined in YAML from
       `📄 customize.yaml` to their respective YAML files; for all other sensors,
-      aim to customise their icons through the UI itself
-  - And where possible, add `unique_id` such that customisation from the UI
-    becomes possible
+      aim to customise their icons through the UI (add `unique_id` where
+      necessary)
+  - As of HA 2021.12 it appears `📄 customize.yaml` is slowly getting phased out
 - [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
       `light_x`, `openclose_y`, the other half already have descriptive names)
   - Some other things are also inconsistent (e.g. `power_xxx` versus `xxx_power`
@@ -84,14 +88,6 @@
     (i.e. to do date arithmetic) – making these trigger-based stops them from
     rendering unnecessarily once-per-minute (due to the inclusion of `now()` in
     their templates)
-- [ ] Further enhance the (Android) companion app notifications
-  - Change the click-action based on the notification context
-  - Allow mobile notifications to be dismissed even if `lovelaceDismiss` is
-    _not_ enabled; this is currently impossible. See
-    `📄 automations/alarm/away.yaml` for an example of where this causes a
-    (highly theoretical 😉) vulnerability
-  - It appears that dismissing (i.e. "swiping away") notifications on Android
-    raises an event on the Home Assistant side too – useful to act on this?
 - [ ] Use generic names for the mobile devices registered through the "Mobile
       App" integration (`pixel_6_pro`, `sm_g930f` and `p20hd_eea`). Knowing the
       model numbers of these devices allows one to deduce the vendor prefixes of
@@ -118,13 +114,6 @@
 - [ ] Enable the `retain`-attribute for all MQTT-topics (either by updating the
       publishing logic, or by manually toggling the attribute on the MQTT server
       itself?)
-- [ ] Send a notification when the washing machine/dryer is done
-- [ ] Use VLC (instead of native Android notifications) for TTS on the tablet in
-      the Kitchen – has a much more natural voice
-  - Additionally, extend TTS to the speaker in the Bedroom?
-- [ ] Further extend SMS functionalities:
-  - Control lighting (status; switch rooms on and off)
-  - Control heating/airco (status; switch heating/airco on and off)
 - [ ] Add tilt sensors to all "tilting" windows (both horizontal and vertical)
   - Use these (in addition to the `openclose` sensors) to detect a potential
     break-in (i.e. windows can be left ajar and still trigger the alarm)
@@ -157,6 +146,40 @@
 - [ ] Create an "Air Quality" dashboard. Move ventilation- and CO₂-related stuff
       from the "Climate" dashboard; add additional air-quality metrics (e.g.,
       Attic exhaust fan, Bedroom window)
+
+## Notifications
+
+### Mobile
+
+- [ ] Change click-action based on notification context
+- [ ] Allow notifications to be dismissed even if `lovelaceDismiss` is _not_
+      enabled; this is currently impossible. See
+      `📄 automations/alarm/away.yaml` for an example where this causes a
+      (highly theoretical 😉) vulnerability
+- [ ] It appears that dismissing (i.e. "swiping away") notifications on Android
+      raises an event on the Home Assistant side – useful to act on this?
+- [ ] Change
+      [the status bar icon](https://companion.home-assistant.io/docs/notifications/notifications-basic/#notification-status-bar-icon)
+      for certain notifications
+- [ ] Implement
+      "[alert once](https://companion.home-assistant.io/docs/notifications/notifications-basic/#alert-once)"
+      for certain notifications?
+- [ ] Try out "Notification for Android TV"
+- [ ] Send a notification when the washing machine/dryer is done
+- [ ] Send notifications (with snapshot/thumbnail) if Arlo records something
+      when "Armed away"
+  - Replaces the "native" Arlo notifications
+
+### TTS
+
+- [ ] Use VLC (instead of native Android notifications) for TTS on the tablet in
+      the Kitchen – has a much more natural voice
+- [ ] Extend TTS to the speaker in the Bedroom?
+
+### SMS
+
+- [ ] Control lighting (status; switch rooms on and off)
+- [ ] Control heating/airco (status; switch heating/airco on and off)
 
 ## Climate
 
@@ -193,12 +216,20 @@
 
 ## Lights
 
+- [ ] Replace all calls to the `hue.activate_scene` script with native Home
+      Assistant scene changes; see
+      <https://github.com/home-assistant/core/pull/58996>
+  - It appears I'll need to recreate all (relevant) scenes in the Hue app as
+    none of the current Hue scenes have shown up in the UI with the migration to
+    HA 2021.12...
+  - Once migrated, check if the existing Hue scene heuristic is still required
+    (or this can also be replaced with native scene functionality)
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
 - [ ] Failure mode for Kitchen-counter motion lights: Switch Kitchen to
       "Ambiance", trigger counter motion sensor, switch Kitchen to "Bright
       (Custom)" (while motion sensor is still active). After motion clears,
-      Kitchen switches back to "Ambiance" instead of to "Bright (Custom")
+      Kitchen switches back to "Ambiance" instead of to "Bright (Custom)"
 - [ ] Use "Light Group" instead of regular groups for grouping lights (where
       applicable – only makes sense when the group of lights needs (advanced)
       light control, not necessary for basic operations (i.e. on/off).
@@ -228,7 +259,8 @@
       provided by Arlo always represents the _latest_ snapshot, not the specific
       snapshot at the point in time the URL was retrieved... This is problematic
       for notifications in Lovelace as they will (after a while) start showing
-      the wrong image
+      the wrong image (i.e. the image is loaded when the notification is viewed,
+      not – as on Android – when the notification is raised)
 - [ ] When coming home after dark: Switch off the Attic light. Occupancy
       simulation turns them on; it's not something you realises (i.e. manually
       switch off) when you get back home. Leaving them on causes Attic occupancy
@@ -266,13 +298,9 @@
   - Perhaps this should also disable some of the "stricter" alarm triggers
     (vibration and motion during "Armed night"; maybe even the `openclose`
     sensors)?
-- [ ] Send notifications (with snapshot/thumbnail) if Arlo records something
-      when "Armed away"
-  - Replaces the "native" Arlo notifications
-  - Perhaps provide a summary of Arlo recordings every morning?
-  - 🚀 Way out there: Use a machine-learned model to classify the camera
-    snapshots and send notifications only if there's something out of the
-    ordinary going on...
+- [ ] 🚀 Way out there: Use a machine-learned model to classify the camera
+      snapshots and act on them only if there's something out of the ordinary
+      going on...
 - [ ] Keep an eye on
       <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/alarmsystems/>
 - [ ] Create a "Auto-disarm for Housekeeper" toggle (similar to the "Auto-arm at
@@ -294,9 +322,6 @@
     connectivity _is_ required to setup/configure these devices
 - [ ] The SSH-key and OpenVPN-certificate used on my phone have the wrong Common
       Name (namely, that of one of my previous phones)
-- [ ] ❗ E-mail forwarding to SES on Pi4 appears to have stopped working.
-      Investigate; probably also a good moment to switch from `sendmail` to
-      Exim...
 
 ## Hardware
 
