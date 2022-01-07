@@ -29,6 +29,7 @@ card:
         - entity: sensor.pi_hole_dns_unique_clients
           name: Active devices on network
           icon: mdi:devices
+        - entity: binary_sensor.pi_hole_update_available
       footer:
         type: graph
         entity: sensor.pi_hole_dns_unique_clients
@@ -46,21 +47,29 @@ card:
               box-shadow: unset;
               background-color: #FFF5E5;
               padding-top: 0px !important;
-              padding-bottom: 4px !important;
+              padding-bottom: 10px !important;
               white-space: nowrap;
             }
           ha-state-icon$ ha-icon$ ha-svg-icon$: |
-            :host{
-              width: auto !important;
+            @keyframes flash {
+              0% {
+                color: var(--warning-color);
+              }
+              50% {
+                color: var(--error-color);
+              }
+              100% {
+                color: var(--warning-color);
+              }
             }
-            :host::after{
-              font-weight: bold;
-              font-variant-position: super;
-              content: "(︎30s)";
-            }
-      icon: mdi:pi-hole
+            {%- if states('switch.pi_hole') == 'off' -%}
+              :host{
+                animation: flash 0.8s ease-in-out infinite;
+              }
+            {%- endif -%}
+      icon: mdi:motion-pause-outline
       show_name: false
-      icon_height: 60px
+      icon_height: 45px
       tap_action:
         action: call-service
         service: pi_hole.disable
