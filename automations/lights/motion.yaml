@@ -10,7 +10,7 @@
   condition:
     - condition: or
       conditions:
-        # One sensor triggers regardless of brightness level...
+        # One sensor triggers regardless of light level...
         - condition: template
           value_template: >-
             {{ trigger.entity_id == 'binary_sensor.presence_105' }}
@@ -22,6 +22,7 @@
                 {{ trigger.entity_id == 'binary_sensor.presence_53' }}
             - condition: numeric_state
               entity_id: sensor.lightlevel_55
+              # N.B. Same threshold value as in the next automation
               below: 200
     # Only switch on the lights under normal circumstances (i.e. the alarm is
     # either disarmed or "Armed night")
@@ -82,29 +83,43 @@
                 entity_id: light.kitchen
   mode: restart
   max_exceeded: silent
-# If the Counter & cupboards stay in their (motion-triggered) "Active" scene for
-# more than 6 minutes _and_ one of the motion sensors still detects activity,
-# switch the entire Kitchen into "Bright (custom)".
 - alias: 💡 | 👋 Kitchen scene to "Bright (custom)" (sustained activity)
   id: ac457661-49b6-4ee6-b0cf-ceac3bd4ccab
   trigger:
     - platform: state
-      entity_id: sensor.hue_scene_kitchen_counter_cupboards
-      to: Activity
-      for: "00:06:00"
+      id: activity
+      entity_id: binary_sensor.presence_53
+      from: "off"
+      to: "on"
+    - platform: state
+      id: sustained_activity
+      entity_id: binary_sensor.presence_53
+      from: "off"
+      to: "on"
+      # Empirically determined to be the threshold for "sustained activity" 😉
+      for: "00:01:30"
   condition:
     - condition: or
       conditions:
-        - condition: state
-          entity_id: binary_sensor.presence_53
-          state: "on"
-        - condition: state
-          entity_id: binary_sensor.presence_105
-          state: "on"
+        - condition: trigger
+          id: activity
+        # Initial trigger should respect maximum light level
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: sustained_activity
+            - condition: numeric_state
+              entity_id: sensor.lightlevel_55
+              # N.B. Same threshold value as in the previous automation
+              below: 200
   action:
-    # No need to re-apply the scene if it's already active
+    # Only attempt to change scene on the initial (sustained activity) trigger.
+    # The additional (more prolific) trigger serves to restart the automation
+    # and reset the delay timer...
     - choose:
         - conditions:
+            - condition: trigger
+              id: sustained_activity
             - condition: not
               conditions:
                 - condition: state
@@ -115,18 +130,44 @@
               data:
                 group_name: Kitchen
                 scene_name: Bright (custom)
-    - delay: "00:30:00"
-    # If motion keeps getting detected, this automation restarts and thus never
-    # reaches the end of the delay. When we reach the end of the delay and the
-    # scene is unchanged, it's safe to switch back to the previous scene
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Kitchen counter & cupboards
+                scene_name: Activity
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.presence_53
+          from: "on"
+          to: "off"
+    - delay: "00:06:00"
+    # This restores the previous scene even if "Bright (custom)" was applied
+    # manually. Given this automation aims to make manually applying "Bright
+    # (custom)" to the Kitchen unnecessary, it seems acceptable...
     - condition: state
       entity_id: sensor.hue_scene_kitchen
       state: Bright (custom)
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen
-        scene_name: >-
-          {{ state_attr('sensor.hue_scene_kitchen', 'previous_scene') }}
+    - choose:
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ states('sensor.hue_scene_kitchen_previous') == '<Off>' }}
+          sequence:
+            - service: light.turn_off
+              data:
+                entity_id: light.kitchen
+      default:
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen_previous
+              state:
+                - unknown
+                - unavailable
+        - service: hue.hue_activate_scene
+          data:
+            group_name: Kitchen
+            scene_name: >-
+              {{ states('sensor.hue_scene_kitchen_previous') }}
   mode: restart
   max_exceeded: silent
 - alias: 💡 | 👋 Toilet light toggle (motion detected)
