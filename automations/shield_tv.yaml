@@ -1,10 +1,16 @@
-- alias: 📺 | 👋 Pause Shield TV (motion at front or back)
+- alias: 📺 | 👋/🚪 Pause Shield TV (motion detected / doorbell rang)
   id: 87c17fff-a8e1-4c5a-8e31-e8ede68d7899
   trigger:
     - platform: state
+      id: motion
       entity_id:
         - binary_sensor.aarlo_motion_front
         - binary_sensor.aarlo_motion_back
+      from: "off"
+      to: "on"
+    - platform: state
+      id: doorbell
+      entity_id: binary_sensor.vibration_43
       from: "off"
       to: "on"
   condition:
@@ -14,9 +20,67 @@
   action:
     - service: media_player.media_play_pause
       entity_id: media_player.nvidia_shield_tv
-    - service: script.tts_p20
+    - variables:
+        message: >-
+          {% if trigger.id == "motion" %}
+            Motion detected at the {{
+              trigger.to_state.attributes.camera_name | lower }}
+          {% elif trigger.id == "doorbell" %}
+            Someone rang the doorbell
+          {% endif %}
+    - service: notify.shield_tv
       data:
         message: >-
-          Motion detected at the {{
-            trigger.to_state.attributes.friendly_name -}}.
+          {{ message }}...
+        data:
+          duration: 10
+          position: center
+          fontsize: large
+          transparency: 25%
+          color: black
+          interrupt: 0
+    # Wait 10 seconds for the capture to update (note the explicit use of the
+    # "image" event versus "snapshot"/"capture"). If no update comes in, assume
+    # it was already up-to-date and replace the notification regardless. There
+    # is a slight chance we're showing an outdated capture...
+    - wait_for_trigger:
+        - platform: event
+          event_type: aarlo_image_updated
+      timeout: 10
+      continue_on_timeout: true
+    - service: notify.shield_tv
+      data:
+        message: >-
+          {{ message }}:
+        image:
+          url: >-
+            {% if trigger.id == "motion" %}
+              {{ state_attr(trigger.entity_id, 'last_thumbnail') }}
+            {% elif trigger.id == "doorbell" %}
+              {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
+            {% endif %}
+        data:
+          duration: 20
+          position: center
+          fontsize: large
+          transparency: 25%
+          color: black
+          interrupt: 0
+    # Block while the notification is up
+    - delay: "00:00:20"
+  mode: single
+  max_exceeded: silent
+- alias: 📺 | 📱 Pause Shield TV (phone ringing)
+  id: c1c84bf2-f550-4aca-b525-b03bc9b09a12
+  trigger:
+    - platform: state
+      entity_id: sensor.pixel_6_pro_phone_state
+      to: ringing
+  condition:
+    - condition: state
+      entity_id: media_player.nvidia_shield_tv
+      state: playing
+  action:
+    - service: media_player.media_play_pause
+      entity_id: media_player.nvidia_shield_tv
   mode: single
