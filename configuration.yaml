@@ -49,30 +49,7 @@ history:
     entities:
       - binary_sensor.updater
 
-logger:
-  default: warning
-  filters:
-    homeassistant.helpers.entity:
-      # The Neato integration generates *a lot* of warnings and errors; most of
-      # them are of temporary nature – the ones that don't are picked up by the
-      # general "device failure" automation.
-      - >-
-        ^Update of (sensor|switch|vacuum).(neato|d7)_[a-z0-9_]+ is taking over
-        [0-9]+ seconds$
-      - ^Updating neato vacuum took longer than the scheduled update interval
-      - >-
-        ^Neato (sensor|switch|vacuum) connection error for
-        '(sensor|switch|vacuum)\.[a-z0-9_]+': Unable to communicate with robot$
-      # Xiaomi MIoT
-      - >-
-        ^Update of sensor.qingping_air_monitor_lite_[a-z0-9_]+ is taking over
-        [0-9]+ seconds$
-    # Xiaomi MIoT is somewhat verbose – the above/below warnings/errors trigger
-    # multiple times daily, but don't appear to influence functionality...
-    custom_components.xiaomi_miot.sensor:
-      - >-
-        Got MiioException while fetching the state: ?
-        (Unable to discover the device )?[a-zA-Z0-9_\-]*, mapping:
+logger: !include logger.yaml
 
 downloader:
   download_dir: var/downloads
@@ -163,6 +140,7 @@ alarm_control_panel:
       trigger_time: 0
     armed_night:
       delay_time: 60
+      arming_time: 180
 
 camera:
   - platform: aarlo
