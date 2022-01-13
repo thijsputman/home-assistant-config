@@ -3,8 +3,8 @@
   trigger:
     - platform: state
       entity_id:
-        - binary_sensor.presence_53
-        - binary_sensor.presence_105
+        - binary_sensor.presence_53 # Sink
+        - binary_sensor.presence_105 # Coffee machine
       from: "off"
       to: "on"
   condition:
@@ -49,48 +49,56 @@
           states('binary_sensor.presence_105') == 'off'
         }}
     - delay: "00:03:00"
-      # If the scene for "Kitchen counter & cupboards" is still "Activity",
-      # no changes were made to the lighting. We can safely restore the previous
-      # scene for the "Kitchen" as a whole...
+    # If the scene for "Kitchen counter & cupboards" is still "Activity", no
+    # changes were made to the lighting. We can safely restore the previous
+    # scene for the "Kitchen" as a whole...
     - condition: state
       entity_id: sensor.hue_scene_kitchen_counter_cupboards
       state: Activity
+    # With one exception: If the Kitchen as a whole is "Bright (custom)" the
+    # subsequent (sustained activity) automation took over – in that case we
+    # abort and let the other automation handles things...
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_kitchen
+          state: Bright (custom)
     - choose:
         - conditions:
-            - condition: template
-              value_template: >-
-                {{
-                  not is_state('sensor.hue_scene_kitchen', '<Off>') and
-                  not is_state('sensor.hue_scene_kitchen', '<Unknown>')
-                }}
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                # This works because changing "Kitchen counter & cupboards"
-                # doesn't actually change the "Kitchen" scene (it retains its
-                # state even though some of its lights changed). We can simply
-                # re-apply the already active scene.
-                scene_name: >-
-                  {{ states('sensor.hue_scene_kitchen') }}
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ is_state('sensor.hue_scene_kitchen', '<Off>') }}
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen
+              state: <Off>
           sequence:
             - service: light.turn_off
               data:
                 entity_id: light.kitchen
+      default:
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen
+              state: <Unknown>
+        - service: hue.hue_activate_scene
+          data:
+            group_name: Kitchen
+            # This works because changing "Kitchen counter & cupboards" doesn't
+            # actually change the "Kitchen" scene (it retains its state even
+            # though some of its lights changed). We can simply re-apply the
+            # already active scene.
+            scene_name: >-
+              {{ states('sensor.hue_scene_kitchen') }}
   mode: restart
-  max_exceeded: silent
 - alias: 💡 | 👋 Kitchen scene to "Bright (custom)" (sustained activity)
   id: ac457661-49b6-4ee6-b0cf-ceac3bd4ccab
   trigger:
     - platform: state
       id: activity
-      entity_id: binary_sensor.presence_53
+      entity_id:
+        - binary_sensor.presence_53
+        - binary_sensor.presence_105
       from: "off"
       to: "on"
+    # Initially trigger only considers the sensor above the sink
     - platform: state
       id: sustained_activity
       entity_id: binary_sensor.presence_53
@@ -134,15 +142,15 @@
               data:
                 group_name: Kitchen counter & cupboards
                 scene_name: Activity
-    - wait_for_trigger:
-        - platform: state
-          entity_id: binary_sensor.presence_53
-          from: "on"
-          to: "off"
+    - wait_template: >-
+        {{
+          states('binary_sensor.presence_53') == 'off' and
+          states('binary_sensor.presence_105') == 'off'
+        }}
     - delay: "00:06:00"
     # This restores the previous scene even if "Bright (custom)" was applied
     # manually. Given this automation aims to make manually applying "Bright
-    # (custom)" to the Kitchen unnecessary, it seems acceptable...
+    # (custom)" in the Kitchen unnecessary, this should not pose an issue...
     - condition: state
       entity_id: sensor.hue_scene_kitchen
       state: Bright (custom)
@@ -169,7 +177,6 @@
             scene_name: >-
               {{ states('sensor.hue_scene_kitchen_previous') }}
   mode: restart
-  max_exceeded: silent
 - alias: 💡 | 👋 Toilet light toggle (motion detected)
   id: e884ea40-fdf9-4069-ad27-4e09d8a45e2e
   trigger:
@@ -202,7 +209,6 @@
         entity_id: light.toilet
         transition: 30
   mode: restart
-  max_exceeded: silent
 - alias: 💡 | 👋 Basement light toggle (motion detected)
   id: 7a1ebf52-c69e-4bf5-8670-0b32bba52600
   trigger:
@@ -230,7 +236,6 @@
     - service: light.turn_off
       entity_id: light.basement
   mode: restart
-  max_exceeded: silent
 - alias: 💡 | 👋 Wardrobe light toggle (motion detected)
   id: f30e4af7-6b31-4062-8f12-25fde6ae3577
   trigger:
@@ -277,7 +282,6 @@
     - service: light.turn_off
       entity_id: light.wardrobe
   mode: restart
-  max_exceeded: silent
 - alias: 💡 | 👋 Bathroom light toggle (motion detected)
   id: 63b00f23-043a-4d8b-9974-03a7e850e897
   trigger:
@@ -329,7 +333,6 @@
         entity_id: light.bathroom
         transition: 30
   mode: restart
-  max_exceeded: silent
 - alias: >-
     💡 | 👋 Upstairs hallway light toggle (motion detected; everyone asleep)
   id: 456be834-0809-442b-a022-2827923c3358
@@ -363,7 +366,6 @@
     - service: light.turn_off
       entity_id: light.upstairs_hallway
   mode: restart
-  max_exceeded: silent
 - alias: >-
     💡 | 👋 Downstairs hallway light toggle (motion detected; everyone asleep)
   id: 6d3da877-2a4f-453a-a4a2-cda751548fe0
@@ -405,7 +407,6 @@
         - light.hue_filament_bulb_1_4
         - light.hue_filament_bulb_1_5
   mode: restart
-  max_exceeded: silent
 - alias: 💡 | 👋 Attic hallway light toggle (motion detected)
   id: 6eb9fb1b-c177-4e11-986c-d6cfec41454a
   trigger:
@@ -470,4 +471,3 @@
           - light.smart_relay_3
           - light.smart_relay_4
   mode: restart
-  max_exceeded: silent

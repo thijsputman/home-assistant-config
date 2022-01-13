@@ -35,6 +35,7 @@
       entity_id: sensor.hue_scene_kitchen_counter_cupboards
       to:
         - Activity
+      for: "00:00:01"
     - platform: state
       entity_id: sensor.hue_scene_kitchen
       to:
@@ -42,6 +43,7 @@
         - Ambiance
         - Movie
         - Bright (custom)
+      for: "00:00:01"
   condition: []
   action:
     - variables:
@@ -52,8 +54,6 @@
           {% elif trigger.entity_id == 'sensor.hue_scene_kitchen' %}
             Kitchen
           {% endif %}
-        scene_name: >-
-          {{ trigger.to_state.state }}
     - condition: template
       value_template: >-
         {{ group_name is defined }}
@@ -62,11 +62,8 @@
         group_name: >-
           {{ group_name }}
         scene_name: >-
-          {{ scene_name }}
-    # Prevent endless loop (i.e. this automation triggering itself)...
-    - delay: 10
-  mode: single
-  max_exceeded: silent
+          {{ trigger.to_state.state }}
+  mode: restart
 # Occasionally, the Innr colour bulbs in the Garden refuse a scene change, so
 # whenever we change the Garden, change it twice to ensure they properly follow
 - alias: 💡 | 🩹 Enforce Garden scene change for Innr bulbs
@@ -78,19 +75,13 @@
         - Active
         - Ambiance
         - Summer Night
+      # Best result is achieved if the repeat command is slightly delayed
+      for: "00:00:03"
   condition: []
   action:
-    - variables:
-        scene_name: >-
-          {{ trigger.to_state.state }}
-    # Best result is achieved if the second command is slightly delayed
-    - delay: 3
     - service: hue.hue_activate_scene
       data:
         group_name: Garden
         scene_name: >-
-          {{ scene_name }}
-    # Prevent endless loop (i.e. this automation triggering itself)...
-    - delay: 7
-  mode: single
-  max_exceeded: silent
+          {{ trigger.to_state.state }}
+  mode: restart
