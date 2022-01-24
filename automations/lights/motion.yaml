@@ -8,6 +8,13 @@
       from: "off"
       to: "on"
   condition:
+    # Don't trigger when Kitchen is "Bright (custom)" – that's bright enough;
+    # there's another automation handling motion for that situation
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_kitchen
+          state: Bright (custom)
     - condition: or
       conditions:
         # One sensor triggers regardless of light level...
@@ -55,14 +62,6 @@
     - condition: state
       entity_id: sensor.hue_scene_kitchen_counter_cupboards
       state: Activity
-    # With one exception: If the Kitchen as a whole is "Bright (custom)" the
-    # subsequent (sustained activity) automation took over – in that case we
-    # abort and let the other automation handles things...
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: sensor.hue_scene_kitchen
-          state: Bright (custom)
     - choose:
         - conditions:
             - condition: state
@@ -78,13 +77,11 @@
             - condition: state
               entity_id: sensor.hue_scene_kitchen
               state: <Unknown>
+        # Changing the "Kitchen counter & cupboards" scene doesn't change the
+        # "Kitchen" scene – we can simply re-apply the already active scene
         - service: hue.hue_activate_scene
           data:
             group_name: Kitchen
-            # This works because changing "Kitchen counter & cupboards" doesn't
-            # actually change the "Kitchen" scene (it retains its state even
-            # though some of its lights changed). We can simply re-apply the
-            # already active scene.
             scene_name: >-
               {{ states('sensor.hue_scene_kitchen') }}
   mode: restart
@@ -107,6 +104,11 @@
       # Empirically determined to be the threshold for "sustained activity" 😉
       for: "00:01:30"
   condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - disarmed
+        - armed_night
     - condition: or
       conditions:
         - condition: trigger
@@ -122,8 +124,8 @@
               below: 200
   action:
     # Only attempt to change scene on the initial (sustained activity) trigger.
-    # The additional (more prolific) trigger serves to restart the automation
-    # and reset the delay timer...
+    # The additional (more prolific) trigger only serves to reset the delay
+    # timer...
     - choose:
         - conditions:
             - condition: trigger
@@ -138,10 +140,6 @@
               data:
                 group_name: Kitchen
                 scene_name: Bright (custom)
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen counter & cupboards
-                scene_name: Activity
     - wait_template: >-
         {{
           states('binary_sensor.presence_53') == 'off' and
