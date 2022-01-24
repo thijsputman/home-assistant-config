@@ -197,17 +197,23 @@
       data:
         brightness: 255
         kelvin: 4500
-      entity_id: light.toilet
+      target:
+        entity_id: light.toilet
     - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.presence_60
           from: "on"
           to: "off"
     - delay: 270
-    - service: light.turn_off
+    - service: light.turn_on
       data:
+        brightness_step_pct: -40
+      target:
         entity_id: light.toilet
-        transition: 30
+    - delay: 30
+    - service: light.turn_off
+      target:
+        entity_id: light.toilet
   mode: restart
 - alias: 💡 | 👋 Basement light toggle (motion detected)
   id: 7a1ebf52-c69e-4bf5-8670-0b32bba52600
@@ -328,10 +334,15 @@
           states('binary_sensor.presence_71') == 'off'
         }}
     - delay: 150
-    - service: light.turn_off
+    - service: light.turn_on
       data:
+        brightness_step_pct: -40
+      target:
         entity_id: light.bathroom
-        transition: 30
+    - delay: 30
+    - service: light.turn_off
+      target:
+        entity_id: light.bathroom
   mode: restart
 - alias: >-
     💡 | 👋 Upstairs hallway light toggle (motion detected; everyone asleep)

@@ -1,322 +1,515 @@
 # Heuristically track the Hue scene name based on the group's (i.e. Hue
-# room/zone) brightness, color_temp and/or xy_color and the number of lights
-# switched on.
+# room/zone) brightness, xy_color and the number of lights switched on.
 #
 # Uses the groups of lights defined in "📄 groups/hue.yaml" to enumerate the
 # number of lights switched on. This greatly increases the accuracy of the
-# heuristic (as otherwise switching on a single light in a room would often
+# heuristic (as otherwise switching on a single light in a room will often
 # detect the previous scene for that room as the active scene).
-# When a room is switched on, changing individual lights (or vice versa,
-# switching on the entire room when individual lights are on) might – or might
-# not – lead to an update in the detected scene. This greatly depends on whether
-# the Hui API actually reports it as a state change... Coping with this caveat
-# is currently beyond the scope of the heuristic.
 #
-# Note that when a Hue *zone* changes, the Hue *room(s)* it belongs to keep
-# reporting their previous state (i.e. some of their lights  changed, but the
-# Hue API doesn't report on these changes).
-# The inverse behaviour does _not_ apply to zones: Changing their containing
-# room(s) _does_ change the state of the zone.
-# This behaviour is utilised by the Kitchen-room, which is set up to track the
-# state of the Kitchen counter & cupboards-zone.
-#
-# Furthermore, if a zone change causes a room to transition from off to on, the
-# room *does* report a state change (namely, it will start reporting its last
-# active/on state). This causes the below heuristic to fail, as such exceptions
-# have to be put in place to handle this "off-on" scenario...
+# Caveats:
+#   * When a room is on, switching off individual lights (or vice versa,
+#     switching on the entire room when individual lights were already on) might
+#     – or might not – lead to an update in the detected scene. This greatly
+#     depends on whether the Hue API deems it appropriate to actually report it
+#     as a state change...
+#   * Transitions are not guaranteed to be discrete: There can be (multiple)
+#     intermediate state(s) as the individual lights catch up with the scene.
+#     The heuristic tries its best to cope with this, but there are cases where
+#     a transition through <Unknown> cannot be avoided.
+#   * Some of the scenes are "unstable", they either initialise to slightly
+#     different values between activations or alternate between values while
+#     active. Mainly the brightness appears to drift a bit...
 
 # Living room [Hue room]
 - trigger:
     - platform: state
       entity_id: light.living_room
-    # If we trigger to <Unknown> wait 10 seconds and try again – sometimes the
-    # individual Hue lights don't propagate fast enough; give them a bit of
-    # time an rerun the template
+      attribute: brightness
+      to: ~
+      # The Hue API doesn't always do a discrete transition – hold the state for
+      # 2 seconds to prevent transitioning through <Unknown> while the lights
+      # catch up with the scene
+      for: "00:00:02"
+    - platform: state
+      entity_id: light.living_room
+      attribute: xy_color
+      to: ~
+      # Idem...
+      for: "00:00:02"
+    # Short-circuit the "off"-state – no need to wait for the attributes to
+    # update in this case
+    - platform: state
+      entity_id: light.living_room
+      to: "off"
+    # The transition to "unknown" indicates the template sensors got reloaded;
+    # force a re-render of the template to bring the sensor back to its proper
+    # state.
+    # A live-lock/runaway trigger _should_ not be possible (as failing to render
+    # the template will bring/keep the sensor in the "unknown" state)
     - platform: state
       entity_id: sensor.hue_scene_living_room
-      to: <Unknown>
-      for: 10
-    - platform: event
-      event_type: template_reloaded
+      to: unknown
+    # Cope with an odd initialisation issue (which only occurs the *first* time
+    # the sensor transitions out of "unknown") that results in the attributes
+    # not initialising properly (they somehow initialise based on the previous,
+    # "unknown", state of the sensor). Retriggering on this transition forces
+    # the attributes to re-render to their proper state.
+    - platform: state
+      entity_id: sensor.hue_scene_living_room
+      from: unknown
   sensor:
-    name: Hue scene (Living room)
-    unique_id: 69b3fafe-1b0a-4f39-88c5-c92f31806e1a
-    icon: mdi:movie-filter
-    state: >-
-      {% if states('light.living_room') == 'off' %}
-        <Off>
-      {% else %}
-        {%
-          set num_lights = expand('group.hue_room_living_room') |
-            selectattr('state', '==', 'on') | list | length
-        %}
-        {%
-          set brightness =
-            state_attr('light.living_room', 'brightness') | int(-1)
-        %}
-        {%
-          set color_temp =
-            state_attr('light.living_room', 'color_temp') | int(-1)
-        %}
-        {%
-          if brightness > 110 and brightness < 120 and
-          color_temp > 225 and color_temp < 235 and num_lights >= 8
-        %}
-          Daytime
-        {%
-          elif brightness > 130 and brightness < 140 and
-          color_temp > 430 and color_temp < 450 and num_lights >= 11
-        %}
-          Ambiance
-        {%
-          elif brightness > 1 and brightness < 10 and
-          color_temp > 430 and color_temp < 450 and num_lights >= 9
-        %}
-          Movie
-        {%
-          elif brightness > 11 and brightness < 20 and
-          color_temp > 430 and color_temp < 450 and num_lights >= 9
-        %}
-          Movie (ambiance)
-        {%
-          elif brightness > 175 and brightness < 185 and
-          color_temp > 420 and color_temp < 430 and num_lights >= 11
-        %}
-          Active
+    - name: Hue scene (Living room)
+      unique_id: 69b3fafe-1b0a-4f39-88c5-c92f31806e1a
+      icon: mdi:movie-filter
+      state: >-
+        {% if states('light.living_room') == 'off' %}
+          <Off>
         {% else %}
-          <Unknown>
+          {%
+            set num_lights = expand('group.hue_room_living_room') |
+              selectattr('state', '==', 'on') | list | length
+          %}
+          {%
+            set brightness =
+              state_attr('light.living_room', 'brightness') | int(-1)
+          %}
+          {%
+            if state_attr('light.living_room', 'xy_color') == none
+          %}
+            {% set xy_color = [-1.0, -1.0] %}
+          {% else %}
+            {%
+              set xy_color = state_attr('light.living_room', 'xy_color')
+            %}
+            {%
+              set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
+            %}
+          {% endif %}
+          {%
+            if num_lights == 8 and
+              (brightness > 130 and brightness < 150) and
+              (xy_color[0] == 0.37 and xy_color[1] == 0.37)
+          %}
+            Daytime
+          {%
+            elif num_lights == 11 and
+              (brightness > 110 and brightness < 130) and
+              (xy_color[0] == 0.54 and xy_color[1] == 0.38)
+          %}
+            Ambiance
+          {%
+            elif num_lights == 9 and
+              (brightness > 40 and brightness < 60) and
+              (xy_color[0] == 0.53 and xy_color[1] == 0.37)
+          %}
+            Movie
+          {%
+            elif num_lights == 9 and
+              (brightness > 70 and brightness < 90) and
+              (xy_color[0] == 0.54 and xy_color[1] == 0.37)
+          %}
+            Movie (ambiance)
+          {%
+            elif num_lights == 11 and
+              (brightness > 130 and brightness < 150) and
+              (xy_color[0] == 0.55 and xy_color[1] == 0.37)
+          %}
+            Active
+          {% else %}
+            <Unknown>
+          {% endif %}
         {% endif %}
-      {% endif %}
-    availability: >-
-      {{ states('light.living_room') not in ['unknown', 'unavailable'] }}
+      attributes:
+        scene_id: >-
+          {%
+            if states('sensor.hue_scene_living_room')
+              in ['Daytime', 'Ambiance', 'Movie', 'Move (ambiance)', 'Active']
+          %}
+            {{
+              'scene.living_room_' ~ states('sensor.hue_scene_living_room') |
+                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+            }}
+          {% else %}
+            <None>
+          {% endif %}
+      availability: >-
+        {{
+          states('light.living_room') not in ['unknown', 'unavailable']
+        }}
 # Kitchen counter & cupboards [Hue zone]
 - trigger:
     - platform: state
       entity_id: light.kitchen_counter_cupboards
-    # If we trigger to <Unknown> wait 10 seconds and try again
+      attribute: brightness
+      to: ~
+      for: "00:00:02"
     - platform: state
-      entity_id: sensor.hue_scene_kitchen_counter_cupboards
-      to: <Unknown>
-      for: 10
-    - platform: event
-      event_type: template_reloaded
+      entity_id: light.kitchen_counter_cupboards
+      attribute: xy_color
+      to: ~
+      for: "00:00:02"
+    - platform: state
+      entity_id: light.kitchen_counter_cupboards
+      to: "off"
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen_counter_cupboards_raw
+      to: unknown
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen_counter_cupboards_raw
+      from: unknown
   sensor:
-    name: Hue scene (Kitchen counter & cupboards)
-    unique_id: b7842630-c541-4e0e-a7ce-c0f4deea3f81
-    icon: mdi:movie-filter
-    state: >-
-      {% if states('light.kitchen_counter_cupboards') == 'off' %}
-        <Off>
-      {% else %}
-        {%
-          set num_lights = expand('group.hue_zone_kitchen_counter_cupboards') |
-            selectattr('state', '==', 'on') | list | length
-        %}
-        {%
-          set brightness =
-            state_attr('light.kitchen_counter_cupboards', 'brightness') | int(-1)
-        %}
-        {%
-          set color_temp =
-            state_attr('light.kitchen_counter_cupboards', 'color_temp') | int(-1)
-        %}
-        {%
-          if state_attr('light.kitchen_counter_cupboards', 'xy_color') == none
-        %}
-          {% set xy_color = [-1.0, -1.0] %}
+    - name: Hue scene (Kitchen counter & cupboards) – raw
+      unique_id: b7842630-c541-4e0e-a7ce-c0f4deea3f81
+      icon: mdi:movie-filter
+      state: >-
+        {% if states('light.kitchen_counter_cupboards') == 'off' %}
+          <Off>
         {% else %}
           {%
-            set xy_color =
-              state_attr('light.kitchen_counter_cupboards', 'xy_color')
+            set num_lights =
+              expand('group.hue_zone_kitchen_counter_cupboards') |
+              selectattr('state', '==', 'on') | list | length
           %}
+          {%
+            set brightness =
+              state_attr('light.kitchen_counter_cupboards', 'brightness') |
+              int(-1)
+          %}
+          {%
+            if state_attr('light.kitchen_counter_cupboards', 'xy_color') == none
+          %}
+            {% set xy_color = [-1.0, -1.0] %}
+          {% else %}
+            {%
+              set xy_color =
+                state_attr('light.kitchen_counter_cupboards', 'xy_color')
+            %}
+            {%
+              set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
+            %}
+          {% endif %}
+          {%
+            if num_lights == 6 and
+              (brightness > 140 and brightness < 160) and
+              (
+                (xy_color[0] == 0.46 and xy_color[1] == 0.38) or
+                (xy_color[0] == 0.41 and xy_color[1] == 0.39)
+              )
+          %}
+            Activity
+          {% else %}
+            <Unknown>
+          {% endif %}
         {% endif %}
+      availability: >-
+        {{
+          states('light.kitchen_counter_cupboards') not in
+            ['unknown', 'unavailable']
+        }}
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.hue_scene_kitchen_counter_cupboards_raw
+        - sensor.hue_scene_kitchen_raw
+      to: ~
+      # Hold for 2 seconds to ensure all dependent sensors have transitioned
+      for: "00:00:02"
+  sensor:
+    - name: Hue scene (Kitchen counter & cupboards)
+      unique_id: d4b9f4af-0104-44d7-9e5c-3d3d33d53b26
+      icon: mdi:movie-filter
+      state: >-
         {#
-          For this zone(/scene combination) the Hue API starts off by providing
-          xy_color values and then – sometimes – switches to a color_temp value
-          midway through the scene being active (not prompted by any change to
-          the actual lights). Hence, we have to deal with both...
+          In case Kitchen counter & cupboards is <Unknown> and Kitchen itself is
+          not, switch to <Kitchen> to indicate it's following the main Kitchen
+          scene (and distinguish the situation from an actual <Unknown>)
         #}
         {%
-          if brightness > 245 and brightness < 256 and (
-            color_temp > 230 and color_temp < 240 or (
-              xy_color[0] > 0.35 and xy_color[0] < 0.39 and
-              xy_color[1] > 0.35 and xy_color[1] < 0.39
-            )
-          ) and num_lights >= 6
+          if states('sensor.hue_scene_kitchen_counter_cupboards_raw')
+            == '<Unknown>' and
+          states('sensor.hue_scene_kitchen_raw') != '<Unknown>'
         %}
-          Activity
+          <Kitchen>
         {% else %}
-          <Unknown>
+          {{ states('sensor.hue_scene_kitchen_counter_cupboards_raw') }}
         {% endif %}
-      {% endif %}
-    attributes:
-      # This attribute does a ping-pong between true and false (changing at
-      # every trigger). We need the subsequent Kitchen trigger to fire each time
-      # Kitchen counter & cupboards triggers (even if the its state doesn't
-      # change – see the header notes for more details). This ping-pong achieves
-      # an unconditional state change.
-      ping_pong: >-
-        {%
-          if state_attr(
-            'sensor.hue_scene_kitchen_counter_cupboards', 'ping_pong') is true
-        %}
-          {{ false }}
-        {% else %}
-          {{ true }}
-        {% endif %}
-    availability: >-
-      {{
-        states('light.kitchen_counter_cupboards') not in
-          ['unknown', 'unavailable']
-      }}
+      attributes:
+        scene_id: >-
+          {%
+            if states('sensor.hue_scene_kitchen_counter_cupboards')
+              in ['Activity']
+          %}
+            {{
+              'scene.kitchen_counter_cupboards_' ~
+                states('sensor.hue_scene_kitchen_counter_cupboards') |
+                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+            }}
+          {% else %}
+            <None>
+          {% endif %}
+      availability: >-
+        {{
+          states('sensor.hue_scene_kitchen_counter_cupboards_raw') not in
+            ['unknown', 'unavailable'] and
+          states('sensor.hue_scene_kitchen_raw') not in
+            ['unknown', 'unavailable']
+        }}
 # Kitchen [Hue room]
 - trigger:
-    # Kitchen relies on the state of Kitchen counter & cupboards, so it should
-    # process _after_ that sensor is updated
     - platform: state
-      entity_id: sensor.hue_scene_kitchen_counter_cupboards
+      entity_id: light.kitchen
+      attribute: brightness
+      to: ~
+      for: "00:00:02"
+    - platform: state
+      entity_id: light.kitchen
+      attribute: xy_color
+      to: ~
+      for: "00:00:02"
+    - platform: state
+      entity_id: light.kitchen
+      to: "off"
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen_raw
+      to: unknown
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen_raw
+      from: unknown
   sensor:
-    name: Hue scene (Kitchen)
-    unique_id: c5876824-72b0-4b40-9d70-a2cde1bc1d7f
-    icon: mdi:movie-filter
-    state: >-
-      {#
-        If Kitchen is off and Kitchen counter & cupboards switches to Activity,
-        don't do anything. In this situation the Hue API messes up (see comment
-        in the header) and as such it's best to keep reporting the "off"-state.
-      #}
-      {%
-        if states('light.kitchen') == 'off' or (
-          states('sensor.hue_scene_kitchen_counter_cupboards') == 'Activity'
-          and (
-            states('sensor.hue_scene_kitchen') == '<Off>' or (
-              states('sensor.hue_scene_kitchen') == '<Unknown>' and
-              states('sensor.hue_scene_kitchen_previous') == '<Off>'
-            )
-          )
-        )
-      %}
-        <Off>
-      {% else %}
-        {%
-          set num_lights = expand('group.hue_room_kitchen') |
-            selectattr('state', '==', 'on') | list | length
-        %}
-        {%
-          set brightness =
-            state_attr('light.kitchen', 'brightness') | int(-1)
-        %}
-        {%
-          set color_temp =
-            state_attr('light.kitchen', 'color_temp') | int(-1)
-        %}
-        {%
-          if brightness > 125 and brightness < 135 and
-          color_temp > 225 and color_temp < 235 and num_lights >= 16
-        %}
-          Daytime
-        {%
-          elif brightness > 75 and brightness < 85 and
-          color_temp > 430 and color_temp < 440 and num_lights >= 16
-        %}
-          Ambiance
-        {%
-          elif brightness > 0 and brightness < 10 and
-          color_temp > 430 and color_temp < 440  and num_lights >= 12
-        %}
-          Movie
-        {%
-          elif brightness > 250 and brightness < 260 and
-          color_temp > 340 and color_temp < 350  and num_lights >= 16
-        %}
-          Bright (custom)
+    - name: Hue scene (Kitchen) – raw
+      unique_id: c5876824-72b0-4b40-9d70-a2cde1bc1d7f
+      icon: mdi:movie-filter
+      state: >-
+        {% if states('light.kitchen') == 'off' %}
+          <Off>
         {% else %}
-          <Unknown>
+          {%
+            set num_lights = expand('group.hue_room_kitchen') |
+              selectattr('state', '==', 'on') | list | length
+          %}
+          {%
+            set brightness =
+              state_attr('light.kitchen', 'brightness') | int(-1)
+          %}
+          {%
+            if state_attr('light.kitchen', 'xy_color') == none
+          %}
+            {% set xy_color = [-1.0, -1.0] %}
+          {% else %}
+            {%
+              set xy_color = state_attr('light.kitchen', 'xy_color')
+            %}
+            {%
+              set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
+            %}
+          {% endif %}
+          {%
+            if num_lights == 16 and
+              (brightness > 70 and brightness < 90) and
+              (xy_color[0] == 0.37 and xy_color[1] == 0.37)
+          %}
+            Daytime
+          {%
+            elif num_lights == 16 and
+              (brightness > 50 and brightness < 70) and
+              (xy_color[0] == 0.39 and xy_color[1] == 0.28)
+          %}
+            Ambiance
+          {%
+            elif num_lights == 12 and
+              (brightness > 40 and brightness < 60) and
+              (xy_color[0] == 0.44 and xy_color[1] == 0.28)
+          %}
+            Movie
+          {%
+            elif num_lights == 16 and
+              (brightness > 170 and brightness < 190) and
+              (xy_color[0] == 0.45 and xy_color[1] == 0.41)
+          %}
+            Bright (custom)
+          {% else %}
+            <Unknown>
+          {% endif %}
         {% endif %}
-      {% endif %}
-    availability: >-
-      {{ states('light.kitchen') not in ['unknown', 'unavailable'] }}
+      availability: >-
+        {{ states('light.kitchen') not in ['unknown', 'unavailable'] }}
 - trigger:
     - platform: state
-      entity_id: sensor.hue_scene_kitchen
+      entity_id: sensor.hue_scene_kitchen_raw
       to: ~
   sensor:
-    name: Hue scene (Kitchen) – previous
-    unique_id: 833bdce8-e798-4279-8d0f-a021e7552a6e
-    icon: mdi:movie-filter
-    state: >-
-      {%
-        if trigger.from_state is defined and trigger.from_state.state not in
-          ['unknown', 'unavailable']
-      %}
+    - name: Hue scene (Kitchen) – previous
+      unique_id: 833bdce8-e798-4279-8d0f-a021e7552a6e
+      icon: mdi:movie-filter
+      state: >-
         {%
-          if states('trigger.from_state.state') != '<Unknown>' and
-          trigger.from_state.state != states(
-            'sensor.hue_scene_kitchen_previous')
+          if trigger.from_state is defined and trigger.from_state.state not in
+            ['unknown', 'unavailable']
         %}
-          {{ trigger.from_state.state }}
-        {% else %}
-          {{ states('sensor.hue_scene_kitchen_previous') }}
+          {%
+            if trigger.from_state.state != '<Unknown>' and
+            trigger.from_state.state != states(
+              'sensor.hue_scene_kitchen_previous')
+          %}
+            {{ trigger.from_state.state }}
+          {% else %}
+            {{ states('sensor.hue_scene_kitchen_previous') }}
+          {% endif %}
         {% endif %}
-      {% endif %}
-    availability: >-
-      {{
-        trigger.from_state is defined and trigger.from_state.state not in
-          ['unknown', 'unavailable']
-      }}
+      attributes:
+        scene_id: >-
+          {%
+            if states('sensor.hue_scene_kitchen_previous')
+              in ['Daytime', 'Ambiance', 'Movie', 'Bright (custom)']
+          %}
+            {{
+              'scene.kitchen_' ~ states('sensor.hue_scene_kitchen_previous') |
+                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+            }}
+          {% else %}
+            <None>
+          {% endif %}
+      availability: >-
+        {{
+          trigger.from_state is defined and trigger.from_state.state not in
+            ['unknown', 'unavailable']
+        }}
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.hue_scene_kitchen_raw
+        - sensor.hue_scene_kitchen_counter_cupboards_raw
+        - sensor.hue_scene_kitchen_previous
+      to: ~
+      # Hold for 2 seconds to ensure all dependent sensors have transitioned
+      for: "00:00:02"
+  sensor:
+    - name: Hue scene (Kitchen)
+      unique_id: 328350fb-0a61-4e9d-8081-8bc2febe5162
+      icon: mdi:movie-filter
+      state: >-
+        {#
+          If Kitchen is <Off> and Kitchen counter & cupboards switches to
+          "Activity", keep reporting the Kitchen as <Off> instead of <Unknown>
+        #}
+        {%
+          if states('sensor.hue_scene_kitchen_counter_cupboards_raw')
+            == 'Activity' and
+          states('sensor.hue_scene_kitchen_raw') == '<Unknown>' and
+          states('sensor.hue_scene_kitchen_previous') == '<Off>'
+        %}
+          <Off>
+        {#
+          If Kitchen counter & cupboards is "Activity", prevent Kitchen from
+          changing state to <Unknown> – instead, keep reporting its previous
+          scene as the active scene
+        #}
+        {%
+          elif states('sensor.hue_scene_kitchen_counter_cupboards_raw')
+            == 'Activity'
+          and states('sensor.hue_scene_kitchen_previous') not in
+            ['unavailable', 'unknown']
+        %}
+          {{ states('sensor.hue_scene_kitchen_previous') }}
+        {% else %}
+          {{ states('sensor.hue_scene_kitchen_raw') }}
+        {% endif %}
+      attributes:
+        scene_id: >-
+          {%
+            if states('sensor.hue_scene_kitchen')
+              in ['Daytime', 'Ambiance', 'Movie', 'Bright (custom)']
+          %}
+            {{
+              'scene.kitchen_' ~ states('sensor.hue_scene_kitchen') |
+                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+            }}
+          {% else %}
+            <None>
+          {% endif %}
+      availability: >-
+        {{
+          states('sensor.hue_scene_kitchen_counter_cupboards_raw') not in
+            ['unknown', 'unavailable'] and
+          states('sensor.hue_scene_kitchen_raw') not in
+            ['unknown', 'unavailable']
+        }}
 # Garden [Hue room]
 - trigger:
     - platform: state
       entity_id: light.garden
-    # If we trigger to <Unknown> wait 10 seconds and try again
+      attribute: brightness
+      to: ~
+      for: "00:00:02"
+    - platform: state
+      entity_id: light.garden
+      attribute: xy_color
+      to: ~
+      for: "00:00:02"
+    - platform: state
+      entity_id: light.garden
+      to: "off"
     - platform: state
       entity_id: sensor.hue_scene_garden
-      to: <Unknown>
-      for: 10
-    - platform: event
-      event_type: template_reloaded
+      to: unknown
+    - platform: state
+      entity_id: sensor.hue_scene_garden
+      from: unknown
   sensor:
-    name: Hue scene (Garden)
-    unique_id: 2e5bc57f-240a-4669-90e4-ace50876fb70
-    icon: mdi:movie-filter
-    state: >-
-      {% if states('light.garden') == 'off' %}
-        <Off>
-      {% else %}
-        {%
-          set num_lights = expand('group.hue_room_garden') |
-            selectattr('state', '==', 'on') | list | length
-        %}
-        {%
-          set brightness =
-            state_attr('light.garden', 'brightness') | int(-1)
-        %}
-        {%
-          if state_attr('light.garden', 'xy_color') == none
-        %}
-          {% set xy_color = [-1.0, -1.0] %}
+    - name: Hue scene (Garden)
+      unique_id: 2e5bc57f-240a-4669-90e4-ace50876fb70
+      icon: mdi:movie-filter
+      state: >-
+        {% if states('light.garden') == 'off' %}
+          <Off>
         {% else %}
           {%
-            set xy_color = state_attr('light.garden', 'xy_color')
+            set num_lights = expand('group.hue_room_garden') |
+              selectattr('state', '==', 'on') | list | length
           %}
+          {%
+            set brightness =
+              state_attr('light.garden', 'brightness') | int(-1)
+          %}
+          {%
+            if state_attr('light.garden', 'xy_color') == none
+          %}
+            {% set xy_color = [-1.0, -1.0] %}
+          {% else %}
+            {%
+              set xy_color = state_attr('light.garden', 'xy_color')
+            %}
+            {%
+              set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
+            %}
+          {% endif %}
+          {%
+            if num_lights == 7 and
+              (brightness > 220 and brightness < 240) and
+              (xy_color[0] == 0.41 and xy_color[1] == 0.36)
+          %}
+            Active
+          {%
+            elif num_lights == 8 and
+              (brightness > 100 and brightness < 120) and
+              (xy_color[0] == 0.36 and xy_color[1] == 0.31)
+          %}
+            Ambiance
+          {% else %}
+            <Unknown>
+          {% endif %}
         {% endif %}
-        {%
-          if brightness > 245 and (
-            xy_color[0] > 0.35 and xy_color[0] < 0.39 and
-            xy_color[1] > 0.35 and xy_color[1] < 0.39
-          ) and num_lights >= 7
-        %}
-          Active
-        {%
-          elif brightness > 90 and brightness < 100 and (
-            xy_color[0] > 0.30 and xy_color[0] < 0.34 and
-            xy_color[1] > 0.36 and xy_color[1] < 0.40
-          ) and num_lights >= 8
-        %}
-          Ambiance
-        {% else %}
-          <Unknown>
-        {% endif %}
-      {% endif %}
-    availability: >-
-      {{ states('light.garden') not in ['unknown', 'unavailable'] }}
+      attributes:
+        scene_id: >-
+          {%
+            if states('sensor.hue_scene_garden') in ['Active', 'Ambiance']
+          %}
+            {{
+              'scene.garden_' ~ states('sensor.hue_scene_garden') |
+                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+            }}
+          {% else %}
+            <None>
+          {% endif %}
+      availability: >-
+        {{ states('light.garden') not in ['unknown', 'unavailable'] }}

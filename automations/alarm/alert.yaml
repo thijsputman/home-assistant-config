@@ -205,10 +205,11 @@
           id: disarmed
           entity_id: alarm_control_panel.home_alarm
           to: disarmed
-        # Short-circuit if the light-state changes
+        # Short-circuit if the light is switched off
         - platform: state
           id: abort
           entity_id: light.front_back_door
+          to: "off"
       timeout: "24:00:00"
       continue_on_timeout: false
     - condition: template

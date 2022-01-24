@@ -216,14 +216,21 @@
 
 ## Lights
 
-- [ ] Replace all calls to the `hue.activate_scene` script with native Home
+- [ ] Replace all calls to the `hue.hue_activate_scene` script with native Home
       Assistant scene changes; see
       <https://github.com/home-assistant/core/pull/58996>
-  - It appears I'll need to recreate all (relevant) scenes in the Hue app as
+  - ~~It appears I'll need to recreate all (relevant) scenes in the Hue app as
     none of the current Hue scenes have shown up in the UI with the migration to
-    HA 2021.12...
-  - Once migrated, check if the existing Hue scene heuristic is still required
-    (or this can also be replaced with native scene functionality)
+    HA 2021.12...~~ The Hue integration switched over to the V2 API after the
+    _second_ restart of Home Assistant – right when I wasn't expecting it 😕
+  - Wait with further migration actions until
+    [this issue](https://github.com/home-assistant/core/issues/61554) gets
+    sorted out; most likely as of Home Assistant 2022.2
+  - The groundwork has already been laid for an easy migration: All relevant Hue
+    scene heuristic template sensors have an attribute that represents their
+    active scene as a Home Assistant native scene (`scene.room_scene_name` or
+    `<None>` if not available) – a simple helper script (to be written) should
+    enable hassle free switching of scenes...
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
 - [ ] Failure mode for Kitchen-counter motion lights: Switch Kitchen to

@@ -18,9 +18,11 @@
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-    # Only continue if the light is not yet at maximum brightness – cannot use
-    # a regular state/attribute condition as the "brightness" attribute is
-    # missing when the light is off.
+    # Only continue if the light is _not_ yet at maximum brightness – continuing
+    # would overwrite the previous state and prevent restoring lights at the end
+    # of the automation. Repeatedly pressing the doorbell
+    # N.B. cannot use a regular state/attribute condition as the "brightness"
+    # attribute is missing when the light is off.
     - condition: template
       value_template: >-
         {{
@@ -53,12 +55,18 @@
           from: "on"
           to: "off"
           for: "00:29:00" # Sensor stays "on" for 60 seconds
-        # Short-circuit if the light-state changes (covers both manual
+        # Short-circuit if the light is switched off (covers both manual
         # intervention and the light getting switched off at dawn by another
-        # automation)
+        # automation) or in case of pending Home Alarm (at which point an alarm
+        # related automation takes over).
         - platform: state
           id: abort
           entity_id: light.hue_filament_bulb_1_2
+          to: "off"
+        - platform: state
+          id: abort
+          entity_id: alarm_control_panel.home_alarm
+          to: pending
       timeout: "24:00:00"
       continue_on_timeout: false
     - condition: template
@@ -119,10 +127,15 @@
           from: "on"
           to: "off"
           for: "00:00:30"
-        # Short-circuit if the light-state changes
+        # Short-circuit if the light is switched off or pending Home Alarm
         - platform: state
           id: abort
-          entity_id: light.hue_filament_bulb_1_2
+          entity_id: light.hue_filament_bulb_1
+          to: "off"
+        - platform: state
+          id: abort
+          entity_id: alarm_control_panel.home_alarm
+          to: pending
       timeout: "24:00:00"
       continue_on_timeout: false
     - condition: template

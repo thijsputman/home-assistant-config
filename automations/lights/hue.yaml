@@ -31,11 +31,15 @@
 - alias: 💡 | 🩹 Enforce Kitchen scene change for Gledopto controllers
   id: 66dc6374-f19a-437c-966b-0679400fc2b5
   trigger:
+    # Switching Kitchen counter & cupboards to "Activity" might cause Kitchen
+    # to momentarily transition to <Unknown> (and then right back to its
+    # previous/actual state). By prioritising (and blocking momentarily) on the
+    # Kitchen counter & cupboards trigger, we prevent a race-condition where
+    # the Kitchen trigger might undo the intended scene change.
     - platform: state
       entity_id: sensor.hue_scene_kitchen_counter_cupboards
       to:
         - Activity
-      for: "00:00:01"
     - platform: state
       entity_id: sensor.hue_scene_kitchen
       to:
@@ -63,7 +67,9 @@
           {{ group_name }}
         scene_name: >-
           {{ trigger.to_state.state }}
-  mode: restart
+    - delay: 5
+  mode: single
+  max_exceeded: silent
 # Occasionally, the Innr colour bulbs in the Garden refuse a scene change, so
 # whenever we change the Garden, change it twice to ensure they properly follow
 - alias: 💡 | 🩹 Enforce Garden scene change for Innr bulbs
@@ -85,3 +91,62 @@
         scene_name: >-
           {{ trigger.to_state.state }}
   mode: restart
+- alias: 💡 | 🩹 Log Hue scene heuristic failures
+  id: c47f1d4b-d0dc-49e9-ae8d-0af0a2c3a092
+  trigger:
+    - platform: state
+      entity_id:
+        - sensor.hue_scene_living_room
+        - sensor.hue_scene_kitchen
+        - sensor.hue_scene_kitchen_counter_cupboards
+        - sensor.hue_scene_garden
+      to:
+        - <Unknown>
+      # Don't log recoverable failures
+      for: "00:00:20"
+  condition: []
+  action:
+    - variables:
+        room: >-
+          {{
+            trigger.entity_id | replace('sensor.hue_scene_', '')
+          }}
+        num_lights: >-
+          {#
+            In hindsight, better choices could have been made with regards to
+            naming the groups... 😇
+          #}
+          {% if room == 'kitchen_counter_cupboards' %}
+            {{
+              expand('group.hue_zone_' ~ room) |
+                selectattr('state', '==', 'on') | list | length
+            }}
+          {% else %}
+            {{
+              expand('group.hue_room_' ~ room) |
+                selectattr('state', '==', 'on') | list | length
+            }}
+          {% endif %}
+        brightness: >-
+          {{ state_attr('light.' ~ room, 'brightness') | int(-1) }}
+        xy_color: >-
+          {%
+            if state_attr('light.' ~ room, 'xy_color') == none
+          %}
+            {{ [-1.0, -1.0] }}
+          {% else %}
+            {%
+              set xy_color = state_attr('light.' ~ room, 'xy_color')
+            %}
+            {{ [xy_color[0] | round(2), xy_color[1] | round (2)] }}
+          {% endif %}
+    - service: system_log.write
+      data:
+        level: warning
+        message: >-
+          Hue scene heuristic failure: {{ trigger.entity_id }} transitioned from
+          {{ trigger.from_state.state }} to {{ trigger.to_state.state }}
+          (num_lights: {{ num_lights}}, brightness: {{ brightness }},
+          xy_color: {{ xy_color }})
+  mode: parallel
+  max: 3
