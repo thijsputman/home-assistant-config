@@ -16,6 +16,7 @@
 - [Alarm](#alarm)
   - [Bugs](#bugs-1)
   - [Features](#features-1)
+- [Arlo](#arlo)
 - [Network](#network)
 - [Hardware](#hardware)
 
@@ -162,7 +163,6 @@
 - [ ] Implement
       "[alert once](https://companion.home-assistant.io/docs/notifications/notifications-basic/#alert-once)"
       for certain notifications?
-- [ ] Try out "Notification for Android TV"
 - [ ] Send a notification when the washing machine/dryer is done
 - [ ] Send notifications (with snapshot/thumbnail) if Arlo records something
       when "Armed away"
@@ -260,12 +260,6 @@
 
 ### Bugs
 
-- [ ] Arlo snapshots used in notifications should be stored locally. The URL
-      provided by Arlo always represents the _latest_ snapshot, not the specific
-      snapshot at the point in time the URL was retrieved... This is problematic
-      for notifications in Lovelace as they will (after a while) start showing
-      the wrong image (i.e. the image is loaded when the notification is viewed,
-      not – as on Android – when the notification is raised)
 - [ ] When coming home after dark: Switch off the Attic light. Occupancy
       simulation turns them on; it's not something you realises (i.e. manually
       switch off) when you get back home. Leaving them on causes Attic occupancy
@@ -303,14 +297,24 @@
   - Perhaps this should also disable some of the "stricter" alarm triggers
     (vibration and motion during "Armed night"; maybe even the `openclose`
     sensors)?
-- [ ] 🚀 Way out there: Use a machine-learned model to classify the camera
-      snapshots and act on them only if there's something out of the ordinary
-      going on...
 - [ ] Keep an eye on
       <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/alarmsystems/>
 - [ ] Create a "Auto-disarm for Housekeeper" toggle (similar to the "Auto-arm at
       night" toggle) that controls whether the alarm is automatically disabled
       next time the housekeeper comes by
+
+## Arlo
+
+- [ ] Arlo snapshots used in notifications should be stored locally. The URL
+      provided by Arlo always represents the _latest_ snapshot, not the specific
+      snapshot at the point in time the URL was retrieved... This is problematic
+      for notifications in Lovelace as they will (after a while) start showing
+      the wrong image (i.e. the image is loaded when the notification is viewed,
+      not – as on Android – when the notification is raised)
+- [ ] Organise the Arlo captures in yearly folders
+- [ ] 🚀 Way out there: Use a machine-learned model to classify the camera
+      snapshots and act on them only if there's something out of the ordinary
+      going on...
 
 ## Network
 
