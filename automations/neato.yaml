@@ -1,4 +1,4 @@
-- alias: 📱 | 🧹 Notify on Neato D7 docking-failure
+- alias: 📱 | 🧹 Notify on (potential) Neato docking-failure
   id: 3a327d1c-422a-496a-8dd4-b3700fdb41e1
   trigger:
     # It appears this is the most reliable way to detect whether Neato didn't
@@ -7,7 +7,9 @@
     # reality – Neato can be driving around the Living room while its state
     # indicates it's "docked").
     - platform: numeric_state
-      entity_id: sensor.neato_d7_battery
+      entity_id:
+        - sensor.neato_d7_battery
+        - sensor.d7_upstairs_battery
       below: 95
       for: "03:00:00"
   condition: []
@@ -19,26 +21,33 @@
         variables:
           group: general
           channel: Notification
-          tag: neato_d7_failure
+          tag: >-
+            neato_failure_{{ context.id }}
           targetDevices: home
-          title: 🧹 Neato D7 failed to dock!
+          title: 🧹 Neato failed to dock!
           message: >-
-            Neato's battery-level has been below 95% for more than three
-            hours – please ensure it has docked properly...
+            Neato {{ device_attr(trigger.entity_id, 'name') }}'s battery-level
+            has been below 95% for more than three hours – please ensure it has
+            docked properly...
     - wait_for_trigger:
-        - platform: numeric_state
-          entity_id: sensor.neato_d7_battery
-          above: 95
+        - platform: template
+          value_template: >-
+            {{ states(trigger.entity_id) >= 95 }}
       timeout: "12:00:00"
       continue_on_timeout: false
     - service: persistent_notification.dismiss
       data:
-        notification_id: neato_d7_failure
-- alias: 📱 | 🧹 Notify on Neato D7 dustbin full
+        notification_id: >-
+          neato_failure_{{ context.id }}
+  mode: parallel
+  max: 2
+- alias: 📱 | 🧹 Notify on Neato dustbin full
   id: f8ba3ff2-5319-40f6-8038-e75fa4f0fe02
   trigger:
     - platform: state
-      entity_id: vacuum.neato_d7
+      entity_id:
+        - vacuum.neato_d7
+        - vacuum.d7_upstairs
       attribute: status
       to: Dust bin full
   condition: []
@@ -50,19 +59,23 @@
         variables:
           group: general
           channel: Notification
-          tag: neato_d7_failure
+          tag: >-
+            neato_failure_{{ context.id }}
           targetDevices: home
-          title: 🧹 Neato D7 dustbin full
+          title: 🧹 Neato dustbin full
           message: >-
-            Neato's dustbin is full – it will automatically resume cleaning when
-            the dustbin is emptied...
+            Neato {{ device_attr(trigger.entity_id, 'name') }}'s dustbin is
+            full – it will automatically resume cleaning when the dustbin is
+            emptied...
     - wait_for_trigger:
-        - platform: state
-          entity_id: vacuum.neato_d7
-          attribute: status
-          from: Dust bin full
+        - platform: template
+          value_template: >-
+            {{ state_attr(trigger.entity_id, 'status') != 'Dust bin full' }}
       timeout: "12:00:00"
       continue_on_timeout: false
     - service: persistent_notification.dismiss
       data:
-        notification_id: neato_d7_failure
+        notification_id: >-
+          neato_failure_{{ context.id }}
+  mode: parallel
+  max: 2

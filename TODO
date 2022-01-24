@@ -124,9 +124,7 @@
     principle it's ventilation hatch should always be open) – same for the
     Bedroom, when we go to bed at least one of the windows should be ajar...
     This could be via TTS when all lights are switched off before going to bed
-- [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit; see
-      if any of the additional monitoring automations are required for the
-      upstairs unit too (it appears more stable at the moment)
+- [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
 
 ### Development Environment
 
