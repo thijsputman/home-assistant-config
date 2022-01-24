@@ -152,6 +152,18 @@
     - condition: state
       entity_id: sensor.hue_scene_kitchen
       state: Bright (custom)
+    # Abort if the Living Room is "Active" and we're about to restore the
+    # Kitchen to "Daytime" – in this case it's better to keep the Kitchen lights
+    # aligned with the Living Room (as it appears someone manually overrode the
+    # daytime lights in the Living Room)
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_kitchen_previous
+          state: Daytime
+        - condition: state
+          entity_id: sensor.hue_scene_living_room
+          state: Active
     - choose:
         - conditions:
             - condition: template
