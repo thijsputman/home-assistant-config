@@ -1,31 +1,37 @@
 #!/usr/bin/env bash
 
-files=$(git diff --name-only --cached | \
-  xargs -I{} sh -c 'test -f "{}" && echo "{}"')
+# Get all staged files. This will lint the on-disk files (i.e. unstaged changes
+# in the files are also linted) – the sheer simplicity of the solution outweighs
+# this minor drawback...
+files=$(git diff --name-only --cached --diff-filter=ACMR | sed 's| |\\ |g')
+
+status_code=0
 
 if [ -n "$files" ] ; then
 
   echo "Preparing to lint your changes -$(git diff --shortstat --cached)..."
 
-  # Read all staged changes into the $MAPFILE array
-  # Caveat: This lints the on-disk files (i.e. unstaged changes in these files
-  # are also linted) – the sheer simplicity of the below solution outweighs this
-  # minor drawback...
+  # Prettier
   readarray -t <<< "$files"
-  npx --yes prettier --check --ignore-unknown "${MAPFILE[@]}"
+  if ! npx --yes prettier --check --ignore-unknown "${MAPFILE[@]}"
+    then status_code=1 ; fi
 
-  # Have MarkdownLint ignore every file that doesn't end with ".md"
-  # Caveat: Files _without_ extension are validated as-if they are Markdown.
-  # Works for TODOl doesn't for LICENSE (that's what --no-verify is for 😇).
-  npx --yes markdownlint-cli --quiet --ignore "**/*.!(md)" "${MAPFILE[@]}"
+  # MarkdownLint
+  md_files=$(echo "$files" | grep -e .md -e TODO)
+  if [ -n "$md_files" ] ; then
+    readarray -t <<< "$md_files"
+    if ! npx --yes markdownlint-cli "${MAPFILE[@]}"
+      then status_code=1 ; fi
+  fi
 
-  # Again, but now only for YAML-files (as yamllint assumes all files passed in
-  # to be YAML)
-  files=$(echo "$files" | grep .yaml)
-
-  if [ -n "$files" ] ; then
-    readarray -t <<< "$files"
-    yamllint "${MAPFILE[@]}"
+  # YAMLlint
+  yaml_files=$(echo "$files" | grep .yaml)
+  if [ -n "$yaml_files" ] ; then
+    readarray -t <<< "$yaml_files"
+    if ! yamllint "${MAPFILE[@]}"
+      then status_code=1 ; fi
   fi
 
 fi
+
+exit $status_code
