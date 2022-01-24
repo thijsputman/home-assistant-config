@@ -53,8 +53,9 @@
       aim to customise their icons through the UI (add `unique_id` where
       necessary)
   - As of HA 2021.12 it appears `📄 customize.yaml` is slowly getting phased out
-- [ ] Clean-up the grossly inconsistent Zigbee entity-naming (half of them are
-      `light_x`, `openclose_y`, the other half already have descriptive names)
+- [ ] Clean-up inconsistent entity IDs
+  - Especially those coming from deCONZ (half of them are `light_x`,
+    `openclose_y`, the other half already have descriptive names)
   - Some other things are also inconsistent (e.g. `power_xxx` versus `xxx_power`
     and `consumption_xxx` versus `xxx_consumption`)
   - Part of the inconsistency is caused by the fact that (new format) template
@@ -62,9 +63,11 @@
     is derived from the `name` and a balance needs to be struck between
     human-readable and structured (otherwise all friendly names should be
     (re)defined via the UI)
-  - Rename `sensor.xiaomi_miot_environment_co2_density` to match with the other
-    Qingping senors (will cause a loss of history, so do this after all
-    measurements have stabilised)
+  - In general, decide how to proceed: Should all entities have descriptive
+    names or is it acceptable to just have them all called `entity_type_001`?
+    Either approach will lead to inconsistencies over time I'm afraid... Giving
+    a new devices and old device's entity ID is easy, so from that perspective
+    it really doesn't matter.
 - [ ] State attributes store history too, so there's no need to create template
       sensors if they're purely used for graphing in dashboards
       (`mini-graph-card` can graph attributes) or in other automations (use a
@@ -126,10 +129,15 @@
     Bedroom, when we go to bed at least one of the windows should be ajar...
     This could be via TTS when all lights are switched off before going to bed
 - [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
+- [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
+      other Qingping senors
+- [ ] See if it's possible everywhere to replace the custom `template_reloaded`
+      event with `from: unknown` state-triggers
 
 ### Development Environment
 
-- [ ] 🎉
+- [ ] Validate all Home Assistant YAML-files against their (JSON) schemas prior
+      to committing (and as part of the linter GitHub Action)
 
 ## Lovelace
 
@@ -229,6 +237,8 @@
     active scene as a Home Assistant native scene (`scene.room_scene_name` or
     `<None>` if not available) – a simple helper script (to be written) should
     enable hassle free switching of scenes...
+  - Once all changes are implemented (and stabilised), see if all of the
+    "band-aid (🩹)" Hue automations are still required
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
 - [ ] Failure mode for Kitchen-counter motion lights: Switch Kitchen to
@@ -255,6 +265,19 @@
 - [ ] Containerize the Fireplace Node.js code; create some helpers scripts in
       Home Assistant to facilitate the switching on/off (mainly so that their
       previous state gets automatically restored)
+- [ ] Create a toggle in Lovelace stop the television from overriding the
+      lighting settings (for when not everyone is watching television) – there's
+      a lot of "magic" automation potential here, but the best solution is most
+      likely to manual turn off the behaviour when it's unwanted... 😇
+- [ ] Create a Living Room "raw" Hue scene heuristic and combine this with the
+      state of the Ensuite lamp in a derived scene to create a situation
+      (similar to the Kitchen) where the Ensuite lamp can be maintained separate
+      of the overall Living Room scene
+  - This should make it possible to retain the state of the Ensuite lamp while
+    changing the Living Room scene as a whole
+  - This should also help resolving the (occasional) situation where the Ensuite
+    lamp doesn't properly react to Hue commands (mainly when initially turning
+    on) – can be detected and automatically resolved
 
 ## Alarm
 
