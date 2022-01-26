@@ -156,14 +156,22 @@
     # Kitchen to "Daytime" – in this case it's better to keep the Kitchen lights
     # aligned with the Living Room (as it appears someone manually overrode the
     # daytime lights in the Living Room)
-    - condition: not
+    # Note that a plain NOT-condition will not work here: In the below situation
+    # that would equate an AND-condition with two nested NOTs. Situations where
+    # _either_ the Living Room _or_ the Kitchen condition would be true, would
+    # lead to an unwanted abort of the automation in that case...
+    - condition: or
       conditions:
-        - condition: state
-          entity_id: sensor.hue_scene_kitchen_previous
-          state: Daytime
-        - condition: state
-          entity_id: sensor.hue_scene_living_room
-          state: Active
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Active
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen_previous
+              state: Daytime
     - choose:
         - conditions:
             - condition: template
