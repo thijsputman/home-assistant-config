@@ -1,8 +1,13 @@
-- alias: 💡 | 🕹️ Turn on Attic hallway lights (Dimmer Switch)
+- alias: 💡 | 🕹️ Turn on Attic hallway lights (Dimmer Switches)
   id: 26a80c46-4ba4-4721-b650-6b0fccf034ef
   mode: single
   trigger:
     - device_id: c7a32fb1be6494d32caafb27134fee28
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+    - device_id: 5999769c0e60efa48786c19add551dec
       domain: deconz
       platform: device
       type: remote_button_short_press
@@ -15,7 +20,7 @@
     - service: timer.start
       target:
         entity_id: timer.attic_hallway_motion_pause
-- alias: 💡 | 🕹️ Cycle through Attic hallway gangs (Dimmer Switch)
+- alias: 💡 | 🕹️ Cycle through Attic hallway gangs (Dimmer Switches)
   id: 1d18a07f-cd2b-49ac-bcd8-ab48089558c9
   mode: single
   trigger:
@@ -25,6 +30,16 @@
       type: remote_button_short_press
       subtype: dim_up
     - device_id: c7a32fb1be6494d32caafb27134fee28
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: dim_down
+    - device_id: 5999769c0e60efa48786c19add551dec
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: dim_up
+    - device_id: 5999769c0e60efa48786c19add551dec
       domain: deconz
       platform: device
       type: remote_button_short_press
@@ -62,11 +77,16 @@
             entity_id:
               - light.smart_relay_3
               - light.smart_relay_4
-- alias: 💡 | 🕹️ Turn off Attic hallway lights (Dimmer Switch)
+- alias: 💡 | 🕹️ Turn off Attic hallway lights (Dimmer Switches)
   id: d248cca1-d887-40b2-966a-5bbc2ebd84dd
   mode: single
   trigger:
     - device_id: c7a32fb1be6494d32caafb27134fee28
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_off
+    - device_id: 5999769c0e60efa48786c19add551dec
       domain: deconz
       platform: device
       type: remote_button_short_press
