@@ -65,6 +65,17 @@
                       data:
                         group_name: Kitchen
                         scene_name: Ambiance
+                    # Wait for the Kitchen to register its change before
+                    # changing counter & cupboards; this is required for the
+                    # scene heuristic to work properly. Not doing so will lead
+                    # the Kitchen to revert back to Daytime (instead of
+                    # Ambiance) after activity ends.
+                    - wait_for_trigger:
+                        - platform: state
+                          entity_id: sensor.hue_scene_kitchen
+                          to: Ambiance
+                      timeout: "00:00:10"
+                      continue_on_timeout: false
                     - service: hue.hue_activate_scene
                       data:
                         group_name: Kitchen counter & cupboards
