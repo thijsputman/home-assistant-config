@@ -11,7 +11,7 @@ card:
   cards:
     - type: conditional
       conditions:
-        - entity: sensor.afvalwijzer_next_item
+        - entity: sensor.afvalwijzer_next_type
           state: restafval
       card:
         type: entity
@@ -29,7 +29,7 @@ card:
         icon: mdi:recycle
     - type: conditional
       conditions:
-        - entity: sensor.afvalwijzer_next_item
+        - entity: sensor.afvalwijzer_next_type
           state: gft
       card:
         type: entity
@@ -48,7 +48,7 @@ card:
         icon: mdi:food-apple-outline
     - type: conditional
       conditions:
-        - entity: sensor.afvalwijzer_next_item
+        - entity: sensor.afvalwijzer_next_type
           state: papier
       card:
         type: entity
