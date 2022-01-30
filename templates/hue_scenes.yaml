@@ -1,29 +1,26 @@
-# Heuristically track the Hue scene name based on the group's (i.e. Hue
-# room/zone) brightness, xy_color and the number of lights switched on.
+# Heuristically track the Hue scene name based on the group's (i.e. Hue room/
+# zone) brightness, xy_color and the number of lights switched on.
 #
-# Uses the groups of lights defined in "📄 groups/hue.yaml" to enumerate the
-# number of lights switched on. This greatly increases the accuracy of the
-# heuristic (as otherwise switching on a single light in a room will often
-# detect the previous scene for that room as the active scene).
+# Uses the custom light groups defined in "📄 ./lights.yaml". This is necessary
+# as the (relative) instability of some non-Signify bulbs cause the heuristic to
+# fail. The custom lights groups explicitly exclude these instable bulbs.
+# Additionally, the custom light groups are used to enumerate the number of
+# lights switched on; this further increases the accuracy of the heuristic.
 #
 # Caveats:
-#   * When a room is on, switching off individual lights (or vice versa,
-#     switching on the entire room when individual lights were already on) might
-#     – or might not – lead to an update in the detected scene. This greatly
-#     depends on whether the Hue API deems it appropriate to actually report it
-#     as a state change...
-#   * Transitions are not guaranteed to be discrete: There can be (multiple)
-#     intermediate state(s) as the individual lights catch up with the scene.
-#     The heuristic tries its best to cope with this, but there are cases where
-#     a transition through <Unknown> cannot be avoided.
-#   * Some of the scenes are "unstable", they either initialise to slightly
-#     different values between activations or alternate between values while
-#     active. Mainly the brightness appears to drift a bit...
+#   * Transitions are not guaranteed to be discrete: There can be intermediate
+#     state(s) as the individual lights catch up with the scene. The heuristic
+#     tries its best to cope with this, but there are cases where a transition
+#     through <Unknown> cannot be avoided.
+#   * Some of the scenes are "unstable", they either initialise at slightly
+#     different values from one activation to another or alternate between
+#     values while active – these variations have to be empirically determined
+#     for each of the tracked scenes.
 
 # Living room [Hue room]
 - trigger:
     - platform: state
-      entity_id: light.living_room
+      entity_id: light.hue_group_living_room
       attribute: brightness
       to: ~
       # The Hue API doesn't always do a discrete transition – hold the state for
@@ -31,7 +28,7 @@
       # catch up with the scene
       for: "00:00:02"
     - platform: state
-      entity_id: light.living_room
+      entity_id: light.hue_group_living_room
       attribute: xy_color
       to: ~
       # Idem...
@@ -39,7 +36,7 @@
     # Short-circuit the "off"-state – no need to wait for the attributes to
     # update in this case
     - platform: state
-      entity_id: light.living_room
+      entity_id: light.hue_group_living_room
       to: "off"
     # The transition to "unknown" indicates the template sensors got reloaded;
     # force a re-render of the template to bring the sensor back to its proper
@@ -66,53 +63,58 @@
           <Off>
         {% else %}
           {%
-            set num_lights = expand('group.hue_room_living_room') |
-              selectattr('state', '==', 'on') | list | length
+            set num_lights = expand(
+              state_attr('light.hue_group_living_room', 'entity_id')
+            ) | selectattr('state', '==', 'on') | list | length
           %}
           {%
             set brightness =
-              state_attr('light.living_room', 'brightness') | int(-1)
+              state_attr('light.hue_group_living_room', 'brightness') | int(-1)
           %}
           {%
-            if state_attr('light.living_room', 'xy_color') == none
+            if state_attr('light.hue_group_living_room', 'xy_color') == none
           %}
             {% set xy_color = [-1.0, -1.0] %}
           {% else %}
             {%
-              set xy_color = state_attr('light.living_room', 'xy_color')
+              set xy_color =
+                state_attr('light.hue_group_living_room', 'xy_color')
             %}
             {%
               set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
             %}
           {% endif %}
           {%
-            if num_lights == 8 and
-              (brightness > 130 and brightness < 150) and
-              (xy_color[0] == 0.37 and xy_color[1] == 0.37)
+            if num_lights == 6 and
+              (brightness == 100 or brightness == 105) and
+              (
+                (xy_color[0] == 0.37 and xy_color[1] == 0.36) or
+                (xy_color[0] == 0.4 and xy_color[1] == 0.36)
+              )
           %}
             Daytime
           {%
-            elif num_lights == 11 and
-              (brightness > 110 and brightness < 130) and
-              (xy_color[0] == 0.54 and xy_color[1] == 0.38)
+            elif num_lights == 9 and brightness == 132 and
+              (xy_color[0] == 0.51 and xy_color[1] == 0.35)
           %}
             Ambiance
           {%
-            elif num_lights == 9 and
-              (brightness > 40 and brightness < 60) and
-              (xy_color[0] == 0.53 and xy_color[1] == 0.37)
+            elif num_lights == 7 and brightness == 15 and
+              (xy_color[0] == 0.51 and xy_color[1] == 0.36)
           %}
             Movie
           {%
-            elif num_lights == 9 and
-              (brightness > 70 and brightness < 90) and
-              (xy_color[0] == 0.54 and xy_color[1] == 0.37)
+            elif num_lights == 7 and brightness == 58 and
+              (xy_color[0] == 0.51 and xy_color[1] == 0.36)
           %}
             Movie (ambiance)
           {%
-            elif num_lights == 11 and
-              (brightness > 130 and brightness < 150) and
-              (xy_color[0] == 0.55 and xy_color[1] == 0.37)
+            elif num_lights == 9 and
+              (brightness == 148 or brightness == 159) and
+              (
+                (xy_color[0] == 0.49 and xy_color[1] == 0.36) or
+                (xy_color[0] == 0.5 and xy_color[1] == 0.36)
+              )
           %}
             Active
           {% else %}
@@ -134,22 +136,23 @@
           {% endif %}
       availability: >-
         {{
-          states('light.living_room') not in ['unknown', 'unavailable']
+          states('light.hue_group_living_room') not in
+            ['unknown', 'unavailable']
         }}
 # Kitchen counter & cupboards [Hue zone]
 - trigger:
     - platform: state
-      entity_id: light.kitchen_counter_cupboards
+      entity_id: light.hue_group_kitchen_counter_cupboards
       attribute: brightness
       to: ~
       for: "00:00:02"
     - platform: state
-      entity_id: light.kitchen_counter_cupboards
+      entity_id: light.hue_group_kitchen_counter_cupboards
       attribute: xy_color
       to: ~
       for: "00:00:02"
     - platform: state
-      entity_id: light.kitchen_counter_cupboards
+      entity_id: light.hue_group_kitchen_counter_cupboards
       to: "off"
     - platform: state
       entity_id: sensor.hue_scene_kitchen_counter_cupboards_raw
@@ -162,38 +165,42 @@
       unique_id: b7842630-c541-4e0e-a7ce-c0f4deea3f81
       icon: mdi:movie-filter
       state: >-
-        {% if states('light.kitchen_counter_cupboards') == 'off' %}
+        {% if states('light.hue_group_kitchen_counter_cupboards') == 'off' %}
           <Off>
         {% else %}
           {%
-            set num_lights =
-              expand('group.hue_zone_kitchen_counter_cupboards') |
-              selectattr('state', '==', 'on') | list | length
+            set num_lights = expand(
+              state_attr('light.hue_group_kitchen_counter_cupboards',
+                'entity_id')
+            ) | selectattr('state', '==', 'on') | list | length
           %}
           {%
             set brightness =
-              state_attr('light.kitchen_counter_cupboards', 'brightness') |
+              state_attr('light.hue_group_kitchen_counter_cupboards',
+                'brightness') |
               int(-1)
           %}
           {%
-            if state_attr('light.kitchen_counter_cupboards', 'xy_color') == none
+            if state_attr('light.hue_group_kitchen_counter_cupboards',
+              'xy_color') == none
           %}
             {% set xy_color = [-1.0, -1.0] %}
           {% else %}
             {%
               set xy_color =
-                state_attr('light.kitchen_counter_cupboards', 'xy_color')
+                state_attr('light.hue_group_kitchen_counter_cupboards',
+                  'xy_color')
             %}
             {%
               set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
             %}
           {% endif %}
           {%
-            if num_lights == 6 and
-              (brightness > 140 and brightness < 160) and
+            if num_lights == 4 and brightness == 130 and
               (
-                (xy_color[0] == 0.46 and xy_color[1] == 0.38) or
-                (xy_color[0] == 0.41 and xy_color[1] == 0.39)
+                (xy_color[0] == 0.41 and xy_color[1] == 0.39) or
+                (xy_color[0] == 0.42 and xy_color[1] == 0.39) or
+                (xy_color[0] == 0.46 and xy_color[1] == 0.38)
               )
           %}
             Activity
@@ -203,7 +210,7 @@
         {% endif %}
       availability: >-
         {{
-          states('light.kitchen_counter_cupboards') not in
+          states('light.hue_group_kitchen_counter_cupboards') not in
             ['unknown', 'unavailable']
         }}
 - trigger:
@@ -257,17 +264,17 @@
 # Kitchen [Hue room]
 - trigger:
     - platform: state
-      entity_id: light.kitchen
+      entity_id: light.hue_group_kitchen
       attribute: brightness
       to: ~
       for: "00:00:02"
     - platform: state
-      entity_id: light.kitchen
+      entity_id: light.hue_group_kitchen
       attribute: xy_color
       to: ~
       for: "00:00:02"
     - platform: state
-      entity_id: light.kitchen
+      entity_id: light.hue_group_kitchen
       to: "off"
     - platform: state
       entity_id: sensor.hue_scene_kitchen_raw
@@ -280,51 +287,54 @@
       unique_id: c5876824-72b0-4b40-9d70-a2cde1bc1d7f
       icon: mdi:movie-filter
       state: >-
-        {% if states('light.kitchen') == 'off' %}
+        {% if states('light.hue_group_kitchen') == 'off' %}
           <Off>
         {% else %}
           {%
-            set num_lights = expand('group.hue_room_kitchen') |
-              selectattr('state', '==', 'on') | list | length
+            set num_lights = expand(
+              state_attr('light.hue_group_kitchen', 'entity_id')
+            ) | selectattr('state', '==', 'on') | list | length
           %}
           {%
             set brightness =
-              state_attr('light.kitchen', 'brightness') | int(-1)
+              state_attr('light.hue_group_kitchen', 'brightness') | int(-1)
           %}
           {%
-            if state_attr('light.kitchen', 'xy_color') == none
+            if state_attr('light.hue_group_kitchen', 'xy_color') == none
           %}
             {% set xy_color = [-1.0, -1.0] %}
           {% else %}
             {%
-              set xy_color = state_attr('light.kitchen', 'xy_color')
+              set xy_color = state_attr('light.hue_group_kitchen', 'xy_color')
             %}
             {%
               set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
             %}
           {% endif %}
           {%
-            if num_lights == 16 and
-              (brightness > 70 and brightness < 90) and
-              (xy_color[0] == 0.37 and xy_color[1] == 0.37)
+            if num_lights == 14 and brightness == 78 and
+              (
+                (xy_color[0] == 0.38 and xy_color[1] == 0.37) or
+                (xy_color[0] == 0.4 and xy_color[1] == 0.36)
+              )
           %}
             Daytime
           {%
-            elif num_lights == 16 and
-              (brightness > 50 and brightness < 70) and
-              (xy_color[0] == 0.39 and xy_color[1] == 0.28)
+            elif num_lights == 14 and brightness == 60 and
+              (xy_color[0] == 0.48 and xy_color[1] == 0.33)
           %}
             Ambiance
           {%
-            elif num_lights == 12 and
-              (brightness > 40 and brightness < 60) and
-              (xy_color[0] == 0.44 and xy_color[1] == 0.28)
+            elif num_lights == 10 and brightness == 62 and
+              (xy_color[0] == 0.46 and xy_color[1] == 0.3)
           %}
             Movie
           {%
-            elif num_lights == 16 and
-              (brightness > 170 and brightness < 190) and
-              (xy_color[0] == 0.45 and xy_color[1] == 0.41)
+            elif num_lights == 14 and brightness == 187 and
+              (
+                (xy_color[0] == 0.46 and xy_color[1] == 0.4) or
+                (xy_color[0] == 0.49 and xy_color[1] == 0.38)
+              )
           %}
             Bright (custom)
           {% else %}
@@ -332,7 +342,9 @@
           {% endif %}
         {% endif %}
       availability: >-
-        {{ states('light.kitchen') not in ['unknown', 'unavailable'] }}
+        {{
+          states('light.hue_group_kitchen') not in ['unknown', 'unavailable']
+        }}
 - trigger:
     - platform: state
       entity_id: sensor.hue_scene_kitchen_raw
@@ -406,8 +418,9 @@
         #}
         {%
           elif states('sensor.hue_scene_kitchen_counter_cupboards_raw')
-            == 'Activity'
-          and states('sensor.hue_scene_kitchen_previous') not in
+            == 'Activity' and
+          states('sensor.hue_scene_kitchen_raw') == '<Unknown>' and
+          states('sensor.hue_scene_kitchen_previous') not in
             ['unavailable', 'unknown']
         %}
           {{ states('sensor.hue_scene_kitchen_previous') }}
@@ -437,17 +450,17 @@
 # Garden [Hue room]
 - trigger:
     - platform: state
-      entity_id: light.garden
+      entity_id: light.hue_group_garden
       attribute: brightness
       to: ~
       for: "00:00:02"
     - platform: state
-      entity_id: light.garden
+      entity_id: light.hue_group_garden
       attribute: xy_color
       to: ~
       for: "00:00:02"
     - platform: state
-      entity_id: light.garden
+      entity_id: light.hue_group_garden
       to: "off"
     - platform: state
       entity_id: sensor.hue_scene_garden
@@ -460,39 +473,38 @@
       unique_id: 2e5bc57f-240a-4669-90e4-ace50876fb70
       icon: mdi:movie-filter
       state: >-
-        {% if states('light.garden') == 'off' %}
+        {% if states('light.hue_group_garden') == 'off' %}
           <Off>
         {% else %}
           {%
-            set num_lights = expand('group.hue_room_garden') |
-              selectattr('state', '==', 'on') | list | length
+            set num_lights = expand(
+              state_attr('light.hue_group_garden', 'entity_id')
+            ) | selectattr('state', '==', 'on') | list | length
           %}
           {%
             set brightness =
-              state_attr('light.garden', 'brightness') | int(-1)
+              state_attr('light.hue_group_garden', 'brightness') | int(-1)
           %}
           {%
-            if state_attr('light.garden', 'xy_color') == none
+            if state_attr('light.hue_group_garden', 'xy_color') == none
           %}
             {% set xy_color = [-1.0, -1.0] %}
           {% else %}
             {%
-              set xy_color = state_attr('light.garden', 'xy_color')
+              set xy_color = state_attr('light.hue_group_garden', 'xy_color')
             %}
             {%
               set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
             %}
           {% endif %}
           {%
-            if num_lights == 7 and
-              (brightness > 220 and brightness < 240) and
+            if num_lights == 5 and brightness == 255 and
               (xy_color[0] == 0.41 and xy_color[1] == 0.36)
           %}
             Active
           {%
-            elif num_lights == 8 and
-              (brightness > 100 and brightness < 120) and
-              (xy_color[0] == 0.36 and xy_color[1] == 0.31)
+            elif num_lights == 6 and brightness == 114 and
+              (xy_color[0] == 0.43 and xy_color[1] == 0.34)
           %}
             Ambiance
           {% else %}
@@ -512,4 +524,6 @@
             <None>
           {% endif %}
       availability: >-
-        {{ states('light.garden') not in ['unknown', 'unavailable'] }}
+        {{
+          states('light.hue_group_garden') not in ['unknown', 'unavailable']
+        }}

@@ -161,12 +161,7 @@ binary_sensor:
 
 binary_sensor custom: !include_dir_merge_list sensors_binary/
 
-light:
-  - platform: group
-    name: Attic hallway
-    entities:
-      - light.smart_relay_3
-      - light.smart_relay_4
+light: !include lights.yaml
 
 media_player:
   # Arlo

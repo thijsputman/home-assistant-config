@@ -1,9 +1,8 @@
 # The Gledopto controllers in the Kitchen are a bit stubborn; they don't always
-# respond to the first scene change request nor do they always properly switch
+# respond to the first scene change request, nor do they always properly switch
 # off when asked to do so... See "📄 docs/HUE.md" for more details.
 # The below aims to keep the "off" state of the Gledopto controllers in line
-# with the other lights in the Kitchen (which don't exhibit this aberrant
-# behaviour).
+# with the Kitchen as a whole.
 - alias: 💡 | 🩹 Enforce "off"-state for Gledopto controllers
   id: 77eb93cc-0e5f-4ad9-9153-e2f7858b1688
   trigger:
@@ -14,11 +13,12 @@
       to: "on"
       for: 10
   condition:
-    # Whenever these two lights-strips are on, the lights in the cupboards
-    # should also be on – if not, toggle the light-strips back off...
+    # If the Gledopto controllers are on, the rest of the Kitchen should also be
+    # on. If that's not the case, switch the Gledopto controllers off. The below
+    # is possible because Hue Group – Kitchen is explicitly set up to _exclude_
+    # the Gledopto controllers.
     - condition: state
-      # Checking one of the four cupboard lights is sufficient
-      entity_id: light.hue_color_spot_2_2
+      entity_id: light.hue_group_kitchen
       state: "off"
   action:
     - service: light.turn_off
@@ -31,11 +31,9 @@
 - alias: 💡 | 🩹 Enforce Kitchen scene change for Gledopto controllers
   id: 66dc6374-f19a-437c-966b-0679400fc2b5
   trigger:
-    # Switching Kitchen counter & cupboards to "Activity" might cause Kitchen
-    # to momentarily transition to <Unknown> (and then right back to its
-    # previous/actual state). By prioritising (and blocking momentarily) on the
-    # Kitchen counter & cupboards trigger, we prevent a race-condition where
-    # the Kitchen trigger might undo the intended scene change.
+    # By prioritising (and blocking momentarily) on the Kitchen counter &
+    # cupboards trigger, we prevent a race-condition where the Kitchen trigger
+    # might undo the intended scene change.
     - platform: state
       entity_id: sensor.hue_scene_kitchen_counter_cupboards
       to:
@@ -102,8 +100,6 @@
         - sensor.hue_scene_garden
       to:
         - <Unknown>
-      # Don't log recoverable failures
-      for: "00:00:20"
   condition: []
   action:
     - variables:
@@ -112,41 +108,54 @@
             trigger.entity_id | replace('sensor.hue_scene_', '')
           }}
         num_lights: >-
-          {#
-            In hindsight, better choices could have been made with regards to
-            naming the groups... 😇
-          #}
-          {% if room == 'kitchen_counter_cupboards' %}
-            {{
-              expand('group.hue_zone_' ~ room) |
-                selectattr('state', '==', 'on') | list | length
-            }}
-          {% else %}
-            {{
-              expand('group.hue_room_' ~ room) |
-                selectattr('state', '==', 'on') | list | length
-            }}
-          {% endif %}
+          {{
+            expand(
+              state_attr('light.hue_group_' ~ room, 'entity_id')
+            ) | selectattr('state', '==', 'on') | list | length
+          }}
         brightness: >-
-          {{ state_attr('light.' ~ room, 'brightness') | int(-1) }}
+          {{ state_attr('light.hue_group_' ~ room, 'brightness') | int(-1) }}
         xy_color: >-
           {%
-            if state_attr('light.' ~ room, 'xy_color') == none
+            if state_attr('light.hue_group_' ~ room, 'xy_color') == none
           %}
             {{ [-1.0, -1.0] }}
           {% else %}
             {%
-              set xy_color = state_attr('light.' ~ room, 'xy_color')
+              set xy_color = state_attr('light.hue_group_' ~ room, 'xy_color')
             %}
             {{ [xy_color[0] | round(2), xy_color[1] | round (2)] }}
           {% endif %}
+    # Attempt to distinguish between a regular and transient failure
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - sensor.hue_scene_living_room
+            - sensor.hue_scene_kitchen
+            - sensor.hue_scene_kitchen_counter_cupboards
+            - sensor.hue_scene_garden
+          from:
+            - <Unknown>
+      timeout: "00:00:20"
+      continue_on_timeout: true
+    - variables:
+        transient_end_state: >-
+          {%- if wait.trigger is not none -%}
+            {{ wait.trigger.to_state.state }}
+          {%- endif -%}
     - service: system_log.write
       data:
         level: warning
         message: >-
-          Hue scene heuristic failure: {{ trigger.entity_id }} transitioned from
-          {{ trigger.from_state.state }} to {{ trigger.to_state.state }}
-          (num_lights: {{ num_lights}}, brightness: {{ brightness }},
-          xy_color: {{ xy_color }})
+          Hue scene heuristic failure: {{ trigger.entity_id }} transitioned {%
+          if transient_end_state != '' -%}
+            through <Unknown> from {{ trigger.from_state.state }} to {{
+            transient_end_state }} {%
+          else -%}
+            from {{ trigger.from_state.state }} to
+            {{ trigger.to_state.state }} {%
+          endif -%}
+          { num_lights: {{ num_lights}}, brightness: {{ brightness }}, xy_color:
+          {{ xy_color }} }
   mode: parallel
   max: 3
