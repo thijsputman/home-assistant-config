@@ -35,7 +35,16 @@
   action:
     - service: input_boolean.turn_off
       entity_id: input_boolean.fireplace
-    - delay: 20
+    # Wait for the Fireplace to transition back to "on" – in reality the lights
+    # never turned off, but the state change indicates the lights are under
+    # normal control again...
+    - wait_for_trigger:
+        - platform: state
+          entity_id: light.fireplace
+          from: "off"
+          to: "on"
+      timeout: "00:01:00"
+      continue_on_timeout: true
     - service: light.turn_off
       entity_id:
         - light.fireplace_1_living_room
@@ -108,9 +117,10 @@
   action:
     - service: input_boolean.turn_off
       entity_id: input_boolean.fireplace
-    # The fireplace lights will remain in whatever state they were in
-    # when the animation stopped; re-applying the current scene restores
-    # them to their proper setting
+    # The fireplace lights will remain in whatever state they were in when the
+    # animation stopped; re-applying the current scene restores them to their
+    # proper setting. We have to wait a bit for the lights to be under normal
+    # control again (empirically determinted to be ± 15 seconds).
     - delay: 20
     - service: hue.hue_activate_scene
       data:

@@ -1,8 +1,15 @@
 - platform: group
   name: Attic hallway
+  unique_id: 2cb6deb0-459e-4837-aef1-e7cead101792
   entities:
     - light.smart_relay_3
     - light.smart_relay_4
+- platform: group
+  name: Fireplace
+  unique_id: 1d73f495-bba4-4d6c-a5b5-e7494a7c00d5
+  entities:
+    - light.fireplace_1_living_room
+    - light.fireplace_2_living_room
 # Used by the Hue scene heuristic in "📄 templates/hue_scenes.yaml" to determine
 # the state of each Hue room/zone and to enumerate the number of lights on.
 # These groups are defined explicitly (i.e., not relying the room/zone "lights"
@@ -10,6 +17,7 @@
 # tend to bug out quite a bit and wreak havoc with the heuristic...
 - platform: group
   name: Hue Group – Living room
+  unique_id: 860e51a5-b068-4829-9434-ba13a8771fe3
   entities:
     - light.hue_filament_bulb_1_3
     - light.fireplace_1_living_room
@@ -22,6 +30,7 @@
     - light.wall_garden_right_living_room
 - platform: group
   name: Hue Group – Kitchen
+  unique_id: 5ae531ba-03e7-4b45-b06b-4538d78cdf4d
   entities:
     - light.color_spot_1_kitchen
     - light.color_spot_2_kitchen
@@ -39,6 +48,7 @@
     - light.spot_4_kitchen_garden_side
 - platform: group
   name: Hue Group – Kitchen counter & cupboards
+  unique_id: eaa0bf39-eb8a-4223-92ed-1b15745fec7a
   entities:
     - light.hue_color_spot_2_2
     - light.hue_color_spot_1_3
@@ -46,6 +56,7 @@
     - light.hue_color_spot_2
 - platform: group
   name: Hue Group – Garden
+  unique_id: 50840e0b-58f9-4bc6-b339-d2ede06153cb
   entities:
     - light.hue_outdoor_wall_1
     - light.outdoor_lightstrip_garden

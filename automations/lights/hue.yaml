@@ -143,6 +143,10 @@
           {%- if wait.trigger is not none -%}
             {{ wait.trigger.to_state.state }}
           {%- endif -%}
+        transient_duration: >-
+          {%- if wait.trigger is not none -%}
+            {{ (20 - wait.remaining) | round(0) }}
+          {%- endif -%}
     - service: system_log.write
       data:
         level: warning
@@ -150,7 +154,7 @@
           Hue scene heuristic failure: {{ trigger.entity_id }} transitioned {%
           if transient_end_state != '' -%}
             through <Unknown> from {{ trigger.from_state.state }} to {{
-            transient_end_state }} {%
+            transient_end_state }} for {{ transient_duration }} seconds {%
           else -%}
             from {{ trigger.from_state.state }} to
             {{ trigger.to_state.state }} {%
