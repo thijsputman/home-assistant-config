@@ -283,16 +283,7 @@
 
 ### Bugs
 
-- [ ] When coming home after dark: Switch off the Attic light. Occupancy
-      simulation turns them on; it's not something you realises (i.e. manually
-      switch off) when you get back home. Leaving them on causes Attic occupancy
-      to trigger and the heating/Airco to inadvertently switch on upon coming
-      home.
-- [ ] When coming home (after dark): Stop the "lights out"-script if its running
-      (used by occupancy simulation automations to turn off the lights). There's
-      a potential race condition where one comes home, switches on some lights
-      just to have them switched off again a couple minutes later by the "Lights
-      out"-script...
+🎉
 
 ### Features
 

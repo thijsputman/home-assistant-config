@@ -1,4 +1,5 @@
-- alias: 💡 | ✈️ Inside lights off when everyone away (daily between 23:00 - 01:00)
+- alias: >-
+    💡 | ✈️ Inside lights off when everyone away (daily between 23:00 - 01:00)
   id: 9b24fc0b-fc61-432c-b881-aa2b644a2efe
   trigger:
     - platform: time
@@ -13,7 +14,30 @@
     - condition: state
       entity_id: group.family
       state: not_home
-    - service: script.lights_out
+    - service: script.turn_on
+      target:
+        entity_id: script.lights_out
+  mode: single
+# The "Lights out"-script has a runtime of around 15-minutes; if someone comes
+# home while the script is running, the inside lights will switch off after a
+# short while for no apparent reason... To prevent that, stop the script when
+# someone comes home. No need to switch on any lights, other automations (in
+# "📄 alarm/welcome.yaml" specifically) handle that.
+- alias: 💡 | ✈️ Stop "Lights out"-script when someone home
+  id: 9c2f2cea-8a22-40aa-ba35-575816f03acd
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: not_home
+      to: home
+  condition:
+    - condition: state
+      entity_id: script.lights_out
+      state: "on"
+  action:
+    - service: script.turn_off
+      target:
+        entity_id: script.lights_out
   mode: single
 - alias: 💡 | ✈️ Attic lights on when everyone away (most weekdays at dusk)
   id: 10746e4d-a051-42c0-afb0-79b375ac17d2
@@ -28,14 +52,15 @@
     - condition: state
       entity_id: group.family
       state: not_home
+    # ± 85% Chance of switching the lights on
     - condition: template
       value_template: >-
         {{ (range(0, 99) | random) > 15 }}
-    # Only run if the Attic lights haven't been switched off yet by the other
-    # Attic occupancy simulation automation.
-    # This effectively disables both automations (the "off"-automation in turn
-    # depends on this automation running) if dusk is after 19:30±00:30 (at which
-    # point the Attic lights become irrelevant for occupancy simulation).
+    # The Attic lights are switched off at 19:30 ± 00:30. If dusk happens after
+    # that time, we should _not_ switch the lights on again (that would lead
+    # them to stay on till the entire house is switched off). We don't know on
+    # beforehand at what time the lights are switched off, so instead we check
+    # if the automation reponsible for switching them on already ran today.
     - condition: template
       value_template: >-
         {{
@@ -43,10 +68,10 @@
             'automation.attic_lights_off_when_everyone_away_weekdays_between_19_00_20_00',
             'last_triggered'
           ) != none and
-          now().strftime('%j')|int > state_attr(
+          now().strftime('%j') | int > state_attr(
             'automation.attic_lights_off_when_everyone_away_weekdays_between_19_00_20_00',
             'last_triggered'
-          ).strftime('%j')|int
+          ).strftime('%j') | int
         }}
   action:
     - service: hue.hue_activate_scene
@@ -55,15 +80,16 @@
         scene_name: Away
   mode: single
 # N.B. This automation's name is used in the previous automation!
-- alias: 💡 | ✈️ Attic lights off when everyone away (weekdays between 19:00 - 20:00)
+- alias: >-
+    💡 | ✈️ Attic lights off when everyone away (weekdays between 19:00 - 20:00)
   id: 7b9daada-513f-43c8-8715-10568d2d16a9
   trigger:
     - platform: time
       at: "19:00:00"
   condition:
     - condition: state
-      state: "on"
       entity_id: light.attic
+      state: "on"
     - condition: state
       entity_id: group.family
       state: not_home
@@ -74,5 +100,25 @@
       entity_id: group.family
       state: not_home
     - service: light.turn_off
+      target:
+        entity_id: light.attic
+  mode: single
+# Leaving the Attic lights on when someone's home would lead the occupancy
+# detection in the Attic to assume there's someone in the Attic and
+# unintentionally switch on the heating/airco...
+- alias: 💡 | ✈️ Attic lights off when someone home
+  id: 561c1b1f-4604-4f18-8635-d716dc677387
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: not_home
+      to: home
+  condition:
+    - condition: state
       entity_id: light.attic
+      state: "on"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.attic
   mode: single

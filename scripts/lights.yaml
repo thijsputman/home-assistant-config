@@ -11,9 +11,7 @@ lights_out:
         - light.front_back_door
         - light.garden
     # This script is generally triggered from the tablet in the Kitchen – dim
-    # Kitchen lights to provide a visual cue that the script is running.
-    # Note that the Gledopto controllers don't like (i.e. don't respond to) Hue
-    # fade outs; that's why there's no fade out here.
+    # Kitchen lights to provide a visual cue that the script is running
     - service: hue.hue_activate_scene
       data:
         group_name: Kitchen
@@ -26,13 +24,12 @@ lights_out:
     # Lower Hallway brightness one minute prior to switching it off
     - service: light.turn_on
       data:
-        brightness_step_pct: -25
+        brightness_step_pct: -15
         entity_id:
           - light.hallway
     - delay: "00:01:00"
     # If there's no motion in the Bathroom and Wardrobe, switch them off too
-    # (otherwise they'll naturally go off after their motion timeouts – this is
-    # purely gold plating... 😉)
+    # (otherwise they'll naturally go off after their motion timeouts
     - wait_template: >-
         {{
           is_state('group.motion_bathroom', 'off') and
@@ -60,17 +57,17 @@ lights_out:
         entity_id: light.hallway
     # Occasionally, lights don't turn off properly – this causes the
     # "Everyone asleep"-state to not trigger. Here we ensure all lights are
-    # *really* off by toggling all groups that are still reporting "on", "off"
+    # *really* off by toggling all groups that are still reporting "on" to "off"
     # yet again... The 10-minute delay is important as it sometimes takes a
     # while for the state reported by the Hue API to align with the actual state
-    # of the lights again.
+    # of the lights.
     # An exception is made for the the Bedroom (where the lights might still be
     # switched on intentionally).
     - delay: "00:10:00"
     - variables:
         rooms_on: >-
           {% set result = namespace(lights=[]) %}
-          {% for light in expand(states.group.light_inside_rooms) |
+          {% for light in expand('group.light_inside_rooms') |
             selectattr('attributes.is_hue_group', 'true') |
             selectattr('state', 'eq', 'on') |
             selectattr('entity_id', 'ne', 'light.bedroom')
