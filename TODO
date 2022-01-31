@@ -13,9 +13,11 @@
   - [SMS](#sms)
 - [Climate](#climate)
 - [Lights](#lights)
-- [Alarm](#alarm)
   - [Bugs](#bugs-1)
   - [Features](#features-1)
+- [Alarm](#alarm)
+  - [Bugs](#bugs-2)
+  - [Features](#features-2)
 - [Arlo](#arlo)
 - [Network](#network)
 - [Hardware](#hardware)
@@ -141,7 +143,7 @@
 
 ## Lovelace
 
-- [ ] SMS functionality: Show cellular reception and credit remaining
+- [ ] SMS functionality: Show cellular reception
 - [ ] Provide a visual indication of the Remote UI (Nabu Casa) status.
       Connection issues there otherwise might go unnoticed for some time (while
       they do mess with the Mobile App functionalities)
@@ -222,6 +224,17 @@
 
 ## Lights
 
+### Bugs
+
+- [ ] Failure mode for Bathroom motion-sensing automation: If the light-level
+      falls below its threshold while a motion sensors remains triggered, the
+      light will never come on (as the automation doesn't restart until the
+      motion sensor clears and retriggers). Instead of using a (preemptive)
+      condition, use a waiting-loop that continuously (i.e. every 30 seconds)
+      evaluates the conditions
+
+### Features
+
 - [ ] Replace all calls to the `hue.hue_activate_scene` script with native Home
       Assistant scene changes; see
       <https://github.com/home-assistant/core/pull/58996>
@@ -241,23 +254,6 @@
     "band-aid (🩹)" Hue automations are still required
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
-- [ ] Failure mode for Kitchen-counter motion lights: Switch Kitchen to
-      "Ambiance", trigger counter motion sensor, switch Kitchen to "Bright
-      (Custom)" (while motion sensor is still active). After motion clears,
-      Kitchen switches back to "Ambiance" instead of to "Bright (Custom)"
-- [ ] Use "Light Group" instead of regular groups for grouping lights (where
-      applicable – only makes sense when the group of lights needs (advanced)
-      light control, not necessary for basic operations (i.e. on/off).
-- [ ] Failure mode for Bathroom motion-sensing automation: If the light-level
-      falls below its threshold while a motion sensors remains triggered, the
-      light will never come on (as the automation doesn't restart until the
-      motion sensor clears and retriggers). Instead of using a (preemptive)
-      condition, use a waiting-loop that continuously (i.e. every 30 seconds)
-      evaluates the conditions
-- [ ] Failure mode for Living room Hue scene heuristic: When the brightness of
-      the Ensuite ceiling lamp is increased during the "Daytime" scene, the
-      detected scene does not change (most likely the overall change is too
-      small – might require a specific exception)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
 - [ ] Have the buttons next to the bed control the Bedroom lights
   - ✔️ Toggle off when on; on when off
@@ -348,11 +344,6 @@
 
 ## Hardware
 
-- [ ] The Heiman Zigbee alarm-"sensor" in the Wardrobe drops off the
-      Zigbee-network every half hour (comes back after a couple minutes). When
-      it does this, it takes the Xiaomi Zigbee smart-plug (connected to the
-      Airco) in the Bedroom with it... Verify the problem is caused by the
-      alarm-sensor, if so, buy a new one / find an alternative solution
 - [ ] The Xiaomi two-gang Zigbee relay in the Attic hallway sometimes refuses to
       switch off one of its gangs (always the same). The Zigbee network thinks
       the light is off (it's actually still on); turning it off again properly
@@ -362,11 +353,5 @@
       need for Internet-connectivity. Block their MAC addresses in the router to
       prevent them from "phoning home" (actually, more to prevent people from
       "phoning in" through them).
-- [ ] The Bluetooth-stack on the Pi0 in the Bedroom appears to crash roughly
-      (but reliably) 24 hours after reboot. Restarting it manually (and
-      subsequently restarting the `bt2mqtt`-container) makes it run reliably
-      till the next boot...
-  - Investigate? Perhaps don't bother and simply restart the entire stack every
-    24 hours or so?
 - [ ] Replace the upstairs Hallway and Guestroom bulbs with Hue filament bulbs
       (and remove the Zigbee-units from the power-sockets)
