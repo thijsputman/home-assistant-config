@@ -1,3 +1,38 @@
+# Ensuite sometimes doesn't turn on with the rest of the Living room – attempt
+# to detect and correct for this...
+- alias: 💡 | 🩹 Enforce Ensuite "on"-state to follow Living room
+  id: 48db5b8d-2b8d-4651-a29e-c6614a144b6d
+  trigger:
+    - platform: state
+      entity_id: sensor.hue_scene_living_room
+      to: ~
+  condition:
+    # Every Living room Hue scene has the Ensuite switched on
+    - condition: state
+      entity_id: light.hue_white_light_1
+      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_living_room
+          state:
+            - <Off>
+            - <Unknown>
+  action:
+    # As the Ensuite is not included in the heuristic computation, we only get
+    # one shot at this. Explicitly switch on the Ensuite, wait a bit and then
+    # re-apply the Hue scene – only re-applying the Hue scene might not be
+    # sufficient...
+    - service: light.turn_on
+      target:
+        entity_id: light.hue_white_light_1
+    - delay: "00:00:10"
+    - service: hue.hue_activate_scene
+      data:
+        group_name: Living Room
+        scene_name: >-
+          {{ states('sensor.hue_scene_living_room') }}
+  mode: restart
 # The Gledopto controllers in the Kitchen are a bit stubborn; they don't always
 # respond to the first scene change request, nor do they always properly switch
 # off when asked to do so... See "📄 docs/HUE.md" for more details.

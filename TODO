@@ -265,15 +265,6 @@
       lighting settings (for when not everyone is watching television) – there's
       a lot of "magic" automation potential here, but the best solution is most
       likely to manual turn off the behaviour when it's unwanted... 😇
-- [ ] Create a Living Room "raw" Hue scene heuristic and combine this with the
-      state of the Ensuite lamp in a derived scene to create a situation
-      (similar to the Kitchen) where the Ensuite lamp can be maintained separate
-      of the overall Living Room scene
-  - This should make it possible to retain the state of the Ensuite lamp while
-    changing the Living Room scene as a whole
-  - This should also help resolving the (occasional) situation where the Ensuite
-    lamp doesn't properly react to Hue commands (mainly when initially turning
-    on) – can be detected and automatically resolved
 
 ## Alarm
 

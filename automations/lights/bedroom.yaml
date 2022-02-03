@@ -1,0 +1,27 @@
+- alias: 💡 | 🕹️ Bedroom lights toggle (bedside Smart Switches)
+  id: f03f5e56-2eaf-4bc0-8424-d316445b0236
+  trigger:
+    - device_id: da1237666189a9a364fa383795ba532d
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+  condition:
+    # Don't act when the wakeup alarm is sounding or snoozed (the light is
+    # supposed to stay on in those cases)
+    - condition: state
+      entity_id: script.wakeup_alarm
+      state: "off"
+    - condition: state
+      entity_id: timer.wakeup_snooze_time
+      state: idle
+  action:
+    - service: light.toggle
+      target:
+        entity_id: light.bedroom
+  mode: single

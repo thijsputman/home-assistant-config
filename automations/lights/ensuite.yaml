@@ -1,0 +1,80 @@
+- alias: ✨ | 💡 Retain Ensuite 100% brightness (Living room scene change)
+  id: cf8119f6-5bf2-4c20-85ac-21d2b0cffd54
+  trigger:
+    - platform: numeric_state
+      entity_id: light.hue_white_light_1
+      attribute: brightness
+      below: 255
+  condition:
+    - condition: state
+      entity_id: light.living_room
+      state: "on"
+  action:
+    # Relying on the fact the Hue scene heuristic update is slightly delayed –
+    # after the Ensuite brightness goes down, simply wait for the heuristic to
+    # update; no need to keep track of previous state(s)...
+    # Additionally, as the Ensuite is excluded from the heuristic (but _is_
+    # impacted by a Hue scene change) this automation will never undo a manual
+    # change of the Ensuite.
+    # Thirdly, as this only triggers on a scene _change_ (and not a re-
+    # application of the same scene) the brightness toggle provided by the next
+    # automation is never overridden either.
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.hue_scene_living_room
+          to:
+            - Daytime
+            - Active
+            - Ambiance
+            - Movie
+            - Movie (Ambiance)
+      timeout: "00:00:10"
+      continue_on_timeout: false
+    # Change Ensuite back to 100% brightness – as the change isn't immediate
+    # (need to wait for the heuristic to update) we use a transition to make the
+    # entire process "feel" smoother...
+    - service: light.turn_on
+      data:
+        transition: 4
+        brightness: 255
+      target:
+        entity_id: light.hue_white_light_1
+  mode: restart
+- alias: ✨ | 🕹️ Ensuite toggle maximum brightness (Magic Cube – double tap)
+  id: 0c5d2b27-0900-42d8-9b1e-8a412185cb34
+  trigger:
+    - device_id: 7053d7e589bf4a4496cff59a24b7c83c
+      domain: deconz
+      platform: device
+      type: remote_double_tap_any_side
+      subtype: ""
+  condition: []
+  action:
+    - choose:
+        - conditions:
+            - condition: numeric_state
+              entity_id: light.hue_white_light_1
+              attribute: brightness
+              above: 254
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_living_room
+                  state:
+                    - <Off>
+                    - <Unknown>
+          sequence:
+            # Re-apply current Hue scene to restore Ensuite to its expected
+            # setting
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Living Room
+                scene_name: >-
+                  {{ states('sensor.hue_scene_living_room') }}
+      default:
+        - service: light.turn_on
+          data:
+            brightness: 255
+          target:
+            entity_id: light.hue_white_light_1
+  mode: single
