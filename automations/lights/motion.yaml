@@ -315,10 +315,25 @@
         - binary_sensor.presence_71
       from: "off"
       to: "on"
+    # Trigger (i.e., restart) the automation when it gets too dark in the
+    # Bathroom; this prevents a "live-lock" where continued motion prevents the
+    # automation from triggering again (the sensor remains in the "on"-state)
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_bathroom
+      below: 200
   condition:
     - condition: numeric_state
       entity_id: sensor.lightlevel_bathroom
       below: 200
+    # Light-level trigger should only proceed if motion is detected
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: binary_sensor.presence_68
+          state: "on"
+        - condition: state
+          entity_id: binary_sensor.presence_71
+          state: "on"
     # Only switch on the lights under normal circumstances (i.e. the alarm is
     # either disarmed or "Armed night")
     - condition: state
