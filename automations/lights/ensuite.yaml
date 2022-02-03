@@ -6,6 +6,17 @@
       attribute: brightness
       below: 255
   condition:
+    # Don't act if the Living room is coming out of <Off> – in that case the
+    # numeric state condition messes up (going from NaN to any number is
+    # considered crossing through 255; we're only interested in cases _actually_
+    # crossing from 255 to a lower value)
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_living_room
+          state: <Off>
+    # No need to continue if the Living room is off – in that case the below
+    # trigger will always timeout...
     - condition: state
       entity_id: light.living_room
       state: "on"
