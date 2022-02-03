@@ -49,7 +49,7 @@ card:
             padding: 0px;
             text-align: center;
           }
-      entity: sensor.monthly_consumption_costs_lights_all
+      entity: sensor.monthly_consumption_costs_all_lights
       attribute: last_period
       unit: € / month
     - type: custom:mini-graph-card

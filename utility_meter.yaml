@@ -39,11 +39,6 @@ monthly_consumption_airco_attic:
 monthly_consumption_all_lights:
   source: sensor.consumption_all_lights
   cycle: monthly
-# XXX: Deprecated – to be removed _after_ 2022-02-01
-monthly_consumption_lights_all:
-  source: sensor.consumption_all_lights
-  cycle: monthly
-# XXX
 monthly_consumption_ups:
   source: sensor.consumption_ups
   cycle: monthly

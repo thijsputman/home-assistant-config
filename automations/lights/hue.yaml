@@ -46,7 +46,7 @@
         - light.extended_color_light_1_3
         - light.extended_color_light_1_4
       to: "on"
-      for: 10
+      for: "00:00:10"
   condition:
     # If the Gledopto controllers are on, the rest of the Kitchen should also be
     # on. If that's not the case, switch the Gledopto controllers off. The below

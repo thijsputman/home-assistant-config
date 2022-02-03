@@ -40,13 +40,6 @@
       devices after none of their sensors updates over a 24-hour window? This
       way a failure will (eventually) show up through the generic "device
       failure"-automation
-- [ ] Remove `monthly_consumption_lights_all` from `📄 utility_meter.yaml`
-      _after_ February 1, 2022 (and don't forget to update Lovelace)
-- [ ] If `ERROR: No deconz_event tied to device "..." found` shows up at Home
-      Assistant startup, wait a couple minutes and reload the automations. This
-      ensures all deCONZ device-trigger will work as intended (it happens when
-      the automations are initialised before the deCONZ integration is fully up
-      and running).
 
 ### Features
 
@@ -135,6 +128,8 @@
       other Qingping senors
 - [ ] See if it's possible everywhere to replace the custom `template_reloaded`
       event with `from: unknown` state-triggers
+- [ ] If Neato `status`-attribute goes to `Please empty dust bin`, send a
+      notification
 
 ### Development Environment
 
