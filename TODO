@@ -95,12 +95,6 @@
       device types is unique enough – which it might).
 - [ ] Experiment with using the amount of rain and the (WeeWX calculated)
       evapotranspiration to indicate whether the garden should be watered
-  - For now just graphing the daily delta between the two to get a bit of a
-    feeling on how the data moves
-  - ~~Added `sensor.weewx_rain_day` (the daily rain tally kept by WeeWX itself)
-    to compare against (i.e. validate the accuracy of) the integral
-    calculation~~ The computed integral appears acceptably close to the value
-    reported by WeeWX itself
 - [ ] It could be nice to also track water consumption. See for example
       <https://www.ztatz.nl/p1-monitor-watermeter/>
   - Apart from tracking consumption, it could also serve as an (early) warning
@@ -188,8 +182,6 @@
 
 - [ ] Create several "backstops" (controlled via HomeKit) to ensure heating is
       properly controlled when there is no access to the online Tado service
-  - ~~On hold till the first time this actually turns out to be an issue. As of
-    yet, the Tado online service has been rock-solid...~~
   - It appears Tado's schedule is enforced _remotely_ (i.e. if there's no active
     Internet connection, the scheduled settings are _not_ applied). Thus, sadly,
     the schedule should be enforced/backstopped locally via HomeKit...
@@ -240,8 +232,16 @@
     active scene as a Home Assistant native scene (`scene.room_scene_name` or
     `<None>` if not available) – a simple helper script (to be written) should
     enable hassle free switching of scenes...
-  - Once all changes are implemented (and stabilised), see if all of the
-    "band-aid (🩹)" Hue automations are still required
+  - Create a helper script to change Kitchen and Counter & cupboards scene at
+    the same time / in a single call (see `📄 lights/dusk.yaml` for proposed
+    logic)
+- [ ] Once all Hue V2 API changes are implemented (and stabilised), see if the
+      "band-aid (🩹)" Hue automations are still necessary
+  - `💡 | 🩹 Enforce "off"-state for Gledopto controllers` last executed January
+    14th
+  - `💡 | 🩹 Enforce Ensuite "on"-state to follow Living room` never executed
+  - Both scene change enforcers are disabled; no issues in the Garden yet; one
+    issue noticed in the Kitchen
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
