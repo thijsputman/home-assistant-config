@@ -156,8 +156,8 @@
             through <Unknown> from {{ trigger.from_state.state }} to {{
             transient_end_state }} for {{ transient_duration }} seconds {%
           else -%}
-            from {{ trigger.from_state.state }} to
-            {{ trigger.to_state.state }} {%
+            from {{ trigger.from_state.state }} to {{
+            trigger.to_state.state }} {%
           endif -%}
           { num_lights: {{ num_lights}}, brightness: {{ brightness }}, xy_color:
           {{ xy_color }} }

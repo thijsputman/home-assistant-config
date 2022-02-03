@@ -100,7 +100,10 @@
             Ambiance
           {%
             elif num_lights == 7 and brightness == 15 and
-              (xy_color[0] == 0.51 and xy_color[1] == 0.36)
+              (
+                (xy_color[0] == 0.51 and xy_color[1] == 0.35) or
+                (xy_color[0] == 0.51 and xy_color[1] == 0.36)
+              )
           %}
             Movie
           {%
@@ -196,10 +199,12 @@
             %}
           {% endif %}
           {%
-            if num_lights == 4 and brightness == 130 and
+            if num_lights == 4 and
+              (brightness == 126 or brightness == 130) and
               (
                 (xy_color[0] == 0.41 and xy_color[1] == 0.39) or
                 (xy_color[0] == 0.42 and xy_color[1] == 0.39) or
+                (xy_color[0] == 0.44 and xy_color[1] == 0.39) or
                 (xy_color[0] == 0.46 and xy_color[1] == 0.38)
               )
           %}
@@ -315,6 +320,7 @@
             if num_lights == 14 and brightness == 78 and
               (
                 (xy_color[0] == 0.38 and xy_color[1] == 0.37) or
+                (xy_color[0] == 0.39 and xy_color[1] == 0.37) or
                 (xy_color[0] == 0.4 and xy_color[1] == 0.36)
               )
           %}
