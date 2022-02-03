@@ -124,6 +124,52 @@
           {{ trigger.event.data.message }}
   mode: single
   max_exceeded: silent
+# Occasionally, a race-condition occurs at startup where the deCONZ-integration
+# isn't yet up and running when the automations (that depend on devices provided
+# by deCONZ) are loaded. This causes all automations that depend on deCONZ
+# devices to fail to initialise. A reload of the automations once deCONZ is up
+# and running resvoles the issue.
+# Below is a canary automation (specifically intended to fail to initialise on
+# the race-condition) and a second automation that reloads all automations when
+# the canary fails. Set up in this way to prevent having to create an automation
+# which triggers (the evaluation of a template condition) on _all_ logged ERRORs
+# (as that is the only other way to detect the race-condition).
+- alias: 🚧 | 🕹️ Reload automations at startup – canary
+  id: 4705ec2c-8003-43dd-b5a0-0fbd0409673e
+  trigger:
+    # Random/unlikely trigger – doesn't really matter, but tried to pick one
+    # that doesn't occur a lot...
+    - device_id: 7053d7e589bf4a4496cff59a24b7c83c
+      domain: deconz
+      platform: device
+      type: remote_moved
+      subtype: side_6
+  condition:
+    # Prevent automation from actually executing
+    - condition: template
+      value_template: >-
+        {{ false }}
+  action: []
+  mode: single
+- alias: 🚧 | 🕹️ Reload automations at startup (deCONZ race-condition)
+  id: c47ad5f2-8a4b-4d9d-88c0-b375d5c16df9
+  trigger:
+    - platform: event
+      event_type: system_log_event
+      event_data:
+        level: ERROR
+        name: homeassistant.components.automation.reload_automations_at_startup_canary
+  condition:
+    - condition: template
+      value_template: >-
+        {{ "'No deconz_event tied to device " in trigger.event.data.message }}
+  action:
+    # Give deCONZ a bit of time to initialise; repeated failures will simply
+    # trigger this automation again...
+    - delay: "00:01:00"
+    - service: automation.reload
+  mode: single
+  max_exceeded: silent
 # To prevent trigger-based template sensors from ending up in an "unknown"
 # state after reloading the "Template Entities" configuration, fire a
 # "template_reloaded" event shortly after this happens so that these sensors
