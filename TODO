@@ -26,8 +26,14 @@
 
 ### Bugs
 
-- [ ] ❗Not all data appears to be ending up in InfluxDB (e.g., the Arlo battery
-      levels are missing?)
+- [x] ~~Not all data appears to be ending up in InfluxDB (e.g., the Arlo battery
+      levels are missing?)~~
+  - Appears to be an issue with the InfluxDB web UI/editor; manually querying
+    the entities / querying a list of all `entity_id`-tags does produce all
+    entities
+  - After the next HA restart, validate the new (air quality) measurements are
+    showing up properly; validate all irrelevant attributes are now properly
+    ignored
 - [ ] The `sensor.consumption_ups` (Riemann sum integral) deviates a lot from
       its expected daily total (sometimes reporting less than 30% of what it
       should be) every couple of days
@@ -117,6 +123,8 @@
     principle it's ventilation hatch should always be open) – same for the
     Bedroom, when we go to bed at least one of the windows should be ajar...
     This could be via TTS when all lights are switched off before going to bed
+  - Once finalised, include tilt sensors in InfluxDB as part of the air quality
+    metrics (these windows are regularly used for ventilation purposes)
 - [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
 - [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
       other Qingping senors

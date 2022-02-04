@@ -26,3 +26,6 @@
   `sensor.power_all_lights`
 - **12-12-2021 16:30 CET** – `sensor.power_sonair_combined` now also includes
   power consumption for the (exhaust) fan in the Attic
+- **23-1-2022 03:20 CET** – NVMe drive hosting the Home Assistant database
+  detached/crashed; it appears all data came through regardless (recovered
+  23-1-2022 @ 12:00 CET)

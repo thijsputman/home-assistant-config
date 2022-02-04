@@ -1,12 +1,16 @@
 import "timezone"
 import "date"
 import "experimental"
+import "influxdata/influxdb/schema"
 
 ehv = timezone.location(name: "Europe/Amsterdam")
 yesterday = date.truncate(
   t: experimental.subDuration(d: 1d, from: now()),
   unit: 1d
 )
+
+// List all known entity IDs
+schema.tagValues(bucket: "home-assistant", tag: "entity_id")
 
 // The below is using one hour aggregate-window mean as poor man's way of
 // turning kW into kWh (better solutions exist – haven't really figured them out

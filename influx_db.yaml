@@ -7,6 +7,10 @@ tags:
   source: HA
 tags_attributes:
   - friendly_name
+# Ignore immutable/irrelevant attributes
+ignore_attributes:
+  - icon
+  - supported_features
 default_measurement: units
 include:
   entities:
@@ -19,6 +23,7 @@ include:
     - group.family # occupancy
     - binary_sensor.vacation_mode
     - sensor.time_of_day
+    - media_player.nvidia_shield_tv
     # WeeWX
     - sensor.weewx_outside_temperature
     - sensor.weewx_outside_temperature_balcony
@@ -35,6 +40,22 @@ include:
     - sensor.temperature_30 # Hallway
     - sensor.temperature_37 # Guestroom
     - sensor.temperature_78 # Basement
+    # Air quality
+    - sensor.qingping_air_monitor_lite_bedroom_environment_co2_density
+    - sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+    - sensor.xiaomi_miot_environment_co2_density
+    - sensor.qingping_air_monitor_lite_bedroom_environment_pm2_5_density
+    - sensor.qingping_air_monitor_lite_living_room_environment_pm2_5_density
+    - sensor.xiaomi_miot_environment_pm2_5_density
+    - sensor.qingping_air_monitor_lite_bedroom_environment_pm10_density
+    - sensor.qingping_air_monitor_lite_living_room_environment_pm10_density
+    - sensor.xiaomi_miot_environment_pm10_density
+    - fan.sonair_guestroom
+    - fan.sonair_living_room
+    - fan.sonair_wardrobe
+    - light.smart_relay_1 # Bathroom exhaust fan
+    - switch.smart_plug_6 # Attic exhaust fan
+    - group.openclose_bedroom
     # tado°
     - sensor.tado_smart_thermostat_temperature # Living room temperature
     - sensor.tado_smart_radiator_attic_temperature
@@ -67,19 +88,63 @@ include:
     # up over time...
     - sensor.aarlo_battery_level_front
     - sensor.aarlo_battery_level_back
-component_config:
-  # Don't push entity_id-attribute (i.e. names of group members) for the
-  # family group; keeps the data in InfluxDB free of PII...
-  group.family:
+# Ignore immutable/irrelevant attributes
+component_config_domain:
+  fan:
     ignore_attributes:
+      - speed_list
+      - preset_modes
+      - percentage_step
+  group:
+    ignore_attributes:
+      # Ignore group member entity IDs – irrelevant and might contain PII (e.g.,
+      # in the case of group.family)
       - entity_id
+      - order
+  light:
+    ignore_attributes:
+      - is_deconz_group
+      - supported_color_modes
+component_config:
+  media_player.nvidia_shield_tv:
+    ignore_attributes:
+      - adb_response
+      - hdmi_input
 component_config_glob:
   # Ignore the voltage, current and temperature measurements provided by the
   # smart-plugs – there are better temperature measurements available; the
-  # voltage/current measurements are redundant (we know power and there's
-  # little doubt the grid provides a stable 230V).
+  # voltage/current measurements are redundant
   "sensor.power_*":
     ignore_attributes:
       - voltage
       - current
       - temperature
+  # Tado heating-sensors include the timestamp e of their last state change –
+  # if ever relevant, can easily be inferred from the underlying data...
+  "sensor.tado_*_heating":
+    ignore_attributes:
+      - time
+  # Aarlo sensors include some irrelevant device details
+  "sensor.aarlo_*":
+    ignore_attributes:
+      - attribution
+      - brand
+      - camera_name # Could/should be inferred from friendly_name
+      - device_id # Device serial-# (sort of PII)
+      - model
+  # Sonair fans don't use preset-mode
+  "fan.sonair_*":
+    ignore_attributes:
+      - preset_mode
+  # Qingping air monitors duplicates their measurement/state inside an
+  # environment.XXX attribute – ignore those
+  "sensor.qingping_air_monitor_lite_*":
+    ignore_attributes:
+      - environment.co2_density
+      - environment.pm2_5_density
+      - environment.pm10_density
+  "sensor.xiaomi_miot_*":
+    ignore_attributes:
+      - environment.co2_density
+      - environment.pm2_5_density
+      - environment.pm10_density
