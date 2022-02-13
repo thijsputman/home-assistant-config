@@ -32,7 +32,7 @@
     - wait_for_trigger:
         - platform: template
           value_template: >-
-            {{ states(trigger.entity_id) >= 95 }}
+            {{ states(trigger.entity_id) | int(0) >= 95 }}
       timeout: "12:00:00"
       continue_on_timeout: false
     - service: persistent_notification.dismiss

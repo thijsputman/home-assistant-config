@@ -28,7 +28,7 @@
           {# 105 m³/h #}
           80
         {% elif power >= 1 %}
-          {% if power_x >= 2.5 %}
+          {% if power_x >= 2.6 %}
             {# 70 m³/h #}
             60
           {% elif power_x >= 1.95 %}
@@ -58,7 +58,7 @@
           {# 105 m³/h #}
           80
         {% elif power >= 1 %}
-          {% if power_x >= 2.5 %}
+          {% if power_x >= 2.6 %}
             {# 70 m³/h #}
             60
           {% elif power_x >= 1.95 %}
@@ -88,7 +88,7 @@
           {# 105 m³/h #}
           80
         {% elif power >= 1 %}
-          {% if power_x >= 2.5 %}
+          {% if power_x >= 2.6 %}
             {# 70 m³/h #}
             60
           {% elif power_x >= 1.95 %}

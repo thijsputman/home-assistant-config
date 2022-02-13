@@ -9,6 +9,8 @@ filters:
     - >-
       ^Update of sensor\.qingping_air_monitor_lite_[a-z0-9_]+ is taking over
       [0-9]+ seconds$
+    - >-
+      ^Update of sensor\.xiaomi_miot_[a-z0-9_]+ is taking over [0-9]+ seconds$
     # Mopidy
     - >-
       ^Update of media_player\.[a-z0-9_]+ is taking over [0-9]+ seconds$
@@ -19,11 +21,18 @@ filters:
     - ^Updating neato [a-z]+ took longer than the scheduled update interval
   homeassistant.components.sensor:
     - ^Updating neato [a-z]+ took longer than the scheduled update interval
+    # Xiaomi MIoT
+    - >-
+      ^Updating xiaomi_miot sensor took longer than the scheduled update
+      interval
   homeassistant.components.vacuum:
     - ^Updating neato [a-z]+ took longer than the scheduled update interval
   homeassistant.components.neato.vacuum:
     - >-
       ^Neato [a-z]+ connection error for '.+': Unable to communicate with robot$
+    - >-
+      ^Could not fetch map boundaries for '.+': Unable to communicate with
+      robot$
   homeassistant.components.neato.sensor:
     - >-
       ^Neato [a-z]+ connection error for '.+': Unable to communicate with robot$
@@ -34,8 +43,8 @@ filters:
   # times daily, but don't appear to influence functionality...
   custom_components.xiaomi_miot.sensor:
     - >-
-      Got MiioException while fetching the state: ?
-      (Unable to discover the device )?[a-zA-Z0-9_\-]*, mapping:
+      Got MiioException while fetching the state: ?(Unable to discover the
+      device |No response from the device)?[a-zA-Z0-9_\-]*, mapping:
   # Mopidy
   homeassistant.components.media_player:
     - ^Updating mpd .+ took longer than the scheduled update interval

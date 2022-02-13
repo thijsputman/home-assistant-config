@@ -113,7 +113,7 @@
             Movie (ambiance)
           {%
             elif num_lights == 9 and
-              (brightness == 148 or brightness == 159) and
+              (brightness == 141 or brightness == 148 or brightness == 159) and
               (
                 (xy_color[0] == 0.49 and xy_color[1] == 0.36) or
                 (xy_color[0] == 0.5 and xy_color[1] == 0.36)

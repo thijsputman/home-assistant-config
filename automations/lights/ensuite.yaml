@@ -89,3 +89,4 @@
           target:
             entity_id: light.hue_white_light_1
   mode: single
+  max_exceeded: silent
