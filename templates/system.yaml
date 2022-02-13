@@ -46,7 +46,7 @@
               'none'
             ]
           ) |
-          rejectattr('entity_id', 'match', 'scene\.') |
+          rejectattr('entity_id', 'match', '(scene|button)\.') |
           map(attribute='entity_id') | list
         %}
         {% for entity_id in entity_ids %}
