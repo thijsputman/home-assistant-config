@@ -128,8 +128,6 @@
 - [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
 - [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
       other Qingping senors
-- [ ] See if it's possible everywhere to replace the custom `template_reloaded`
-      event with `from: unknown` state-triggers
 - [ ] If Neato `status`-attribute goes to `Please empty dust bin`, send a
       notification
 

@@ -14,22 +14,28 @@
         - binary_sensor.vibration_102
         - binary_sensor.vibration_106
       attribute: tiltangle
+    # Force re-render when template entities YAML configuration is reloaded
+    - platform: state
+      entity_id: binary_sensor.occupancy_office_chairs
+      to: unknown
   binary_sensor:
-    name: Occupancy (Office chairs)
-    unique_id: 3ff1e67a-37ba-443c-b390-e9d2bdf4b07f
-    icon: mdi:account-check
-    device_class: occupancy
-    state: "on"
-    # Empirically determined that we move around in our chairs at least once
-    # every half an hour...
-    auto_off: 1800
+    - name: Occupancy (Office chairs)
+      unique_id: 3ff1e67a-37ba-443c-b390-e9d2bdf4b07f
+      icon: mdi:account-check
+      device_class: occupancy
+      state: "on"
+      # Empirically determined that we move around in our chairs at least once
+      # every half an hour...
+      auto_off: 1800
 # Attic occupancy – combination of the office chairs occupancy and the state of
 # the lights, under the condition that someone is home
 - trigger:
     - platform: state
       entity_id: group.family
+      to: ~
     - platform: state
       entity_id: binary_sensor.occupancy_office_chairs
+      to: ~
     - platform: state
       entity_id: light.attic
       for: "00:05:00"
@@ -44,32 +50,36 @@
       from: "on"
       to: "off"
       for: "00:15:00"
+    # Force re-render when template entities YAML configuration is reloaded
+    - platform: state
+      entity_id: binary_sensor.occupancy_attic
+      to: unknown
   binary_sensor:
-    name: Occupancy (Attic)
-    unique_id: e3a6437c-8269-4005-9d17-ac7f2e45e8d5
-    icon: mdi:account-check
-    device_class: occupancy
-    state: >-
-      {% if states('group.family') == 'not_home' %}
-        {{ false }}
-      {#
-        Short-circuit office chair occupancy – activity should occur shortly
-        _after_ the lights are switched off. In this situation waiting for the
-        full half hour is most likely too long...
-      #}
-      {%
-        elif trigger.entity_id == 'light.attic' and
-          states('light.attic') == 'off'
-      %}
-        {{
-          (states.binary_sensor.vibration_102.last_updated | as_local) +
-            timedelta(minutes = 5) >= now() or
-          (states.binary_sensor.vibration_106.last_updated | as_local) +
-            timedelta(minutes = 5) >= now()
-        }}
-      {% else %}
-        {{
-          states('binary_sensor.occupancy_office_chairs') == 'on' or
-            states('light.attic') == 'on'
-        }}
-      {% endif %}
+    - name: Occupancy (Attic)
+      unique_id: e3a6437c-8269-4005-9d17-ac7f2e45e8d5
+      icon: mdi:account-check
+      device_class: occupancy
+      state: >-
+        {% if states('group.family') == 'not_home' %}
+          {{ false }}
+        {#
+          Short-circuit office chair occupancy – activity should occur shortly
+          _after_ the lights are switched off. In this situation waiting for the
+          full half hour is most likely too long...
+        #}
+        {%
+          elif trigger.entity_id == 'light.attic' and
+            states('light.attic') == 'off'
+        %}
+          {{
+            (states.binary_sensor.vibration_102.last_updated | as_local) +
+              timedelta(minutes = 5) >= now() or
+            (states.binary_sensor.vibration_106.last_updated | as_local) +
+              timedelta(minutes = 5) >= now()
+          }}
+        {% else %}
+          {{
+            states('binary_sensor.occupancy_office_chairs') == 'on' or
+              states('light.attic') == 'on'
+          }}
+        {% endif %}

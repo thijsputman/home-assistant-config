@@ -8,27 +8,27 @@
     - platform: state
       entity_id: binary_sensor.pi_hole_web_update_available
       to: ~
-    - platform: event
-      event_type: template_reloaded
-    - platform: homeassistant
-      event: start
+    # Force re-render when template entities YAML configuration is reloaded
+    - platform: state
+      entity_id: binary_sensor.pi_hole_update_available
+      to: unknown
   binary_sensor:
-    name: Pi-hole Update Available
-    unique_id: 97042b69-4893-4b0f-a00e-9000c98820cc
-    icon: mdi:archive-arrow-up
-    device_class: update
-    state: >-
-      {{
-        states('binary_sensor.pi_hole_core_update_available') or
-        states('binary_sensor.pi_hole_ftl_update_available') or
-        states('binary_sensor.pi_hole_web_update_available')
-      }}
-    availability: >-
-      {{
-        states('binary_sensor.pi_hole_core_update_available')
-          not in ['unavailable', 'unknown'] and
-        states('binary_sensor.pi_hole_ftl_update_available')
-          not in ['unavailable', 'unknown'] and
-        states('binary_sensor.pi_hole_web_update_available')
-          not in ['unavailable', 'unknown']
-      }}
+    - name: Pi-hole Update Available
+      unique_id: 97042b69-4893-4b0f-a00e-9000c98820cc
+      icon: mdi:archive-arrow-up
+      device_class: update
+      state: >-
+        {{
+          states('binary_sensor.pi_hole_core_update_available') or
+          states('binary_sensor.pi_hole_ftl_update_available') or
+          states('binary_sensor.pi_hole_web_update_available')
+        }}
+      availability: >-
+        {{
+          states('binary_sensor.pi_hole_core_update_available')
+            not in ['unavailable', 'unknown'] and
+          states('binary_sensor.pi_hole_ftl_update_available')
+            not in ['unavailable', 'unknown'] and
+          states('binary_sensor.pi_hole_web_update_available')
+            not in ['unavailable', 'unknown']
+        }}

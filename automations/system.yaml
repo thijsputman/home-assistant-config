@@ -170,25 +170,6 @@
     - service: automation.reload
   mode: single
   max_exceeded: silent
-# To prevent trigger-based template sensors from ending up in an "unknown"
-# state after reloading the "Template Entities" configuration, fire a
-# "template_reloaded" event shortly after this happens so that these sensors
-# can trigger to update themselves
-- alias: >-
-    🚧 Trigger template_reloaded-event
-    ("Template Entities" configuration reloaded)
-  id: bc006b3a-0ea9-4596-9521-b6424a986872
-  trigger:
-    - platform: event
-      event_type: call_service
-      event_data:
-        domain: template
-        service: reload
-  condition: []
-  action:
-    - delay: 30
-    - event: template_reloaded
-  mode: restart
 - alias: 📱/🚨 | ⚡ Notify on prolonged power outage (⏰ > 10 minutes)
   id: 8ff8c413-b877-41af-bc9d-8e72b1b9bcab
   trigger:
