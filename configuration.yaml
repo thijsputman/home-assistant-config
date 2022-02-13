@@ -166,19 +166,6 @@ light: !include lights.yaml
 media_player:
   # Arlo
   - platform: aarlo
-  # NVIDIA Shield TV
-  - platform: androidtv
-    name: NVIDIA Shield TV
-    device_class: androidtv
-    host: nvidia-shield-tv.sgraastra
-    exclude_unnamed_apps: true
-    apps:
-      com.nvidia.shield.remote: Shield TV
-      com.nvidia.geforcenow: GeForce NOW
-      com.google.android.tv: Live Channels
-    state_detection_rules:
-      com.nvidia.shield.remote:
-        - standby
   # Pi0 speaker (Bedroom)
   - platform: mpd
     name: Pi0 speaker (Bedroom)
