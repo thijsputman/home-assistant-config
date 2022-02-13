@@ -5,58 +5,58 @@
     - platform: mqtt
       topic: gammu/received
   sensor:
-    name: Gammu received (message)
-    unique_id: 773a0ad1-5f99-4271-8711-cd5faf2b6515
-    icon: mdi:message-arrow-left-outline
-    attributes:
-      # Wrap phone number in "<...>" to prevent issues with them getting
-      # interpreted as an integers
-      number: >-
-        <{{ trigger.payload_json.number }}>
-      datetime: >-
-        {{ trigger.payload_json.datetime | as_datetime }}
-    state: >-
-      {# "state" Maximum length is 255 characters #}
-      {{
-        trigger.payload_json.text |
-          truncate(250, killwords=False, end='...', leeway=0)
-      }}
-- trigger:
-    - platform: mqtt
-      topic: gammu/sent
-  sensor:
-    name: Gammu sent (message)
-    unique_id: dbcbbc71-433d-4d48-a3b6-d9e38da373c6
-    icon: mdi:message-arrow-right-outline
-    attributes:
-      number: >-
-        {% if trigger.payload_json.number is defined  %}
+    - name: Gammu received (message)
+      unique_id: 773a0ad1-5f99-4271-8711-cd5faf2b6515
+      icon: mdi:message-arrow-left-outline
+      attributes:
+        # Wrap phone number in "<...>" to prevent issues with them getting
+        # interpreted as an integers
+        number: >-
           <{{ trigger.payload_json.number }}>
-        {% endif %}
-      datetime: >-
-        {% if trigger.payload_json.datetime is defined  %}
+        datetime: >-
           {{ trigger.payload_json.datetime | as_datetime }}
-        {% endif %}
-      success: >-
-        {% if trigger.payload_json.result == 'success' %}
-          {{ true }}
-        {% else %}
-          {{ false }}
-        {% endif %}
-    state: >-
-      {% if trigger.payload_json.result is match('error : ') %}
-        {{
-          trigger.payload_json.result | replace('error : ', '') | capitalize |
-            truncate(250, killwords=False, end='...', leeway=0)
-        }}
-      {% elif trigger.payload_json.text is defined %}
+      state: >-
+        {# "state" Maximum length is 255 characters #}
         {{
           trigger.payload_json.text |
             truncate(250, killwords=False, end='...', leeway=0)
         }}
-      {% else %}
-        unknown
-      {% endif %}
+- trigger:
+    - platform: mqtt
+      topic: gammu/sent
+  sensor:
+    - name: Gammu sent (message)
+      unique_id: dbcbbc71-433d-4d48-a3b6-d9e38da373c6
+      icon: mdi:message-arrow-right-outline
+      attributes:
+        number: >-
+          {% if trigger.payload_json.number is defined  %}
+            <{{ trigger.payload_json.number }}>
+          {% endif %}
+        datetime: >-
+          {% if trigger.payload_json.datetime is defined  %}
+            {{ trigger.payload_json.datetime | as_datetime }}
+          {% endif %}
+        success: >-
+          {% if trigger.payload_json.result == 'success' %}
+            {{ true }}
+          {% else %}
+            {{ false }}
+          {% endif %}
+      state: >-
+        {% if trigger.payload_json.result is match('error : ') %}
+          {{
+            trigger.payload_json.result | replace('error : ', '') | capitalize |
+              truncate(250, killwords=False, end='...', leeway=0)
+          }}
+        {% elif trigger.payload_json.text is defined %}
+          {{
+            trigger.payload_json.text |
+              truncate(250, killwords=False, end='...', leeway=0)
+          }}
+        {% else %}
+          unknown
+        {% endif %}
 # Track the number of messages received over a 10-minute interval
 - trigger:
     - platform: state
@@ -65,30 +65,30 @@
       minutes: /10
       id: reset
   sensor:
-    name: Gammu received (message count)
-    unique_id: 24aa5d78-0f5a-4829-b3a3-baac0ae15e3b
-    icon: mdi:forum
-    unit_of_measurement: msg
-    state: >-
-      {% if trigger.id == 'reset' %}
-        {{ 0 }}
-      {% else %}
-        {% if states('sensor.gammu_received_message') == 'unknown' and
-            state_attr('sensor.gammu_received_message', 'number') == None
-        %}
-          {#
-            If "Gammu received (message)" ends up in an invalid state, don't
-            increment. This mostly happens at startup (and will thus result in
-            a count of zero), but in edge-cases it might happen with a non-zero
-            count – hence the approach chosen...
-          #}
-          {{ states('sensor.gammu_received_message_count') | int(0) }}
+    - name: Gammu received (message count)
+      unique_id: 24aa5d78-0f5a-4829-b3a3-baac0ae15e3b
+      icon: mdi:forum
+      unit_of_measurement: msg
+      state: >-
+        {% if trigger.id == 'reset' %}
+          {{ 0 }}
         {% else %}
-          {{
-            states('sensor.gammu_received_message_count') | int + 1
-          }}
+          {% if states('sensor.gammu_received_message') == 'unknown' and
+              state_attr('sensor.gammu_received_message', 'number') == None
+          %}
+            {#
+              If "Gammu received (message)" ends up in an invalid state, don't
+              increment. This mostly happens at startup (and will thus result in
+              a count of zero), but in edge-cases it might happen with a non-zero
+              count – hence the approach chosen...
+            #}
+            {{ states('sensor.gammu_received_message_count') | int(0) }}
+          {% else %}
+            {{
+              states('sensor.gammu_received_message_count') | int + 1
+            }}
+          {% endif %}
         {% endif %}
-      {% endif %}
 # The sensor(s) below this one use template triggers to trigger on specific
 # message contents. This works nicely, but has one major caveat: If subsequent
 # messages match the same template trigger, the sensor won't trigger (as the
@@ -106,17 +106,17 @@
     - platform: state
       entity_id: sensor.gammu_received_authenticated_command
   sensor:
-    name: Gammu received (unprocessed message)
-    unique_id: 389c514a-d57c-4958-a727-3033e283ffb9
-    availability: >-
-      {{ trigger.id == 'incoming' }}
-    attributes:
-      number: >-
-        {{ state_attr('sensor.gammu_received_message', 'number') }}
-      datetime: >-
-        {{ state_attr('sensor.gammu_received_message', 'datetime') }}
-    state: >-
-      {{ states('sensor.gammu_received_message') }}
+    - name: Gammu received (unprocessed message)
+      unique_id: 389c514a-d57c-4958-a727-3033e283ffb9
+      availability: >-
+        {{ trigger.id == 'incoming' }}
+      attributes:
+        number: >-
+          {{ state_attr('sensor.gammu_received_message', 'number') }}
+        datetime: >-
+          {{ state_attr('sensor.gammu_received_message', 'datetime') }}
+      state: >-
+        {{ states('sensor.gammu_received_message') }}
 # Commands are accepted via SMS. To prevent abuse, the commands have to come
 # from an authorised phone number _and_ contain a pre-shared secret. This sensor
 # only triggers when these conditions are met.
@@ -130,35 +130,35 @@
       # See "📄 ./secrets_empty.yaml" for example logic
       value_template: !secret gammu_eval
   sensor:
-    name: Gammu received (authenticated command)
-    unique_id: 923a6400-f058-405f-8139-423e2b449830
-    icon: mdi:message-text-lock-outline
-    # Out of an abundance of caution, the availability-condition is repeated in
-    # all attribute and state templates...
-    availability: >-
-      {{
-        states('sensor.gammu_received_message_count')|int <= 10
-      }}
-    attributes:
-      number: >-
-        {% if states('sensor.gammu_received_message_count')|int <= 10 %}
-          {{
-            state_attr('sensor.gammu_received_unprocessed_message', 'number')
-          }}
-        {% endif %}
-      datetime: >-
-        {% if states('sensor.gammu_received_message_count')|int <= 10 %}
-          {{
-            state_attr('sensor.gammu_received_unprocessed_message', 'datetime')
-          }}
-        {% endif %}
-    state: >-
-      {% if states('sensor.gammu_received_message_count')|int <= 10 %}
-        {# Remove secret; trim and lowercase – eases further processing #}
+    - name: Gammu received (authenticated command)
+      unique_id: 923a6400-f058-405f-8139-423e2b449830
+      icon: mdi:message-text-lock-outline
+      # Out of an abundance of caution, the availability-condition is repeated in
+      # all attribute and state templates...
+      availability: >-
         {{
-          states('sensor.gammu_received_unprocessed_message') |
-            regex_replace('#.*?#', '') | trim | lower
+          states('sensor.gammu_received_message_count')|int <= 10
         }}
-      {% else %}
-        unavailable
-      {% endif %}
+      attributes:
+        number: >-
+          {% if states('sensor.gammu_received_message_count')|int <= 10 %}
+            {{
+              state_attr('sensor.gammu_received_unprocessed_message', 'number')
+            }}
+          {% endif %}
+        datetime: >-
+          {% if states('sensor.gammu_received_message_count')|int <= 10 %}
+            {{
+              state_attr('sensor.gammu_received_unprocessed_message', 'datetime')
+            }}
+          {% endif %}
+      state: >-
+        {% if states('sensor.gammu_received_message_count')|int <= 10 %}
+          {# Remove secret; trim and lowercase – eases further processing #}
+          {{
+            states('sensor.gammu_received_unprocessed_message') |
+              regex_replace('#.*?#', '') | trim | lower
+          }}
+        {% else %}
+          unavailable
+        {% endif %}
