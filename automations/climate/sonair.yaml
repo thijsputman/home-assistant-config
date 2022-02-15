@@ -138,10 +138,14 @@
           conditions:
             - condition: trigger
               id: [start, reload] # yamllint disable-line rule:brackets
-        - condition: numeric_state
-          entity_id: sensor.weewx_outside_temperature
-          above: 28
-          below: 6
+        - condition: or
+          conditions:
+            - condition: numeric_state
+              entity_id: sensor.weewx_outside_temperature
+              below: 6
+            - condition: numeric_state
+              entity_id: sensor.weewx_outside_temperature
+              above: 28
     # If the fan speed is _above_ 40% it has most likely been manually
     # overridden; in that case we leave the current setting alone...
     - condition: not
@@ -234,10 +238,14 @@
           conditions:
             - condition: trigger
               id: [start, reload] # yamllint disable-line rule:brackets
-        - condition: numeric_state
-          entity_id: sensor.weewx_outside_temperature
-          above: 28
-          below: 6
+        - condition: or
+          conditions:
+            - condition: numeric_state
+              entity_id: sensor.weewx_outside_temperature
+              below: 6
+            - condition: numeric_state
+              entity_id: sensor.weewx_outside_temperature
+              above: 28
   action:
     - service: switch.turn_on
       target:
@@ -263,10 +271,14 @@
     - condition: state
       entity_id: fan.sonair_wardrobe
       state: "on"
-    - condition: numeric_state
-      entity_id: sensor.weewx_outside_temperature
-      above: 28
-      below: 6
+    - condition: or
+      conditions:
+        - condition: numeric_state
+          entity_id: sensor.weewx_outside_temperature
+          below: 6
+        - condition: numeric_state
+          entity_id: sensor.weewx_outside_temperature
+          above: 28
     - condition: not
       conditions:
         - condition: state
