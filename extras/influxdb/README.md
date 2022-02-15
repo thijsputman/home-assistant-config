@@ -9,9 +9,9 @@
   `sensor.power_86_actual` are missing due to
   [an odd issue with the Zigbee-network](../../docs/deCONZ.md#ikea-tradfri-repeater-april-2021)
   (resolved on 1-5-2021 @ 19:30 CET)
-- **4-5-2021 17:30 CET** – the value for `sensor.power_lights_all` now also
+- **4-5-2021 @ 17:30 CET** – the value for `sensor.power_lights_all` now also
   includes the stand-by consumption of all Zigbee bulbs
-- **14-7-2021 16:00 CET** – added `sensor.gas_consumption` which should be
+- **14-7-2021 @ 16:00 CET** – added `sensor.gas_consumption` which should be
   preferred over the (still present) `sensor.hourly_gas_consumption` sensor.
   Home Assistant 2021.7
   [removed the hourly gas consumption reading from the DSMR integration](https://github.com/home-assistant/core/pull/52147);
@@ -19,13 +19,16 @@
   CET the values were computed differently (higher derivative over a shorter
   timespan) compared to the values as previously computed by the DSMR
   integration.
-- **18-7-2021 15:00 CET** – No data for `sensor.weewx_wind_speed` recorded due
+- **18-7-2021 @ 15:00 CET** – No data for `sensor.weewx_wind_speed` recorded due
   to a climbing plant getting in the way (resolved on 21-7-2021 @ 18:00 CET)
-- **3-12-2021 12:00 CET** - Renamed `sensor.ups_power` to
+- **3-12-2021 @ 12:00 CET** - Renamed `sensor.ups_power` to
   `sensor.ups_power_usage`; renamed `sensor.power_lights_all` to
   `sensor.power_all_lights`
-- **12-12-2021 16:30 CET** – `sensor.power_sonair_combined` now also includes
+- **12-12-2021 @ 16:30 CET** – `sensor.power_sonair_combined` now also includes
   power consumption for the (exhaust) fan in the Attic
-- **23-1-2022 03:20 CET** – NVMe drive hosting the Home Assistant database
+- **23-1-2022 @ 03:20 CET** – NVMe drive hosting the Home Assistant database
   detached/crashed; it appears all data came through regardless (recovered
   23-1-2022 @ 12:00 CET)
+- **15-2-2022 @ 19:00 CET** – Reduced precision from `ns` to `s`; sub-second
+  precision seems a bit overkill for what I have in mind (the most frequently
+  updating sensors do so every 30 seconds)

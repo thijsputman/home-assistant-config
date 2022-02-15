@@ -12,6 +12,7 @@ ignore_attributes:
   - icon
   - supported_features
 default_measurement: units
+precision: s
 include:
   entities:
     - sensor.power_tariff
@@ -89,12 +90,17 @@ include:
     - sensor.aarlo_battery_level_front
     - sensor.aarlo_battery_level_back
 # Ignore immutable/irrelevant attributes
+# N.B. There appears to be an issue in the InfluxDB integration which causes
+# overlapping combinations of "component_config_domain" and "..._glob" to be
+# ignored. For now, either define a domain or one (or more) globs for entities
+# in that domain, don't define both!
 component_config_domain:
   fan:
     ignore_attributes:
       - speed_list
       - preset_modes
       - percentage_step
+      - preset_mode # Sonair fans don't use preset-mode
   group:
     ignore_attributes:
       # Ignore group member entity IDs – irrelevant and might contain PII (e.g.,
@@ -132,10 +138,6 @@ component_config_glob:
       - camera_name # Could/should be inferred from friendly_name
       - device_id # Device serial-# (sort of PII)
       - model
-  # Sonair fans don't use preset-mode
-  "fan.sonair_*":
-    ignore_attributes:
-      - preset_mode
   # Qingping air monitors duplicates their measurement/state inside an
   # environment.XXX attribute – ignore those
   "sensor.qingping_air_monitor_lite_*":
