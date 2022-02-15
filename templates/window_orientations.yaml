@@ -14,6 +14,8 @@
     - platform: state
       entity_id: sensor.attic_window_position
       to: unknown
+    - platform: homeassistant
+      event: start
   sensor:
     - name: Attic window (position)
       unique_id: b3b83f06-840c-466f-9540-00766e5062a7
@@ -71,6 +73,8 @@
     - platform: state
       entity_id: sensor.bathroom_window_position
       to: unknown
+    - platform: homeassistant
+      event: start
   sensor:
     - name: Bathroom window (position)
       unique_id: 4d2dc71e-d179-407d-b891-c7d6c0e61407

@@ -18,6 +18,8 @@
     - platform: state
       entity_id: binary_sensor.occupancy_office_chairs
       to: unknown
+    - platform: homeassistant
+      event: start
   binary_sensor:
     - name: Occupancy (Office chairs)
       unique_id: 3ff1e67a-37ba-443c-b390-e9d2bdf4b07f
@@ -54,6 +56,8 @@
     - platform: state
       entity_id: binary_sensor.occupancy_attic
       to: unknown
+    - platform: homeassistant
+      event: start
   binary_sensor:
     - name: Occupancy (Attic)
       unique_id: e3a6437c-8269-4005-9d17-ac7f2e45e8d5

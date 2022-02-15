@@ -38,14 +38,12 @@
     - platform: state
       entity_id: light.hue_group_living_room
       to: "off"
-    # The transition to "unknown" indicates the template sensors got reloaded;
-    # force a re-render of the template to bring the sensor back to its proper
-    # state.
-    # A live-lock/runaway trigger _should_ not be possible (as failing to render
-    # the template will bring/keep the sensor in the "unknown" state)
+    # Force re-render when template entities YAML configuration is reloaded
     - platform: state
       entity_id: sensor.hue_scene_living_room
       to: unknown
+    - platform: homeassistant
+      event: start
     # Cope with an odd initialisation issue (which only occurs the *first* time
     # the sensor transitions out of "unknown") that results in the attributes
     # not initialising properly (they somehow initialise based on the previous,

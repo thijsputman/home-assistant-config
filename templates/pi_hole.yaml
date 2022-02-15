@@ -12,6 +12,8 @@
     - platform: state
       entity_id: binary_sensor.pi_hole_update_available
       to: unknown
+    - platform: homeassistant
+      event: start
   binary_sensor:
     - name: Pi-hole Update Available
       unique_id: 97042b69-4893-4b0f-a00e-9000c98820cc

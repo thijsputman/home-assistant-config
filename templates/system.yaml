@@ -166,6 +166,8 @@
     - platform: state
       entity_id: binary_sensor.vacation_mode
       to: unknown
+    - platform: homeassistant
+      event: start
   binary_sensor:
     - name: Vacation-mode
       unique_id: b2d979d7-3a12-4722-92e4-64773edbb939
