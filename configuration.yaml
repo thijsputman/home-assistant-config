@@ -5,6 +5,9 @@ homeassistant:
   allowlist_external_dirs:
     - /config/var
     - /nvme/var
+  media_dirs:
+    sd: /config/var
+    nvme: /nvme/var
 
 frontend:
   extra_module_url:
