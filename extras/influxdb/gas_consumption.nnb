@@ -1,0 +1,95 @@
+{
+    "cells": [
+        {
+            "language": "markdown",
+            "source": [
+                "# Gas Consumption"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "require(\"dotenv\").config();\n\nconst { InfluxDB } = require(\"@influxdata/influxdb-client\");\nconst client = new InfluxDB({\n  url: \"https://eu-central-1-1.aws.cloud2.influxdata.com\",\n  token: process.env.INFLUXDB_TOKEN,\n});\nconst queryApi = client.getQueryApi(process.env.INFLUXDB_ORG);\n\n// console.log() By default outputs a maximum of 100 array-elements\nutil.inspect.defaultOptions.maxArrayLength = null;\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "```flux\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(fn:\n    (r) => r[\"entity_id\"] == \"gas_consumption\"\n      and r[\"_field\"] == \"value\"\n  )\n  // Gas usage (m³/h) is reported once per hour – derive to actual usage\n  |> derivative(unit: 1h, nonNegative:true)\n  |> aggregateWindow(every: 1h, fn: mean)\n  |> aggregateWindow(every: 1d, fn: sum)\n  // In September 2021, \"_measurement\" changed from m3 to m³ – this results in\n  // two groups of results that can be safely summed (there are no overlapping\n  // measurements). This also resolves a timezone issue which causes in a \n  // duplicate \"null\"-entry to show up for the last day in the result set.\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> sum()\n  // \"_time\" represents the end of the cumulative range (i.e., midnight of the\n  // next day) – substract one to show the correct day in the result set\n  |> timeShift(duration: -1d)\n```\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(fn:\n    (r) => r[\"entity_id\"] == \"gas_consumption\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> derivative(unit: 1h, nonNegative:true)\n  |> aggregateWindow(every: 1h, fn: mean)\n  |> aggregateWindow(every: 1d, fn: sum)\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> sum()\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "console.log(result.map((obj) => `${obj[\"_time\"]} ${obj[\"_value\"]}`));\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Graph daily gas usage"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "const { Plotly } = require(\"node-kernel\");\nconst data = [\n  {\n    x: result.map((obj) => obj[\"_time\"]),\n    y: result.map((obj) => obj[\"_value\"]),\n    type: \"scatter\",\n    mode: \"lines\",\n  },\n];\nconst layout = {\n  height: 400,\n  width: 1000,\n};\nPlotly.newPlot(\"foo\", data, layout);\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Monthly and yearly totals"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "import { op, table } from \"arquero\";\n\nconst dt = table({\n  time: result.map((obj) => obj[\"_time\"]),\n  value: result.map((obj) => obj[\"_value\"]),\n});\n\ndt.derive({ month: (d) => op.month(d.time), year: (d) => op.year(d.time) })\n  .groupby(\"year\", \"month\")\n  .rollup({ sum: (d) => op.sum(d.value) })\n  .print();\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "dt.derive({ year: (d) => op.year(d.time) })\n  .groupby(\"year\")\n  .rollup({ sum: (d) => op.sum(d.value) })\n  .print();\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "# Graph daily gas usage – including 7-day moving average"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "import { op, table, rolling } from \"arquero\";\n\nconst dt = table({\n  time: result.map((obj) => obj[\"_time\"]),\n  value: result.map((obj) => obj[\"_value\"]),\n});\n\nconst movingAverage = dt\n  .derive({ movingAverage: rolling((d) => op.average(d.value), [-3, 3]) })\n  .array(\"movingAverage\");\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "const { Plotly } = require(\"node-kernel\");\nconst data = [\n  {\n    x: result.map((obj) => obj[\"_time\"]),\n    y: result.map((obj) => obj[\"_value\"]),\n    type: \"scatter\",\n    mode: \"lines\",\n  },\n  {\n    x: result.map((obj) => obj[\"_time\"]),\n    y: movingAverage,\n    type: \"scatter\",\n    mode: \"lines\",\n    line: {\n      shape: \"spline\",\n    },\n  },\n];\nconst layout = {\n  height: 400,\n  width: 1000,\n};\nPlotly.newPlot(\"foo\", data, layout);\n"
+            ],
+            "outputs": []
+        }
+    ]
+}

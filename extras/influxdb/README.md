@@ -1,4 +1,15 @@
-# InfluxDB scratch-pad
+# InfluxDB Notebooks
+
+Using the
+[Node.js Notebooks](https://marketplace.visualstudio.com/items?itemName=donjayamanne.typescript-notebook)
+VS Code extension.
+
+Before attempting to use the notebooks, ensure you install their dependencies:
+
+```shell
+cd extras/influxdb
+npm install
+```
 
 ## Changes / Notes
 

@@ -20,3 +20,4 @@
 /lovelace/home/security/occupancy.yaml
 
 .env
+node_modules/

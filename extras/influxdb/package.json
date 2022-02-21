@@ -1,0 +1,12 @@
+{
+  "name": "extras-influxdb",
+  "version": "",
+  "description": "",
+  "main": "",
+  "scripts": {},
+  "dependencies": {
+    "@influxdata/influxdb-client": "^1.22.0",
+    "arquero": "^4.8.8",
+    "dotenv": "^16.0.0"
+  }
+}

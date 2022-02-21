@@ -32,6 +32,18 @@ if [ -n "$files" ] ; then
       then status_code=1 ; fi
   fi
 
+  # VS Code Notebooks – remind to clear cell outputs
+  nnb_files=$(echo "$files" | grep .nnb)
+  if [ -n "$nnb_files" ] ; then
+    for f in $nnb_files ; do
+      if (( "$(< "$f" jq '[.cells[].outputs | length] | add' )" > 0 )) ; then
+        echo "❌ Notebook \"${f##*/}\" contains cell output(s) – \
+          clear them before committing..." | tr -s " "
+        status_code=1
+      fi
+    done
+  fi
+
 fi
 
 exit $status_code

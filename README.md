@@ -14,8 +14,9 @@ A combination of [Prettier](https://prettier.io/),
 hook to ensure consistent formatting and – for YAML and Markdown – more
 elaborate sanity-checking.
 
-To set up this pre-commit hook, follow the below instructions. This assumes NPM
-and Python3/`pip` are installed on your system:
+To set up this pre-commit hook, follow the below instructions. This assumes NPM,
+Python3/`pip` and [jq](https://stedolan.github.io/jq/) are installed on your
+system:
 
 ```shell
 pip install --user yamllint
