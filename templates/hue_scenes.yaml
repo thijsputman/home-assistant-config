@@ -82,8 +82,10 @@
               set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
             %}
           {% endif %}
+          {% if num_lights == 0 %}
+            <Off>
           {%
-            if num_lights == 6 and
+            elif num_lights == 6 and
               (brightness == 100 or brightness == 105) and
               (
                 (xy_color[0] == 0.37 and xy_color[1] == 0.36) or
@@ -97,7 +99,7 @@
           %}
             Ambiance
           {%
-            elif num_lights == 7 and brightness == 15 and
+            elif num_lights == 7 and (brightness == 15 or brightness == 20) and
               (
                 (xy_color[0] == 0.51 and xy_color[1] == 0.35) or
                 (xy_color[0] == 0.51 and xy_color[1] == 0.36)
@@ -196,8 +198,10 @@
               set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
             %}
           {% endif %}
+          {% if num_lights == 0 %}
+            <Off>
           {%
-            if num_lights == 4 and
+            elif num_lights == 4 and
               (brightness == 126 or brightness == 130) and
               (
                 (xy_color[0] == 0.41 and xy_color[1] == 0.39) or
@@ -314,8 +318,10 @@
               set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
             %}
           {% endif %}
+          {% if num_lights == 0 %}
+            <Off>
           {%
-            if num_lights == 14 and brightness == 78 and
+            elif num_lights == 14 and brightness == 78 and
               (
                 (xy_color[0] == 0.38 and xy_color[1] == 0.37) or
                 (xy_color[0] == 0.39 and xy_color[1] == 0.37) or
@@ -501,8 +507,10 @@
               set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
             %}
           {% endif %}
+          {% if num_lights == 0 %}
+            <Off>
           {%
-            if num_lights == 5 and brightness == 255 and
+            elif num_lights == 5 and brightness == 255 and
               (xy_color[0] == 0.41 and xy_color[1] == 0.36)
           %}
             Active
