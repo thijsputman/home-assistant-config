@@ -90,10 +90,9 @@ include:
     - sensor.aarlo_battery_level_front
     - sensor.aarlo_battery_level_back
 # Ignore immutable/irrelevant attributes
-# N.B. There appears to be an issue in the InfluxDB integration which causes
-# overlapping combinations of "component_config_domain" and "..._glob" to be
-# ignored. For now, either define a domain or one (or more) globs for entities
-# in that domain, don't define both!
+# N.B. Overlapping combinations of "component_config_domain" and "..._glob" are
+# ignored. So, either define a domain or one (or more) globs for entities _in_
+# that domain, but don't define both!
 component_config_domain:
   fan:
     ignore_attributes:
@@ -118,8 +117,9 @@ component_config:
       - hdmi_input
 component_config_glob:
   # Ignore the voltage, current and temperature measurements provided by the
-  # smart-plugs – there are better temperature measurements available; the
-  # voltage/current measurements are redundant
+  # smart-plugs – the voltage/current measurements are redundant; better
+  # temperature measures are available (and only a handful of smart-plugs
+  # still report a temperature measure)
   "sensor.power_*":
     ignore_attributes:
       - voltage

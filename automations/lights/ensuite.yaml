@@ -14,7 +14,15 @@
       conditions:
         - condition: state
           entity_id: sensor.hue_scene_living_room
-          state: <Off>
+          state:
+            - <Off>
+            # At Home Assistant start, the Hue scene heuristic is "unknown" or
+            # "unavailable" for a short period of time; often while the light
+            # entities get initialised (and this automation incorrectly
+            # triggers) – prevent that edge case from toggling the Ensuite to
+            # 100% brightness...
+            - unknown
+            - unavailable
     # No need to continue if the Living room is off – in that case the below
     # trigger will always timeout...
     - condition: state
