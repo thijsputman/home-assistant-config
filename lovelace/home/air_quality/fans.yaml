@@ -1,0 +1,136 @@
+type: custom:mod-card
+card_mod:
+  style:
+    .: |
+      ha-card {
+        background: var(--llh-mod-card-background);
+        box-shadow: var(--llh-mod-card-box-shadow);
+      }
+    hui-vertical-stack-card$: |
+      mini-graph-card, hui-entities-card{
+        margin: 0px !important;
+      }
+report_size: 2
+card:
+  type: vertical-stack
+  cards:
+    - type: custom:mini-graph-card
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            border-radius: 0px !important;
+            box-shadow: unset;
+          }
+      name: Fan speeds (past 48h)
+      icon: mdi:fan
+      hour24: true
+      hours_to_show: 48
+      points_per_hour: 0.5
+      aggregate_func: avg
+      smoothing: false
+      cache: true
+      decimals: 0
+      upper_bound: 100
+      lower_bound: 0
+      show:
+        labels: true
+        labels_secondary: false
+      state_map:
+        - value: "off"
+          label: "0"
+        - value: "on"
+      entities:
+        - entity: sensor.speed_sonair_living_room
+          name: Living room
+          show_points: false
+          show_fill: false
+        - entity: sensor.speed_sonair_wardrobe
+          name: Wardrobe
+          show_points: false
+          show_fill: false
+        - entity: sensor.speed_sonair_guestroom
+          name: Guestroom
+          show_points: false
+          show_fill: false
+        - color: dimgray
+          entity: sensor.time_of_day_numeric
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+          smoothing: false
+        - color: dimgray
+          entity: input_boolean.everyone_asleep
+          name: Night
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+          smoothing: false
+    - type: entities
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            border-radius: 0px !important;
+            box-shadow: unset;
+            background-color: #D4D4D4;
+            padding-bottom: 4px !important;
+          }
+      entities:
+        - type: custom:slider-entity-row
+          card_mod:
+            style:
+              hui-generic-entity-row$: |
+                .info{
+                  flex: 1 1 20%;
+                }
+          entity: fan.sonair_living_room
+          name: Living room
+          hide_state: true
+          grow: true
+          toggle: true
+          hide_when_off: true
+          extend_paper_buttons_row:
+            position: center
+            buttons:
+              - entity: switch.co2_sensor_sonair_living_room
+                name: false
+        - type: custom:slider-entity-row
+          card_mod:
+            style:
+              hui-generic-entity-row$: |
+                .info{
+                  flex: 1 1 20%;
+                }
+          entity: fan.sonair_guestroom
+          name: Guestroom
+          hide_state: true
+          grow: true
+          toggle: true
+          hide_when_off: true
+          extend_paper_buttons_row:
+            position: center
+            buttons:
+              - entity: switch.co2_sensor_sonair_guestroom
+                name: false
+        - type: custom:slider-entity-row
+          card_mod:
+            style:
+              hui-generic-entity-row$: |
+                .info{
+                  flex: 1 1 20%;
+                }
+          entity: fan.sonair_wardrobe
+          name: Wardrobe
+          hide_state: true
+          grow: true
+          toggle: true
+          hide_when_off: true
+          extend_paper_buttons_row:
+            position: center
+            buttons:
+              - entity: switch.co2_sensor_sonair_wardrobe
+                name: false

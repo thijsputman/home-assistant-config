@@ -7,25 +7,23 @@ card_mod:
         box-shadow: var(--llh-mod-card-box-shadow);
       }
     hui-vertical-stack-card$: |
-      mini-graph-card + mini-graph-card,
-      mini-graph-card + hui-weather-forecast-card{
+      mini-graph-card, hui-weather-forecast-card{
         margin: 0px !important;
       }
+    hui-vertical-stack-card$ mini-graph-card:
+      $: |
+        ha-card {
+          border: 0px;
+          border-radius: 0px !important;
+          box-shadow: unset;
+          padding-bottom: 0px !important;
+          margin-bottom: 0px !important;
+        }
 report_size: 2
 card:
   type: vertical-stack
   cards:
     - type: custom:mini-graph-card
-      card_mod:
-        style: |
-          ha-card {
-            border: 0px;
-            box-shadow: unset;
-            padding-bottom: 0px !important;
-            margin-bottom: 0px !important;
-            border-radius: 0px;
-          }
-      title: null
       name: Temperature (past 48h)
       hour24: true
       hours_to_show: 48
@@ -75,12 +73,10 @@ card:
       card_mod:
         style: |
           ha-card {
-            border: 0px;
-            box-shadow: unset;
-            padding-top: 0px !important;
+            padding-top: 4px !important;
             margin-top: 0px !important;
+            background: linear-gradient(#D4D4D4, #FFFFFF 18%);
           }
-      title: null
       name: Current temperature (48h trend)
       hour24: true
       hours_to_show: 48
@@ -134,8 +130,8 @@ card:
         style: |
           ha-card {
             border: 0px;
+            border-radius: 0px !important;
             box-shadow: unset;
-            border-radius: 0px;
             background-color: #D4D4D4;
             --weather-icon-cloud-front-color: aliceblue;
             --weather-icon-cloud-back-color: lightsteelblue;

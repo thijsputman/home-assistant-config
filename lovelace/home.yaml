@@ -22,14 +22,19 @@ views:
           - !include home/security/housekeeper.yaml
   # Climate
   - title: Climate
+    type: custom:masonry-layout
     path: climate
     icon: mdi:home-thermometer
     badges: []
+    layout:
+      min_height: 1
     cards:
       - type: vertical-stack
         cards:
           - !include home/climate/thermostat.yaml
-          - !include home/climate/sonair.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/climate/temperature.yaml
       - type: vertical-stack
         cards:
           - type: grid
@@ -54,11 +59,21 @@ views:
                 tap_action:
                   action: toggle
                 entity: humidifier.vocolinc_flb_living_room
-          - !include home/climate/bathroom_fan.yaml
+  # Air-quality
+  - title: Air-quality
+    type: custom:masonry-layout
+    path: air-quality
+    icon: mdi:fan
+    badges: []
+    layout:
+      min_height: 1
+    cards:
       - type: vertical-stack
         cards:
-          - !include home/climate/temperature.yaml
-          - !include home/climate/co2.yaml
+          - !include home/air_quality/co2.yaml
+          - !include home/air_quality/pm.yaml
+      - !include home/air_quality/fans.yaml
+      - !include home/air_quality/bathroom_fan.yaml
   # Lights
   - title: Lights
     path: lights

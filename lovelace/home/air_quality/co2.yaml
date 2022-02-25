@@ -13,12 +13,12 @@ state_map:
   - value: "off"
   - value: "on"
 entities:
-  - entity: sensor.qingping_air_monitor_lite_bedroom_environment_co2_density
-    name: Bedroom
-    show_points: false
-    show_fill: false
   - entity: sensor.qingping_air_monitor_lite_living_room_environment_co2_density
     name: Living room
+    show_points: false
+    show_fill: false
+  - entity: sensor.qingping_air_monitor_lite_bedroom_environment_co2_density
+    name: Bedroom
     show_points: false
     show_fill: false
   - entity: sensor.xiaomi_miot_environment_co2_density
