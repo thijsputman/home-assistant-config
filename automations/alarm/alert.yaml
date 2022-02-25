@@ -242,6 +242,10 @@
       data:
         group_name: Garden
         scene_name: Active
+    - service: light.turn_on
+      data:
+        brightness: 255
+        entity_id: light.hue_filament_bulb_1 # Light above the Kitchen door
     # Wait for 5 minutes to ensure this is not a false alarm
     - wait_for_trigger:
         - platform: state
@@ -263,6 +267,10 @@
       data:
         group_name: Garden
         scene_name: Ambiance
+    - service: light.turn_on
+      data:
+        brightness: 77
+        entity_id: light.hue_filament_bulb_1
   mode: single
   max_exceeded: silent
 - alias: 🚨 | 💡 All indoor lights to maximum brightness (alarm triggered)

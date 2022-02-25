@@ -270,7 +270,9 @@
         notification_id: alert_away_back_gate
   mode: single
   max_exceeded: silent
-- alias: 🚨 | 💡 Downstairs lights maximum brightness (back gate opened; "Armed away")
+- alias: >-
+    🚨 | 💡 Downstairs lights maximum brightness (back gate opened;
+    "Armed away")
   id: 9684f5d2-8d26-429f-bb08-aa5deeb23c50
   trigger:
     - platform: state
@@ -300,15 +302,10 @@
       data:
         group_name: Hallway
         scene_name: Bright
-    - service: light.turn_on
-      data:
-        brightness: 255
-        entity_id: light.hue_filament_bulb_1 # Light above the Kitchen door
     # The delay below is to prevent DoS-ing the system by rapidly opening and
     # closing the back gate...
     - delay: 60
-    # A regular automation switches the inside lights (including the one outside
-    # above the Kitchen door) off at dawn, so there's no need to account for
-    # that here.
+    # A regular automation switches the inside lights off at dawn, so there's no
+    # need to account for that here.
   mode: single
   max_exceeded: silent
