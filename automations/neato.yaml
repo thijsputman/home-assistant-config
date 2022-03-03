@@ -57,7 +57,7 @@
         entity_id: script.persistent_notification
       data:
         variables:
-          group: general
+          group: chores
           channel: Notification
           tag: >-
             neato_failure_{{ context.id }}

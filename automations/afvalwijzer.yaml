@@ -18,16 +18,16 @@
         variables:
           targetDevices: home
           channel: Reminder
-          group: trash
+          group: chores
           title: ♻️ Trash reminder
           message: >-
             Don't forget to put the
               {%- if is_state('sensor.afvalwijzer_tomorrow', 'restafval')
-                %} <strong>black</strong>
+                %} <strong>black bin</strong>
               {%- elif is_state('sensor.afvalwijzer_tomorrow', 'gft')
-                %} <strong>green</strong>
+                %} <strong>green bin</strong>
               {%- endif
-            %} bin outside!
+            %} outside!
   mode: single
 - alias: 📱 | ⏰ Trash reminder (Paper)
   id: 1f0e4981-921e-426f-a77d-05a1e6b8f478
@@ -47,7 +47,7 @@
         variables:
           targetDevices: home
           channel: Reminder
-          group: trash
+          group: chores
           title: 📦 Trash reminder
           message: Don't forget to put the <strong>paper</strong> outside!
   mode: single

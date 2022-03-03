@@ -31,11 +31,14 @@
       entity_id: group.family
       from: not_home
       to: home
-      # Tado integration's state doesn't update instantly (even when changes are
-      # made through the integration) – wait for a short while to ensure the
-      # integration catches up correctly. Otherwise a (very) short trip outside
-      # could leave tado° stuck in "Away" mode.
-      for: "00:02:00"
+    # Tado integration's state doesn't update instantly (even when changes are
+    # made through the integration) – secondary, delayed, trigger to prevent
+    # short trips outside from leaving tado° stuck in "Away"-mode
+    - platform: state
+      entity_id: group.family
+      from: not_home
+      to: home
+      for: "00:05:00"
   condition:
     - condition: state
       entity_id: climate.tado_living_room

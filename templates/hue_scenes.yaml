@@ -94,12 +94,14 @@
           %}
             Daytime
           {%
-            elif num_lights == 9 and brightness == 132 and
+            elif num_lights == 9 and
+              (brightness == 127 or brightness == 132) and
               (xy_color[0] == 0.51 and xy_color[1] == 0.35)
           %}
             Ambiance
           {%
-            elif num_lights == 7 and (brightness == 15 or brightness == 20) and
+            elif num_lights == 7 and
+              (brightness == 15 or brightness == 20 or brightness == 22) and
               (
                 (xy_color[0] == 0.51 and xy_color[1] == 0.35) or
                 (xy_color[0] == 0.51 and xy_color[1] == 0.36)
