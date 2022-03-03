@@ -34,7 +34,7 @@ card:
           }
       tap_action:
         action: more-info
-      entity: sensor.binary_dryer
+      entity: binary_sensor.dryer
       show_name: true
       show_icon: true
       show_state: false

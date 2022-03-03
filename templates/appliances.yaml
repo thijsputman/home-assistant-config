@@ -154,3 +154,17 @@
         {%- else -%}
           off
         {%- endif -%}
+    # Dryer
+    - name: Dryer
+      unique_id: 07c24e37-0968-438c-bf9d-10e8266cfa96
+      device_class: power
+      icon: mdi:tumble-dryer
+      availability: >-
+        {{ states('sensor.power_83') not in ['unknown', 'unavailable'] }}
+      # Dryer's idle/standby consumption is 2 Watt
+      state: >-
+        {%- if states('sensor.power_83')|float(0) > 2 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}

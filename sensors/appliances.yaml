@@ -80,18 +80,6 @@
             ) | round(2)
           }}
     # Dryer
-    binary_dryer:
-      friendly_name: Dryer
-      device_class: power
-      # Dryer's idle/standby consumption is 2 Watt
-      value_template: >-
-        {%- if states('sensor.power_83') in ['unknown', 'unavailable'] -%}
-          {{ states('sensor.power_83') }}
-        {%- elif states('sensor.power_83')|float > 2 -%}
-          on
-        {%- else -%}
-          off
-        {%- endif -%}
     monthly_consumption_costs_dryer:
       friendly_name: Monthly costs (Dryer)
       unit_of_measurement: €
