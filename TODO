@@ -130,8 +130,6 @@
 - [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
 - [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
       other Qingping senors
-- [ ] If Neato `status`-attribute goes to `Please empty dust bin`, send a
-      notification
 - [ ] A sudden substantial increase in PM indicates a fire (or some kind of
       calamity); experiment with using this to trigger the alarm – additionally,
       increases in CO₂ levels when no-one is home (i.e. Home Alarm is "Armed

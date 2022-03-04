@@ -49,7 +49,9 @@
         - vacuum.neato_d7
         - vacuum.d7_upstairs
       attribute: status
-      to: Dust bin full
+      to:
+        - Dust bin full
+        - Please empty dust bin
   condition: []
   action:
     - service: script.turn_on
@@ -65,12 +67,19 @@
           title: 🧹 Neato dustbin full
           message: >-
             Neato {{ device_attr(trigger.entity_id, 'name') }}'s dustbin is
-            full – it will automatically resume cleaning when the dustbin is
-            emptied...
+            full, please empty it{%-
+              if state_attr(trigger.entity_id, 'status') != 'Dust bin full'
+            -%} – Neato will automatically resume cleaning when its dustbin is
+            emptied{%-
+              endif
+            -%}...
     - wait_for_trigger:
         - platform: template
           value_template: >-
-            {{ state_attr(trigger.entity_id, 'status') != 'Dust bin full' }}
+            {{
+              state_attr(trigger.entity_id, 'status') not in
+                ['Dust bin full', 'Please empty dust bin']
+            }}
       timeout: "12:00:00"
       continue_on_timeout: false
     - service: persistent_notification.dismiss
