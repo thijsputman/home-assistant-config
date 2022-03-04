@@ -29,6 +29,9 @@
           title: 👖 Washing machine is done
           message: >-
             Time to take the laundry from the washing machine...
+    # The washing machine turns itself off when it's done, so it's not possible
+    # to use its power consumption to determine if it has been emptied (i.e
+    # interacted with). Instead, use a sensor stuck to its door...
     - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.vibration_130 # Vibration sensor on door
@@ -36,38 +39,45 @@
           to: "on"
       timeout: "02:00:00"
       continue_on_timeout: true
-    # The washing machine turns itself off when it's done, so it's not possible
-    # to use power consumption to determine if it has been emptied. Instead, if
-    # the washing machine door is _not_ opened (i.e. trigger times out) within
-    # two hours, assume it wasn't emptied and raise the alert level...
-    - condition: template
-      value_template: >-
-        {{ wait.trigger is none }}
-    - service: script.turn_on
-      target:
-        entity_id: script.persistent_notification
-      data:
-        variables:
-          group: chores
-          channel: Alert
-          criticalNotification: true
-          tag: washing_machine
-          targetDevices: all
-          title: 👖 Take the laundry from the washing machine!
-          message: >-
-            The washing machine finished at <strong>{{ done_at }}</strong>,
-            time to take the laundry out!
-    - wait_for_trigger:
-        - platform: state
-          entity_id: binary_sensor.vibration_130 # Vibration sensor on door
-          from: "off"
-          to: "on"
-      timeout: "12:00:00"
-      continue_on_timeout: false
-    - service: persistent_notification.dismiss
-      data:
-        notification_id: washing_machine
+    - choose:
+        # Door got opened (i.e. triggered within timeout) – dismiss notification
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ wait.trigger is not none }}
+          sequence:
+            - service: persistent_notification.dismiss
+              data:
+                notification_id: washing_machine
+      # Door was _not_ opened within two hours of completing the run (i.e.
+      # trigger timed out) – raise the alert level...
+      default:
+        - service: script.turn_on
+          target:
+            entity_id: script.persistent_notification
+          data:
+            variables:
+              group: chores
+              channel: Alert
+              criticalNotification: true
+              tag: washing_machine
+              targetDevices: all
+              title: 👖 Take the laundry from the washing machine!
+              message: >-
+                The washing machine finished at <strong>{{ done_at }}</strong>,
+                time to take the laundry out!
+        - wait_for_trigger:
+            - platform: state
+              entity_id: binary_sensor.vibration_130 # Vibration sensor on door
+              from: "off"
+              to: "on"
+          timeout: "12:00:00"
+          continue_on_timeout: false
+        - service: persistent_notification.dismiss
+          data:
+            notification_id: washing_machine
   mode: single
+  max_exceeded: silent
 - alias: 📱 | 👖 Notify on dryer done
   id: 72c3b569-a2e9-4c9e-85f1-cf9bbf49c86e
   trigger:
@@ -96,18 +106,18 @@
           title: 👖 Dryer is done
           message: >-
             Time to take the laundry from the dryer...
-    # Dismiss notification when dryer is emptied (i.e. when it's switched off)
+    # Dismiss notification when dryer is emptied (i.e. switched off)
     - wait_for_trigger:
-        - platform: state
-          entity_id: binary_sensor.dryer
-          from: "on"
-          to: "off"
-      timeout: "12:00:00"
+        - platform: numeric_state
+          entity_id: sensor.power_83
+          below: 1
+      timeout: "16:00:00"
       continue_on_timeout: false
     - service: persistent_notification.dismiss
       data:
         notification_id: dryer
   mode: single
+  max_exceeded: silent
 - alias: 📱 | 👖 Notify on dryer reservoir full
   id: 7dabd9e4-77b7-4663-9eb7-c5fd5efb96e1
   trigger:
