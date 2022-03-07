@@ -4,16 +4,25 @@
     - platform: numeric_state
       entity_id: sensor.power_86_actual
       above: 100
-      for: "00:03:00"
+      for: "00:01:00"
   condition: []
   action:
     - wait_for_trigger:
         - platform: numeric_state
+          id: cycle_completed
           entity_id: sensor.power_86_actual
           below: 10
           for: "00:20:00"
+        # Short-circuit on door open
+        - platform: state
+          entity_id: binary_sensor.vibration_130 # Vibration sensor on door
+          from: "off"
+          to: "on"
       timeout: "06:00:00"
       continue_on_timeout: false
+    # Only continue on "cycle completed"-trigger
+    - condition: trigger
+      id: cycle_completed
     - variables:
         done_at: >-
           {{ now().hour ~ ':' ~now().minute }}
@@ -34,7 +43,7 @@
     # interacted with). Instead, use a sensor stuck to its door...
     - wait_for_trigger:
         - platform: state
-          entity_id: binary_sensor.vibration_130 # Vibration sensor on door
+          entity_id: binary_sensor.vibration_130
           from: "off"
           to: "on"
       timeout: "02:00:00"
@@ -68,7 +77,7 @@
                 time to take the laundry out!
         - wait_for_trigger:
             - platform: state
-              entity_id: binary_sensor.vibration_130 # Vibration sensor on door
+              entity_id: binary_sensor.vibration_130
               from: "off"
               to: "on"
           timeout: "12:00:00"
@@ -84,16 +93,32 @@
     - platform: numeric_state
       entity_id: sensor.power_83
       above: 500
-      for: "00:20:00"
+      for: "00:01:00"
   condition: []
   action:
     - wait_for_trigger:
+        # Anti-crease cycle takes about an hour; consider the dryer to be done
+        # 20-minutes after that cycle started...
         - platform: numeric_state
+          id: cycle_completed
           entity_id: sensor.power_83
           below: 500
-          for: "00:40:00"
+          for: "00:20:00"
+        # Short-circuit on water reservoir full
+        - platform: numeric_state
+          entity_id: sensor.power_83
+          below: 10
+          for: "00:05:00"
+        # Short-circuit on dryer switched off
+        - platform: numeric_state
+          entity_id: sensor.power_83
+          below: 1
+          for: "00:01:00"
       timeout: "06:00:00"
       continue_on_timeout: false
+    # Only continue on "cycle completed"-trigger
+    - condition: trigger
+      id: cycle_completed
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -127,17 +152,29 @@
       for: "00:01:00"
   condition: []
   action:
-    # This isn't totally fool-proof (only triggers if the reservoir fills up
-    # early in the run; conflicts with the "done"-automation in edge cases), but
-    # serves as a good starting to point to judge the value of the
-    # notification...
+    # If the water reservoir is full, the dryer stops immediately (as opposed
+    # to running its anti-crease cycle) – power consumption goes to ± 2 Watt
     - wait_for_trigger:
         - platform: numeric_state
+          id: reservoir_full
           entity_id: sensor.power_83
-          below: 500
-          for: "00:02:00"
-      timeout: "00:20:00"
+          below: 10
+          for: "00:05:00"
+        # Short-circuit on dryer switched off
+        - platform: numeric_state
+          entity_id: sensor.power_83
+          below: 1
+          for: "00:01:00"
+      # The shortest normal drying cycle (including the anti-crease cycle) takes
+      # well over an hour, the actual "drying" part takes well _under_  an
+      # hour – so after an hour it's safe to give up on detecting a full
+      # reservoir; this furthermore ensures this automation never conflicts
+      # with the "dryer done"-automation.
+      timeout: "01:00:00"
       continue_on_timeout: false
+    # Only continue on "reservoir full"-trigger
+    - condition: trigger
+      id: reservoir_full
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -152,11 +189,13 @@
           message: >-
             Empty the reservoir so the dryer can continue its run...
     # Dismiss notification when dryer reservoir is emptied (i.e. when it appears
-    # to be continuing its run)
+    # to be continuing its run) – the regular "dryer done"-automation will
+    # restart (it aborts on a full water reservoir)
     - wait_for_trigger:
         - platform: numeric_state
           entity_id: sensor.power_83
           above: 500
+          for: "00:01:00"
       timeout: "12:00:00"
       continue_on_timeout: false
     - service: persistent_notification.dismiss

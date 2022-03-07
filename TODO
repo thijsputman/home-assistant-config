@@ -123,10 +123,12 @@
     This could be via TTS when all lights are switched off before going to bed
   - Once finalised, include tilt sensors in InfluxDB as part of the air quality
     metrics (these windows are regularly used for ventilation purposes)
-- [ ] Send notifications when the washing machine and dryer are done (based on
+- [x] ~~Send notifications when the washing machine and dryer are done (based on
       their power consumption) – use a vibration sensor on the washing machine
       door to detect if it got emptied (and if that doesn't happen in a timely
-      fashion, raise a more urgent notification)
+      fashion, raise a more urgent notification)~~
+  - Assess reliability of the vibration sensor; alternatively a contact sensor
+    could be used
 - [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
 - [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
       other Qingping senors
