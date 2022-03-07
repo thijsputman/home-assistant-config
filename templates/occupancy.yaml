@@ -14,7 +14,8 @@
         - binary_sensor.vibration_102
         - binary_sensor.vibration_106
       attribute: tiltangle
-    # Force re-render when template entities YAML configuration is reloaded
+    # Force re-render when template entities YAML configuration is reloaded or
+    # Home Assistant starts
     - platform: state
       entity_id: binary_sensor.occupancy_office_chairs
       to: unknown
@@ -52,7 +53,8 @@
       from: "on"
       to: "off"
       for: "00:15:00"
-    # Force re-render when template entities YAML configuration is reloaded
+    # Force re-render when template entities YAML configuration is reloaded or
+    # Home Assistant starts
     - platform: state
       entity_id: binary_sensor.occupancy_attic
       to: unknown

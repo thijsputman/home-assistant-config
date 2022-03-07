@@ -8,7 +8,8 @@
     - platform: state
       entity_id: binary_sensor.pi_hole_web_update_available
       to: ~
-    # Force re-render when template entities YAML configuration is reloaded
+    # Force re-render when template entities YAML configuration is reloaded or
+    # Home Assistant starts
     - platform: state
       entity_id: binary_sensor.pi_hole_update_available
       to: unknown

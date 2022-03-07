@@ -38,7 +38,8 @@
     - platform: state
       entity_id: light.hue_group_living_room
       to: "off"
-    # Force re-render when template entities YAML configuration is reloaded
+    # Force re-render when template entities YAML configuration is reloaded or
+    # Home Assistant starts
     - platform: state
       entity_id: sensor.hue_scene_living_room
       to: unknown
@@ -101,8 +102,13 @@
             Ambiance
           {%
             elif num_lights == 7 and
-              (brightness == 15 or brightness == 20 or brightness == 22) and
               (
+                brightness == 15 or
+                brightness == 20 or
+                brightness == 22 or
+                brightness == 26
+              ) and (
+                (xy_color[0] == 0.50 and xy_color[1] == 0.36) or
                 (xy_color[0] == 0.51 and xy_color[1] == 0.35) or
                 (xy_color[0] == 0.51 and xy_color[1] == 0.36)
               )
@@ -323,7 +329,7 @@
           {% if num_lights == 0 %}
             <Off>
           {%
-            elif num_lights == 14 and brightness == 78 and
+            elif num_lights == 14 and (brightness == 76 or brightness == 78) and
               (
                 (xy_color[0] == 0.38 and xy_color[1] == 0.37) or
                 (xy_color[0] == 0.39 and xy_color[1] == 0.37) or

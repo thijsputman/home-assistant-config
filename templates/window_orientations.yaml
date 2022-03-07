@@ -10,7 +10,8 @@
     - platform: state
       entity_id: binary_sensor.vibration_129
       attribute: orientation
-    # Force re-render when template entities YAML configuration is reloaded
+    # Force re-render when template entities YAML configuration is reloaded or
+    # Home Assistant starts
     - platform: state
       entity_id: sensor.attic_window_position
       to: unknown
@@ -69,7 +70,8 @@
       # vibration sensor isn't 100% reactive – especially not when carefully
       # opening/closing the window).
       for: 5
-    # Force re-render when template entities YAML configuration is reloaded
+    # Force re-render when template entities YAML configuration is reloaded or
+    # Home Assistant starts
     - platform: state
       entity_id: sensor.bathroom_window_position
       to: unknown

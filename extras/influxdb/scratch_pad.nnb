@@ -10,7 +10,7 @@
         {
             "language": "javascript",
             "source": [
-                "require(\"dotenv\").config();\n\nconst { InfluxDB } = require(\"@influxdata/influxdb-client\");\nconst client = new InfluxDB({\n  url: \"https://eu-central-1-1.aws.cloud2.influxdata.com\",\n  token: process.env.INFLUXDB_TOKEN,\n});\nconst queryApi = client.getQueryApi(process.env.INFLUXDB_ORG);\n\n// console.log() By default outputs a maximum of 100 array-elements\nutil.inspect.defaultOptions.maxArrayLength = null;\n"
+                "require(\"dotenv\").config();\n\nconst { InfluxDB } = require(\"@influxdata/influxdb-client\");\nconst client = new InfluxDB({\n  url: \"https://eu-central-1-1.aws.cloud2.influxdata.com\",\n  token: process.env.INFLUXDB_TOKEN,\n});\nconst queryApi = client.getQueryApi(process.env.INFLUXDB_ORG);\n\n// console.log() By default outputs a maximum of 100 array-elements\nutil.inspect.defaultOptions.maxArrayLength = null;\n\nconsole.log(client.transport.defaultOptions.hostname);\n"
             ],
             "outputs": []
         },

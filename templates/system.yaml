@@ -165,7 +165,8 @@
     - platform: state
       entity_id: alarm_control_panel.home_alarm
       to: disarmed
-    # Force re-render when template entities YAML configuration is reloaded
+    # Force re-render when template entities YAML configuration is reloaded or
+    # Home Assistant starts
     - platform: state
       entity_id: binary_sensor.vacation_mode
       to: unknown
