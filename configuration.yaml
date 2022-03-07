@@ -28,6 +28,7 @@ recorder:
       - sensor.power_88 # ↑
       - sensor.power_149 # ↑
       - sensor.gammu_received_unprocessed_message
+      - sensor.last_notification_unprocessed
       - sensor.failed_devices
     entity_globs:
       - sensor.dd_wrt_*_total_octets

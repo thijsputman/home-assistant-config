@@ -109,6 +109,9 @@
             {# Plant sensors #}
             {% elif entity_id is search('^plant\..+') %}
               {# Ignored; derived from MQTT devices #}
+            {# Last notification #}
+            {% elif entity_id is search('^sensor\.last_notification_.+') %}
+              {# Ignored; unavailable as part of normal operation #}
             {# Failed devices (this sensor) #}
             {% elif entity_id == 'sensor.failed_devices' %}
               {# Ignored #}

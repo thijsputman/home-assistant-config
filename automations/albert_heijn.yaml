@@ -1,0 +1,83 @@
+- alias: 🛒 | 💤 Prepone «wakeup» time (Albert Heijn arriving early)
+  id: 866031ac-89c6-4ab4-8a76-b0f67b910ae7
+  trigger:
+    - platform: state
+      entity_id: sensor.last_notification_albert_heijn_eta
+      to: ~
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.last_notification_albert_heijn_eta
+          state: unavailable
+    - condition: time
+      before: input_datetime.wakeup
+    # Albert Heijn ETA is within 15-minutes of «wakeup» time
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.last_notification_albert_heijn_eta') | as_datetime
+            >= today_at(states('input_datetime.wakeup')) + timedelta(minutes=15)
+        }}
+  action:
+    # Set «wakeup» time to 15-minutes before Albert Heijn ETA
+    - service: input_datetime.set_datetime
+      data:
+        datetime: >-
+          {{
+            states('sensor.last_notification_albert_heijn_eta') | as_datetime
+              - timedelta(minutes=15)
+          }}
+      target:
+        entity_id: input_datetime.wakeup
+  mode: single
+- alias: 🛒 | 🔊 Announce Albert Heijn ETA (wakeup alarm snoozed)
+  id: 381fa915-60ea-4d01-ab6c-51d245da3b8d
+  trigger:
+    - platform: event
+      event_type: timer.started
+      event_data:
+        entity_id: timer.wakeup_snooze_time
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.last_notification_albert_heijn_eta
+          state: unavailable
+    # Albert Heijn ETA is for today
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.last_notification_albert_heijn_eta') | as_datetime
+            >= today_at('00:00:00')
+        }}
+  action:
+    - delay: 5
+    - variables:
+        eta_start: >-
+          {%-
+            set start = states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime
+          -%}
+          {{ start.hour }}:{{ start.minute }}
+        eta_end: >-
+          {%-
+            set end = states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime + timedelta(seconds=state_attr(
+                  'sensor.last_notification_albert_heijn_eta', 'interval'))
+          -%}
+          {{ end.hour }}:{{ end.minute }}
+    - service: tts.cloud_say
+      data:
+        entity_id: media_player.pi0_speaker_bedroom
+        # cspell: disable
+        # Cloud TTS chokes on "Heijn"...
+        message: >-
+          Good morning, Albert Heyn expects to arrive between {{ eta_start }}
+          and {{ eta_end }}. That is in {{
+            ((states('sensor.last_notification_albert_heijn_eta') |
+              as_timestamp - now() | as_timestamp) / 60) | int
+          }} minutes...
+        # cspell: enable
+        language: en-GB
+  mode: single

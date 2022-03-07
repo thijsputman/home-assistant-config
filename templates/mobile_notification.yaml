@@ -1,0 +1,85 @@
+- trigger:
+    - platform: state
+      entity_id: sensor.pixel_6_pro_last_notification
+      to: ~
+    # Trigger back to "unavailable" after 10 seconds
+    - platform: state
+      id: unavailable
+      entity_id: sensor.last_notification_unprocessed
+      from:
+        - unavailable
+        - unknown # Also cover initialisation (see below)
+      for: "00:00:10"
+    # Force re-render when template entities YAML configuration is reloaded or
+    # Home Assistant starts
+    - platform: state
+      entity_id: sensor.last_notification_unprocessed
+      to: unknown
+    - platform: homeassistant
+      event: start
+  sensor:
+    - name: Last Notification (unprocessed)
+      unique_id: 1c27807f-ffd8-482e-b374-06b33195c128
+      availability: >-
+        {{ trigger.id != 'unavailable' }}
+      attributes:
+        package: >-
+          {{
+            state_attr('sensor.pixel_6_pro_last_notification', 'package')
+          }}
+        post_time: >-
+          {{
+            ((state_attr('sensor.pixel_6_pro_last_notification', 'post_time')
+              | int) / 1000) | round(0) | as_datetime
+          }}
+      state: >-
+        {{ states('sensor.pixel_6_pro_last_notification') }}
+- trigger:
+    - platform: state
+      entity_id: sensor.last_notification_unprocessed
+      attribute: package
+      to: com.icemobile.albertheijn
+  sensor:
+    - name: Last Notification – Albert Heijn ETA
+      unique_id: f0ddb0ee-cecb-4444-bee6-4e39daf60946
+      icon: mdi:basket-outline
+      # cspell: disable
+      availability: >-
+        {#
+          Message should have been posted _less_ than 12-hours ago – the sensor
+          assumes the ETA concerns today, so this prevent an older message from
+          unintentionally being interpreted as still relevant...
+        #}
+        {{
+          state_attr('sensor.last_notification_unprocessed', 'post_time') |
+            as_datetime >= now() - timedelta(hours=12) and
+          states('sensor.last_notification_unprocessed') is
+            search(
+              'verwacht(?:en)? tussen \d{2}:\d{2} ' ~
+              'en \d{2}:\d{2} uur bij je te zijn')
+        }}
+      attributes:
+        interval: >-
+          {%
+            set eta = states('sensor.last_notification_unprocessed')  |
+                regex_findall(
+                  'verwacht(?:en)? tussen (\d{2}:\d{2}) ' ~
+                  'en (\d{2}:\d{2}) uur bij je te zijn')
+          %}
+          {% if eta != [] and eta[0] != [] %}
+            {{
+              (today_at(eta[0][1]) | as_timestamp -
+                today_at(eta[0][0]) | as_timestamp) | int(0)
+            }}
+          {% endif %}
+      state: >-
+        {%
+          set eta = states('sensor.last_notification_unprocessed')  |
+              regex_findall(
+                'verwacht(?:en)? tussen (\d{2}:\d{2}) ' ~
+                'en (\d{2}:\d{2}) uur bij je te zijn')
+        %}
+        {% if eta != [] and eta[0] != [] %}
+          {{ today_at(eta[0][0]) }}
+        {% endif %}
+      # cspell: enable
