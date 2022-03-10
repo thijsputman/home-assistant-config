@@ -52,13 +52,6 @@
       data:
         message: >-
           {{ message }}:
-        image:
-          url: >-
-            {% if trigger.id == "motion" %}
-              {{ state_attr(trigger.entity_id, 'last_thumbnail') }}
-            {% elif trigger.id == "doorbell" %}
-              {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
-            {% endif %}
         data:
           duration: 20
           position: center
@@ -66,6 +59,13 @@
           transparency: 25%
           color: black
           interrupt: 0
+          image:
+            url: >-
+              {% if trigger.id == "motion" %}
+                {{ state_attr(trigger.entity_id, 'last_thumbnail') }}
+              {% elif trigger.id == "doorbell" %}
+                {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
+              {% endif %}
     # Block while the notification is up
     - delay: "00:00:20"
   mode: single

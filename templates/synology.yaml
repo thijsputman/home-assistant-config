@@ -27,7 +27,7 @@
         {{
           (
             states('sensor.ups_nominal_real_power') | float(0) *
-              states('sensor.ups_load')|float / 100
+              states('sensor.ups_load')| float(0) / 100
           ) | round(0)
         }}
     - name: UPS battery runtime (minutes)

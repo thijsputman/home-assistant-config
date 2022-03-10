@@ -2,6 +2,9 @@
     # Power outage detection based on back-up UPS. To filter out minor hiccups,
     # this triggers when the UPS is discharging and battery level dips below
     # 98%. Under current load this happens after about 40 seconds...
+    # If the battery charge sensor is unavailable, assume it to be at 100%-
+    # charge. A false-positive on the power outage sensor might have rather
+    # severe consequences, so err on the side of caution.
     - name: Power outage
       unique_id: 679eb3a5-4052-445c-979c-a72cb5796048
       device_class: problem
@@ -10,7 +13,7 @@
         {{ states('sensor.ups_status') not in ['unknown', 'unavailable'] }}
       state: >-
         {%- if
-          states('sensor.ups_battery_charge')|int < 98 and
+          states('sensor.ups_battery_charge')|int(100) < 98 and
           states('sensor.ups_status') == 'On Battery Battery Discharging'
         -%}
           on
