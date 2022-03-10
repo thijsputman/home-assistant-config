@@ -45,6 +45,7 @@ card:
           show_points: false
           show_legend: false
           y_axis: secondary
+          smoothing: false
     - type: custom:mini-graph-card
       card_mod:
         style: |

@@ -32,6 +32,7 @@ entities:
     show_points: false
     show_legend: false
     y_axis: secondary
+    aggregate_func: max
     smoothing: false
   - color: dimgray
     entity: input_boolean.everyone_asleep
@@ -40,4 +41,5 @@ entities:
     show_points: false
     show_legend: false
     y_axis: secondary
+    aggregate_func: max
     smoothing: false
