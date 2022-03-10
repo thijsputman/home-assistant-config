@@ -9,10 +9,13 @@ homeassistant:
     sd: /config/var
     nvme: /nvme/var
 
-frontend:
-  extra_module_url:
-    - /local/custom-jsm/card-mod.js?v=3.1.2
-    - /local/custom-jsm/layout-card.js?v=2.4.1
+# Temporarily disabled; loading via Lovelace "Resources" for the time being; see
+# https://github.com/thomasloven/lovelace-card-mod/issues/185
+#
+# frontend:
+#   extra_module_url:
+#     - /local/custom-jsm/card-mod.js?v=3.1.2
+#     - /local/custom-jsm/layout-card.js?v=2.4.2
 
 system_log:
   fire_event: true
@@ -51,8 +54,6 @@ history:
   exclude:
     domains:
       - automation
-    entities:
-      - binary_sensor.updater
 
 logger: !include logger.yaml
 
@@ -71,10 +72,6 @@ lovelace:
 
 # InfluxDB
 influxdb: !include influx_db.yaml
-
-# MQTT
-mqtt:
-  broker: pi4.sgraastra
 
 # Text to speech
 tts:
