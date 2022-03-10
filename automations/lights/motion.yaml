@@ -4,7 +4,7 @@
     - platform: state
       entity_id:
         - binary_sensor.presence_53 # Sink
-        - binary_sensor.presence_105 # Coffee machine
+        - binary_sensor.presence_155 # Coffee machine
       from: "off"
       to: "on"
   condition:
@@ -20,7 +20,7 @@
         # One sensor triggers regardless of light level...
         - condition: template
           value_template: >-
-            {{ trigger.entity_id == 'binary_sensor.presence_105' }}
+            {{ trigger.entity_id == 'binary_sensor.presence_155' }}
         # ...the other not
         - condition: and
           conditions:
@@ -53,7 +53,7 @@
     - wait_template: >-
         {{
           states('binary_sensor.presence_53') == 'off' and
-          states('binary_sensor.presence_105') == 'off'
+          states('binary_sensor.presence_155') == 'off'
         }}
     - delay: "00:03:00"
     # If the scene for "Kitchen counter & cupboards" is still "Activity", no
@@ -92,7 +92,7 @@
       id: activity
       entity_id:
         - binary_sensor.presence_53
-        - binary_sensor.presence_105
+        - binary_sensor.presence_155
       from: "off"
       to: "on"
     # Initially trigger only considers the sensor above the sink
@@ -143,7 +143,7 @@
     - wait_template: >-
         {{
           states('binary_sensor.presence_53') == 'off' and
-          states('binary_sensor.presence_105') == 'off'
+          states('binary_sensor.presence_155') == 'off'
         }}
     - delay: "00:06:00"
     # This restores the previous scene even if "Bright (custom)" was applied

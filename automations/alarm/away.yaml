@@ -121,7 +121,7 @@
         - binary_sensor.presence_71 # Bathroom
         - binary_sensor.presence_91 # Attic stairs/hallway
         - binary_sensor.presence_92 # Attic stairs/hallway
-        - binary_sensor.presence_105 # Kitchen counter
+        - binary_sensor.presence_155 # Kitchen counter
         - binary_sensor.presence_121 # Stairs
         - binary_sensor.presence_123 # Downstairs hallway
         - binary_sensor.presence_125 # Downstairs hallway
@@ -165,7 +165,7 @@
             - binary_sensor.presence_71
             - binary_sensor.presence_91
             - binary_sensor.presence_92
-            - binary_sensor.presence_105
+            - binary_sensor.presence_155
             - binary_sensor.presence_121
             - binary_sensor.presence_123
             - binary_sensor.presence_125

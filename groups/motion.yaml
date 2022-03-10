@@ -23,14 +23,14 @@ motion_all:
   icon: mdi:home-variant-outline
   entities:
     - binary_sensor.presence_50 # Basement
-    - binary_sensor.presence_53 # Kitchen counter
+    - binary_sensor.presence_53 # Kitchen (Counter)
     - binary_sensor.presence_60 # Toilet
     - binary_sensor.presence_63 # Wardrobe
     - binary_sensor.presence_68 # Bathroom
     - binary_sensor.presence_71 # Bathroom
     - binary_sensor.presence_91 # Attic stairs/hallway
     - binary_sensor.presence_92 # Attic stairs/hallway
-    - binary_sensor.presence_105 # Kitchen counter
+    - binary_sensor.presence_155 # Kitchen (Coffee machine)
     - binary_sensor.presence_121 # Stairs
     - binary_sensor.presence_123 # Downstairs hallway
     - binary_sensor.presence_125 # Downstairs hallway
