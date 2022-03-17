@@ -173,6 +173,22 @@
               entity_id: sensor.hue_scene_kitchen_previous
               state: Daytime
     - choose:
+        # Don't restore daytime lighting when it's not daytime (anymore) –
+        # restoring to "Ambiance" seems most sensible at this point instead
+        - conditions:
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.time_of_day
+                  state: day
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen_previous
+              state: Daytime
+          sequence:
+            - service: hue.hue_activate_scene
+              data:
+                group_name: Kitchen
+                scene_name: Ambiance
         - conditions:
             - condition: template
               value_template: >-

@@ -68,7 +68,7 @@
           message: >-
             Neato {{ device_attr(trigger.entity_id, 'name') }}'s dustbin is
             full, please empty it{%-
-              if state_attr(trigger.entity_id, 'status') != 'Dust bin full'
+              if state_attr(trigger.entity_id, 'status') == 'Dust bin full'
             -%} – Neato will automatically resume cleaning when its dustbin is
             emptied{%-
               endif
