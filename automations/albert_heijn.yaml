@@ -5,6 +5,9 @@
       entity_id: sensor.last_notification_albert_heijn_eta
       to: ~
   condition:
+    - condition: state
+      entity_id: group.family
+      state: home
     - condition: not
       conditions:
         - condition: state
@@ -12,15 +15,15 @@
           state: unavailable
     - condition: time
       before: input_datetime.wakeup
-    # Albert Heijn ETA is within 15-minutes of «wakeup» time
+    # Albert Heijn ETA is at most 15-minutes _after_ «wakeup» time
     - condition: template
       value_template: >-
         {{
           states('sensor.last_notification_albert_heijn_eta') | as_datetime
-            >= today_at(states('input_datetime.wakeup')) + timedelta(minutes=15)
+            - timedelta(minutes=15) <= today_at(states('input_datetime.wakeup'))
         }}
   action:
-    # Set «wakeup» time to 15-minutes before Albert Heijn ETA
+    # Set «wakeup» time to 15-minutes _before_ Albert Heijn ETA
     - service: input_datetime.set_datetime
       data:
         datetime: >-
