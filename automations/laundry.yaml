@@ -15,14 +15,15 @@
           for: "00:20:00"
         # Short-circuit on door open
         - platform: state
-          entity_id: binary_sensor.vibration_130 # Vibration sensor on door
+          entity_id: binary_sensor.openclose_158 # Contact sensor on door
           from: "off"
           to: "on"
       timeout: "06:00:00"
       continue_on_timeout: false
     # Only continue on "cycle completed"-trigger
-    - condition: trigger
-      id: cycle_completed
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id == 'cycle_completed' }}
     - variables:
         done_at: >-
           {{ now().hour ~ ':' ~now().minute }}
@@ -43,7 +44,7 @@
     # interacted with). Instead, use a sensor stuck to its door...
     - wait_for_trigger:
         - platform: state
-          entity_id: binary_sensor.vibration_130
+          entity_id: binary_sensor.openclose_158
           from: "off"
           to: "on"
       timeout: "02:00:00"
@@ -77,7 +78,7 @@
                 time to take the laundry out!
         - wait_for_trigger:
             - platform: state
-              entity_id: binary_sensor.vibration_130
+              entity_id: binary_sensor.openclose_158
               from: "off"
               to: "on"
           timeout: "12:00:00"
@@ -87,6 +88,8 @@
             notification_id: washing_machine
   mode: single
   max_exceeded: silent
+  trace:
+    stored_traces: 15
 - alias: 📱 | 👖 Notify on dryer done
   id: 72c3b569-a2e9-4c9e-85f1-cf9bbf49c86e
   trigger:
@@ -117,8 +120,9 @@
       timeout: "06:00:00"
       continue_on_timeout: false
     # Only continue on "cycle completed"-trigger
-    - condition: trigger
-      id: cycle_completed
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id == 'cycle_completed' }}
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -143,6 +147,8 @@
         notification_id: dryer
   mode: single
   max_exceeded: silent
+  trace:
+    stored_traces: 15
 - alias: 📱 | 👖 Notify on dryer reservoir full
   id: 7dabd9e4-77b7-4663-9eb7-c5fd5efb96e1
   trigger:
@@ -173,8 +179,9 @@
       timeout: "01:00:00"
       continue_on_timeout: false
     # Only continue on "reservoir full"-trigger
-    - condition: trigger
-      id: reservoir_full
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id == 'reservoir_full' }}
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -203,3 +210,5 @@
         notification_id: dryer
   mode: single
   max_exceeded: silent
+  trace:
+    stored_traces: 15
