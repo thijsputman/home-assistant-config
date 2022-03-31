@@ -52,7 +52,12 @@
       to:
         - Dust bin full
         - Please empty dust bin
-  condition: []
+  condition:
+    # Neato drops offline from time to time, prevent (re)triggering if that
+    # happens (under normal circumstances, its either "docked" or "cleaning").
+    - condition: template
+      value_template: >-
+        {{ states(trigger.entity_id) in ['docked', 'cleaning'] }}
   action:
     - service: script.turn_on
       target:
@@ -61,8 +66,11 @@
         variables:
           group: chores
           channel: Notification
+          # Limit to a single notification per Neato unit – the "bin full"
+          # state can persist for some time, no need to generate identical
+          # notifications...
           tag: >-
-            neato_failure_{{ context.id }}
+            neato_failure_{{ trigger.entity_id }}
           targetDevices: home
           title: 🧹 Neato dustbin full
           message: >-
@@ -77,6 +85,7 @@
         - platform: template
           value_template: >-
             {{
+              states(trigger.entity_id) in ['docked', 'cleaning'] and
               state_attr(trigger.entity_id, 'status') not in
                 ['Dust bin full', 'Please empty dust bin']
             }}
@@ -85,6 +94,6 @@
     - service: persistent_notification.dismiss
       data:
         notification_id: >-
-          neato_failure_{{ context.id }}
+          neato_failure_{{ trigger.entity_id }}
   mode: parallel
   max: 2
