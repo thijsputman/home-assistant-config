@@ -15,7 +15,8 @@
           state: unavailable
     - condition: time
       before: input_datetime.wakeup
-    # Albert Heijn ETA is at most 15-minutes _after_ «wakeup» time
+    # Albert Heijn ETA is at most 15-minutes _after_ «wakeup» time (our
+    # "wakeup grace-period")
     - condition: template
       value_template: >-
         {{
@@ -27,10 +28,20 @@
     - service: input_datetime.set_datetime
       data:
         datetime: >-
-          {{
-            states('sensor.last_notification_albert_heijn_eta') | as_datetime
-              - timedelta(minutes=15)
-          }}
+          {%
+            set wakeup = states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime - timedelta(minutes=15)
+          %}
+          {#
+            If the «wakeup» time would be _before_ the current time, set the
+            alarm to sound ASAP. This is possible if an ETA change comes through
+            very late (i.e., within the "wakeup grace-period").
+          #}
+          {% if wakeup <= now() %}
+            {{ now() + timedelta(seconds=10) }}
+          {% else %}
+            {{ wakeup }}
+          {% endif %}
       target:
         entity_id: input_datetime.wakeup
   mode: single
