@@ -123,12 +123,6 @@
     This could be via TTS when all lights are switched off before going to bed
   - Once finalised, include tilt sensors in InfluxDB as part of the air quality
     metrics (these windows are regularly used for ventilation purposes)
-- [x] ~~Send notifications when the washing machine and dryer are done (based on
-      their power consumption) – use a vibration sensor on the washing machine
-      door to detect if it got emptied (and if that doesn't happen in a timely
-      fashion, raise a more urgent notification)~~
-  - Assess reliability of the vibration sensor; alternatively a contact sensor
-    could be used
 - [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
 - [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
       other Qingping senors
@@ -254,12 +248,11 @@
   - Create a helper script to change Kitchen and Counter & cupboards scene at
     the same time / in a single call (see `📄 lights/dusk.yaml` for proposed
     logic)
-- [ ] Once all Hue V2 API changes are implemented (and stabilised), see if the
-      "band-aid (🩹)" Hue automations are still necessary
+- [ ] See if the "band-aid (🩹)" Hue automations are still necessary:
   - `💡 | 🩹 Enforce "off"-state for Gledopto controllers` last executed January
     14th
-  - `💡 | 🩹 Enforce Ensuite "on"-state to follow Living room` never executed
-  - ~~Both "scene change enforcers" appear to be still required~~
+  - `💡 | 🩹 Enforce Ensuite "on"-state to follow Living room` last executed
+    March 7th
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...

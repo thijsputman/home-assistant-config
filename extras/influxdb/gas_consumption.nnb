@@ -73,14 +73,14 @@
         {
             "language": "markdown",
             "source": [
-                "# Graph daily gas usage – including 7-day moving average"
+                "# Graph daily gas usage – including 28-day moving average"
             ],
             "outputs": []
         },
         {
             "language": "javascript",
             "source": [
-                "import { op, table, rolling } from \"arquero\";\n\nconst dt = table({\n  time: result.map((obj) => obj[\"_time\"]),\n  value: result.map((obj) => obj[\"_value\"]),\n});\n\nconst movingAverage = dt\n  .derive({ movingAverage: rolling((d) => op.average(d.value), [-3, 3]) })\n  .array(\"movingAverage\");\n"
+                "import { op, table, rolling } from \"arquero\";\n\nconst dt = table({\n  time: result.map((obj) => obj[\"_time\"]),\n  value: result.map((obj) => obj[\"_value\"]),\n});\n\nconst movingAverage = dt\n  .derive({ movingAverage: rolling((d) => op.average(d.value), [-14, 13]) })\n  .array(\"movingAverage\");\n"
             ],
             "outputs": []
         },
