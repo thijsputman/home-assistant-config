@@ -114,6 +114,7 @@
                 brightness == 15 or
                 brightness == 20 or
                 brightness == 22 or
+                brightness == 23 or
                 brightness == 26
               ) and (
                 (xy_color[0] == 0.50 and xy_color[1] == 0.36) or
