@@ -182,10 +182,9 @@
       entity_id: light.garden
       state: "off"
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Garden
-        scene_name: Ambiance
+    - service: scene.turn_on
+      target:
+        entity_id: scene.garden_ambiance
     # Wait for the door to close
     - wait_for_trigger:
         - platform: template

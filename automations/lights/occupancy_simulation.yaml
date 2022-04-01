@@ -74,10 +74,9 @@
           ).strftime('%j') | int
         }}
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Attic
-        scene_name: Away
+    - service: scene.turn_on
+      target:
+        entity_id: scene.attic_away
   mode: single
 # N.B. This automation's name is used in the previous automation!
 - alias: >-

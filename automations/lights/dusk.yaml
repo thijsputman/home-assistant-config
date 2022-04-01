@@ -11,10 +11,9 @@
       entity_id: light.garden
       state: "off"
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Garden
-        scene_name: Ambiance
+    - service: scene.turn_on
+      target:
+        entity_id: scene.garden_ambiance
   mode: single
 - alias: 💡 | ⏰ Inside lights on (daily at sunset)
   id: 0ca01a00-8847-41f1-b852-70f4c4a49275
@@ -37,10 +36,9 @@
                   entity_id: sensor.hue_scene_living_room
                   state: Daytime
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Living room
-                scene_name: Ambiance
+            - service: scene.turn_on
+              target:
+                entity_id: scene.living_room_ambiance
     # Kitchen
     - choose:
         - conditions:
@@ -61,10 +59,9 @@
                       entity_id: sensor.hue_scene_kitchen_counter_cupboards
                       state: Activity
                   sequence:
-                    - service: hue.hue_activate_scene
-                      data:
-                        group_name: Kitchen
-                        scene_name: Ambiance
+                    - service: scene.turn_on
+                      target:
+                        entity_id: scene.kitchen_ambiance
                     # Wait for the Kitchen to register its change before
                     # changing counter & cupboards; this is required for the
                     # scene heuristic to work properly. Not doing so will lead
@@ -76,23 +73,20 @@
                           to: Ambiance
                       timeout: "00:00:10"
                       continue_on_timeout: false
-                    - service: hue.hue_activate_scene
-                      data:
-                        group_name: Kitchen counter & cupboards
-                        scene_name: Activity
+                    - service: scene.turn_on
+                      target:
+                        entity_id: scene.kitchen_counter_cupboards_activity
               # Otherwise, act on the Kitchen alone
               default:
-                - service: hue.hue_activate_scene
-                  data:
-                    group_name: Kitchen
-                    scene_name: Ambiance
+                - service: scene.turn_on
+                  target:
+                    entity_id: scene.kitchen_ambiance
     # Hallway – turn on lights regardless of their state. The daytime light
     # automation most likely already switched them on; the below ensures they
     # don't get stuck at their – too high – daytime brightness level...
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Hallway
-        scene_name: Evening
+    - service: scene.turn_on
+      target:
+        entity_id: scene.hallway_evening
   mode: single
 # The distinction between "Inside lights" and "House lights" is somewhat
 # arbitrary – it serves to keep the dusk and dawn lighting automations aligned.
@@ -107,10 +101,9 @@
   condition: []
   action:
     # Front and back (i.e. Kitchen) door
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Front & back door
-        scene_name: Evening
+    - service: scene.turn_on
+      target:
+        entity_id: scene.front_back_door_evening
     # Guestroom
     - choose:
         - conditions:
@@ -118,10 +111,9 @@
               entity_id: light.guestroom
               state: "off"
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Guestroom
-                scene_name: Evening
+            - service: scene.turn_on
+              target:
+                entity_id: scene.guestroom_evening
   mode: single
 - alias: 💡 | ⏰ Garden lights off (daily after 23:00)
   id: 99711cfd-e1c7-47d8-83af-94876e126b6c

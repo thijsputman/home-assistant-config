@@ -19,30 +19,27 @@
       entity_id: light.living_room
       state: "on"
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: Movie
+    - service: scene.turn_on
+      target:
+        entity_id: scene.living_room_movie
     - choose:
         - conditions:
             - condition: state
               entity_id: light.kitchen
               state: "on"
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                scene_name: Movie
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_movie
     - choose:
         - conditions:
             - condition: state
               entity_id: light.hallway
               state: "on"
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Hallway
-                scene_name: Movie
+            - service: scene.turn_on
+              target:
+                entity_id: scene.hallway_movie
   mode: single
 - alias: 💡 | 📺 Restore lights (Shield TV on/paused)
   id: 586f5ad1-0c79-4213-820d-9e6ed587d540
@@ -91,30 +88,27 @@
           entity_id: sensor.time_of_day
           state: day
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: Movie (ambiance)
+    - service: scene.turn_on
+      target:
+        entity_id: scene.living_room_movie_ambiance
     - choose:
         - conditions:
             - condition: state
               entity_id: light.kitchen
               state: "on"
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                scene_name: Ambiance
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_ambiance
     - choose:
         - conditions:
             - condition: state
               entity_id: light.hallway
               state: "on"
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Hallway
-                scene_name: Evening
+            - service: scene.turn_on
+              target:
+                entity_id: scene.hallway_evening
   mode: single
 - alias: 💡 | 📺 Restore lights (Shield TV off)
   id: 42a90454-8626-47c7-9f83-fb8d7ded0453
@@ -146,28 +140,25 @@
           entity_id: sensor.time_of_day
           state: day
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: Ambiance
+    - service: scene.turn_on
+      target:
+        entity_id: scene.living_room_ambiance
     - choose:
         - conditions:
             - condition: state
               entity_id: light.kitchen
               state: "on"
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                scene_name: Ambiance
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_ambiance
     - choose:
         - conditions:
             - condition: state
               entity_id: light.hallway
               state: "on"
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Hallway
-                scene_name: Evening
+            - service: scene.turn_on
+              target:
+                entity_id: scene.hallway_evening
   mode: single

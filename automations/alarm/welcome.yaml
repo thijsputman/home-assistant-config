@@ -26,18 +26,15 @@
           to: "on"
       timeout: "00:05:00"
       continue_on_timeout: false
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen
-        scene_name: Ambiance
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: Ambiance
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Hallway
-        scene_name: Evening
+    - service: scene.turn_on
+      target:
+        entity_id: scene.kitchen_ambiance
+    - service: scene.turn_on
+      target:
+        entity_id: scene.living_room_ambiance
+    - service: scene.turn_on
+      target:
+        entity_id: scene.hallway_evening
 - alias: 🚨 | 💡 Downstairs lights on (armed → pending → disarmed)
   id: 84d125f9-e88c-4bce-81e7-6f08a04f5afe
   trigger:
@@ -63,15 +60,12 @@
       # after 60 seconds it's safe to give up
       timeout: 60
       continue_on_timeout: false
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen
-        scene_name: Ambiance
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: Ambiance
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Hallway
-        scene_name: Evening
+    - service: scene.turn_on
+      target:
+        entity_id: scene.kitchen_ambiance
+    - service: scene.turn_on
+      target:
+        entity_id: scene.living_room_ambiance
+    - service: scene.turn_on
+      target:
+        entity_id: scene.hallway_evening

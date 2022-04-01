@@ -6,24 +6,21 @@ entities:
         - icon: mdi:floor-lamp
           tap_action:
             action: call-service
-            service: hue.hue_activate_scene
-            service_data:
-              group_name: Living room
-              scene_name: Ambiance
+            service: scene.turn_on
+            target:
+              entity_id: scene.living_room_ambiance
         - icon: mdi:lightbulb-on-outline
           tap_action:
             action: call-service
-            service: hue.hue_activate_scene
-            service_data:
-              group_name: Living room
-              scene_name: Active
+            service: scene.turn_on
+            target:
+              entity_id: scene.living_room_active
         - icon: mdi:movie
           tap_action:
             action: call-service
-            service: hue.hue_activate_scene
-            service_data:
-              group_name: Living room
-              scene_name: Movie (ambiance)
+            service: scene.turn_on
+            target:
+              entity_id: scene.living_room_movie_ambiance
   - type: custom:paper-buttons-row
     buttons:
       - name: Ambiance
@@ -53,17 +50,15 @@ entities:
         - icon: mdi:floor-lamp
           tap_action:
             action: call-service
-            service: hue.hue_activate_scene
-            service_data:
-              group_name: Kitchen
-              scene_name: Ambiance
+            service: scene.turn_on
+            target:
+              entity_id: scene.kitchen_ambiance
         - icon: mdi:lightbulb-on-outline
           tap_action:
             action: call-service
-            service: hue.hue_activate_scene
-            service_data:
-              group_name: Kitchen
-              scene_name: Bright (custom)
+            service: scene.turn_on
+            target:
+              entity_id: scene.kitchen_bright_custom
   - entity: light.garden
   - type: custom:paper-buttons-row
     buttons:
@@ -71,20 +66,18 @@ entities:
         icon: mdi:weather-night
         tap_action:
           action: call-service
-          service: hue.hue_activate_scene
-          service_data:
-            group_name: Garden
-            scene_name: Ambiance
+          service: scene.turn_on
+          target:
+            entity_id: scene.garden_ambiance
       - name: Summer night
         icon: mdi:glass-cocktail
       - name: Active
         icon: mdi:track-light
         tap_action:
           action: call-service
-          service: hue.hue_activate_scene
-          service_data:
-            group_name: Garden
-            scene_name: Active
+          service: scene.turn_on
+          target:
+            entity_id: scene.garden_active
   - entity: light.bedroom
   - entity: light.attic
   - entity: light.hallway

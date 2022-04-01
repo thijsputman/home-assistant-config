@@ -44,14 +44,12 @@ lights_out:
             # This script is generally triggered from the tablet in the
             # Kitchen – dim Kitchen lights to provide a visual cue that the
             # script is running
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                scene_name: Movie
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Hallway
-                scene_name: Evening
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_movie
+            - service: scene.turn_on
+              target:
+                entity_id: scene.hallway_evening
             - delay: "00:05:00"
             # Lower Hallway brightness 1-minute prior to switching it off
             - service: light.turn_on

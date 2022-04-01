@@ -290,18 +290,15 @@
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen
-        scene_name: Bright (custom)
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: Active
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Hallway
-        scene_name: Bright
+    - service: scene.turn_on
+      target:
+        entity_id: scene.kitchen_bright_custom
+    - service: scene.turn_on
+      target:
+        entity_id: scene.living_room_active
+    - service: scene.turn_on
+      target:
+        entity_id: scene.hallway_bright
     # The delay below is to prevent DoS-ing the system by rapidly opening and
     # closing the back gate...
     - delay: 60

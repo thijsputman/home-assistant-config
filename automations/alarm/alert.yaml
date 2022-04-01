@@ -195,10 +195,9 @@
           entity_id: sensor.time_of_day
           state: day
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Front & back door
-        scene_name: Bright
+    - service: scene.turn_on
+      target:
+        entity_id: scene.front_back_door_bright
     # Turn the lights off if the alarm disarms
     - wait_for_trigger:
         - platform: state
@@ -238,10 +237,9 @@
         - armed_night
         - armed_away
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Garden
-        scene_name: Active
+    - service: scene.turn_on
+      target:
+        entity_id: scene.garden_active
     - service: light.turn_on
       data:
         brightness: 255
@@ -263,10 +261,9 @@
     - condition: template
       value_template: >-
         {{ wait.trigger.id != 'abort' }}
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Garden
-        scene_name: Ambiance
+    - service: scene.turn_on
+      target:
+        entity_id: scene.garden_ambiance
     - service: light.turn_on
       data:
         brightness: 77

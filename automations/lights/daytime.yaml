@@ -57,19 +57,16 @@
               entity_id: sensor.hue_scene_kitchen_counter_cupboards
               state: Activity
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                scene_name: Daytime
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen counter & cupboards
-                scene_name: Activity
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_daytime
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_counter_cupboards_activity
       default:
-        - service: hue.hue_activate_scene
-          data:
-            group_name: Kitchen
-            scene_name: Daytime
+        - service: scene.turn_on
+          target:
+            entity_id: scene.kitchen_daytime
   mode: single
 - alias: 💡 | ⛅ Kitchen lights off during daytime (☀️ > 90 lux)
   id: 2c48592e-2d8b-42f1-880b-44183ffc442a
@@ -95,10 +92,9 @@
     - condition: template
       value_template: >-
         {{ kitchen_counter_cupboards == 'Activity' }}
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen counter & cupboards
-        scene_name: Activity
+    - service: scene.turn_on
+      target:
+        entity_id: scene.kitchen_counter_cupboards_activity
   mode: single
 - alias: 💡 | ⛅ Living room lights on during daytime (☀️ < 25 lux)
   id: 05a5eb32-be80-4130-a561-d21015851ae8
@@ -144,10 +140,9 @@
       entity_id: media_player.nvidia_shield_tv
       state: "off"
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: Daytime
+    - service: scene.turn_on
+      target:
+        entity_id: scene.living_room_daytime
   mode: single
 - alias: 💡 | ⛅ Living room lights off during daytime (☀️ > 30 lux)
   id: 21a8d2ce-746d-460a-9c65-b9ddf4f1b3b1

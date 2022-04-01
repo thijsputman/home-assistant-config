@@ -39,10 +39,9 @@
         - disarmed
         - armed_night
   action:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen counter & cupboards
-        scene_name: Activity
+    - service: scene.turn_on
+      target:
+        entity_id: scene.kitchen_counter_cupboards_activity
     # Wait for _all_ motion sensors to clear – otherwise race conditions are
     # possible where the lights go off (because one sensor clears) and never
     # come back on again (because the other sensor never clears due to
@@ -136,10 +135,9 @@
                   entity_id: sensor.hue_scene_kitchen
                   state: Bright (custom)
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                scene_name: Bright (custom)
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_bright_custom
     - wait_template: >-
         {{
           states('binary_sensor.presence_53') == 'off' and
@@ -185,10 +183,9 @@
               entity_id: sensor.hue_scene_kitchen_previous
               state: Daytime
           sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Kitchen
-                scene_name: Ambiance
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_ambiance
         - conditions:
             - condition: template
               value_template: >-
