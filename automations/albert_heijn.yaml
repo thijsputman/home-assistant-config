@@ -45,13 +45,15 @@
       target:
         entity_id: input_datetime.wakeup
   mode: single
-- alias: 🛒 | 🔊 Announce Albert Heijn ETA (wakeup alarm snoozed)
+- alias: 🛒 | 🔊 Announce Albert Heijn ETA (wakeup alarm snoozed or silenced)
   id: 381fa915-60ea-4d01-ab6c-51d245da3b8d
   trigger:
     - platform: event
       event_type: timer.started
       event_data:
         entity_id: timer.wakeup_snooze_time
+    - platform: event
+      event_type: wakeup_alarm_silenced
   condition:
     - condition: not
       conditions:
@@ -81,6 +83,11 @@
                   'sensor.last_notification_albert_heijn_eta', 'interval'))
           -%}
           {{ end.hour }}:{{ end.minute }}
+        eta_minutes: >-
+          {{
+            ((states('sensor.last_notification_albert_heijn_eta') |
+              as_timestamp - now() | as_timestamp) / 60) | int
+          }}
     - service: tts.cloud_say
       data:
         entity_id: media_player.pi0_speaker_bedroom
@@ -88,10 +95,11 @@
         # Cloud TTS chokes on "Heijn"...
         message: >-
           Good morning, Albert Heyn expects to arrive between {{ eta_start }}
-          and {{ eta_end }}. That is in {{
-            ((states('sensor.last_notification_albert_heijn_eta') |
-              as_timestamp - now() | as_timestamp) / 60) | int
-          }} minutes...
+          and {{ eta_end }}. That is in {% if eta_minutes < 60 -%}
+            {{ eta_minutes }} minutes...
+          {% else -%}
+            more than an hour...
+          {% endif %}
         # cspell: enable
         language: en-GB
   mode: single
