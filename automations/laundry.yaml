@@ -26,7 +26,7 @@
         {{ wait.trigger.id == 'cycle_completed' }}
     - variables:
         done_at: >-
-          {{ now().hour ~ ':' ~now().minute }}
+          {{ now().hour ~ ':' ~ now().minute }}
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -90,7 +90,7 @@
   max_exceeded: silent
   trace:
     stored_traces: 15
-- alias: 📱 | 👖 Notify on dryer done
+- alias: 📱 | 👖 Notify on dryer done or reservoir full
   id: 72c3b569-a2e9-4c9e-85f1-cf9bbf49c86e
   trigger:
     - platform: numeric_state
@@ -107,60 +107,9 @@
           entity_id: sensor.power_83
           below: 500
           for: "00:20:00"
-        # Short-circuit on water reservoir full
-        - platform: numeric_state
-          entity_id: sensor.power_83
-          below: 10
-          for: "00:05:00"
-        # Short-circuit on dryer switched off
-        - platform: numeric_state
-          entity_id: sensor.power_83
-          below: 1
-          for: "00:01:00"
-      timeout: "06:00:00"
-      continue_on_timeout: false
-    # Only continue on "cycle completed"-trigger
-    - condition: template
-      value_template: >-
-        {{ wait.trigger.id == 'cycle_completed' }}
-    - service: script.turn_on
-      target:
-        entity_id: script.persistent_notification
-      data:
-        variables:
-          group: chores
-          channel: Notification
-          tag: dryer
-          targetDevices: home
-          title: 👖 Dryer is done
-          message: >-
-            Time to take the laundry from the dryer...
-    # Dismiss notification when dryer is emptied (i.e. switched off)
-    - wait_for_trigger:
-        - platform: numeric_state
-          entity_id: sensor.power_83
-          below: 1
-      timeout: "16:00:00"
-      continue_on_timeout: false
-    - service: persistent_notification.dismiss
-      data:
-        notification_id: dryer
-  mode: single
-  max_exceeded: silent
-  trace:
-    stored_traces: 15
-- alias: 📱 | 👖 Notify on dryer reservoir full
-  id: 7dabd9e4-77b7-4663-9eb7-c5fd5efb96e1
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.power_83
-      above: 500
-      for: "00:01:00"
-  condition: []
-  action:
-    # If the water reservoir is full, the dryer stops immediately (as opposed
-    # to running its anti-crease cycle) – power consumption goes to ± 2 Watt
-    - wait_for_trigger:
+        # If the water reservoir is full, the dryer stops immediately (as
+        # opposed to running the anti-crease cycle) – power consumption goes
+        # to ± 2 Watt
         - platform: numeric_state
           id: reservoir_full
           entity_id: sensor.power_83
@@ -171,39 +120,59 @@
           entity_id: sensor.power_83
           below: 1
           for: "00:01:00"
-      # The shortest normal drying cycle (including the anti-crease cycle) takes
-      # well over an hour, the actual "drying" part takes well _under_  an
-      # hour – so after an hour it's safe to give up on detecting a full
-      # reservoir; this furthermore ensures this automation never conflicts
-      # with the "dryer done"-automation.
-      timeout: "01:00:00"
+      timeout: "06:00:00"
       continue_on_timeout: false
-    # Only continue on "reservoir full"-trigger
-    - condition: template
-      value_template: >-
-        {{ wait.trigger.id == 'reservoir_full' }}
-    - service: script.turn_on
-      target:
-        entity_id: script.persistent_notification
-      data:
-        variables:
-          group: chores
-          channel: Alert
-          criticalNotification: true
-          tag: dryer
-          targetDevices: home
-          title: 👖 Dryer reservoir is full!
-          message: >-
-            Empty the reservoir so the dryer can continue its run...
-    # Dismiss notification when dryer reservoir is emptied (i.e. when it appears
-    # to be continuing its run) – the regular "dryer done"-automation will
-    # restart (it aborts on a full water reservoir)
+    - choose:
+        # Cycle completed
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ wait.trigger.id == 'cycle_completed' }}
+          sequence:
+            - service: script.turn_on
+              target:
+                entity_id: script.persistent_notification
+              data:
+                variables:
+                  group: chores
+                  channel: Notification
+                  tag: dryer
+                  targetDevices: home
+                  title: 👖 Dryer is done
+                  message: >-
+                    Time to take the laundry from the dryer...
+        # Water reservoir full
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ wait.trigger.id == 'reservoir_full' }}
+          sequence:
+            - service: script.turn_on
+              target:
+                entity_id: script.persistent_notification
+              data:
+                variables:
+                  group: chores
+                  channel: Alert
+                  criticalNotification: true
+                  tag: dryer
+                  targetDevices: home
+                  title: 👖 Dryer reservoir is full!
+                  message: >-
+                    Empty the reservoir so the dryer can continue its run...
+    # Dismiss notification when dryer is switched off or when it appears to be
+    # continuing its run – the latter case mainly occurs if the  reservoir was
+    # full, but can also be triggered if a second run is started without first
+    # switching off the dryer...
     - wait_for_trigger:
+        - platform: numeric_state
+          entity_id: sensor.power_83
+          below: 1
         - platform: numeric_state
           entity_id: sensor.power_83
           above: 500
           for: "00:01:00"
-      timeout: "12:00:00"
+      timeout: "16:00:00"
       continue_on_timeout: false
     - service: persistent_notification.dismiss
       data:
