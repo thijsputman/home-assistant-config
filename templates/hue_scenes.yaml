@@ -100,6 +100,7 @@
                 brightness == 122 or
                 brightness == 123 or
                 brightness == 127 or
+                brightness == 128 or
                 brightness == 130 or
                 brightness == 132
               ) and (
@@ -219,7 +220,7 @@
             <Off>
           {%
             elif num_lights == 4 and
-              (brightness == 126 or brightness == 130) and
+              (brightness == 126 or brightness == 128 or brightness == 130) and
               (
                 (xy_color[0] == 0.41 and xy_color[1] == 0.39) or
                 (xy_color[0] == 0.42 and xy_color[1] == 0.39) or
