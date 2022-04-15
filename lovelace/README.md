@@ -16,8 +16,8 @@ custom CSS.
 
 - `aarlo-glance.js?v=0.1.4.1`
 - `card-mod.js?v=3.1.4`
-- `compass-card.js?v=1.4.0`
-- `hass-hue-icons.js?v=1.2.3`
+- `compass-card.js?v=1.6.0`
+- `hass-hue-icons.js?v=1.2.12`
 - `home-assistant-sun-card.js?v=0.1.4`
 - `layout-card.js?v=2.4.2`
 - `logbook-card.js?v=1.4.1`
