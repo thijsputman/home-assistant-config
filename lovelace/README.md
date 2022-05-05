@@ -16,8 +16,8 @@ custom CSS.
 
 - `aarlo-glance.js?v=0.1.4.1`
 - `card-mod.js?v=3.1.4`
-- `compass-card.js?v=1.6.0`
-- `hass-hue-icons.js?v=1.2.12`
+- `compass-card.js?v=1.6.1`
+- `hass-hue-icons.js?v=1.2.20`
 - `home-assistant-sun-card.js?v=0.1.4`
 - `layout-card.js?v=2.4.2`
 - `logbook-card.js?v=1.4.1`
@@ -25,7 +25,7 @@ custom CSS.
 - `paper-buttons-row.js?v=1.0.0`
 - `simple-thermostat.js?v=2.4.3`
 - `slider-entity-row.js?v=17.2.1`
-- `vacuum-card.js?v=2.3.3`
+- `vacuum-card.js?v=2.6.2`
 
 ## Custom CSS
 
