@@ -6,7 +6,7 @@
   - [Bugs](#bugs)
   - [Features](#features)
   - [Development Environment](#development-environment)
-- [Lovelace](#lovelace)
+- [Dashboards](#dashboards)
 - [Notifications](#notifications)
   - [Mobile](#mobile)
   - [TTS](#tts)
@@ -22,7 +22,7 @@
   - [Features](#features-3)
 - [Arlo](#arlo)
 - [Network](#network)
-- [Hardware](#hardware)
+- [Devices & Hardware](#devices--hardware)
 
 ## General
 
@@ -44,6 +44,12 @@
       at the end of the day; this results in the schedule not getting applied
       the following day (and the heating only turning on when occupancy is
       detected in the Attic)
+- [ ] Why does `device_attr(device_id(...), 'name')` keep referring to
+      `Close-in boiler (Kitchen)` as `Power 151`? The device name is correctly
+      set in Home Assistant — perhaps reset the device's name in deCONZ to see
+      if the resolves the issue?
+- [ ] Linked the Meater integration to Home Assistant, but no devices are
+      showing up... Perhaps they need to be switched on (once) to show up?
 
 ### Features
 
@@ -130,13 +136,25 @@
       calamity); experiment with using this to trigger the alarm – additionally,
       increases in CO₂ levels when no-one is home (i.e. Home Alarm is "Armed
       away") might indicate some-one is in the house...
+- [ ] See if there's any benefit to using the newly introduced
+      [backup feature](https://www.home-assistant.io/blog/2022/04/06/release-20224/#backups-for-home-assistant-core--container-installs)
+      — in addition to the existing backup solution
+  - For now it appears to unconditionally include _everything_ inside
+    `📂 config` folder (including `📂 var`, which really doesn't have to be
+    backed up — only reason it skips the database is because that's located on
+    an external drive). For now hold off on this...
+- [ ] It appears the "force re-render on template-entity reload / HA
+      restart"-logic isn't necessary anymore — see
+      [this pull-request](https://github.com/home-assistant/core/pull/69344).
+  - Implemented for the Pi-Hole update template-entity; let's keep an eye on
+    that one...
 
 ### Development Environment
 
 - [ ] Validate all Home Assistant YAML-files against their (JSON) schemas prior
       to committing (and as part of the linter GitHub Action)
 
-## Lovelace
+## Dashboards
 
 - [ ] SMS functionality: Show cellular reception
 - [ ] Provide a visual indication of the Remote UI (Nabu Casa) status.
@@ -226,7 +244,12 @@
 
 ### Bugs
 
-🎉
+- [ ] It appears I'm **grossly** overestimating power consumption of the Hue
+      lamps...
+  - Kept an eye on power consumption during a recent holiday and based on the
+    data reported by the energy meter it their combined power consumption can't
+    be more than around 60 to 70 Watt (as opposed to the currently guestimated ±
+    270 Watt)
 
 ### Features
 
@@ -271,7 +294,8 @@
 
 ### Bugs
 
-🎉
+- [ ] "Auto-arm at night" did not automatically turn itself back on the
+      following day?
 
 ### Features
 
@@ -330,6 +354,12 @@
 - [ ] DD-WRT-1 appears to forget its Virtual AP settings on reboot...
 - [ ] Test (i.e. keep an eye on) whether the ping-scripts on DD-WRT-1 and
       DD-WRT-2 automatically start on a reboot of the device
+  - On DD-WRT-1 the script _is_ started on `wanup` (with the correct arguments;
+    properly running in the background, executing a ping every 60-seconds). No
+    data appears in MQTT though (while independently running `mosquitto_pub`
+    works fine 😕). No clue what's going on here... Could be some kind of crazy
+    timing issue — test first with `startup` instead of `wanup` to rule out
+    those kinds of issues (script needs to be started only once anyway)
 - [ ] Upgrade both DD-WRT units to the latest firmware version
 - [ ] Setup a "devices" VLAN and a separate "devices" WiFi and setup switches
       and routing in such a way that only Home Assistant's Raspberry Pi can talk
@@ -340,9 +370,15 @@
     connectivity _is_ required to setup/configure these devices
 - [ ] The SSH-key and OpenVPN-certificate used on my phone have the wrong Common
       Name (namely, that of one of my previous phones)
+- [ ] Add OpenVPN usage counters (VPN in / VPN out; probably easiest via SNMP)
 
-## Hardware
+## Devices & Hardware
 
+- [ ] ❗Upgrade Shield TV to it latest (Android 11-based) "experience" — this
+      could potentially break its current (AndroidTV) integration with Home
+      Assistant (see [#65397](https://github.com/home-assistant/core/pull/65397)
+      and friends), so reserve some time to either setup a custom integration
+      (or custom ADB command)
 - [ ] The Xiaomi two-gang Zigbee relay in the Attic hallway sometimes refuses to
       switch off one of its gangs (always the same). The Zigbee network thinks
       the light is off (it's actually still on); turning it off again properly
@@ -354,3 +390,7 @@
       "phoning in" through them).
 - [ ] Replace the upstairs Hallway and Guestroom bulbs with Hue filament bulbs
       (and remove the Zigbee-units from the power-sockets)
+- [ ] The Heiman Sirens seemingly going offline after around 24-hours appears to
+      be caused by
+      [a deCONZ issue](https://forum.phoscon.de/t/since-migrating-deconz-plugin-from-2-14-1-to-2-15-3-heiman-hs2wd-e-siren-sensors-become-note-reachable-after-a-few-hours/1951)
+      (and not an actual hardware issue). See if deCONZ 2.17 resolves this...

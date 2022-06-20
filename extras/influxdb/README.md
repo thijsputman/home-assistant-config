@@ -43,3 +43,16 @@ npm install
 - **15-2-2022 @ 19:00 CET** – Reduced precision from `ns` to `s`; sub-second
   precision seems a bit overkill for what I have in mind (the most frequently
   updating sensors do so every 30 seconds)
+- **5-5-2022 @ 03:00 CET** – Multi-sensor Attic (`sensor.temperature_3`) started
+  intermittently reporting errant temperature values (-100 ºC). This coincided
+  with an upgrade of deCONZ (which apparently suffered from a bug specifically
+  effecting these multi-sensors). Nonetheless, after replacing the sensor's
+  battery (around 11:00 CET that same day) the issue disappeared.
+- **13-5-2022 @ 00:00 CET** – `sensor.dd_wrt_1_wan_in_mbps` and
+  `sensor.dd_wrt_1_wan_out_mbps` became unavailable due to an issue with the
+  SNMP integration. The underlying issue was fixed by upgrading Home Assistant
+  to version 2022.5.5 on 20-5-2022 @ 06:00.
+- **8-6-2022 @ 12:30 CET** – Internet connectivity was down until around 15:30
+  CET; no data came through to Influx Cloud during that period.
+- **8-6-2022 @ 21:00 CET** – Ping sensor on DD-WRT-1
+  (`sensor.dd_wrt_1_google_dns_roundtrip_time`) was down until around 23:00 CET.
