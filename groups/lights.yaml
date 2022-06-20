@@ -5,6 +5,7 @@ light_inside_rooms:
   entities:
     - light.attic
     - light.bedroom
+    - light.ensuite
     - light.guestroom
     - light.kitchen
     - light.living_room
@@ -18,6 +19,7 @@ lights_all:
     - light.basement
     - light.bathroom
     - light.bedroom
+    - light.ensuite
     - light.front_back_door
     - light.garden
     - light.guestroom
