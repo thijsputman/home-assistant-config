@@ -102,11 +102,6 @@ device_tracker:
 
 utility_meter: !include utility_meter.yaml
 
-# Neato
-neato:
-  client_id: !secret neato_client_id
-  client_secret: !secret neato_client_secret
-
 # Arlo
 aarlo:
   backend: sse
@@ -183,6 +178,9 @@ notify:
     services:
       - service: mobile_app_pixel_6_pro
       - service: mobile_app_sm_g930f
+
+mqtt:
+  sensor: !include_dir_merge_list mqtt/
 
 sensor: !include sensors.yaml
 sensor custom: !include_dir_merge_list sensors/

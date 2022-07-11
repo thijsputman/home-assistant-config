@@ -1,5 +1,4 @@
-- platform: mqtt
-  unique_id: 7c04a03b-5494-48b2-84cc-2a4f3d7839d3
+- unique_id: 7c04a03b-5494-48b2-84cc-2a4f3d7839d3
   state_topic: gammu/signal
   name: Gammu signal-strength
   unit_of_measurement: "%"

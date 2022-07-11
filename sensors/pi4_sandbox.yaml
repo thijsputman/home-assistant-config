@@ -37,11 +37,3 @@
   version: 2c
   accept_errors: true
   unit_of_measurement: KiB
-- platform: mqtt
-  state_topic: tc66c/pi4_sandbox/power_W
-  name: Pi4 Sandbox Power usage
-  unit_of_measurement: W
-  device_class: power
-  value_template: >-
-    {{ value | round(2) }}
-  expire_after: 180
