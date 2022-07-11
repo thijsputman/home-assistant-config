@@ -83,7 +83,7 @@
                 {% set matched = 'Aarlo' %}
               {% endif %}
             {# tadoº #}
-            {% elif entity_id is search('^sensor.tado_smart_.+') %}
+            {% elif entity_id is search('^sensor\.tado_smart_.+') %}
               {# Ignored; derived from HomeKit Controller #}
             {# Gammu #}
             {% elif entity_id is search('^sensor\.gammu_.+') %}
@@ -123,15 +123,17 @@
               {% set matched = state_attr(entity_id, 'friendly_name') %}
             {% endif %}
           {% else %}
-            {#
-              Several "Mobile App"-related sensors can be unavailable/unknown
-              under normal circumstances; these entity IDs are ignored...
-            #}
+            {# Mobile App #}
             {%
-              if entity_id is not search(
+              if entity_id is search(
                 '^sensor\..+_(charger_type|next_alarm|do_not_disturb_sensor)$'
               )
             %}
+              {# Ignored; unavailable/unknown under normal circumstances #}
+            {# Meater #}
+            {% elif entity_id is search('^sensor\.meater_probe_.+') %}
+              {# Ignored; Meater Probe is only available when in-use #}
+            {% else %}
               {% set matched = device_attr(device_id(entity_id), 'name') %}
             {% endif %}
           {% endif %}

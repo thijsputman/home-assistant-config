@@ -59,14 +59,14 @@
         {
             "language": "markdown",
             "source": [
-                "## Arlo battery level – back"
+                "## Arlo battery level"
             ],
             "outputs": []
         },
         {
             "language": "javascript",
             "source": [
-                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -100d, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"aarlo_battery_level_back\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"aarlo_battery_level_front\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
             ],
             "outputs": []
         },

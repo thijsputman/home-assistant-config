@@ -48,8 +48,10 @@
       `Close-in boiler (Kitchen)` as `Power 151`? The device name is correctly
       set in Home Assistant — perhaps reset the device's name in deCONZ to see
       if the resolves the issue?
-- [ ] Linked the Meater integration to Home Assistant, but no devices are
-      showing up... Perhaps they need to be switched on (once) to show up?
+- [ ] On reloading the `Template Entities` configuration, the SMS automation
+      sends a "Pong!"-message (without receiving a "Ping?") — probably a missing
+      guard condition, could be related to
+      [this pull-request](https://github.com/home-assistant/core/pull/69344)?
 
 ### Features
 
@@ -208,6 +210,8 @@
       40% and 60% at night (while it should be stable at 60%); the Wardrobe
       Sonair template fan speed sensor incorrectly jumps between 20% and 40%
       when it should be stable at 40%...
+- [ ] Not all Airco (Attic) transitions appear properly covered/guarded; the
+      airco-unit occasionally switches on when the window is open...
 
 ### Features
 
@@ -294,8 +298,7 @@
 
 ### Bugs
 
-- [ ] "Auto-arm at night" did not automatically turn itself back on the
-      following day?
+🎉
 
 ### Features
 
