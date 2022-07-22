@@ -10,13 +10,6 @@
     - platform: state
       entity_id: binary_sensor.vibration_129
       attribute: orientation
-    # Force re-render when template entities YAML configuration is reloaded or
-    # Home Assistant starts
-    - platform: state
-      entity_id: sensor.attic_window_position
-      to: unknown
-    - platform: homeassistant
-      event: start
   sensor:
     - name: Attic window (position)
       unique_id: b3b83f06-840c-466f-9540-00766e5062a7
@@ -70,13 +63,6 @@
       # vibration sensor isn't 100% reactive – especially not when carefully
       # opening/closing the window).
       for: 5
-    # Force re-render when template entities YAML configuration is reloaded or
-    # Home Assistant starts
-    - platform: state
-      entity_id: sensor.bathroom_window_position
-      to: unknown
-    - platform: homeassistant
-      event: start
   sensor:
     - name: Bathroom window (position)
       unique_id: 4d2dc71e-d179-407d-b891-c7d6c0e61407

@@ -38,21 +38,6 @@
     - platform: state
       entity_id: light.hue_group_living_room
       to: "off"
-    # Force re-render when template entities YAML configuration is reloaded or
-    # Home Assistant starts
-    - platform: state
-      entity_id: sensor.hue_scene_living_room
-      to: unknown
-    - platform: homeassistant
-      event: start
-    # Cope with an odd initialisation issue (which only occurs the *first* time
-    # the sensor transitions out of "unknown") that results in the attributes
-    # not initialising properly (they somehow initialise based on the previous,
-    # "unknown", state of the sensor). Retriggering on this transition forces
-    # the attributes to re-render to their proper state.
-    - platform: state
-      entity_id: sensor.hue_scene_living_room
-      from: unknown
   sensor:
     - name: Hue scene (Living room)
       unique_id: 69b3fafe-1b0a-4f39-88c5-c92f31806e1a
@@ -175,12 +160,6 @@
     - platform: state
       entity_id: light.hue_group_kitchen_counter_cupboards
       to: "off"
-    - platform: state
-      entity_id: sensor.hue_scene_kitchen_counter_cupboards_raw
-      to: unknown
-    - platform: state
-      entity_id: sensor.hue_scene_kitchen_counter_cupboards_raw
-      from: unknown
   sensor:
     - name: Hue scene (Kitchen counter & cupboards) – raw
       unique_id: b7842630-c541-4e0e-a7ce-c0f4deea3f81
@@ -305,12 +284,6 @@
     - platform: state
       entity_id: light.hue_group_kitchen
       to: "off"
-    - platform: state
-      entity_id: sensor.hue_scene_kitchen_raw
-      to: unknown
-    - platform: state
-      entity_id: sensor.hue_scene_kitchen_raw
-      from: unknown
   sensor:
     - name: Hue scene (Kitchen) – raw
       unique_id: c5876824-72b0-4b40-9d70-a2cde1bc1d7f
@@ -497,12 +470,6 @@
     - platform: state
       entity_id: light.hue_group_garden
       to: "off"
-    - platform: state
-      entity_id: sensor.hue_scene_garden
-      to: unknown
-    - platform: state
-      entity_id: sensor.hue_scene_garden
-      from: unknown
   sensor:
     - name: Hue scene (Garden)
       unique_id: 2e5bc57f-240a-4669-90e4-ace50876fb70
