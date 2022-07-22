@@ -1,27 +1,20 @@
 - trigger:
     - platform: state
+      id: incoming
       entity_id: sensor.pixel_6_pro_last_notification
       to: ~
-    # Trigger back to "unavailable" after 10 seconds
+    # Trigger back to "unavailable" after 10 seconds — this ensures subsequent
+    # _identical_ notifications are properly picked up on (unless they happen
+    # within the "reset" interval; a non-issue in these use-cases)
     - platform: state
-      id: unavailable
-      entity_id: sensor.last_notification_unprocessed
-      from:
-        - unavailable
-        - unknown # Also cover initialisation (see below)
+      entity_id: sensor.pixel_6_pro_last_notification
+      to: ~
       for: "00:00:10"
-    # Force re-render when template entities YAML configuration is reloaded or
-    # Home Assistant starts
-    - platform: state
-      entity_id: sensor.last_notification_unprocessed
-      to: unknown
-    - platform: homeassistant
-      event: start
   sensor:
     - name: Last Notification (unprocessed)
       unique_id: 1c27807f-ffd8-482e-b374-06b33195c128
       availability: >-
-        {{ trigger.id != 'unavailable' }}
+        {{ trigger.id == 'incoming' }}
       attributes:
         package: >-
           {{

@@ -48,10 +48,6 @@
       `Close-in boiler (Kitchen)` as `Power 151`? The device name is correctly
       set in Home Assistant — perhaps reset the device's name in deCONZ to see
       if the resolves the issue?
-- [ ] On reloading the `Template Entities` configuration, the SMS automation
-      sends a "Pong!"-message (without receiving a "Ping?") — probably a missing
-      guard condition, could be related to
-      [this pull-request](https://github.com/home-assistant/core/pull/69344)?
 
 ### Features
 
@@ -148,8 +144,9 @@
 - [ ] It appears the "force re-render on template-entity reload / HA
       restart"-logic isn't necessary anymore — see
       [this pull-request](https://github.com/home-assistant/core/pull/69344).
-  - Implemented for the Pi-Hole update template-entity; let's keep an eye on
-    that one...
+  - Some further changes to the logic are actually required: Sensors that are
+    `unavailable` at (re)start get restored to their most recent
+    "available"-state (and not to `unavailable`)
 
 ### Development Environment
 

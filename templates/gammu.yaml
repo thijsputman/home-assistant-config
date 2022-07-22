@@ -79,8 +79,8 @@
             {#
               If "Gammu received (message)" ends up in an invalid state, don't
               increment. This mostly happens at startup (and will thus result in
-              a count of zero), but in edge-cases it might happen with a non-zero
-              count – hence the approach chosen...
+              a count of zero), but in edge-cases it might happen with a
+              non-zero count – hence the approach chosen...
             #}
             {{ states('sensor.gammu_received_message_count') | int(0) }}
           {% else %}
@@ -94,17 +94,17 @@
 # messages match the same template trigger, the sensor won't trigger (as the
 # template remains "true"; it needs to transition from "false" to "true" to
 # trigger). To achieve this, we store the incoming message in a pre-processing
-# sensor that – once a message is processed – returns to "unavailable" and as
-# sensor ensures all template triggers are set to "false".
+# sensor that – once a message is processed – returns to "unavailable" and thus
+# ensures all template triggers are (re)set to "false".
 - trigger:
     - platform: state
-      entity_id: sensor.gammu_received_message
       id: incoming
-    # List all (mutually exclusive) additional processing triggers (i.e. the
-    # sensor(s) below) – ensure they don't trigger on "unavailable" or we'll end
-    # up in live-lock...
+      entity_id: sensor.gammu_received_message
+    # Wait 10 seconds and reset to unavailable — identical messages _within_
+    # the interval do not register (non-issue for the use-cases in this file)
     - platform: state
-      entity_id: sensor.gammu_received_authenticated_command
+      entity_id: sensor.gammu_received_message
+      for: "00:00:10"
   sensor:
     - name: Gammu received (unprocessed message)
       unique_id: 389c514a-d57c-4958-a727-3033e283ffb9
@@ -133,8 +133,8 @@
     - name: Gammu received (authenticated command)
       unique_id: 923a6400-f058-405f-8139-423e2b449830
       icon: mdi:message-text-lock-outline
-      # Out of an abundance of caution, the availability-condition is repeated in
-      # all attribute and state templates...
+      # Out of an abundance of caution, the availability-condition is repeated
+      # in all attribute and state templates...
       availability: >-
         {{
           states('sensor.gammu_received_message_count')|int <= 10
@@ -149,7 +149,8 @@
         datetime: >-
           {% if states('sensor.gammu_received_message_count')|int <= 10 %}
             {{
-              state_attr('sensor.gammu_received_unprocessed_message', 'datetime')
+              state_attr(
+                'sensor.gammu_received_unprocessed_message', 'datetime')
             }}
           {% endif %}
       state: >-
