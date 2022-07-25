@@ -20,6 +20,7 @@ views:
         cards:
           - !include home/security/open_close.yaml
           - !include home/security/housekeeper.yaml
+          - !include home/security/connectivity.yaml
   # Climate
   - title: Climate
     type: custom:masonry-layout

@@ -1,0 +1,15 @@
+type: glance
+card_mod:
+  style: |
+    ha-card {
+      --paper-item-icon-active-color: var(--state-on-color);
+      --paper-item-icon-color: var(--error-color);
+    }
+entities:
+  - entity: binary_sensor.remote_ui
+    name: Nabu Casa
+    icon: hass:home-assistant
+  - entity: binary_sensor.google_dns_ping
+    name: Internet-connectivity
+    icon: mdi:web
+show_state: false

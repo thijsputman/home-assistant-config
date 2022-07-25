@@ -150,12 +150,8 @@
 ## Dashboards
 
 - [ ] SMS functionality: Show cellular reception
-- [ ] Provide a visual indication of the Remote UI (Nabu Casa) status.
-      Connection issues there otherwise might go unnoticed for some time (while
-      they do mess with the Mobile App functionalities)
 - [ ] Add an overview of motion/vibration sensors
   - Perhaps create separate Security-dashboard?
-- [ ] Add visual indication of "Vacation-mode"
 - [ ] Add buttons to toggle the entire house to a specific Hue scene ("Alarm",
       "Active" and "Ambiance")
 - [x] ~~Create an "Air Quality" dashboard. Move ventilation- and CO₂-related

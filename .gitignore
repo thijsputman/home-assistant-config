@@ -17,7 +17,6 @@
 /secrets.yaml
 /known_devices.yaml
 /groups/private.yaml
-/lovelace/home/security/occupancy.yaml
 
 .env
 node_modules/
