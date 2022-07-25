@@ -4,6 +4,17 @@
     - platform: state
       entity_id: sensor.gammu_received_authenticated_command
   condition:
+    # Only trigger if the authenticated command was received in the last
+    # 5-minutes — this prevents replaying an outdated/stale command upon Home
+    # Assistant restart or when template entities are reloaded
+    - condition: template
+      value_template: >-
+        {{
+          (
+            state_attr('sensor.gammu_received_authenticated_command',
+              'datetime') | as_datetime | as_local
+          ) >= (now() | as_local) - timedelta(minutes=5)
+        }}
     # Using a template condition (instead of a static state) to allow greater
     # flexibility in matching the command. Cannot use the template condition as
     # trigger as that would prevent triggering if the same command is received
@@ -31,6 +42,14 @@
     - condition: template
       value_template: >-
         {{
+          (
+            state_attr('sensor.gammu_received_authenticated_command',
+              'datetime') | as_datetime | as_local
+          ) >= (now() | as_local) - timedelta(minutes=5)
+        }}
+    - condition: template
+      value_template: >-
+        {{
           states('sensor.gammu_received_authenticated_command')
             is match('^(help|commands?)( |$)')
         }}
@@ -54,6 +73,14 @@
     - platform: state
       entity_id: sensor.gammu_received_authenticated_command
   condition:
+    - condition: template
+      value_template: >-
+        {{
+          (
+            state_attr('sensor.gammu_received_authenticated_command',
+              'datetime') | as_datetime | as_local
+          ) >= (now() | as_local) - timedelta(minutes=5)
+        }}
     - condition: template
       value_template: >-
         {{
@@ -159,6 +186,14 @@
     - platform: state
       entity_id: sensor.gammu_received_authenticated_command
   condition:
+    - condition: template
+      value_template: >-
+        {{
+          (
+            state_attr('sensor.gammu_received_authenticated_command',
+              'datetime') | as_datetime | as_local
+          ) >= (now() | as_local) - timedelta(minutes=5)
+        }}
     - condition: template
       value_template: >-
         {{

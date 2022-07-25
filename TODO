@@ -141,12 +141,6 @@
     `📂 config` folder (including `📂 var`, which really doesn't have to be
     backed up — only reason it skips the database is because that's located on
     an external drive). For now hold off on this...
-- [ ] It appears the "force re-render on template-entity reload / HA
-      restart"-logic isn't necessary anymore — see
-      [this pull-request](https://github.com/home-assistant/core/pull/69344).
-  - Some further changes to the logic are actually required: Sensors that are
-    `unavailable` at (re)start get restored to their most recent
-    "available"-state (and not to `unavailable`)
 
 ### Development Environment
 
