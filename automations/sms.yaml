@@ -108,6 +108,7 @@
                 message: >-
                   {% set result = namespace(cameras=[]) %}
                   {% for state in states.camera |
+                    selectattr('attributes.brand', 'defined') |
                     selectattr('attributes.brand', 'eq', 'Netgear Arlo')
                   %}
                     {% if state.attributes.last_video is defined %}
@@ -135,6 +136,7 @@
             message: >-
               {% set result = namespace(sensors=[], cameras=[]) %}
               {% for state in states.binary_sensor |
+                selectattr('attributes.device_class', 'defined') |
                 selectattr('attributes.device_class', 'in',
                   ['smoke', 'moisture', 'motion', 'opening', 'vibration']
                 )
@@ -144,6 +146,7 @@
                 {% endif %}
               {% endfor %}
               {% for state in states.camera |
+                selectattr('attributes.brand', 'defined') |
                 selectattr('attributes.brand', 'eq', 'Netgear Arlo')
               %}
                 {#

@@ -11,6 +11,7 @@ lights_out:
               'group.light_inside_rooms',
               'light.front_back_door',
               'light.garden' ) |
+            selectattr('attributes.is_hue_group', 'defined') |
             selectattr('attributes.is_hue_group', 'true') |
             selectattr('state', 'eq', 'on') |
             selectattr('entity_id', 'ne', 'light.bedroom') |

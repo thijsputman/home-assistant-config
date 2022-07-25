@@ -9,6 +9,7 @@
     sensors: >-
       {% set result = namespace(sensors=[]) %}
       {% for state in states.sensor |
+          selectattr('attributes.device_class', 'defined') |
           selectattr('attributes.device_class', '==', 'battery') |
           rejectattr('entity_id', 'in', exclude) %}
         {# Cannot use "selectattr" as a numeric comparison is needed #}
