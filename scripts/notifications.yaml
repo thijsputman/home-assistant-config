@@ -400,19 +400,19 @@ sms_notification:
             indenting using whitespaces. For SMS messages that is less relevant
             (and better readability is achieved by using emojis instead).
 
-            Finally, the "\n" string literals should _not_ be escaped in the
-            encoded JSON. They need to be interpreted as actual newlines by
-            Gammu to allow for linebreaks in the resulting SMS message.
+            Finally, note that the positioning of the double-quotes in the
+            "text"-property is highly relevant: If "message" gets quoted
+            _before_ the regular expressions are applied, they don't work as
+            intended (quoting "message" causes all special characters to be
+            escaped).
           #}
           {
             "number": {{ '"' ~ numbers | join(';') ~ '"' }},
-            "text": {{
-              message |
-              regex_replace(' *\n+ *', ' ') |
-              regex_replace('\\\\n +', '\\\\n') |
-              to_json |
-              replace('\\\\n', '\\n')
-            }}
+            "text": {{ '"' ~
+                message |
+                regex_replace(' *\n+ *', ' ') |
+                regex_replace('\\\\n +', '\\\\n')
+              ~ '"' }}
           }
     - wait_for_trigger:
         - platform: state
