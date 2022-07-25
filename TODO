@@ -276,6 +276,8 @@
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
 - [ ] Have the buttons next to the bed control the Bedroom lights
   - ✔️ Toggle off when on; on when off
+  - ✔️ Toggle off all lights (`script.lights_out`) on double press (under
+    specific circumstances)
   - Cycle through various other modes (with long press?)
 - [ ] Containerize the Fireplace Node.js code; create some helpers scripts in
       Home Assistant to facilitate the switching on/off (mainly so that their
