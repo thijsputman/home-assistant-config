@@ -4,8 +4,13 @@
       entity_id: sensor.pixel_6_pro_last_notification
       to: ~
     # Trigger back to "unavailable" after 10 seconds — this ensures subsequent
-    # _identical_ notifications are properly picked up on (unless they happen
-    # within the "reset" interval; a non-issue in these use-cases)
+    # notifications with identical attributes are properly picked up on by the
+    # triggers further down this file (unless they happen within the "reset"
+    # interval; a non-issue in these use-cases)
+    # Without this reset, a trigger looking for a notification with a certain
+    # attribute (e.g. package == com.icemobile.albertheijn) would not trigger
+    # on subsequent notifications from the same package (but with a different
+    # message/payload).
     - platform: state
       entity_id: sensor.pixel_6_pro_last_notification
       to: ~
@@ -39,13 +44,13 @@
       # cspell: disable
       availability: >-
         {#
-          Message should have been posted _less_ than 12-hours ago – the sensor
-          assumes the ETA concerns today, so this prevent an older message from
+          Message should have been posted _less_ than 1-hour ago – the sensor
+          assumes the ETA concerns today; this prevents old/stale messages from
           unintentionally being interpreted as still relevant...
         #}
         {{
           state_attr('sensor.last_notification_unprocessed', 'post_time') |
-            as_datetime >= now() - timedelta(hours=12) and
+            as_datetime >= now() - timedelta(hours=1) and
           states('sensor.last_notification_unprocessed') is
             search(
               'verwacht(?:en)? tussen \d{2}:\d{2} ' ~
