@@ -25,62 +25,68 @@
   condition: []
   action:
     # Living room
-    - choose:
-        - conditions:
-            - condition: or
-              conditions:
-                - condition: state
-                  entity_id: light.living_room
-                  state: "off"
-                - condition: state
-                  entity_id: sensor.hue_scene_living_room
-                  state: Daytime
-          sequence:
+    - if:
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: light.living_room
+              state: "off"
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Daytime
+      then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.living_room_ambiance
+    # Ensuite
+    - if:
+        - condition: state
+          entity_id: light.ensuite
+          state: "off"
+      then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.ensuite_orchid
+    # Kitchen
+    - if:
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: light.kitchen
+              state: "off"
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen
+              state: Daytime
+      then:
+        # If the Kitchen counter & cupboard lights are on, aim to keep them on
+        # while transitioning the Kitchen to "Ambiance"
+        - if:
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen_counter_cupboards
+              state: Activity
+          then:
             - service: scene.turn_on
               target:
-                entity_id: scene.living_room_ambiance
-    # Kitchen
-    - choose:
-        - conditions:
-            - condition: or
-              conditions:
-                - condition: state
-                  entity_id: light.kitchen
-                  state: "off"
-                - condition: state
+                entity_id: scene.kitchen_ambiance
+            # Wait for the Kitchen to register its change before
+            # changing counter & cupboards; this is required for the
+            # scene heuristic to work properly. Not doing so will lead
+            # the Kitchen to revert back to Daytime (instead of
+            # Ambiance) after activity ends.
+            - wait_for_trigger:
+                - platform: state
                   entity_id: sensor.hue_scene_kitchen
-                  state: Daytime
-          sequence:
-            - choose:
-                # If the Kitchen counter & cupboard lights are on, aim to keep
-                # them on while transitioning the Kitchen to "Ambiance"
-                - conditions:
-                    - condition: state
-                      entity_id: sensor.hue_scene_kitchen_counter_cupboards
-                      state: Activity
-                  sequence:
-                    - service: scene.turn_on
-                      target:
-                        entity_id: scene.kitchen_ambiance
-                    # Wait for the Kitchen to register its change before
-                    # changing counter & cupboards; this is required for the
-                    # scene heuristic to work properly. Not doing so will lead
-                    # the Kitchen to revert back to Daytime (instead of
-                    # Ambiance) after activity ends.
-                    - wait_for_trigger:
-                        - platform: state
-                          entity_id: sensor.hue_scene_kitchen
-                          to: Ambiance
-                      timeout: "00:00:10"
-                      continue_on_timeout: false
-                    - service: scene.turn_on
-                      target:
-                        entity_id: scene.kitchen_counter_cupboards_activity
-              # Otherwise, act on the Kitchen alone
-              default:
-                - service: scene.turn_on
-                  target:
-                    entity_id: scene.kitchen_ambiance
+                  to: Ambiance
+              timeout: "00:00:10"
+              continue_on_timeout: false
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_counter_cupboards_activity
+          # Otherwise, act on the Kitchen alone
+          else:
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_ambiance
     # Hallway – turn on lights regardless of their state. The daytime light
     # automation most likely already switched them on; the below ensures they
     # don't get stuck at their – too high – daytime brightness level...
@@ -105,15 +111,14 @@
       target:
         entity_id: scene.front_back_door_evening
     # Guestroom
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: light.guestroom
-              state: "off"
-          sequence:
-            - service: scene.turn_on
-              target:
-                entity_id: scene.guestroom_evening
+    - if:
+        - condition: state
+          entity_id: light.guestroom
+          state: "off"
+      then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.guestroom_evening
   mode: single
 - alias: 💡 | ⏰ Garden lights off (daily after 23:00)
   id: 99711cfd-e1c7-47d8-83af-94876e126b6c
