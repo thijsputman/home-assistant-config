@@ -1,0 +1,13 @@
+{
+  "temp_nozzle": 0,
+  "temp_bed": 0,
+  "material": "",
+  "pos_z_mm": 0,
+  "printing_speed": 0,
+  "flow_factor": 0,
+  "progress": 0,
+  "print_dur": "",
+  "time_est": 0,
+  "time_zone": 0,
+  "project_name": ""
+}

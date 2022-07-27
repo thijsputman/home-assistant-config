@@ -1,0 +1,12 @@
+# Google DNS (ping)
+- platform: ping
+  host: 8.8.8.8
+  name: Google DNS (ping)
+  count: 4
+  scan_interval: 60
+# Prusa MINI+
+- platform: ping
+  host: prusa-mini.sgraastra
+  name: Prusa MINI+ (ping)
+  count: 4
+  scan_interval: 60

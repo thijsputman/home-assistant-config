@@ -1,3 +1,8 @@
+- platform: aarlo
+  monitored_conditions:
+    - motion
+    - sound
+    - connectivity
 - platform: template
   sensors:
     aarlo_armed_front:
