@@ -1,0 +1,25 @@
+# DD-WRT
+- platform: ddwrt
+  host: !secret ddwrt_1_ip
+  # The device-tracker somehow insists on doing an uncached DNS lookup *every*
+  # *single* *time* it talks with DD-WRT (for both the A- and AAAA-record),
+  # leading to an absurd skewing of Pi-hole's statistics (50% of _total_
+  # requests are for this singular purpose).
+  # Even after setting up resolvctl properly on Ubuntu (and configuring Docker
+  # to use 127.0.0.53 as DNS instead of talking directly with Pi-hole) it's
+  # still doing so...
+  # As such, the above (and below) "workarounds" appear to be necessary.
+  username: !secret ddwrt_username
+  password: !secret ddwrt_password
+  interval_seconds: 10
+  consider_home: 120
+  new_device_defaults:
+    track_new_devices: false
+- platform: ddwrt
+  host: !secret ddwrt_2_ip # Idem...
+  username: !secret ddwrt_username
+  password: !secret ddwrt_password
+  interval_seconds: 10
+  consider_home: 120
+  new_device_defaults:
+    track_new_devices: false
