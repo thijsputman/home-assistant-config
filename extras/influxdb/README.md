@@ -56,3 +56,6 @@ npm install
   CET; no data came through to Influx Cloud during that period.
 - **8-6-2022 @ 21:00 CET** – Ping sensor on DD-WRT-1
   (`sensor.dd_wrt_1_google_dns_roundtrip_time`) was down until around 23:00 CET.
+- **26-7-2022 @ 10:40 CET** – No data for `sensor.weewx_wind_speed` recorded due
+  to the Wisteria getting in the way, again 😇 (resolved on 26-7-2022 @ 21:00
+  CET)

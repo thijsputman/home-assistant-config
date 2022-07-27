@@ -100,7 +100,15 @@
     - service: scene.turn_on
       target:
         entity_id: scene.living_room_movie_ambiance
-    # Ensuite — no-op
+    # Ensuite
+    - if:
+        - condition: state
+          entity_id: light.ensuite
+          state: "off"
+      then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.ensuite_orchid
     # Kitchen
     - if:
         - condition: state
@@ -157,7 +165,7 @@
     - if:
         - condition: state
           entity_id: light.ensuite
-          state: "on"
+          state: "off"
       then:
         - service: scene.turn_on
           target:
