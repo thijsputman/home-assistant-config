@@ -1,94 +1,102 @@
-type: entities
-entities:
-  - entity: light.living_room
-    extend_paper_buttons_row:
-      buttons:
-        - icon: mdi:floor-lamp
-          tap_action:
-            action: call-service
-            service: scene.turn_on
-            target:
-              entity_id: scene.living_room_ambiance
-        - icon: mdi:lightbulb-on-outline
-          tap_action:
-            action: call-service
-            service: scene.turn_on
-            target:
-              entity_id: scene.living_room_active
-        - icon: mdi:movie
-          tap_action:
-            action: call-service
-            service: scene.turn_on
-            target:
-              entity_id: scene.living_room_movie_ambiance
-  - type: custom:paper-buttons-row
-    buttons:
-      - name: Ambiance
-        icon: mdi:floor-lamp
-        tap_action:
-          action: call-service
-          service: script.hue_activate_scene_living_room_kitchen
-          service_data:
-            scene_name: Ambiance
-      - name: Active
-        icon: mdi:lightbulb-on-outline
-        tap_action:
-          action: call-service
-          service: script.hue_activate_scene_living_room_kitchen
-          service_data:
-            scene_name: Active
-      - name: Movie
-        icon: mdi:movie
-        tap_action:
-          action: call-service
-          service: script.hue_activate_scene_living_room_kitchen
-          service_data:
-            scene_name: Movie
-  - entity: light.kitchen
-    extend_paper_buttons_row:
-      buttons:
-        - icon: mdi:floor-lamp
-          tap_action:
-            action: call-service
-            service: scene.turn_on
-            target:
-              entity_id: scene.kitchen_ambiance
-        - icon: mdi:lightbulb-on-outline
-          tap_action:
-            action: call-service
-            service: scene.turn_on
-            target:
-              entity_id: scene.kitchen_bright_custom
-  - entity: light.garden
-  - type: custom:paper-buttons-row
-    buttons:
-      - name: Ambiance
-        icon: mdi:weather-night
-        tap_action:
-          action: call-service
-          service: scene.turn_on
-          target:
-            entity_id: scene.garden_ambiance
-      - name: Summer night
-        icon: mdi:glass-cocktail
-      - name: Active
-        icon: mdi:track-light
-        tap_action:
-          action: call-service
-          service: scene.turn_on
-          target:
-            entity_id: scene.garden_active
-  - entity: light.bedroom
-  - entity: light.attic
-  - entity: light.hallway
-  - entity: light.front_back_door
-  - entity: light.guestroom
-  - entity: light.wardrobe
-  - entity: light.bathroom
-  - entity: light.toilet
-  - entity: light.basement
-  - entity: light.attic_hallway
-    name: Attic – Hallway
-title: Lights
-state_color: false
-show_header_toggle: false
+type: vertical-stack
+cards:
+  - type: entities
+    title: Rooms
+    show_header_toggle: false
+    entities:
+      - entity: light.living_room
+        extend_paper_buttons_row:
+          buttons:
+            - icon: mdi:floor-lamp
+              tap_action:
+                action: call-service
+                service: scene.turn_on
+                target:
+                  entity_id: scene.living_room_ambiance
+            - icon: mdi:lightbulb-on-outline
+              tap_action:
+                action: call-service
+                service: scene.turn_on
+                target:
+                  entity_id: scene.living_room_active
+            - icon: mdi:movie
+              tap_action:
+                action: call-service
+                service: scene.turn_on
+                target:
+                  entity_id: scene.living_room_movie_ambiance
+      - entity: light.ensuite
+      - entity: light.kitchen
+        extend_paper_buttons_row:
+          buttons:
+            - icon: mdi:floor-lamp
+              tap_action:
+                action: call-service
+                service: scene.turn_on
+                target:
+                  entity_id: scene.kitchen_ambiance
+            - icon: mdi:lightbulb-on-outline
+              tap_action:
+                action: call-service
+                service: scene.turn_on
+                target:
+                  entity_id: scene.kitchen_bright_custom
+      - type: custom:paper-buttons-row
+        buttons:
+          - name: Ambiance
+            icon: mdi:floor-lamp
+            tap_action:
+              action: call-service
+              service: script.hue_activate_scene_living_room_kitchen
+              service_data:
+                scene_name: Ambiance
+          - name: Active
+            icon: mdi:lightbulb-on-outline
+            tap_action:
+              action: call-service
+              service: script.hue_activate_scene_living_room_kitchen
+              service_data:
+                scene_name: Active
+          - name: Movie
+            icon: mdi:movie
+            tap_action:
+              action: call-service
+              service: script.hue_activate_scene_living_room_kitchen
+              service_data:
+                scene_name: Movie
+      - type: divider
+      - entity: light.garden
+      - type: custom:paper-buttons-row
+        buttons:
+          - name: Ambiance
+            icon: mdi:weather-night
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              target:
+                entity_id: scene.garden_ambiance
+          - name: Summer night
+            icon: mdi:glass-cocktail
+          - name: Active
+            icon: mdi:track-light
+            tap_action:
+              action: call-service
+              service: scene.turn_on
+              target:
+                entity_id: scene.garden_active
+      - type: divider
+      - entity: light.bedroom
+      - entity: light.attic
+      - entity: light.guestroom
+      - entity: light.hallway
+  - type: glance
+    columns: 3
+    show_state: false
+    entities:
+      - entity: light.front_back_door
+      - entity: light.wardrobe
+      - entity: light.bathroom
+      - entity: light.toilet
+      - entity: light.basement
+      - entity: light.attic_hallway
+        name: Attic staircase
