@@ -324,6 +324,11 @@
       right now it's an unorganised mess
 - [ ] Occupancy simulation: Randomly trigger the "Active" scenes in the Kitchen
       and Living room around dinner time
+- [ ] Occupancy simulation: Randomly switch on Bedroom lights around bedtime;
+      switch them off around the time "Lights out" gets started
+- [ ] Occupancy simulation: When the "Lights out"-script is triggered from the
+      Bedroom, the upstairs Hallway light gets switched off right away (instead
+      of after around 5-minutes) — randomly account for this variation
 
 ## Arlo
 

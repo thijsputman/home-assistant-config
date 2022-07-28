@@ -88,6 +88,10 @@
             ((states('sensor.last_notification_albert_heijn_eta') |
               as_timestamp - now() | as_timestamp) / 60) | int
           }}
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.pi0_speaker_bedroom
+        volume_level: 0.45
     - service: tts.cloud_say
       data:
         entity_id: media_player.pi0_speaker_bedroom
