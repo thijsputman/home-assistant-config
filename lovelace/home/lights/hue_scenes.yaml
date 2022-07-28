@@ -1,35 +1,25 @@
-type: grid
-cards:
-  - type: button
-    tap_action:
-      action: more-info
-    entity: sensor.hue_scene_kitchen
-    show_name: false
-    show_state: true
-    icon_height: 36px
-    icon: hue:room-kitchen
-  - type: button
-    tap_action:
-      action: more-info
-    entity: sensor.hue_scene_kitchen_counter_cupboards
-    show_name: false
-    show_state: true
-    icon_height: 36px
-    icon: mdi:water-pump
-  - type: button
-    tap_action:
-      action: more-info
-    entity: sensor.hue_scene_living_room
-    show_name: false
-    show_state: true
-    icon_height: 36px
+type: glance
+card_mod:
+  style:
+    .: |
+      ha-card h1{
+        padding-bottom: 0px;
+      }
+    div.entity:
+      $: |
+        :host{
+          color: var(--secondary-text-color) !important;
+        }
+title: Rooms — active scene
+columns: 3
+show_name: false
+show_state: true
+entities:
+  - entity: sensor.hue_scene_living_room
     icon: hue:room-living
-  - type: button
-    tap_action:
-      action: more-info
-    entity: sensor.hue_scene_garden
-    show_name: false
-    show_state: true
-    icon_height: 36px
+  - entity: sensor.hue_scene_kitchen
+    icon: hue:room-kitchen
+  - entity: sensor.hue_scene_kitchen_counter_cupboards
+    icon: mdi:water-pump
+  - entity: sensor.hue_scene_garden
     icon: hue:room-outdoors
-square: false

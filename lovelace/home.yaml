@@ -110,6 +110,15 @@ views:
                 entity: light.hue_white_light_1
                 icon: mdi:vanity-light
                 name: Ensuite
+              - type: button
+                tap_action:
+                  action: call-service
+                  service: light.turn_on
+                  data:
+                    entity_id: light.attic
+                    flash: short
+                icon: hue:room-attic
+                name: Blink Attic
           - !include home/lights/hue_scenes.yaml
       - !include home/lights/lux_downstairs.yaml
       - !include home/lights/lux_upstairs.yaml
