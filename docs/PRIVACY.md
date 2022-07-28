@@ -30,12 +30,6 @@ explanation:
   [if no other measures are taken](https://support.microsoft.com/help/4027925/))
   be used to track/identify household members or guests "in the wild".
 
-- `📄 groups/private.yaml` – Groups that contain the names of household members
-  (such as `Family` – used for presence detection) are stored here.
-
-- `📄 lovelace/home/security/occupancy.yaml` – Lovelace card that shows the
-  presence/state of household members (and thus contains their names).
-
 ## Areas of Concern
 
 ### 1. Local network
@@ -79,7 +73,7 @@ are managed through the Home Assistant UI and as a result not present in this
 repository.
 
 Looking through the repository you will be able to find my preferred bus stop
-([bushalte Evoluon](https://github.com/thijsputman/home-assistant-config/blob/f59eca8c12644b4ae0bd1979ab5b4756774ef3b4/sensors/9292ov.yaml#L3)),
+([bushalte Evoluon](https://github.com/thijsputman/home-assistant-config/blob/587f4a2e872b6605da63635b2d44ada0e36d900b/sensors/9292ov.yaml#L3)),
 which could be used to wardrive around the neighboorhood and try to pinpoint my
 location more accurately. Another reason to exclude `📄 know_devices.yaml` from
 the repository.

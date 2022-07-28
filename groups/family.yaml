@@ -1,0 +1,6 @@
+family:
+  name: Family
+  icon: mdi:account-group
+  entities:
+    - !secret person_1
+    - !secret person_2

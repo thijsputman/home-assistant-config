@@ -16,7 +16,6 @@
 # Privacy sensitive
 /secrets.yaml
 /known_devices.yaml
-/groups/private.yaml
 
 .env
 node_modules/
