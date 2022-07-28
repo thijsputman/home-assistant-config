@@ -39,42 +39,53 @@
       type: remote_button_double_press
       subtype: turn_on
   condition:
-    # Only act at night, if the Bedroom lights are on, and everyone is not
-    # asleep yet
+    # Only act at night, if the "Lights out"-script isn't running, and not
+    # everyone is asleep yet
     - condition: state
       entity_id: sensor.time_of_day
       state: night
     - condition: state
-      entity_id: light.bedroom
-      state: "on"
+      entity_id: script.lights_out
+      state: "off"
     # This condition is additionally relevant as it prevents interfering with
-    # the wakeup alarm silencing automation (which triggers on double press too)
+    # the "Silence wakeup alarm"-automation (which triggers on double press
+    # too).
+    # There is some time between "Lights out" finishing and "Everyone asleep"
+    # activating. As the "Lights out"-script is idempotent running this
+    # automation again in that period doesn't cause any issues, so no attempt
+    # is made to prevent this eventuality.
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
+    # Flash Bedroom lights to provide feedback
+    - service: light.turn_on
+      data:
+        flash: short
+      entity_id: light.bedroom
     # Don't block on the (long-running) "Lights out"-script
     - service: script.turn_on
       target:
         entity_id: script.lights_out
-    - service: tts.cloud_say
-      data:
-        entity_id: media_player.pi0_speaker_bedroom
-        message: >-
-          Switching off all lights.
-          {% if states('input_boolean.alarm_auto_arm_night') == 'on' -%}
-            The Home Alarm will arm once everyone is asleep.
-          {%- endif %}
-          {% if states('input_boolean.wakeup_alarm_mute') == 'off' -%}
-            The wakeup alarm will sound at {{
-              today_at(states('input_datetime.wakeup')) |
-              as_timestamp | timestamp_custom('%H:%M')
-            -}}.
-          {%- endif %}
-          Sleep tight; good night.
-        language: en-GB
+    # Delay for 2 seconds to prevent switching off the Bedroom lights from
+    # interfering with flashing them
+    - delay: 2
+    # Switch off the upstairs Hallway light
+    - if:
+        condition: state
+        entity_id: light.upstairs_hallway
+        state: "on"
+      then:
+        - service: light.turn_off
+          data:
+            transition: 10
+            entity_id: light.upstairs_hallway
+    # Switch off the Bedroom lights
+    - condition: state
+      entity_id: light.bedroom
+      state: "on"
     - service: light.turn_off
       data:
-        transition: 30
+        transition: 10
         entity_id: light.bedroom
   mode: single
