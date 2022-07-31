@@ -8,13 +8,23 @@
     - condition: state
       entity_id: group.family
       state: home
+    - condition: time
+      before: input_datetime.wakeup
     - condition: not
       conditions:
         - condition: state
           entity_id: sensor.last_notification_albert_heijn_eta
           state: unavailable
-    - condition: time
-      before: input_datetime.wakeup
+    # Ensure Albert Heijn ETA is for *today* — the subsequent time comparison
+    # assumes it is (so crazy stuff happens if we don't explicitly check for it
+    # here)
+    - condition: template
+      value_template: >-
+        {{
+          (states('sensor.last_notification_albert_heijn_eta') |
+            as_datetime | as_timestamp | timestamp_custom('%Y-%m-%d')
+          ) == (now() | as_timestamp | timestamp_custom('%Y-%m-%d'))
+        }}
     # Albert Heijn ETA is at most 15-minutes _after_ «wakeup» time (our
     # "wakeup grace-period")
     - condition: template
@@ -24,7 +34,9 @@
             - timedelta(minutes=15) <= today_at(states('input_datetime.wakeup'))
         }}
   action:
-    # Set «wakeup» time to 15-minutes _before_ Albert Heijn ETA
+    # Set «wakeup» time to 15-minutes _before_ Albert Heijn ETA — note that
+    # "input_datetime.wakeup" only cares about the time component; the date
+    # component is ignored
     - service: input_datetime.set_datetime
       data:
         datetime: >-
