@@ -128,14 +128,19 @@
           {% endif %}
         {% endif %}
       attributes:
+        light_id: light.living_room
         scene_id: >-
           {%
-            if states('sensor.hue_scene_living_room')
-              in ['Daytime', 'Ambiance', 'Movie', 'Move (ambiance)', 'Active']
+            if this.state not in
+              ['unknown', 'unavailable', '<Unknown>', '<Off>']
           %}
             {{
-              'scene.living_room_' ~ states('sensor.hue_scene_living_room') |
-                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+              (
+                this.attributes.light_id | replace('light.', 'scene.')
+              ) ~ '_' ~ (
+                this.state | lower | regex_replace('([^a-z ])+', '') |
+                  replace(' ', '_')
+              )
             }}
           {% else %}
             <None>
@@ -249,15 +254,19 @@
           {{ states('sensor.hue_scene_kitchen_counter_cupboards_raw') }}
         {% endif %}
       attributes:
+        light_id: light.kitchen_counter_cupboards
         scene_id: >-
           {%
-            if states('sensor.hue_scene_kitchen_counter_cupboards')
-              in ['Activity']
+            if this.state not in
+              ['unknown', 'unavailable', '<Unknown>', '<Off>', '<Kitchen>']
           %}
             {{
-              'scene.kitchen_counter_cupboards_' ~
-                states('sensor.hue_scene_kitchen_counter_cupboards') |
-                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+              (
+                this.attributes.light_id | replace('light.', 'scene.')
+              ) ~ '_' ~ (
+                this.state | lower | regex_replace('([^a-z ])+', '') |
+                  replace(' ', '_')
+              )
             }}
           {% else %}
             <None>
@@ -355,7 +364,7 @@
         }}
 - trigger:
     - platform: state
-      entity_id: sensor.hue_scene_kitchen_raw
+      entity_id: sensor.hue_scene_kitchen
       to: ~
   sensor:
     - name: Hue scene (Kitchen) – previous
@@ -364,42 +373,43 @@
       state: >-
         {%
           if trigger.from_state is defined and trigger.from_state.state not in
-            ['unknown', 'unavailable']
+            ['unknown', 'unavailable', '<Unknown>']
         %}
-          {%
-            if trigger.from_state.state != '<Unknown>' and
-            trigger.from_state.state != states(
-              'sensor.hue_scene_kitchen_previous')
-          %}
-            {{ trigger.from_state.state }}
-          {% else %}
-            {{ states('sensor.hue_scene_kitchen_previous') }}
-          {% endif %}
+          {{ trigger.from_state.state }}
+        {% else %}
+          <Unknown>
         {% endif %}
       attributes:
+        light_id: light.kitchen
         scene_id: >-
           {%
-            if states('sensor.hue_scene_kitchen_previous')
-              in ['Daytime', 'Ambiance', 'Movie', 'Bright (custom)']
+            if trigger.from_state is defined and trigger.from_state.state not in
+              ['unknown', 'unavailable', '<Unknown>', '<Off>']
           %}
-            {{
-              'scene.kitchen_' ~ states('sensor.hue_scene_kitchen_previous') |
-                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
-            }}
+            {% if trigger.from_state.state != this.state %}
+              {{
+                (
+                  this.attributes.light_id | replace('light.', 'scene.')
+                ) ~ '_' ~ (
+                  trigger.from_state.state | lower |
+                    regex_replace('([^a-z ])+', '') | replace(' ', '_')
+                )
+              }}
+            {% else %}
+              {{ this.attributes.scene_id }}
+            {% endif %}
           {% else %}
             <None>
           {% endif %}
       availability: >-
         {{
-          trigger.from_state is defined and trigger.from_state.state not in
-            ['unknown', 'unavailable']
+          states('sensor.hue_scene_kitchen') not in ['unknown', 'unavailable']
         }}
 - trigger:
     - platform: state
       entity_id:
         - sensor.hue_scene_kitchen_raw
         - sensor.hue_scene_kitchen_counter_cupboards_raw
-        - sensor.hue_scene_kitchen_previous
       to: ~
       # Hold for 2 seconds to ensure all dependent sensors have transitioned
       for: "00:00:02"
@@ -414,9 +424,9 @@
         #}
         {%
           if states('sensor.hue_scene_kitchen_counter_cupboards_raw')
-            == 'Activity' and
-          states('sensor.hue_scene_kitchen_raw') == '<Unknown>' and
-          states('sensor.hue_scene_kitchen_previous') == '<Off>'
+              == 'Activity'
+          and states('sensor.hue_scene_kitchen_raw') == '<Unknown>' and
+            this.state == '<Off>'
         %}
           <Off>
         {#
@@ -426,24 +436,27 @@
         #}
         {%
           elif states('sensor.hue_scene_kitchen_counter_cupboards_raw')
-            == 'Activity' and
-          states('sensor.hue_scene_kitchen_raw') == '<Unknown>' and
-          states('sensor.hue_scene_kitchen_previous') not in
-            ['unavailable', 'unknown']
+              == 'Activity'
+          and states('sensor.hue_scene_kitchen_raw') == '<Unknown>'
         %}
-          {{ states('sensor.hue_scene_kitchen_previous') }}
+          {{ this.state }}
         {% else %}
           {{ states('sensor.hue_scene_kitchen_raw') }}
         {% endif %}
       attributes:
+        light_id: light.kitchen
         scene_id: >-
           {%
-            if states('sensor.hue_scene_kitchen')
-              in ['Daytime', 'Ambiance', 'Movie', 'Bright (custom)']
+            if this.state not in
+              ['unknown', 'unavailable', '<Unknown>', '<Off>']
           %}
             {{
-              'scene.kitchen_' ~ states('sensor.hue_scene_kitchen') |
-                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+              (
+                this.attributes.light_id | replace('light.', 'scene.')
+              ) ~ '_' ~ (
+                this.state | lower | regex_replace('([^a-z ])+', '') |
+                  replace(' ', '_')
+              )
             }}
           {% else %}
             <None>
@@ -516,13 +529,19 @@
           {% endif %}
         {% endif %}
       attributes:
+        light_id: light.garden
         scene_id: >-
           {%
-            if states('sensor.hue_scene_garden') in ['Active', 'Ambiance']
+            if this.state not in
+              ['unknown', 'unavailable', '<Unknown>', '<Off>']
           %}
             {{
-              'scene.garden_' ~ states('sensor.hue_scene_garden') |
-                lower | regex_replace('([^a-z ])+', '') | replace(' ', '_')
+              (
+                this.attributes.light_id | replace('light.', 'scene.')
+              ) ~ '_' ~ (
+                this.state | lower | regex_replace('([^a-z ])+', '') |
+                  replace(' ', '_')
+              )
             }}
           {% else %}
             <None>

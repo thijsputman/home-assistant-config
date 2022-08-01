@@ -123,9 +123,9 @@
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: light.turn_off
-      target:
-        entity_id: light.kitchen
+    - service: script.hue_activate_scene_kitchen
+      data:
+        turn_off: true
   mode: single
 - alias: >-
     💡 | ⏰ Inside lights off – Downstairs hallway (daily at sunrise;

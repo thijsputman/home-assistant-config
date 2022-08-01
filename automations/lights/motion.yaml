@@ -78,11 +78,9 @@
               state: <Unknown>
         # Changing the "Kitchen counter & cupboards" scene doesn't change the
         # "Kitchen" scene – we can simply re-apply the already active scene
-        - service: hue.hue_activate_scene
+        - service: script.hue_activate_scene
           data:
-            group_name: Kitchen
-            scene_name: >-
-              {{ states('sensor.hue_scene_kitchen') }}
+            scene_entity: sensor.hue_scene_kitchen
   mode: restart
 - alias: 💡 | 👋 Kitchen scene to "Bright (custom)" (sustained activity)
   id: ac457661-49b6-4ee6-b0cf-ceac3bd4ccab
@@ -187,26 +185,17 @@
               target:
                 entity_id: scene.kitchen_ambiance
         - conditions:
-            - condition: template
-              value_template: >-
-                {{ states('sensor.hue_scene_kitchen_previous') == '<Off>' }}
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen_previous
+              state: <Off>
           sequence:
             - service: light.turn_off
               data:
                 entity_id: light.kitchen
       default:
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: sensor.hue_scene_kitchen_previous
-              state:
-                - unknown
-                - unavailable
-        - service: hue.hue_activate_scene
+        - service: script.hue_activate_scene
           data:
-            group_name: Kitchen
-            scene_name: >-
-              {{ states('sensor.hue_scene_kitchen_previous') }}
+            scene_entity: sensor.hue_scene_kitchen_previous
   mode: restart
 - alias: 💡 | 👋 Toilet light toggle (motion detected)
   id: e884ea40-fdf9-4069-ad27-4e09d8a45e2e

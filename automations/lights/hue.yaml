@@ -27,11 +27,9 @@
       target:
         entity_id: light.hue_white_light_1
     - delay: "00:00:10"
-    - service: hue.hue_activate_scene
+    - service: script.hue_activate_scene
       data:
-        group_name: Living Room
-        scene_name: >-
-          {{ states('sensor.hue_scene_living_room') }}
+        scene_entity: sensor.hue_scene_living_room
   mode: restart
 # The Gledopto controllers in the Kitchen are a bit stubborn; they don't always
 # respond to the first scene change request, nor do they always properly switch
@@ -66,41 +64,34 @@
 - alias: 💡 | 🩹 Enforce Kitchen scene change for Gledopto controllers
   id: 66dc6374-f19a-437c-966b-0679400fc2b5
   trigger:
-    # By prioritising (and blocking momentarily) on the Kitchen counter &
-    # cupboards trigger, we prevent a race-condition where the Kitchen trigger
-    # might undo the intended scene change.
+    # By prioritising (and blocking for a while) on the Kitchen counter &
+    # cupboards trigger, we ensure that change gets priority over the Kitchen
+    # as a whole — as the Gledopto controllers are part of both sets of Hue
+    # scenes, this is the most straightforward way to reapply their scene (no
+    # need to figure out what to do, simply punch in the triggered scene change
+    # again).
     - platform: state
-      entity_id: sensor.hue_scene_kitchen_counter_cupboards
-      to:
-        - Activity
+      entity_id:
+        - sensor.hue_scene_kitchen_counter_cupboards
+      not_to:
+        - <Off>
+        - <Unknown>
     - platform: state
-      entity_id: sensor.hue_scene_kitchen
-      to:
-        - Daytime
-        - Ambiance
-        - Movie
-        - Bright (custom)
+      entity_id:
+        - sensor.hue_scene_kitchen
+      not_to:
+        - <Off>
+        - <Unknown>
       for: "00:00:01"
   condition: []
   action:
-    - variables:
-        group_name: >-
-          {% if trigger.entity_id ==
-            'sensor.hue_scene_kitchen_counter_cupboards' %}
-            Kitchen counter & cupboards
-          {% elif trigger.entity_id == 'sensor.hue_scene_kitchen' %}
-            Kitchen
-          {% endif %}
-    - condition: template
-      value_template: >-
-        {{ group_name is defined }}
-    - service: hue.hue_activate_scene
+    - condition: >-
+        {{ trigger.entity_id is defined }}
+    - service: script.hue_activate_scene
       data:
-        group_name: >-
-          {{ group_name }}
-        scene_name: >-
-          {{ trigger.to_state.state }}
-    - delay: 5
+        scene_entity: >-
+          {{ trigger.entity_id }}
+    - delay: 20
   mode: single
   max_exceeded: silent
 # Occasionally, the Innr colour bulbs in the Garden refuse a scene change, so
@@ -110,19 +101,16 @@
   trigger:
     - platform: state
       entity_id: sensor.hue_scene_garden
-      to:
-        - Active
-        - Ambiance
-        - Summer Night
+      not_to:
+        - <Off>
+        - <Unknown>
       # Best result is achieved if the repeat command is slightly delayed
       for: "00:00:03"
   condition: []
   action:
-    - service: hue.hue_activate_scene
+    - service: script.hue_activate_scene
       data:
-        group_name: Garden
-        scene_name: >-
-          {{ trigger.to_state.state }}
+        scene_entity: sensor.hue_scene_garden
   mode: restart
 - alias: 💡 | 🩹 Log Hue scene heuristic failures
   id: c47f1d4b-d0dc-49e9-ae8d-0af0a2c3a092

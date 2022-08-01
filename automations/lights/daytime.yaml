@@ -50,23 +50,9 @@
               entity_id: sensor.hue_scene_kitchen
               state: <Off>
   action:
-    - choose:
-        # If the Kitchen counter & cupboards lights are on, leave those on
-        - conditions:
-            - condition: state
-              entity_id: sensor.hue_scene_kitchen_counter_cupboards
-              state: Activity
-          sequence:
-            - service: scene.turn_on
-              target:
-                entity_id: scene.kitchen_daytime
-            - service: scene.turn_on
-              target:
-                entity_id: scene.kitchen_counter_cupboards_activity
-      default:
-        - service: scene.turn_on
-          target:
-            entity_id: scene.kitchen_daytime
+    - service: script.hue_activate_scene_kitchen
+      data:
+        scene_id: scene.kitchen_daytime
   mode: single
 - alias: 💡 | ⛅ Kitchen lights off during daytime (☀️ > 90 lux)
   id: 2c48592e-2d8b-42f1-880b-44183ffc442a
@@ -83,18 +69,9 @@
       entity_id: sensor.hue_scene_kitchen
       state: Daytime
   action:
-    - variables:
-        kitchen_counter_cupboards: >-
-          {{ states('sensor.hue_scene_kitchen_counter_cupboards') }}
-    - service: light.turn_off
-      entity_id: light.kitchen
-    # If the Kitchen counter & cupboards lights were on, turn them on again
-    - condition: template
-      value_template: >-
-        {{ kitchen_counter_cupboards == 'Activity' }}
-    - service: scene.turn_on
-      target:
-        entity_id: scene.kitchen_counter_cupboards_activity
+    - service: script.hue_activate_scene_kitchen
+      data:
+        turn_off: true
   mode: single
 - alias: 💡 | ⛅ Living room lights on during daytime (☀️ < 25 lux)
   id: 05a5eb32-be80-4130-a561-d21015851ae8

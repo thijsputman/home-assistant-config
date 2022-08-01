@@ -135,9 +135,7 @@
     # proper setting. We have to wait a bit for the lights to be under normal
     # control again (empirically determinted to be ± 15 seconds).
     - delay: 20
-    - service: hue.hue_activate_scene
+    - service: script.hue_activate_scene
       data:
-        group_name: Living room
-        scene_name: >-
-          {{ states('sensor.hue_scene_living_room') }}
+        scene_entity: sensor.hue_scene_living_room
   mode: single

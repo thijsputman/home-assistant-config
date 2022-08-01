@@ -85,11 +85,9 @@
           sequence:
             # Re-apply current Hue scene to restore Ensuite to its expected
             # setting
-            - service: hue.hue_activate_scene
+            - service: script.hue_activate_scene
               data:
-                group_name: Living Room
-                scene_name: >-
-                  {{ states('sensor.hue_scene_living_room') }}
+                scene_entity: sensor.hue_scene_living_room
       default:
         - service: light.turn_on
           data:

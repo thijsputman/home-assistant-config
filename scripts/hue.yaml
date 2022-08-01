@@ -1,180 +1,120 @@
-hue_activate_scene_living_room_kitchen:
-  alias: Hue activate scene – Living room & Kitchen
-  icon: mdi:lightbulb-group-outline
-  sequence:
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: >-
-          {{ scene_name }}
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen
-        scene_name: >-
-          {% if scene_name == 'Active' %}
-            Bright (custom)
-          {% else %}
-            {{ scene_name }}
-          {% endif %}
-  mode: single
-# Convenience method for controlling full house lighting. Mainly used by alarm
-# automations to reduce their length/complexity. Somewhat aligned with the
-# automations in "📄 automations/lights/dawn.yaml" to ensure lights don't stay
-# on unnecessarily after dawn.
-hue_activate_scene_house:
-  alias: Hue activate scene – House
-  icon: mdi:home-lightbulb-outline
+hue_activate_scene:
+  alias: Hue activate scene
+  description: >-
+    Activate a Hue scene based on the scene heuristically detected and stored in
+    one of the Hue scene template sensors.
+  icon: mdi:movie-open-star
   fields:
-    scene_name:
-      description: Scene name
+    scene_entity:
+      description: Hue scene template sensor
       required: true
-      default: Ambiance
       selector:
-        select:
-          options:
-            - Alarm
-            - Active
-            - Ambiance
+        entity:
+          integration: template
   sequence:
-    - variables:
-        # Default to "Ambiance"
-        scene_name: >-
-          {%
-            if scene_name is defined and scene_name in
-              ['Alarm', 'Active', 'Ambiance']
-          %}
-            {{ scene_name }}
-          {% else %}
-            Ambiance
-          {% endif %}
-    # Ground floor
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Kitchen
-        scene_name: >-
-          {% if scene_name in ['Alarm', 'Active'] %}
-            Bright (custom)
-          {% else %}
-            Ambiance
-          {% endif %}
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Living room
-        scene_name: >-
-          {% if scene_name in ['Alarm', 'Active'] %}
-            Active
-          {% else %}
-            Ambiance
-          {% endif %}
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Hallway
-        scene_name: >-
-          {% if scene_name in ['Alarm', 'Active'] %}
-            Bright
-          {% else %}
-            Evening
-          {% endif %}
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Garden
-        scene_name: >-
-          {% if scene_name == 'Alarm' %}
-            Active
-          {% else %}
-            Ambiance
-          {% endif %}
-    # Slightly rate-limit the Hue API – should be able to handle around 10
-    # commands per second, but let's not push it...
-    - delay: 2
-    # First floor
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ scene_name in ['Alarm', 'Active'] }}
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Bedroom
-                scene_name: >-
-                  {% if scene_name in 'Alarm' %}
-                    Concentrate
-                  {% else %}
-                    Bright
-                  {% endif %}
-      default:
-        - service: light.turn_off
-          data:
-            entity_id: light.bedroom
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ scene_name == 'Alarm' }}
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Bathroom
-                scene_name: Concentrate
-      default:
-        - service: light.turn_off
-          data:
-            entity_id: light.bathroom
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ scene_name == 'Alarm' }}
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Wardrobe
-                scene_name: Bright
-      default:
-        - service: light.turn_off
-          data:
-            entity_id: light.wardrobe
-    - service: hue.hue_activate_scene
-      data:
-        group_name: Guestroom
-        scene_name: >-
-          {% if scene_name in ['Alarm', 'Active'] %}
-            Bright
-          {% else %}
-            Evening
-          {% endif %}
-    # Attic
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ scene_name in ['Alarm', 'Active'] }}
-          sequence:
-            - service: hue.hue_activate_scene
-              data:
-                group_name: Attic
-                scene_name: >-
-                  {% if scene_name in 'Alarm' %}
-                    Concentrate
-                  {% else %}
-                    Bright
-                  {% endif %}
-      default:
-        - service: light.turn_off
-          data:
-            entity_id: light.attic
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ scene_name == 'Alarm' }}
-          sequence:
-            - service: light.turn_on
-              data:
-                entity_id: light.attic_hallway
-      default:
-        - service: light.turn_off
-          data:
-            entity_id: light.attic_hallway
-  mode: single
+    - if:
+        - >-
+          {{
+            state_attr(scene_entity, 'scene_id') is defined and
+            state_attr(scene_entity, 'scene_id') != '<None>'
+          }}
+      then:
+        - service: scene.turn_on
+          target:
+            entity_id: >-
+              {{ state_attr(scene_entity, 'scene_id') }}
+      else:
+        - if:
+            - >-
+              {{ states(scene_entity) == '<Off>' }}
+          then:
+            - service: light.turn_off
+              target:
+                entity_id: >-
+                  {{ state_attr(scene_entity, 'light_id') }}
+  mode: parallel
+  max: 5
+hue_activate_scene_kitchen:
+  alias: Hue activate scene (Kitchen)
+  description: >-
+    Retain the "Activity" scene in Kitchen counter & cupboards while
+    transitioning the Kitchen as a whole to another scene. Can also turn off
+    the lights in the Kitchen (leave "scene_id" empty for this).
+  icon: mdi:movie-open-star
+  fields:
+    scene_id:
+      description: Scene entity for the Kitchen
+      selector:
+        entity:
+          integration: scenes
+    turn_off:
+      description: Turn off the Kitchen lights
+      selector:
+        boolean: # yamllint disable-line rule:empty-values
+  sequence:
+    - if:
+        - >-
+          {{ scene_id is defined and scene_id is match('^scene\.kitchen_.+') }}
+      then:
+        # Only relevant if Kitchen counter & cupboards is in "Activity"
+        - if:
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen_counter_cupboards
+              state: Activity
+          then:
+            - service: scene.turn_on
+              target:
+                entity_id: >-
+                  {{ scene_id }}
+            # Wait for the Kitchen to register its change before changing
+            # counter & cupboards; this is required for the scene heuristic to
+            # work properly. Not doing so will lead the Kitchen to revert back
+            # to its previous scene (instead of the newly activated one) after
+            # "Activity" in counter & cupboards ends.
+            - wait_for_trigger:
+                - platform: template
+                  value_template: >-
+                    {{
+                      state_attr('sensor.hue_scene_kitchen', 'scene_id') ==
+                        scene_id
+                    }}
+              timeout: "00:00:10"
+              continue_on_timeout: false
+            - service: scene.turn_on
+              target:
+                entity_id: scene.kitchen_counter_cupboards_activity
+          # Otherwise, simply apply the scene to Kitchen alone
+          else:
+            - service: scene.turn_on
+              target:
+                entity_id: >-
+                  {{ scene_id }}
+      # Identical — for turning off the lights...
+      else:
+        - if:
+            - >-
+              {{ turn_off is true }}
+          then:
+            - if:
+                - condition: state
+                  entity_id: sensor.hue_scene_kitchen_counter_cupboards
+                  state: Activity
+              then:
+                - service: light.turn_off
+                  target:
+                    entity_id: light.kitchen
+                - wait_for_trigger:
+                    - platform: state
+                      entity_id: sensor.hue_scene_kitchen
+                      to: <Off>
+                  timeout: "00:00:10"
+                  continue_on_timeout: false
+                - service: scene.turn_on
+                  target:
+                    entity_id: scene.kitchen_counter_cupboards_activity
+              else:
+                - service: light.turn_off
+                  target:
+                    entity_id: light.kitchen
+  mode: parallel
+  max: 5

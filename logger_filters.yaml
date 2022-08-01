@@ -46,8 +46,3 @@ custom_components.xiaomi_miot.sensor:
 # Mopidy
 homeassistant.components.media_player:
   - ^Updating mpd .+ took longer than the scheduled update interval
-# It appears "hue.hue_activate_scene" got deprecated a bit prematurely...
-homeassistant.components.hue.services:
-  - >-
-    ^Use of service_call 'hue_activate_scene' is deprecated and will be
-    removed in a future release

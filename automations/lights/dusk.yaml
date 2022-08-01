@@ -58,35 +58,9 @@
               entity_id: sensor.hue_scene_kitchen
               state: Daytime
       then:
-        # If the Kitchen counter & cupboard lights are on, aim to keep them on
-        # while transitioning the Kitchen to "Ambiance"
-        - if:
-            - condition: state
-              entity_id: sensor.hue_scene_kitchen_counter_cupboards
-              state: Activity
-          then:
-            - service: scene.turn_on
-              target:
-                entity_id: scene.kitchen_ambiance
-            # Wait for the Kitchen to register its change before
-            # changing counter & cupboards; this is required for the
-            # scene heuristic to work properly. Not doing so will lead
-            # the Kitchen to revert back to Daytime (instead of
-            # Ambiance) after activity ends.
-            - wait_for_trigger:
-                - platform: state
-                  entity_id: sensor.hue_scene_kitchen
-                  to: Ambiance
-              timeout: "00:00:10"
-              continue_on_timeout: false
-            - service: scene.turn_on
-              target:
-                entity_id: scene.kitchen_counter_cupboards_activity
-          # Otherwise, act on the Kitchen alone
-          else:
-            - service: scene.turn_on
-              target:
-                entity_id: scene.kitchen_ambiance
+        - service: script.hue_activate_scene_kitchen
+          data:
+            scene_entity: scene.kitchen_ambiance
     # Hallway – turn on lights regardless of their state. The daytime light
     # automation most likely already switched them on; the below ensures they
     # don't get stuck at their – too high – daytime brightness level...

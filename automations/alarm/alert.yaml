@@ -285,15 +285,21 @@
           entity_id: sensor.time_of_day
           state: day
   action:
-    # Don't block on activating the lights – this ensures the subsequent wait-
-    # for-trigger is active as fast as possible; otherwise it's possible to
-    # disarm the alarm prior to the trigger being active...
-    - service: script.turn_on
+    - service: scene.turn_on
       target:
-        entity_id: script.hue_activate_scene_house
+        entity_id:
+          - scene.living_room_active
+          - scene.kitchen_bright_custom
+          - scene.hallway_bright
+          - scene.garden_active
+          - scene.bedroom_concentrate
+          - scene.bathroom_concentrate
+          - scene.wardrobe_bright
+          - scene.guestroom_bright
+          - scene.attic_concentrate
+    - service: light.turn_on
       data:
-        variables:
-          scene_name: Alarm
+        entity_id: light.attic_hallway
     # Wait for the alarm to disarm or for dawn
     - wait_for_trigger:
         - platform: state
@@ -326,9 +332,22 @@
                         tablet_kitchen_user_id
                     }}
           sequence:
-            - service: script.hue_activate_scene_house
+            - service: scene.turn_on
+              target:
+                entity_id:
+                  - scene.living_room_active
+                  - scene.kitchen_bright_custom
+                  - scene.hallway_bright
+                  - scene.garden_ambiance
+                  - scene.bedroom_bright
+                  - scene.guestroom_bright
+                  - scene.attic_bright
+            - service: light.turn_off
               data:
-                scene_name: Active
+                entity_id:
+                  - light.bathroom
+                  - light.wardrobe
+                  - light.attic_hallway
       # Otherwise, switch the house back to regular "Ambiance"/Evening-mode.
       # An automation in "📄 automations/lights/dawn.yaml" switches off all
       # "Ambiance"/Evening-mode lights just after sunrise. By switching the
@@ -336,9 +355,22 @@
       # is well _before_ sunrise), we ensure all lights are properly switched
       # off after sunrise (without duplicating any logic).
       default:
-        - service: script.hue_activate_scene_house
+        - service: scene.turn_on
+          target:
+            entity_id:
+              - scene.living_room_ambiance
+              - scene.kitchen_ambiance
+              - scene.hallway_evening
+              - scene.garden_ambiance
+              - scene.guestroom_evening
+        - service: light.turn_off
           data:
-            scene_name: Ambiance
+            entity_id:
+              - light.bedroom
+              - light.bathroom
+              - light.wardrobe
+              - light.attic
+              - light.attic_hallway
   mode: single
 - alias: 🚨 | 📱 Notify on alarm pending
   id: 601cb512-c43b-4155-b58f-122441d49d22
