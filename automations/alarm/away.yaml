@@ -22,6 +22,7 @@
         variables:
           group: home alarm
           channel: Alert
+          tag: alarm_away_openclose
           criticalNotification: true
           title: 🚪 Doors and/or windows left open!
           message: >-
@@ -103,6 +104,11 @@
                   regex_replace(' .*$', '') -}}
               {%- endif -%}
             {%- endif -%}.
+    # Dismiss the "doors/windows left open"-notification (potentially) raised
+    # when the alarm got armed
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: alarm_away_openclose
 - alias: 🚨 | 👋 Trigger alarm (motion detected; "Armed away")
   id: 358bd339-33e4-4c0a-a92e-0682346e48a1
   trigger:

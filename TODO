@@ -81,8 +81,8 @@
     actually useful given the above considerations; remove the ones that are
     not...
 - [ ] Clean up `📄 sensors.yaml` (i.e., move its contents into the `📁 sensors`
-      folder). Do the same with the binary sensors (move them from
-      `📄 configuration.yaml` into `📁 sensors_binary`).
+      folder). ~~Do the same with the binary sensors (move them from
+      `📄 configuration.yaml` into `📁 sensors_binary`).~~
   - Reimplement all template sensors using
     [the new format](https://www.home-assistant.io/integrations/template) and
     move them into the `📁 templates` folder
@@ -95,6 +95,9 @@
     (i.e. to do date arithmetic) – making these trigger-based stops them from
     rendering unnecessarily once-per-minute (due to the inclusion of `now()` in
     their templates)
+  - [Properly self-reference using `this`](https://www.home-assistant.io/integrations/template/#self-referencing)
+    instead of hard-coding `states(...)` with the name of the template sensor in
+    question
 - [ ] Use generic names for the mobile devices registered through the "Mobile
       App" integration (`pixel_6_pro`, `sm_g930f` and `p20hd_eea`). Knowing the
       model numbers of these devices allows one to deduce the vendor prefixes of
