@@ -349,11 +349,17 @@
       entity_id: binary_sensor.openclose_33
       from: "off"
       to: "on"
-    # Using HomeKit to trigger – triggers faster than the online integration
+    # Using HomeKit to trigger – when using a schedule, the online tadoº
+    # integration doesn't trigger to "cool" (instead, it stays in "auto") so
+    # it's of no use here...
     - platform: state
       entity_id: climate.tado_smart_ac_control_attic
       from: "off"
       to: cool
+      # Wait 30-seconds for the online tadoº integration to catch-up — moving
+      # too fast might cause the "physical" commands to the Airco to criss-cross
+      # with the "virtual" state, leaving the entire thing messed up
+      for: "00:00:30"
   condition:
     - condition: state
       entity_id: binary_sensor.openclose_33
