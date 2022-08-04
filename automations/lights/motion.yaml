@@ -46,41 +46,29 @@
     # possible where the lights go off (because one sensor clears) and never
     # come back on again (because the other sensor never clears due to
     # ongoing motion and thus never retriggers the lights).
-    # The "!= 'on'" check (as opposed to a "== 'off'") is intentional as it is
-    # a bit more forgiving in cases where a sensor drops off the network (i.e.
-    # "unavailable") while this automation is running.
     - wait_template: >-
         {{
           states('binary_sensor.presence_53') == 'off' and
           states('binary_sensor.presence_155') == 'off'
         }}
     - delay: "00:03:00"
-    # If the scene for "Kitchen counter & cupboards" is still "Activity", no
-    # changes were made to the lighting. We can safely restore the previous
-    # scene for the "Kitchen" as a whole...
+    # If the Kitchen scene is not "Bright (custom)" and the scene for "Kitchen
+    # counter & cupboards" is still "Activity", no changes were made to the
+    # lighting (either manual, or by the "sustained activity"-automation). We
+    # can safely restore the previous scene for the "Kitchen" as a whole...
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_kitchen
+          state: Bright (custom)
     - condition: state
       entity_id: sensor.hue_scene_kitchen_counter_cupboards
       state: Activity
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: sensor.hue_scene_kitchen
-              state: <Off>
-          sequence:
-            - service: light.turn_off
-              data:
-                entity_id: light.kitchen
-      default:
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: sensor.hue_scene_kitchen
-              state: <Unknown>
-        # Changing the "Kitchen counter & cupboards" scene doesn't change the
-        # "Kitchen" scene – we can simply re-apply the already active scene
-        - service: script.hue_activate_scene
-          data:
-            scene_entity: sensor.hue_scene_kitchen
+    # Changing the "Kitchen counter & cupboards" scene doesn't change the
+    # "Kitchen" scene – we thus can simply re-apply the active scene
+    - service: script.hue_activate_scene
+      data:
+        scene_entity: sensor.hue_scene_kitchen
   mode: restart
 - alias: 💡 | 👋 Kitchen scene to "Bright (custom)" (sustained activity)
   id: ac457661-49b6-4ee6-b0cf-ceac3bd4ccab
@@ -92,7 +80,7 @@
         - binary_sensor.presence_155
       from: "off"
       to: "on"
-    # Initially trigger only considers the sensor above the sink
+    # Initial trigger only considers the sensor above the sink
     - platform: state
       id: sustained_activity
       entity_id: binary_sensor.presence_53
@@ -168,31 +156,23 @@
             - condition: state
               entity_id: sensor.hue_scene_kitchen_previous
               state: Daytime
-    - choose:
-        # Don't restore daytime lighting when it's not daytime (anymore) –
-        # restoring to "Ambiance" seems most sensible at this point instead
-        - conditions:
-            - condition: not
-              conditions:
-                - condition: state
-                  entity_id: sensor.time_of_day
-                  state: day
+    # Don't restore daytime lighting when it's not daytime (anymore) – restoring
+    # to "Ambiance" seems most sensible at this point instead
+    - if:
+        - condition: not
+          conditions:
             - condition: state
-              entity_id: sensor.hue_scene_kitchen_previous
-              state: Daytime
-          sequence:
-            - service: scene.turn_on
-              target:
-                entity_id: scene.kitchen_ambiance
-        - conditions:
-            - condition: state
-              entity_id: sensor.hue_scene_kitchen_previous
-              state: <Off>
-          sequence:
-            - service: light.turn_off
-              data:
-                entity_id: light.kitchen
-      default:
+              entity_id: sensor.time_of_day
+              state: day
+        - condition: state
+          entity_id: sensor.hue_scene_kitchen_previous
+          state: Daytime
+      then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.kitchen_ambiance
+      # Otherwise, restore Kitchen to previous scene
+      else:
         - service: script.hue_activate_scene
           data:
             scene_entity: sensor.hue_scene_kitchen_previous
