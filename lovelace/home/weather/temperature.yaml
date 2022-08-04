@@ -33,7 +33,7 @@ card:
       decimals: 1
       entities:
         - entity: sensor.weewx_outside_temperature
-          name: Garden
+          name: Weather station
           show_points: false
           show_fill: false
         - entity: sensor.weewx_outside_temperature_balcony
@@ -41,7 +41,7 @@ card:
           show_points: false
           show_fill: false
         - entity: sensor.weewx_outside_temperature_greenhouse
-          name: Greenhouse
+          name: Garden
           show_points: false
           show_fill: false
         - entity: sensor.temperature_27

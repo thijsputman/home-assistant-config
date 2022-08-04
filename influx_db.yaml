@@ -28,6 +28,7 @@ include:
     # WeeWX
     - sensor.weewx_outside_temperature
     - sensor.weewx_outside_temperature_balcony
+    - sensor.weewx_outside_temperature_garden
     - sensor.weewx_solar_irradiance
     - sensor.weewx_wind_speed
     - sensor.weewx_rain_hour
