@@ -55,18 +55,19 @@
         {% if states('group.family') == 'not_home' %}
           {{ false }}
         {#
-          Short-circuit office chair occupancy – activity should occur shortly
-          _after_ the lights are switched off. In this situation waiting for the
-          full half hour is most likely too long...
+          Short-circuit office chair occupancy – activity should occur (i.e.,
+          someone should sit down) shortly _after_ the lights are switched off.
+          If not, probably nobody is present any more and waiting the full half
+          hour for "Occupancy (Office chairs)" to clear is most likely too long.
         #}
         {%
           elif trigger.entity_id == 'light.attic' and
             states('light.attic') == 'off'
         %}
           {{
-            (states.binary_sensor.vibration_102.last_updated | as_local) +
+            (states.binary_sensor.vibration_102.last_changed | as_local) +
               timedelta(minutes = 5) >= now() or
-            (states.binary_sensor.vibration_106.last_updated | as_local) +
+            (states.binary_sensor.vibration_106.last_changed | as_local) +
               timedelta(minutes = 5) >= now()
           }}
         {% else %}
