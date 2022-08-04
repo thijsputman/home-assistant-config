@@ -255,17 +255,24 @@
         {% endif %}
       attributes:
         light_id: light.kitchen_counter_cupboards
+        # See comment for "Hue scene (Kitchen)"-sensor's scene_id attribute
         scene_id: >-
           {%
-            if this.state not in
-              ['unknown', 'unavailable', '<Unknown>', '<Off>', '<Kitchen>']
+            if states('sensor.hue_scene_kitchen_counter_cupboards_raw')
+              == '<Unknown>' and
+            states('sensor.hue_scene_kitchen_raw') != '<Unknown>'
+          %}
+            <None>
+          {%
+            elif states('sensor.hue_scene_kitchen_counter_cupboards_raw') not in
+              ['unknown', 'unavailable', '<Unknown>', '<Off>']
           %}
             {{
               (
                 this.attributes.light_id | replace('light.', 'scene.')
               ) ~ '_' ~ (
-                this.state | lower | regex_replace('([^a-z ])+', '') |
-                  replace(' ', '_')
+                states('sensor.hue_scene_kitchen_counter_cupboards_raw') | lower
+                  | regex_replace('([^a-z ])+', '') | replace(' ', '_')
               )
             }}
           {% else %}
@@ -325,8 +332,11 @@
           {% if num_lights == 0 %}
             <Off>
           {%
-            elif num_lights == 14 and (brightness == 76 or brightness == 78) and
-              (
+            elif num_lights == 14 and (
+              brightness == 75 or
+              brightness == 76 or
+              brightness == 78
+            ) and (
                 (xy_color[0] == 0.38 and xy_color[1] == 0.37) or
                 (xy_color[0] == 0.39 and xy_color[1] == 0.37) or
                 (xy_color[0] == 0.4 and xy_color[1] == 0.36)
@@ -381,6 +391,7 @@
         {% endif %}
       attributes:
         light_id: light.kitchen
+        # See comment for "Hue scene (Kitchen)"-sensor's scene_id attribute
         scene_id: >-
           {%
             if trigger.from_state is defined and trigger.from_state.state not in
@@ -445,17 +456,32 @@
         {% endif %}
       attributes:
         light_id: light.kitchen
+        # Relying on "this.state" to capture the current (i.e., most recent)
+        # state of the template sensor appears not 100% reliable — sometimes it
+        # results in the _previous_ state of the sensor... Unclear what's
+        # exactly going on, but this behaviour effects all sensors in this file
+        # that _render_ outside variables (e.g. "this.state" or "states(...)"")
+        # in their state template (although it could just as well be an odd/
+        # infrequent timing issue).
+        # Replicating the state template's logic inside the attribute template
+        # appears to not suffer from this issue.
         scene_id: >-
           {%
-            if this.state not in
+            if states('sensor.hue_scene_kitchen_counter_cupboards_raw')
+                == 'Activity'
+            and states('sensor.hue_scene_kitchen_raw') == '<Unknown>'
+          %}
+            {{ this.attributes.scene_id }}
+          {%
+            elif states('sensor.hue_scene_kitchen_raw') not in
               ['unknown', 'unavailable', '<Unknown>', '<Off>']
           %}
             {{
               (
                 this.attributes.light_id | replace('light.', 'scene.')
               ) ~ '_' ~ (
-                this.state | lower | regex_replace('([^a-z ])+', '') |
-                  replace(' ', '_')
+                states('sensor.hue_scene_kitchen_raw') | lower |
+                  regex_replace('([^a-z ])+', '') | replace(' ', '_')
               )
             }}
           {% else %}
