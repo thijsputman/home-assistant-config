@@ -116,5 +116,13 @@ hue_activate_scene_kitchen:
                 - service: light.turn_off
                   target:
                     entity_id: light.kitchen
+          # Provide some feedback in case of invalid/missing arguments
+          else:
+            - service: system_log.write
+              data:
+                level: error
+                message: >-
+                  Invalid call to script.hue_activate_scene_kitchen: incorrect
+                  "scene_id" or missing "turn_off"
   mode: parallel
   max: 5

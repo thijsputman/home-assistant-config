@@ -60,7 +60,7 @@
       then:
         - service: script.hue_activate_scene_kitchen
           data:
-            scene_entity: scene.kitchen_ambiance
+            scene_id: scene.kitchen_ambiance
     # Hallway – turn on lights regardless of their state. The daytime light
     # automation most likely already switched them on; the below ensures they
     # don't get stuck at their – too high – daytime brightness level...
