@@ -46,3 +46,7 @@ custom_components.xiaomi_miot.sensor:
 # Mopidy
 homeassistant.components.media_player:
   - ^Updating mpd .+ took longer than the scheduled update interval
+# Meater servers go offline *a lot*
+homeassistant.components.meater:
+  - >-
+    ^Unexpected error fetching meater_api data: Error connecting to Meater

@@ -53,11 +53,11 @@
         - Dust bin full
         - Please empty dust bin
   condition:
-    # Neato drops offline from time to time, prevent (re)triggering if that
-    # happens (under normal circumstances, its either "docked" or "cleaning").
+    # Neato drops offline from time to time, prevent (re)triggering when the
+    # integration comes back online
     - condition: template
       value_template: >-
-        {{ states(trigger.entity_id) in ['docked', 'cleaning'] }}
+        {{ trigger.from_state.state not in ['unknown', 'unavailable'] }}
   action:
     - service: script.turn_on
       target:
