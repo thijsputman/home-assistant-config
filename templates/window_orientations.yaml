@@ -101,7 +101,7 @@
         {%
           elif
             y >= 75 and y <= 77 and
-            z >= 14 and z <= 16 and
+            z >= 13 and z <= 16 and
             openclose == 'on'
         %}
           ajar
