@@ -100,7 +100,8 @@
     their templates)
   - [Properly self-reference using `this`](https://www.home-assistant.io/integrations/template/#self-referencing)
     instead of hard-coding `states(...)` with the name of the template sensor in
-    question
+    question — do note the findings in
+    [9c03dfb](https://github.com/thijsputman/home-assistant-config/commit/9c03dfbf1611a4def2d4f7e43aa33dabbdfedc3c)
 - [ ] Use generic names for the mobile devices registered through the "Mobile
       App" integration (`pixel_6_pro`, `sm_g930f` and `p20hd_eea`). Knowing the
       model numbers of these devices allows one to deduce the vendor prefixes of
@@ -188,7 +189,6 @@
 
 - [ ] Use VLC (instead of native Android notifications) for TTS on the tablet in
       the Kitchen – has a much more natural voice
-- [ ] Extend TTS to the speaker in the Bedroom?
 
 ### SMS
 
@@ -203,8 +203,10 @@
       40% and 60% at night (while it should be stable at 60%); the Wardrobe
       Sonair template fan speed sensor incorrectly jumps between 20% and 40%
       when it should be stable at 40%...
-- [ ] Not all Airco (Attic) transitions appear properly covered/guarded; the
-      airco-unit occasionally switches on when the window is open...
+- [x] ~~Not all Airco (Attic) transitions appear properly covered/guarded; the
+      airco-unit occasionally switches on when the window is open...~~
+  - Most likely resolved by
+    [6be625d](https://github.com/thijsputman/home-assistant-config/commit/6be625d38ca3a1906e9bf8e5732eb8c083d1da17)
 
 ### Features
 

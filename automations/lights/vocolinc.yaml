@@ -7,6 +7,7 @@
       to: "on"
     - platform: state
       entity_id: sensor.hue_scene_living_room
+      to: ~
   condition:
     - condition: state
       entity_id: humidifier.vocolinc_flb_living_room
