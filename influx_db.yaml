@@ -58,6 +58,10 @@ include:
     - light.smart_relay_1 # Bathroom exhaust fan
     - switch.smart_plug_6 # Attic exhaust fan
     - group.openclose_bedroom
+    - binary_sensor.openclose_33 # Attic window
+    - sensor.attic_window_position
+    - binary_sensor.openclose_36 # Kitchen top window
+    - binary_sensor.openclose_12 # Kitchen door
     # tado°
     - sensor.tado_smart_thermostat_temperature # Living room temperature
     - sensor.tado_smart_radiator_attic_temperature
@@ -126,8 +130,8 @@ component_config_glob:
       - voltage
       - current
       - temperature
-  # Tado heating-sensors include the timestamp e of their last state change –
-  # if ever relevant, can easily be inferred from the underlying data...
+  # Tado heating-sensors include the timestamp of their last state change – if
+  # ever relevant, can easily be inferred from the underlying data...
   "sensor.tado_*_heating":
     ignore_attributes:
       - time

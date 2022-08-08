@@ -122,7 +122,8 @@
 - [ ] Enable the `retain`-attribute for all MQTT-topics (either by updating the
       publishing logic, or by manually toggling the attribute on the MQTT server
       itself?)
-- [ ] Add tilt sensors to all "tilting" windows (both horizontal and vertical)
+- [ ] Add tilt sensors to all "tilting" windows; only works for vertically
+      tilting windows ("kiepraam") though
   - Use these (in addition to the `openclose` sensors) to detect a potential
     break-in (i.e. windows can be left ajar and still trigger the alarm)
   - Use these (_instead of_ the `openclose` sensors) to warn when windows are
@@ -132,8 +133,9 @@
     principle it's ventilation hatch should always be open) – same for the
     Bedroom, when we go to bed at least one of the windows should be ajar...
     This could be via TTS when all lights are switched off before going to bed
-  - Once finalised, include tilt sensors in InfluxDB as part of the air quality
-    metrics (these windows are regularly used for ventilation purposes)
+  - ~~Once finalised, include tilt sensors in InfluxDB as part of the air
+    quality metrics (these windows are regularly used for ventilation
+    purposes)~~
 - [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
 - [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
       other Qingping senors
