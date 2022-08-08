@@ -91,6 +91,7 @@ views:
               service: script.turn_on
               service_data:
                 entity_id: script.lights_out
+                activatedFrom: kitchen
               confirmation:
                 text: Turn off all lights?
             show_state: false

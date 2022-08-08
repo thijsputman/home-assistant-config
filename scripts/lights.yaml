@@ -1,13 +1,29 @@
 lights_out:
   alias: Lights out
+  fields:
+    activatedFrom:
+      description: From where was the "Lights out"-script triggered
+      required: false
+      default: kitchen
+      selector:
+        select:
+          options:
+            - kitchen
+            - bedroom
+  variables:
+    activatedFrom: >-
+      {% if activatedFrom in ['kitchen', 'bedroom'] %}
+        {{ activatedFrom }}
+      {% else %}
+        kitchen
+      {% endif %}
   sequence:
     - variables:
         # Front & back door and Garden should already be off (they have their
-        # own automations) – included just in case (or if we go to bed early)
+        # own automations) – included in case we go to bed early
         rooms_on: >-
-          {% set result = namespace(lights=[]) %}
-          {%
-            for light in expand(
+          {{
+            expand(
               'group.light_inside_rooms',
               'light.front_back_door',
               'light.garden' ) |
@@ -15,74 +31,105 @@ lights_out:
             selectattr('attributes.is_hue_group', 'true') |
             selectattr('state', 'eq', 'on') |
             selectattr('entity_id', 'ne', 'light.bedroom') |
-            selectattr('entity_id', 'ne', 'light.kitchen')
-          %}
-            {% set result.lights = result.lights + [light] %}
-          {% endfor %}
-          {{ result.lights | join(',', attribute='entity_id') }}
+            map(attribute='entity_id') | list
+          }}
     - choose:
+        # Activated from Kitchen
         - conditions:
-            - condition: template
-              value_template: >-
-                {{ rooms_on != '' }}
+            - >-
+              {{ activatedFrom == 'kitchen' }}
           sequence:
-            - service: light.turn_off
-              target:
-                entity_id: >-
-                  {{ rooms_on }}
-    # We're about to transition the state of the Kitchen and Hallway; no need to
-    # bother with that if both rooms are off to begin with...
-    - choose:
+            - if:
+                - >-
+                  {{
+                    rooms_on | reject('eq', 'light.kitchen') | list | length
+                      > 0
+                  }}
+              then:
+                - service: light.turn_off
+                  target:
+                    entity_id: >-
+                      {{ rooms_on | reject('eq', 'light.kitchen') | join(',') }}
+            # Only continue if either the Kitchen or Hallway lights were on the
+            # begin with
+            - if:
+                - condition: not
+                  conditions:
+                    - condition: state
+                      entity_id:
+                        - light.kitchen
+                        - light.hallway
+                      state: "off"
+              then:
+                # Dim Kitchen lights to provide a visual cue
+                - service: scene.turn_on
+                  target:
+                    entity_id: scene.kitchen_movie
+                # Turn on Hallway lights so there's light when going upstairs
+                - service: scene.turn_on
+                  target:
+                    entity_id: scene.hallway_evening
+                - delay: "00:05:00"
+                # Lower Hallway brightness 1-minute prior to switching it off
+                - service: light.turn_on
+                  data:
+                    brightness_step_pct: -15
+                    entity_id:
+                      - light.hallway
+                - delay: "00:01:00"
+                - service: light.turn_off
+                  data:
+                    entity_id: light.kitchen
+                - service: light.turn_off
+                  data:
+                    transition: 10
+                    entity_id: light.hallway
+        # Activated from Bedroom
         - conditions:
-            - condition: not
-              conditions:
-                - condition: state
-                  entity_id:
-                    - light.kitchen
-                    - light.hallway
-                  state: "off"
+            - >-
+              {{ activatedFrom == 'bedroom' }}
           sequence:
-            # This script is generally triggered from the tablet in the
-            # Kitchen – dim Kitchen lights to provide a visual cue that the
-            # script is running
-            - service: scene.turn_on
-              target:
-                entity_id: scene.kitchen_movie
-            - service: scene.turn_on
-              target:
-                entity_id: scene.hallway_evening
-            - delay: "00:05:00"
-            # Lower Hallway brightness 1-minute prior to switching it off
-            - service: light.turn_on
-              data:
-                brightness_step_pct: -15
-                entity_id:
-                  - light.hallway
-            - delay: "00:01:00"
-            - service: light.turn_off
-              data:
-                entity_id: light.kitchen
-            - service: light.turn_off
-              data:
-                transition: 10
+            - if:
+                - >-
+                  {{ rooms_on | length > 0 }}
+              then:
+                - service: light.turn_off
+                  target:
+                    entity_id: >-
+                      {{ rooms_on | join(',') }}
+            - if:
+                condition: state
                 entity_id: light.hallway
+                state: "on"
+              then:
+                - service: light.turn_off
+                  data:
+                    transition: 10
+                    entity_id: light.hallway
+            - if:
+                - condition: state
+                  entity_id: light.bedroom
+                  state: "on"
+              then:
+                - service: light.turn_off
+                  data:
+                    transition: 10
+                    entity_id: light.bedroom
     # If there's no motion in the Bathroom and Wardrobe, switch them off too
-    # (otherwise they'll naturally go off after their motion timeouts).
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{
-                  is_state('group.motion_bathroom', 'off') and
-                  is_state('binary_sensor.presence_63', 'off')
-                }}
-          sequence:
-            - service: light.turn_off
-              data:
-                transition: 10
-                entity_id:
-                  - light.bathroom
-                  - light.wardrobe
+    # (otherwise they'll naturally go off after their motion timeouts)
+    - if:
+        - >-
+          {{
+            is_state('group.motion_bathroom', 'off') and
+            is_state('binary_sensor.presence_63', 'off')
+          }}
+      then:
+        - service: light.turn_off
+          data:
+            transition: 10
+            entity_id:
+              - light.bathroom
+              - light.wardrobe
     # Occasionally, lights don't turn off properly – this causes the
     # "Everyone asleep"-state to not trigger. Here we ensure all lights are
     # *really* off by toggling all groups that are still reporting "on" to "off"
@@ -94,17 +141,14 @@ lights_out:
     - delay: "00:10:00"
     - variables:
         force_off: >-
-          {% set result = namespace(lights=[]) %}
-          {% for light in expand('group.light_inside_rooms') |
+          {{
+            expand('group.light_inside_rooms') |
             selectattr('attributes.is_hue_group', 'true') |
             selectattr('state', 'eq', 'on') |
-            selectattr('entity_id', 'ne', 'light.bedroom')
-          %}
-            {% set result.lights = result.lights + [light] %}
-          {% endfor %}
-          {{ result.lights | join(',', attribute='entity_id') }}
-    - condition: template
-      value_template: >-
+            selectattr('entity_id', 'ne', 'light.bedroom') |
+            join(',', attribute='entity_id')
+          }}
+    - condition: >-
         {{ force_off != '' }}
     - service: light.turn_off
       target:

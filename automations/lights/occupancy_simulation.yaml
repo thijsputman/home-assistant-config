@@ -10,15 +10,25 @@
       state: not_home
   action:
     - delay: >-
-        {{ range(0, 7200) | random }}
+        {{ range(7200) | random }}
     - condition: state
       entity_id: group.family
       state: not_home
     - service: script.turn_on
       target:
         entity_id: script.lights_out
+      data:
+        variables:
+          # Randomly toggle between activation from the Kitchen and activation
+          # from the Bedroom
+          activatedFrom: >-
+            {% if (range(100) | random) >= 50 %}
+              kitchen
+            {% else %}
+              bedroom
+            {% endif %}
   mode: single
-# The "Lights out"-script has a runtime of around 15-minutes; if someone comes
+# The "Lights out"-script has a runtime of up to 15-minutes; if someone comes
 # home while the script is running, the inside lights will switch off after a
 # short while for no apparent reason... To prevent that, stop the script when
 # someone comes home. No need to switch on any lights, other automations (in
