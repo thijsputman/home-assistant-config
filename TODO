@@ -102,12 +102,14 @@
     instead of hard-coding `states(...)` with the name of the template sensor in
     question — do note the findings in
     [9c03dfb](https://github.com/thijsputman/home-assistant-config/commit/9c03dfbf1611a4def2d4f7e43aa33dabbdfedc3c)
-- [ ] Use generic names for the mobile devices registered through the "Mobile
-      App" integration (`pixel_6_pro`, `sm_g930f` and `p20hd_eea`). Knowing the
-      model numbers of these devices allows one to deduce the vendor prefixes of
-      their WiFi and Bluetooth MAC addresses, which in turn _could_ be used to
-      pinpoint the exact location of the house (if the combination of the three
-      device types is unique enough – which it might).
+- [ ] ~~Use generic names for the mobile devices registered through the "Mobile
+      App" integration~~ (`pixel_6_pro`, `sm_g990b2` and `p20hd_eea`) — seeing
+      as how these devices are only referenced in a few places, easier to
+      reference them from `secrets.yaml`
+  - Knowing the model numbers of these devices allows one to deduce the vendor
+    prefixes of their WiFi and Bluetooth MAC addresses, which in turn _could_ be
+    used to pinpoint the exact location of the house (if the combination of the
+    three device types is unique enough – which it might).
 - [ ] Experiment with using the amount of rain and the (WeeWX calculated)
       evapotranspiration to indicate whether the garden should be watered
 - [ ] It could be nice to also track water consumption. See for example

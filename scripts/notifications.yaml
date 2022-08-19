@@ -115,13 +115,13 @@ persistent_notification:
         {% elif targetDevices == 'home' %}
           {%
             if is_state('device_tracker.pixel_6_pro', 'home') and
-              is_state('device_tracker.sm_g930f', 'home')
+              is_state('device_tracker.sm_g990b2', 'home')
           %}
             notify.all_devices
           {% elif is_state('device_tracker.pixel_6_pro', 'home') %}
             notify.mobile_app_pixel_6_pro
-          {% elif is_state('device_tracker.sm_g930f', 'home') %}
-            notify.mobile_app_sm_g930f
+          {% elif is_state('device_tracker.sm_g990b2', 'home') %}
+            notify.mobile_app_sm_g990b2
           {% endif %}
         {% endif %}
       {% else %}
@@ -163,7 +163,7 @@ persistent_notification:
         {{
           targetDevices != 'home' or (
             targetDevices == 'home' and (
-              is_state('device_tracker.sm_g930f', 'home') or
+              is_state('device_tracker.sm_g990b2', 'home') or
               is_state('device_tracker.pixel_6_pro', 'home')
             )
           )

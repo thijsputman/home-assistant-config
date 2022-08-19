@@ -103,7 +103,7 @@ notify:
     platform: group
     services:
       - service: mobile_app_pixel_6_pro
-      - service: mobile_app_sm_g930f
+      - service: mobile_app_sm_g990b2
 
 mqtt:
   sensor: !include_dir_merge_list mqtt/
