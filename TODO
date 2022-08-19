@@ -260,8 +260,8 @@
   - `💡 | 🩹 Enforce "off"-state for Gledopto controllers`
   - `💡 | 🩹 Enforce Ensuite "on"-state to follow Living room`
   - `💡 | 🩹 Enforce Garden scene change for Innr bulbs`
-  - `💡 | 🩹 Enforce Kitchen scene change for Gledopto controllers` — switched
-    off for now...
+  - ~~`💡 | 🩹 Enforce Kitchen scene change for Gledopto controllers`~~ — still
+    required
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...

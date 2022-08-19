@@ -89,9 +89,11 @@ views:
             tap_action:
               action: call-service
               service: script.turn_on
-              service_data:
+              target:
                 entity_id: script.lights_out
-                activatedFrom: kitchen
+              data:
+                variables:
+                  activatedFrom: kitchen
               confirmation:
                 text: Turn off all lights?
             show_state: false
