@@ -71,7 +71,9 @@
       conditions:
         - condition: state
           entity_id: sensor.last_notification_albert_heijn_eta
-          state: unavailable
+          state:
+            - unavailable
+            - unknown
     # Albert Heijn ETA is for today
     - condition: template
       value_template: >-

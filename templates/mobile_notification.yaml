@@ -50,7 +50,7 @@
         #}
         {{
           state_attr('sensor.last_notification_unprocessed', 'post_time') |
-            as_datetime >= now() - timedelta(hours=1) and
+            float(0) | as_datetime >= now() - timedelta(hours=1) and
           states('sensor.last_notification_unprocessed') is
             search(
               'verwacht(?:en)? tussen \d{2}:\d{2} ' ~

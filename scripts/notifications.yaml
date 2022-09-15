@@ -1,6 +1,6 @@
 tts_p20:
   alias: TTS P20HD
-  icon: mdi:text-to-speech
+  icon: mdi:microphone-message
   sequence:
     - service: notify.mobile_app_p20hd_eea
       data:
