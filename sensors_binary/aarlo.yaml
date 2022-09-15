@@ -21,3 +21,11 @@
             [ 'armed_night', 'armed_away'] }}
       availability_template: >-
         {{ is_state('binary_sensor.aarlo_connected_back', 'on') }}
+    aarlo_armed_balcony:
+      friendly_name: Armed Balcony
+      icon_template: mdi:cctv
+      value_template: >-
+        {{ states('sensor.aarlo_alarm_state') in
+            [ 'armed_night', 'armed_away'] }}
+      availability_template: >-
+        {{ is_state('binary_sensor.aarlo_connected_balcony', 'on') }}

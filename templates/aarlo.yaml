@@ -1,0 +1,13 @@
+- trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.aarlo_motion_back
+        - binary_sensor.aarlo_motion_balcony
+      to: ~
+  binary_sensor:
+    - name: Aarlo Motion Back (combined)
+      unique_id: f26f7c26-9a78-48c9-9db4-161d0d7095b8
+      icon: mdi:run
+      device_class: motion
+      state: >-
+        {{ trigger.to_state.state }}

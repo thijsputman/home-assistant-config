@@ -15,11 +15,11 @@ views:
         cards:
           - !include home/security/aarlo_front.yaml
           - !include home/security/aarlo_back.yaml
-          - !include home/security/calamities.yaml
       - type: vertical-stack
         cards:
           - !include home/security/open_close.yaml
           - !include home/security/housekeeper.yaml
+          - !include home/security/calamities.yaml
           - !include home/security/connectivity.yaml
   # Climate
   - title: Climate

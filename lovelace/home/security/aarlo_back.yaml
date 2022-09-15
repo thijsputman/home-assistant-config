@@ -1,10 +1,18 @@
 type: custom:mod-card
 card_mod:
-  style: |
-    ha-card {
-      background: var(--llh-mod-card-background);
-      box-shadow: var(--llh-mod-card-box-shadow);
-    }
+  style:
+    .: |
+      ha-card {
+        background: var(--llh-mod-card-background);
+        box-shadow: var(--llh-mod-card-box-shadow);
+      }
+    hui-vertical-stack-card$: |
+      aarlo-glance:first-child{
+        margin-bottom: 0px !important;
+      }
+      aarlo-glance:nth-child(2){
+        margin-top: 0px !important;
+      }
 report_size: 3
 card:
   type: conditional
@@ -38,6 +46,8 @@ card:
               box-shadow: unset;
               padding-bottom: 0px !important;
               margin-bottom: 0px !important;
+              border-bottom-left-radius: 0px !important;
+              border-bottom-right-radius: 0px !important;
             }
             ha-card div.base-16x9 > img{
               width: 101% !important;
@@ -57,6 +67,48 @@ card:
         door: binary_sensor.openclose_12
         door2: binary_sensor.openclose_34
         light: light.hue_filament_bulb_1
+      - type: custom:aarlo-glance
+        card_mod:
+          style: |
+            ha-card {
+              {%- if states('binary_sensor.aarlo_armed_balcony') == 'on' -%}
+                border: 3px solid var(--label-badge-red);
+              {%- elif
+                states('sensor.aarlo_last_back') != 'unknown' and
+                strptime(
+                  now().year ~ ' ' ~ states('sensor.aarlo_last_balcony'),
+                  '%Y %m-%d %H:%M'
+                ) + timedelta( hours = 12 ) > now().today() and
+                strptime(
+                  now().year ~ ' ' ~ states('sensor.aarlo_last_balcony'),
+                    '%Y %m-%d %H:%M') < now().today()
+              -%}
+                border: 3px solid var(--warning-color);
+              {%- else -%}
+                border: 3px solid var(--label-badge-green);
+              {%- endif -%}
+              box-shadow: unset;
+              padding-bottom: 0px !important;
+              margin-bottom: 0px !important;
+              border-top-left-radius: 0px !important;
+              border-top-right-radius: 0px !important;
+            }
+            ha-card div.base-16x9 > img{
+              width: 101% !important;
+            }
+        entity: camera.aarlo_balcony
+        name: Balcony
+        show:
+          - motion
+          - battery_level
+          - signal_strength
+          - captured_today
+          - image_date
+        top_title: true
+        top_status: false
+        top_date: true
+        play_direct: true
+        door: binary_sensor.openclose_18
       - type: custom:logbook-card
         card_mod:
           style: |
@@ -83,7 +135,7 @@ card:
               font-style: normal;
               color: var(--secondary-text-color);
             }
-        entity: binary_sensor.aarlo_motion_back
+        entity: binary_sensor.aarlo_motion_back_combined
         title: false
         no_event: No motion detected in the past 24 hours.
         history: 1

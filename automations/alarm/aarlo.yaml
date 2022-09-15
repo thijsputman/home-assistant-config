@@ -184,6 +184,18 @@
           sequence:
             - service: aarlo.camera_request_snapshot
               entity_id: camera.aarlo_back
+    # Balcony camera
+    - choose:
+        - conditions:
+            # Don't disturb an active recording session
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: camera.aarlo_balcony
+                  state: recording
+          sequence:
+            - service: aarlo.camera_request_snapshot
+              entity_id: camera.aarlo_balcony
     # Front camera
     # In case of a regular/timed snapshot, ensure at least five minutes have
     # passed since the doorbell last rang (the 4-minute time delta is
@@ -272,6 +284,20 @@
                 filename: >-
                   /config/var/aarlo/back-{{ filename }}
               entity_id: camera.aarlo_back
+    # Balcony
+    - choose:
+        - conditions:
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: camera.aarlo_balcony
+                  state: recording
+          sequence:
+            - service: aarlo.camera_request_snapshot_to_file
+              data:
+                filename: >-
+                  /config/var/aarlo/balcony-{{ filename }}
+              entity_id: camera.aarlo_balcony
   mode: single
 - alias: 📹 | 🤖 Store activity snapshot (Arlo recording)
   id: 4dbb8ad5-e671-4f72-ba30-70fe0a29932e
@@ -325,5 +351,20 @@
                 subdir: arlo/activity
                 filename: >-
                   {{ 'back' ~ time_of_day ~ filename }}
+        # Balcony
+        - conditions:
+            - condition: state
+              entity_id: camera.aarlo_balcony
+              state:
+                - recording
+                - recently active
+          sequence:
+            - service: downloader.download_file
+              data:
+                url: >-
+                  {{ state_attr('camera.aarlo_balcony', 'last_thumbnail') }}
+                subdir: arlo/activity
+                filename: >-
+                  {{ 'balcony' ~ time_of_day ~ filename }}
   mode: parallel
-  max: 3
+  max: 4
