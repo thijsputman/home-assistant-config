@@ -133,6 +133,9 @@
             {# Meater #}
             {% elif entity_id is search('^sensor\.meater_probe_.+') %}
               {# Ignored; Meater Probe is only available when in-use #}
+            {# Prusa MINI+ #}
+            {% elif entity_id is search('.+\.prusa_mini_.+') %}
+              {# Ignored; Prusa MINI+ is only available when in-use #}
             {% else %}
               {% set matched = device_attr(device_id(entity_id), 'name') %}
             {% endif %}
