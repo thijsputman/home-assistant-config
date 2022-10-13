@@ -28,9 +28,6 @@
 
 ### Bugs
 
-- [ ] ❗ On (or after) August 14th, remove
-      `WeeWX outside temperature (Greenhouse)` and replace all references with
-      `WeeWX outside temperature (Garden)` (rename of custom MQTT-sensor)
 - [ ] The `sensor.consumption_ups` (Riemann sum integral) deviates a lot from
       its expected daily total (sometimes reporting less than 30% of what it
       should be) every couple of days

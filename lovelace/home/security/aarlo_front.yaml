@@ -44,6 +44,7 @@ card:
                 border: 3px solid var(--label-badge-green);
               {%- endif -%}
               box-shadow: unset;
+              background-color: black;
               padding-bottom: 0px !important;
               margin-bottom: 0px !important;
             }

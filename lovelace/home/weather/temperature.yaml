@@ -40,7 +40,7 @@ card:
           name: Balcony
           show_points: false
           show_fill: false
-        - entity: sensor.weewx_outside_temperature_greenhouse
+        - entity: sensor.weewx_outside_temperature_garden
           name: Garden
           show_points: false
           show_fill: false
