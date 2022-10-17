@@ -394,7 +394,9 @@
                 expand('group.vibration_all')
             ) | selectattr('state', 'eq', 'on') | selectattr(
               'last_changed', 'gt', now() - timedelta(minutes=5)
-            ) | map(attribute='name') | list
+            ) |
+            sort(reverse=true, attribute='last_changed') |
+            map(attribute='name') | list
           }}
     - service: script.turn_on
       target:
@@ -414,8 +416,8 @@
                 The alarm was triggered by
                 <strong>{{ tripped_sensors[0] }}</strong>.
               {%- else -%}
-                The following sensors triggered the alarm:
-                <br><br>◾ {{
+                The following <strong>{{ tripped_sensors | length }} sensors
+                </strong> triggered the alarm:<br>◾ {{
                   tripped_sensors | join('<br>◾ ')
                 -}}
               {%- endif -%}
@@ -442,6 +444,7 @@
                 expand('group.vibration_all')
             ) |
             selectattr('last_changed', 'gt', now() - timedelta(minutes=5)) |
+            sort(reverse=true, attribute='last_changed') |
             map(attribute='name') | list
           }}
     - service: script.turn_on
@@ -458,8 +461,8 @@
                 The alarm was triggered by
                 <strong>{{ tripped_sensors[0] }}</strong>.
               {%- else -%}
-                The following sensors triggered the alarm:
-                \n\n◾ {{
+                The following <strong>{{ tripped_sensors | length }} sensors
+                </strong> triggered the alarm:\n◾ {{
                   tripped_sensors | join('\\n◾ ')
                 -}}
               {%- endif -%}
@@ -483,8 +486,8 @@
               {%- if tripped_sensors | length == 1 -%}
                 The alarm was triggered by: {{ tripped_sensors[0] }}
               {%- else -%}
-                The following sensors triggered the alarm:
-                <br><br>◾ {{
+                The following {{ tripped_sensors | length }} sensors triggered
+                the alarm: <br>◾ {{
                   tripped_sensors | join('<br>◾ ')
                 -}}
               {%- endif -%}
