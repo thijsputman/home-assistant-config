@@ -28,7 +28,7 @@
 # The "everyone awake"-transition fires once daily as a result of people waking
 # up (at the first "wakeup" time of the day). Note that there are other events
 # (irrespective of "wakeup" time) that can trigger this transition too...
-- alias: 💤 | ⏰ Everyone awake (daily at «wakeup» time)
+- alias: 💤 | ⏰ Everyone awake (at «wakeup» time)
   id: dfe729c9-436a-4fdb-8970-b68492d9a1a2
   trigger:
     - platform: time
@@ -81,7 +81,7 @@
       data:
         entity_id: input_boolean.wakeup_alarm_mute
   mode: single
-- alias: 💤 Set «wakeup light start» time («wakeup» time change)
+- alias: 💤 Set «wakeup light start» time (on «wakeup» time change)
   id: 2067fdfb-bad3-40fb-aa7d-d35430dd5b78
   trigger:
     - platform: state

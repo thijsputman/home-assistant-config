@@ -39,24 +39,26 @@
       type: remote_button_double_press
       subtype: turn_on
   condition:
-    # Only act at night, if the "Lights out"-script isn't running, and not
+    # Only act around bedtime, if the "Lights out"-script isn't running, and not
     # everyone is asleep yet
     - condition: state
       entity_id: sensor.time_of_day
-      state: night
+      state:
+        - dusk
+        - night
     - condition: state
       entity_id: script.lights_out
       state: "off"
-    # This condition is additionally relevant as it prevents interfering with
-    # the "Silence wakeup alarm"-automation (which triggers on double press
-    # too).
-    # There is some time between "Lights out" finishing and "Everyone asleep"
-    # activating. As the "Lights out"-script is idempotent running this
-    # automation again in that period doesn't cause any issues, so no attempt
-    # is made to prevent this eventuality.
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
+    # Prevent interfering with the "Silence wakeup alarm"-automation (which also
+    # triggers on double press) — the wakeup "grace time" timer is started when
+    # the wakeup alarm sounds; at which point we don't want "Lights out" to
+    # trigger anymore...
+    - condition: state
+      entity_id: timer.wakeup_grace_time
+      state: idle
   action:
     - service: script.turn_on
       target:
