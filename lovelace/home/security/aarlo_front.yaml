@@ -101,6 +101,7 @@ card:
         hiddenState:
           - "off"
           - unknown
+          - unavailable
         show:
           state: false
           duration: true

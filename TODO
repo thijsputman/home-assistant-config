@@ -185,6 +185,13 @@
 - [ ] Implement
       "[alert once](https://companion.home-assistant.io/docs/notifications/notifications-basic/#alert-once)"
       for certain notifications?
+- [ ] The maximum length of the notification message shown is platform (and
+      device?) dependent. On my current (Android 13) device, it appears limited
+      to 10 lines (based on the actual number of lines, _not_ the amount of
+      characters). Messages are truncated _without_ a clear indication; this can
+      lead to confusion. It might thus be better to put a (conservative) limit
+      on the length of the message and provide a clear indication the message
+      got truncated...
 
 ### TTS
 
@@ -324,6 +331,7 @@
 - [ ] Send notifications (with snapshot/thumbnail) if Arlo records something
       when "Armed away"
   - Replaces the "native" Arlo notifications
+  - Experiment with including videos instead of still images
 - [ ] Arlo snapshots used in notifications should be stored locally. The URL
       provided by Arlo always represents the _latest_ snapshot, not the specific
       snapshot at the point in time the URL was retrieved... This is problematic

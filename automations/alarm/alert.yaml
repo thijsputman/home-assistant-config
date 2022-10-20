@@ -536,7 +536,7 @@
           message: >-
             🔓 Home Alarm disarmed
             \nThe Home Alarm just got disarmed
-            {%- if actor != '' %} {{ actor }} {%- endif -%}.
+            {% if actor != '' %} {{ actor }} {% endif %}.
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -549,4 +549,4 @@
           title: 🔓 Home Alarm disarmed
           message: >-
             The Home Alarm just got disarmed
-            {%- if actor != '' %} {{ actor }} {%- endif -%}.
+            {% if actor != '' %} {{ actor }} {% endif %}.

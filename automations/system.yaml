@@ -215,11 +215,16 @@
   condition:
     - condition: template
       value_template: >-
-        {{ "'No deconz_event tied to device " in trigger.event.data.message }}
+        {{ "No deconz_event tied to device " in trigger.event.data.message }}
   action:
     # Give deCONZ a bit of time to initialise; repeated failures will simply
     # trigger this automation again...
     - delay: "00:01:00"
+    - service: system_log.write
+      data:
+        level: warning
+        message: >-
+          deCONZ canary triggered; reloading automations...
     - service: automation.reload
   mode: single
   max_exceeded: silent
