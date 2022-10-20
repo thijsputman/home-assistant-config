@@ -1,0 +1,3 @@
+failed_devices_active:
+  name: Failed devices — active
+  initial: "[]"

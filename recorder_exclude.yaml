@@ -8,6 +8,7 @@ entities:
   - sensor.gammu_received_unprocessed_message
   - sensor.last_notification_unprocessed
   - sensor.failed_devices
+  - input_text.failed_devices_active
 entity_globs:
   - sensor.dd_wrt_*_total_octets
   - sensor.dd_wrt_*_bps

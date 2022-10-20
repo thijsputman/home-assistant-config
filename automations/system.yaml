@@ -46,14 +46,32 @@
 - alias: 📱 Notify on device failure (unavailable/unknown/none-state)
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12
   trigger:
+    # The sensor updates every 5-minutes — holding the state for 6-minutes
+    # allows transient failures (ones that appear for only a single 5-minute
+    # interval) to be filtered out
     - platform: state
       entity_id: sensor.failed_devices
+      not_to:
+        - unknown
+        - unavailable
+        - none
+      for: "00:06:00"
   condition:
-    # Guard against an invalid state in the sensor (as any state change triggers
-    # the automation)
+    # If the active set of failed devices (i.e., the set currently up in the
+    # notification) is identical to the incoming set, don't send a new
+    # notification. This (combined with the trigger delay) ensures transient
+    # failures are not notified upon.
+    # This limits unnecessary use of notifications, but mainly serves to prevent
+    # a situation where a non-critical failure notification is up (but dismissed
+    # from the phone) and a transient failure occurs. In this case the
+    # resolving of the transient failure would cause the original (dismissed)
+    # notification to reappear on the phone...
     - condition: template
       value_template: >-
-        {{ states('sensor.failed_devices') not in ['unknown', 'unavailable'] }}
+        {{
+          states('input_text.failed_devices_active') !=
+            states('sensor.failed_devices')
+        }}
     # Don't notify if there's no Internet- or Nabu Casa-connectivity (a likely
     # cause of failures). Once the connectivity issue(s) clear, any persistent
     # failures will show up in the next notification...
@@ -64,6 +82,12 @@
       entity_id: binary_sensor.remote_ui
       state: "on"
   action:
+    - service: input_text.set_value
+      target:
+        entity_id: input_text.failed_devices_active
+      data:
+        value: >-
+          {{ states('sensor.failed_devices') }}
     - choose:
         # If there are no (more) failures, dismiss the notification
         - conditions:
@@ -89,7 +113,7 @@
               targetDevices: my
               title: 💥 Device failure(s)
               message: >-
-                The following device(s) appear to have (partially) failed:<br>
+                The following device(s) appear to have (partially) failed:
                 <br><br>◾ {{
                   devices | join('<br>◾ ')
                 -}}
