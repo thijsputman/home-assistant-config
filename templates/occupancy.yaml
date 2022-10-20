@@ -2,8 +2,13 @@
 - trigger:
     # Using vibration sensors on the office chairs to infer occupancy of the
     # Attic (i.e. the "Office" 😉) – the vibration itself is not always strong
-    # enough, but changes to either orientation or tilt angle indicate someone
-    # is moving around in the chair...
+    # enough, so changes to either orientation or tilt angle are also taken into
+    # account
+    - platform: state
+      entity_id:
+        - binary_sensor.vibration_102
+        - binary_sensor.vibration_106
+      to: "on"
     - platform: state
       entity_id:
         - binary_sensor.vibration_102
@@ -19,10 +24,22 @@
       unique_id: 3ff1e67a-37ba-443c-b390-e9d2bdf4b07f
       icon: mdi:account-check
       device_class: occupancy
-      state: "on"
+      # Require *two* triggers (of which at least *one* changes the sensor's
+      # state — hence the use of "last changed") on a single sensor in 30-minute
+      # interval to detect occupancy. This prevents momentarily sitting down or
+      # bumping into a chair from detecting occupancy....
+      state: >-
+        {% if this.state == 'off' %}
+          {{
+            (trigger.from_state.last_changed | as_local) +
+              timedelta(minutes = 30) >= now()
+          }}
+        {% else %}
+          {{ this.state }}
+        {% endif %}
       # Empirically determined that we move around in our chairs at least once
       # every half an hour...
-      auto_off: 1800
+      auto_off: "00:30:00"
 # Attic occupancy – combination of the office chairs occupancy and the state of
 # the lights, under the condition that someone is home
 - trigger:
@@ -35,7 +52,7 @@
     - platform: state
       entity_id: light.attic
       for: "00:05:00"
-    # Additional triggers to short-circuit office chair occupancy
+    # Additional triggers to short-circuit "Office chairs occupancy"
     - platform: state
       entity_id: light.attic
       from: "on"
@@ -46,6 +63,11 @@
       from: "on"
       to: "off"
       for: "00:15:00"
+    - platform: state
+      entity_id: light.attic
+      from: "on"
+      to: "off"
+      for: "00:30:00"
   binary_sensor:
     - name: Occupancy (Attic)
       unique_id: e3a6437c-8269-4005-9d17-ac7f2e45e8d5
@@ -55,20 +77,32 @@
         {% if states('group.family') == 'not_home' %}
           {{ false }}
         {#
-          Short-circuit office chair occupancy – activity should occur (i.e.,
-          someone should sit down) shortly _after_ the lights are switched off.
-          If not, probably nobody is present any more and waiting the full half
-          hour for "Occupancy (Office chairs)" to clear is most likely too long.
+          Switching off the Attic lights most likely indicates the Attic is no
+          longer occupied — it's possible though the lights got switched off
+          because it's simply bright enough without them... Here we short-
+          circuit the state of "Office chairs occupancy" to better handle this
+          situation:
+           1. If the light get switched off and there's no motion in the chairs
+              (checked over a 5-, 10- and 15-minute period; with some margin to
+              account for the time the vibration sensor retains its "on"-state),
+              toggle off occupancy. In this situation it doesn't make sense to
+              wait the full 30-minutes it takes for "Office chairs occupancy" to
+              clear naturally.
+           2. If the vibration sensors get triggered after the lights are
+              switched off, retrigger Attic occupancy (this workaround is needed
+              because "Office chairs occupancy" remains in its "on"-state in
+              this case). The 30-minutes delayed trigger is added specifically
+              for this purpose (it has no impact on the first use-case).
         #}
         {%
           elif trigger.entity_id == 'light.attic' and
-            states('light.attic') == 'off'
+            trigger.for is defined and states('light.attic') == 'off'
         %}
           {{
             (states.binary_sensor.vibration_102.last_changed | as_local) +
-              timedelta(minutes = 5) >= now() or
+              trigger.for - timedelta(seconds = 90) >= now() or
             (states.binary_sensor.vibration_106.last_changed | as_local) +
-              timedelta(minutes = 5) >= now()
+              trigger.for - timedelta(seconds = 90) >= now()
           }}
         {% else %}
           {{
