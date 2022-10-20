@@ -48,7 +48,6 @@ utility_meter: !include utility_meter.yaml
 
 # Arlo
 aarlo:
-  backend: sse
   username: !secret arlo_username
   password: !secret arlo_password
   refresh_devices_every: 2
