@@ -1,5 +1,8 @@
 # Cold Storage
 
+- [Gammu (Vodafone NL prepaid top-up)](#gammu-vodafone-nl-prepaid-top-up)
+- [Synology](#synology)
+
 ## Gammu (Vodafone NL prepaid top-up)
 
 Several automations and a single template sensor useful in handling prepaid
@@ -13,10 +16,22 @@ unlimited SMS subscription (€ 6 / month at Simyo).
 
 Note that should this ever be reimplemented, the `sms_notification` script's
 `phoneNumber`-parameter needs to be updated to allow sending messages to
-Vodafone's top-up service number (4000). Also, the
+Vodafone's top-up service number (`4000`). Also, the
 `Gammu received (message count)`-sensor should be updated to ignore messages
 from `<Vodafone>` to prevent overflowing the message counters with (irrelevant)
 service messages.
 
-- [`📄 gammu_prepaid.yaml`](./gammu_prepaid.yaml)
-- [`📄 sms_prepaid.yaml`](./sms_prepaid.yaml)
+- [`📄 gammu/automations.yaml`](./gammu/automations.yaml)
+- [`📄 gammu/sensors.yaml`](./gammu/sensors.yaml)
+
+## Synology
+
+An automation, a dashboard card, and a template sensor used to provide an
+overview of (and some reporting on) the state of my Synology DiskStation.
+
+Given the (insanely) increased electricity prices and the fact that the Synology
+was mainly still running for sentimental reasons, I've switched it off...
+
+- [`📄 synology/automations.yaml`](./synology/automations.yaml)
+- [`📄 synology/dashboards.yaml`](./synology/dashboards.yaml)
+- [`📄 synology/sensors.yaml`](./synology/sensors.yaml)

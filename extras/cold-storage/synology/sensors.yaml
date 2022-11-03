@@ -1,0 +1,15 @@
+- sensor:
+    - name: DS1815+ 1-minute load
+      unique_id: e9b49d0d-1dd3-4bbe-89c3-a2ea2e8f4ccd
+      unit_of_measurement: "%"
+      icon: mdi:chip
+      availability: >-
+        {{
+          states('sensor.ds1815_cpu_load_average_1_min')
+            not in ['unknown', 'unavailable']
+        }}
+      state: >-
+        {{
+          states('sensor.ds1815_cpu_load_average_1_min') | float(0) |
+            multiply(25) | round(1)
+        }}
