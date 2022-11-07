@@ -97,3 +97,41 @@
           neato_failure_{{ trigger.entity_id }}
   mode: parallel
   max: 2
+- alias: 🧹 | ✈️ Disable Neato schedules (on vacation)
+  id: 58b5a8da-d714-4314-adbb-fbd0f6fc352c
+  trigger:
+    - platform: state
+      entity_id: input_boolean.alarm_vacation_mode
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id:
+        - switch.neato_d7_schedule
+        - switch.d7_upstairs_schedule
+      state: "on"
+  action:
+    - service: switch.turn_off
+      entity_id:
+        - switch.neato_d7_schedule
+        - switch.d7_upstairs_schedule
+  mode: single
+- alias: 🧹 | ✈️ Enable Neato schedules (back from vacation)
+  id: 7ae52e61-d2d3-4772-9e08-b1f93012e871
+  trigger:
+    - platform: state
+      entity_id: input_boolean.alarm_vacation_mode
+      from: "on"
+      to: "off"
+  condition:
+    - condition: state
+      entity_id:
+        - switch.neato_d7_schedule
+        - switch.d7_upstairs_schedule
+      state: "off"
+  action:
+    - service: switch.turn_on
+      entity_id:
+        - switch.neato_d7_schedule
+        - switch.d7_upstairs_schedule
+  mode: single
