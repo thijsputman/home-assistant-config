@@ -8,6 +8,6 @@ Some extras I'm using in combination with my Home Assistant instance.
 - [`📁 cold-storage`](./cold-storage/README.md) – Used "once upon a time";
   archived for now
 - [`📁 influxdb`](./influxdb/README.md) – InfluxDB scratch-pad
-- [`📁 deconz`](./deconz/README.md) – deCONZ REST commands scratch-pad
+- [`📁 deconz`](./deconz/README.md) – deCONZ related
 - [`📁 bt-mqtt-gateway`](./bt-mqtt-gateway/README.md) – Bluetooth-gateway (for a
   set of Mi Flora devices)

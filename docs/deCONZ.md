@@ -1,25 +1,64 @@
 # deCONZ (Phoscon ConBee II)
 
-- [Device-compatibility](#device-compatibility)
+- [Heiman Siren](#heiman-siren)
+- [Smart plugs](#smart-plugs)
+  - [Tuya Smart Power Plug 16A](#tuya-smart-power-plug-16a)
   - [Xiaomi Mi Smart Plug (`lumi.plug.mmeu01`)](#xiaomi-mi-smart-plug-lumiplugmmeu01)
   - [BlitzWolf Smart Socket (`TS0121`)](#blitzwolf-smart-socket-ts0121)
-- [Notes](#notes)
-  - [IKEA Tradfri Repeater (April 2021)](#ikea-tradfri-repeater-april-2021)
+- [IKEA Tradfri Repeater](#ikea-tradfri-repeater)
+  - [Update — May/June 2021](#update--mayjune-2021)
 
 As a general caution, if Zigbee-entities become `unavailable` after restarting
 deCONZ (without restarting Home Assistant), **_reload_** the integration before
 trying anything else...
 
-## Device-compatibility
+## Heiman Siren
+
+To pair, press reset for 5 seconds. The light blinks green a couple times (and
+an electric "hum" starts). Then press reset for 2 seconds (rapid green blinking;
+long blink on pair). Pair both as light and as sensor (i.e., pair twice) through
+deCONZ.
+
+If the device keeps "buzzing", press reset for 2 seconds and (re)discover the
+sensor. That should stop the electric "hum" (in two out of the three devices I
+have; the third one keeps buzzing regardless).
+
+If/when the siren stops working properly, leave it unplugged for a couple days
+(so the internal battery fully drains) and try again...
+
+Note that there's an issue in deCONZ versions prior to `2.17` which causes these
+(newly) added sensors to go offline after 24-hours. Doesn't impact the
+functioning of the siren (so the offline sensors can easily be disabled in Home
+Assistant to work around the issue).
+
+## Smart plugs
+
+### Tuya Smart Power Plug 16A
+
+There appear to be many incarnations around (same device; same form factor —
+different manufacturer). I own both `_TZ3000_ew3ldmgx` and `_TZ3000_r6buo8ba`
+units and both work like a charm: No difficulties in pairing and discovering the
+consumption sensors; no need to pair multiple times and/or manually discover
+sensors...
+
+Simply pair as a `Light` in deCONZ and they work.
+
+Note that for `_TZ3000_r6buo8ba` a custom DDF needs to be loaded. See
+[`📂 extras/deconz/devices/`](../extras/deconz/README.md) for more details.
 
 ### Xiaomi Mi Smart Plug (`lumi.plug.mmeu01`)
 
-Once paired, it works as intended with deCONZ 2.9.2 (February 2021) or above –
-including the power consumption measurements.
+As of end of 2021, this plug appears to out of stock / not available anymore.
 
-Pairing is a bit of hassle though:
+Once paired, they generally work as intended with deCONZ `2.9.2` or above –
+including the power consumption measurements. Several of my units show
+intermittent issues: Mainly after deCONZ reboots they start dropping off the
+network. Power-cycling the units appears to mostly resolve the issue; as does
+repairing them.
 
-#### deCONZ 2.11.5 (June 2021)
+Pairing is a bit of hassle:
+
+#### deCONZ `2.11.5`
 
 Once the device is paired (with or without all of its additional sensors),
 there's no more need to remove and re-add it until all sensors show up. Instead,
@@ -34,9 +73,13 @@ button pressed for 5 seconds) _before_ you start the sensor search.
 This search should almost immediately return a new sensor. Needs to be done
 twice, once for the `power` and once for the `consumption` sensor (even if one
 of them was already found during initial pairing). The procedure is comperable
-with the BlitzWolf procedure described in the next section...
+with the [BlitzWolf](#blitzwolf-smart-socket-ts0121) procedure described
+below...
 
-Additionally, it appears not needed anymore to manually delete additional
+There should be 4 clusters showing up (`01`, `15`, `16`, and `F2`) for the plug
+to work properly.
+
+Additionally, it appears not necessary anymore to manually delete additional
 sensors upon deleting the main `light`-entity; deCONZ seems to be taking care of
 this automatically now.
 
@@ -68,8 +111,8 @@ Reference:
 
 ### BlitzWolf Smart Socket (`TS0121`)
 
-This unit appears (again, through limited testing) has similar problems as the
-[Xiaomi unit](#xiaomi-mi-smart-plug-lumiplugmmeu01) – different instructions
+This unit appears (again, through limited testing) to have similar problems as
+the [Xiaomi unit](#xiaomi-mi-smart-plug-lumiplugmmeu01) – different instructions
 apply though:
 
 > Resetting the device (initializing pairing sequence by holding power button
@@ -80,11 +123,9 @@ Reference:
 
 - <https://github.com/dresden-elektronik/deconz-rest-plugin/issues/2988#issuecomment-791972997>
 
-## Notes
+## IKEA Tradfri Repeater
 
-### IKEA Tradfri Repeater (April 2021)
-
-An odd incident occurred on April 26th at around 23:00: The
+An odd incident occurred on April 26th 2021 at around 23:00: The
 `TRADFRI Signal Repeater` dropped from the network (crashed?). Once power-cycled
 the device came back up without issue.
 
@@ -112,7 +153,7 @@ Neither of the units responded to "read" requests for any of their clusters via
 the deCONZ GUI anymore. Power-cycling both units appears to have restored full
 functionality.
 
-#### Update – End of May
+### Update — May/June 2021
 
 After leaving the Heiman device unplugged for a couple weeks (to force its
 internal battery to fully drain), it was successfully joined back into the
@@ -130,11 +171,9 @@ The signal repeater was located physically very close to the Heiman unit.
 **Conclusion**: It appears that somehow the `TRADFRI Signal Repeater` and the
 `Heiman WarningDevice` don't play nice in close proximity? 😕
 
-#### Update – June 2021
-
 After a prolonged power outage, the Heiman warning-device again didn't come back
 online; effectively showing the same symptoms as described above. The other
-Heiman warning-device came back online just fine.
-
-I'm strongly starting to suspect the device itself is totally broken to begin
-with... 🤐
+Heiman warning-device came back online just fine. It seems the device was
+somewhat broken to begin with. At the same time, the `TRADFRI Signal Repeater`
+also kept causing issues. So, both devices were removed from the network and
+scrapped.

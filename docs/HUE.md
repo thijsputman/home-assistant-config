@@ -1,6 +1,8 @@
 # Hue
 
 - [Gledopto LED Strip Controllers](#gledopto-led-strip-controllers)
+- [Hue API V2 (Home Assistant 2021.12)](#hue-api-v2-home-assistant-202112)
+  - [Innr](#innr)
 
 ## Gledopto LED Strip Controllers
 
@@ -25,3 +27,15 @@ of controllers exhibit these caveats. Furthermore, the Pro-controller provides
 better/cleaner transitions between colour states (the regular on lags a bit and
 has rather "choppy" transitions). So, all in all, the slightly more expensive
 Pro-controller is the better choice.
+
+## Hue API V2 (Home Assistant 2021.12)
+
+The updated API appears substantially more responsive: Issues with individual
+bulbs (temporarily) dropping of the network now bubble through to Home Assistant
+itself (whereas this was hidden from Home Assistant in the V1 API).
+
+### Innr
+
+The somewhat erratic behaviour of the Innr colour bulbs became problematic with
+the V2 API: They have been excluded from connectivity reporting (via the Hue
+integration's settings) as they drop from the network multiple times daily.

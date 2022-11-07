@@ -59,3 +59,15 @@ npm install
 - **26-7-2022 @ 10:40 CET** – No data for `sensor.weewx_wind_speed` recorded due
   to the Wisteria getting in the way, again 😇 (resolved on 26-7-2022 @ 21:00
   CET)
+- **1-9-2022** to **12-9-2022** — No data reported by `sensor.temperature_27`
+  due to an empty battery while on Holiday...
+- **15-9-2022 @ 00:00 CET** until **02:00 CET** — No data reported due to a DNS
+  issue
+- **26-9-2022** to **22-10-2022** — Odd data (bi-hourly spikes to an incorrect
+  value) reported by both `sensor.aarlo_battery_level_front` and
+  `sensor.aarlo_battery_level_back`
+- **29-10-2022** to **3-11-2022** — No data reported for
+  `sensor.tado_smart_radiator_attic_setpoint` (for unknown reason)
+- **4-** & **5-11-2022 @ 04:30 CET** until **09:30 CET** — No data reported due
+  to a Home Assistant crash (SSD disconnected during backup due to a hardware
+  conflict on the USB bus)
