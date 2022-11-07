@@ -62,8 +62,10 @@ card:
                           color: var(--warning-color)
                         name:
                           color: var(--warning-color)
-                  - name: Guest-mode
-                    entity: input_boolean.alarm_guest_mode
+                  - name: Vacation-mode
+                    entity: input_boolean.alarm_vacation_mode
+                    tap_action:
+                      action: more-info
                     state_styles:
                       "on":
                         icon:

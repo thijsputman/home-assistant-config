@@ -1,0 +1,31 @@
+- alias: ✈️ | 🚨 Enable Vacation-mode ("Armed away" ⏰ > 16-hours)
+  id: c8b73e92-cc5f-4090-8c1f-cac4d6377630
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_away
+      for: "16:00:00"
+  condition:
+    - condition: state
+      entity_id: input_boolean.alarm_vacation_mode
+      state: "off"
+  action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.alarm_vacation_mode
+- alias: ✈️ | 🚨 Disable Vacation-mode (alarm disarmed)
+  id: edff3f2c-32bf-4347-946e-db14be11cd14
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: disarmed
+  condition:
+    - condition: state
+      entity_id: input_boolean.alarm_vacation_mode
+      state: "on"
+    # Keep Vacation-mode active while the housekeeper is present
+    - condition: state
+      entity_id: binary_sensor.housekeeper_present
+      state: "off"
+  action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.alarm_vacation_mode

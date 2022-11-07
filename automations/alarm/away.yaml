@@ -248,7 +248,7 @@
         # longer than during a normal working day.
         - conditions:
             - condition: state
-              entity_id: binary_sensor.vacation_mode
+              entity_id: input_boolean.alarm_vacation_mode
               state: "on"
           sequence:
             - service: script.turn_on

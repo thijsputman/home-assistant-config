@@ -8,44 +8,13 @@ cards:
       - entity: alarm_control_panel.home_alarm
         state_not: triggered
     card:
-      type: custom:mod-card
-      card_mod:
-        style:
-          hui-horizontal-stack-card$: |
-            :host div#root > *{
-              flex: 4 0 auto;
-            }
-            :host div#root > :last-child{
-              flex: 3 0 auto !important;
-            }
-      report_size: 1
-      card:
-        type: horizontal-stack
-        cards:
-          - type: entities
-            entities:
-              - entity: !secret person_1
-                name: ​ # Abusing ZWSP to visually hide the name
-          - type: entities
-            entities:
-              - entity: !secret person_2
-                name: ​
-          - type: glance
-            card_mod:
-              style: |
-                ha-card{
-                  display: flex;
-                  align-items: center;
-                  justify-content: center;
-                }
-                ha-card div.entities {
-                  padding: 0px !important;
-                  margin: 0px !important;
-                }
-                ha-card div.entities div.entity {
-                  margin: 0px !important;
-                }
-            show_name: false
-            show_state: false
-            entities:
-              - entity: binary_sensor.vacation_mode
+      type: horizontal-stack
+      cards:
+        - type: entities
+          entities:
+            - entity: !secret person_1
+              name: ​ # Abusing ZWSP to visually hide the name
+        - type: entities
+          entities:
+            - entity: !secret person_2
+              name: ​

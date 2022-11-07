@@ -162,38 +162,3 @@
             truncate(245, true, '..."]') |
             regex_replace('",? ?"?\.\.\."]$', '..."]')
         }}
-# If the Home Alarm is in "Armed away"-mode for more than 16 hours, enable
-# Vacation-mode – indicating we are away from home longer than on a regular
-# working day.
-# This mainly serves to make some of the alarm triggers stricter (a false alarm
-# when coming home from a trip is less of an issue than one that can occur daily
-# coming home from the office), but it has other potential uses too.
-# Triggers at the top of every hour (and on Home Alarm disarm) to prevent
-# unnecessarily rendering a not highly time-sensitive template.
-- trigger:
-    - platform: time_pattern
-      hours: /1
-      minutes: 0
-      seconds: 0
-    - platform: state
-      entity_id: alarm_control_panel.home_alarm
-      to: disarmed
-  binary_sensor:
-    - name: Vacation-mode
-      unique_id: b2d979d7-3a12-4722-92e4-64773edbb939
-      icon: mdi:airplane-clock
-      state: >-
-        {%
-          if states.alarm_control_panel.home_alarm.last_changed is defined
-        %}
-          {{
-            states('alarm_control_panel.home_alarm') == 'armed_away' and
-            states.alarm_control_panel.home_alarm.last_changed <
-              now() - timedelta(hours=16)
-          }}
-        {# Err on the side of caution #}
-        {% elif states('alarm_control_panel.home_alarm') == 'armed_away' %}
-          true
-        {% else %}
-          false
-        {% endif %}

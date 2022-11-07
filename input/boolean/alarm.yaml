@@ -2,6 +2,6 @@ alarm_auto_arm_night:
   name: Auto-arm Home Alarm at night
   icon: mdi:shield-moon-outline
   initial: true
-alarm_guest_mode:
-  name: Home Alarm Guest-mode
-  icon: mdi:shield-account
+alarm_vacation_mode:
+  name: Home Alarm Vacation-mode
+  icon: mdi:shield-airplane
