@@ -1,0 +1,41 @@
+- alias: >-
+    🎛️ | 💤/✈️ Kitchen tablet screen off (everyone asleep / everyone away)
+  id: c82e78e4-d54f-48d0-be93-6d2be002d1b7
+  trigger:
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "off"
+      to: "on"
+    - platform: state
+      entity_id: group.family
+      from: home
+      to: not_home
+      for: "00:05:00"
+  condition:
+    - condition: state
+      entity_id: switch.p20hd_eea_screen
+      state: "on"
+  action:
+    - service: switch.turn_off
+      entity_id: switch.p20hd_eea_screen
+  mode: single
+- alias: >-
+    🎛️ | 💤/✈️ Kitchen tablet screen on (everyone awake / someone home)
+  id: 2bb72694-569c-4203-9524-09ccbe70cc3f
+  trigger:
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
+    - platform: state
+      entity_id: group.family
+      from: not_home
+      to: home
+  condition:
+    - condition: state
+      entity_id: switch.p20hd_eea_screen
+      state: "off"
+  action:
+    - service: switch.turn_on
+      entity_id: switch.p20hd_eea_screen
+  mode: single

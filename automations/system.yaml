@@ -3,7 +3,7 @@
   variables:
     # Exclude mobile devices
     exclude:
-      - sensor.p20hd_eea_battery_level
+      - sensor.p20hd_eea_battery
       - sensor.sm_g990b2_battery_level
       - sensor.pixel_6_pro_battery_level
     sensors: >-

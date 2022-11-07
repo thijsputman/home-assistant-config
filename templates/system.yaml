@@ -136,6 +136,11 @@
             {# Prusa MINI+ #}
             {% elif entity_id is search('.+\.prusa_mini_.+') %}
               {# Ignored; Prusa MINI+ is only available when in-use #}
+            {# Fully Kiosk Browser #}
+            {%
+              elif entity_id is search('^number\..+_screen(|saver)_brightness')
+            %}
+              {# Ignored; unavailable/unknown under normal circumstances #}
             {% else %}
               {% set matched = device_attr(device_id(entity_id), 'name') %}
             {% endif %}
