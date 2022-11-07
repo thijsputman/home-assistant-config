@@ -455,14 +455,13 @@
           message: >-
             🚨 Home Alarm sounding!
             {% if tripped_sensors | length > 0
-            %}\nThe Home Alarm is sounding – there's someone in the house!
+            %}\nThere's someone in the house!
               \n\n
               {%- if tripped_sensors | length == 1 -%}
-                The alarm was triggered by
-                <strong>{{ tripped_sensors[0] }}</strong>.
+                The alarm was triggered by {{ tripped_sensors[0] }}.
               {%- else -%}
-                The following <strong>{{ tripped_sensors | length }} sensors
-                </strong> triggered the alarm:\n◾ {{
+                The following {{ tripped_sensors | length }} sensors triggered
+                the alarm:\n◾ {{
                   tripped_sensors | join('\\n◾ ')
                 -}}
               {%- endif -%}
@@ -484,10 +483,11 @@
               %} – there's someone in the house!
               <br><br>
               {%- if tripped_sensors | length == 1 -%}
-                The alarm was triggered by: {{ tripped_sensors[0] }}
+                The alarm was triggered by:
+                <strong>{{ tripped_sensors[0] }}</strong>.
               {%- else -%}
-                The following {{ tripped_sensors | length }} sensors triggered
-                the alarm: <br>◾ {{
+                The following <strong>{{ tripped_sensors | length }} sensors
+                </strong> triggered the alarm: <br>◾ {{
                   tripped_sensors | join('<br>◾ ')
                 -}}
               {%- endif -%}
