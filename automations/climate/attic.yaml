@@ -342,6 +342,32 @@
         hvac_mode: auto
       target:
         entity_id: climate.tado_attic_ac
+- alias: 🌡️ | ⏰ Attic radiator enable schedule (daily at 01:00)
+  id: 2024e4d4-ea94-4109-a217-37dcd6b653fd
+  trigger:
+    - platform: time
+      at: "01:00:00"
+  condition:
+    - condition: time
+      weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
+    - condition: state
+      entity_id: climate.tado_living_room
+      state: auto
+    - condition: state
+      entity_id: climate.tado_living_room
+      attribute: preset_mode
+      state: home
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: climate.tado_attic
+          state: auto
+  action:
+    - service: climate.set_hvac_mode
+      data:
+        hvac_mode: auto
+      target:
+        entity_id: climate.tado_attic
 - alias: ❄️ | 🚪 Airco – Attic off (window open)
   id: 717e590f-b4d7-4cf9-8efd-c540f5ea3298
   trigger:
