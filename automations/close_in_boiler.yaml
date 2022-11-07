@@ -1,43 +1,81 @@
-- alias: 🌡️ | ⏰ Close-in boiler off (daily after 22:00)
+- alias: 🌡️ | ⏰ Close-in boiler off (daily after 21:00)
   id: 264239fc-ba04-45f0-aae1-e0ce05493332
   trigger:
     - platform: time
-      at: "22:00:00"
-    # Fallback: Switch off when everyone goes to sleep (might have been manually
-    # switched on after 22:00, or we might have come home after 22:00)
+      id: time_based
+      at: "21:00:00" # Time is aligned with other automations
+    # Also switch off when everyone goes to sleep (short-circuit the wait logic
+    # to prevent wasting energy when we're asleep; boiler might have been
+    # switched on manually after 21:00)
     - platform: state
       entity_id: input_boolean.everyone_asleep
       from: "off"
       to: "on"
   condition:
     - condition: state
+      entity_id: group.family
+      state: home
+    - condition: state
       entity_id: switch.smart_plug_9
       state: "on"
   action:
-    # First, wait for the next heating-cycle to start (cycle-time ± 75 minutes /
-    # on-demand when warm water is used)
-    - wait_for_trigger:
-        - platform: numeric_state
-          entity_id: sensor.power_57
-          above: 1000
-          for: "00:00:10"
-      timeout: "03:00:00"
-      continue_on_timeout: false
-    # Then, wait for the boiler to become inactive for a while (i.e. heating-cycle
-    # completed / no warm water being used) – this way, we always switch off the
-    # boiler when it's full of warm water, ensuring warm water remains available
-    # until approximately midnight...
-    - wait_for_trigger:
-        - platform: numeric_state
-          entity_id: sensor.power_57
-          below: 50
-          for: "00:15:00"
-      timeout: "01:30:00"
-      continue_on_timeout: false
+    # Wait logic only relevant in case of time-based trigger
+    - if:
+        - condition: trigger
+          id: time_based
+      then:
+        # First, wait for the next heating-cycle to start (cycle-time ± 75
+        # minutes / on-demand when warm water is used)
+        - wait_for_trigger:
+            - platform: numeric_state
+              entity_id: sensor.power_57
+              above: 1000
+              for: "00:00:10"
+          timeout: "03:00:00"
+          continue_on_timeout: false
+        # Then, wait for the boiler to become inactive for a while (i.e.
+        # heating-cycle completed / no warm water being used) – this way, we
+        # always switch off the boiler when it's full of warm water, ensuring
+        # warm water remains available as long as possible...
+        - wait_for_trigger:
+            - platform: numeric_state
+              entity_id: sensor.power_57
+              below: 50
+              for: "00:15:00"
+          timeout: "01:30:00"
+          continue_on_timeout: false
     - service: switch.turn_off
       entity_id: switch.smart_plug_9
-  mode: single
+  mode: restart
   max_exceeded: silent
+- alias: 🌡️ | 👋 Close-in boiler on (motion at Kitchen counter)
+  id: d700cf1b-0c10-4c37-8cc6-21f0a135ecbd
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.presence_53
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: switch.smart_plug_9
+      state: "off"
+    # Only act when the wakeup "grace-time" timer is running — this ensures we
+    # don't interfer with any of the switch off automations
+    - condition: state
+      entity_id: timer.wakeup_grace_time
+      state: active
+    # Only act when everyone's awake and there's someone home (no need to switch
+    # the boiler on otherwise, probably a burglar... 😉)
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: state
+      entity_id: group.family
+      state: home
+  action:
+    - service: switch.turn_on
+      entity_id: switch.smart_plug_9
+  mode: single
 - alias: 🌡️ | ✈️ Close-in boiler off (everyone away)
   id: ca6fb857-6ff7-4ac7-b960-4e527d9897a2
   trigger:
@@ -54,13 +92,9 @@
     - service: switch.turn_off
       entity_id: switch.smart_plug_9
   mode: single
-- alias: 🌡️ | 💤/✈️ Close-in boiler on (everyone awake / someone home)
+- alias: 🌡️ | ✈️ Close-in boiler on (someone home before 21:00)
   id: f4cda301-822a-4737-a047-587118c5964e
   trigger:
-    - platform: state
-      entity_id: input_boolean.everyone_asleep
-      from: "on"
-      to: "off"
     - platform: state
       entity_id: group.family
       from: not_home
@@ -69,11 +103,10 @@
     - condition: state
       entity_id: switch.smart_plug_9
       state: "off"
-    # Only act if someone is home (otherwise the "everyone asleep"-trigger
-    # would switch the boiler on even when no-one is home)
-    - condition: state
-      entity_id: group.family
-      state: home
+    # Only act in between «wakeup» time and 21:00
+    - condition: time
+      after: input_datetime.wakeup
+      before: "21:00:00"
   action:
     - service: switch.turn_on
       entity_id: switch.smart_plug_9
@@ -114,7 +147,9 @@
     - service: switch.turn_off
       entity_id: switch.smart_plug_9
   mode: single
-- alias: 🌡️ | ⏰ Close-in boiler Legionella-prevention (twice-weekly when on holiday)
+- alias: >-
+    🌡️ | ⏰ Close-in boiler Legionella-prevention
+    (twice-weekly when on holiday)
   id: 19d9594e-6bea-4854-b5b1-19bd07dfe33c
   trigger:
     - platform: time
