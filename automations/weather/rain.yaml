@@ -7,25 +7,11 @@
   condition:
     - condition: state
       entity_id: sensor.attic_window_position
-      state:
-        - ajar
-        - open
+      state: open
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
-    - choose:
-        # Only announce it's raining via TTS if the window is fully open
-        - conditions:
-            - condition: state
-              entity_id: sensor.attic_window_position
-              state: open
-          sequence:
-            - service: script.tts_p20
-              data:
-                message: >-
-                  It's raining!
-                  Check the Attic window to ensure it's not raining in...
     # Explicitly block any further runs of this automation while the
     # notification is up (i.e. once a notification is up, no additional
     # notifications are raised)

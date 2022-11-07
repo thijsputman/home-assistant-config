@@ -1,17 +1,3 @@
-tts_p20:
-  alias: TTS P20HD
-  icon: mdi:microphone-message
-  sequence:
-    - service: notify.mobile_app_p20hd_eea
-      data:
-        message: TTS
-        title: >-
-          {{ message }}
-        data:
-          channel: alarm_stream
-          ttl: 0
-          priority: high
-  mode: single
 persistent_notification:
   alias: Persistent notification
   description: >-
