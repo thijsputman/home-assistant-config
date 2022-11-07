@@ -49,7 +49,11 @@
       target:
         entity_id: script.lights_out
   mode: single
-- alias: 💡 | ✈️ Attic lights on when everyone away (most weekdays at dusk)
+# Combined into a single automation to prevent the lights from getting switched
+# *on* at dusk if dusk is _after_ the randomised switch off moment (somewhere
+# between 19:00 and 20:00)
+- alias: >-
+    💡 | ✈️ Attic lights on and off when everyone away (most weekdays)
   id: 10746e4d-a051-42c0-afb0-79b375ac17d2
   trigger:
     - platform: state
@@ -62,49 +66,33 @@
     - condition: state
       entity_id: group.family
       state: not_home
+    # It never makes sense to run after 20:00
+    - condition: time
+      before: "20:00:00"
+  action:
     # ± 85% Chance of switching the lights on
     - condition: template
       value_template: >-
         {{ (range(0, 99) | random) > 15 }}
-    # The Attic lights are switched off at 19:30 ± 00:30. If dusk happens after
-    # that time, we should _not_ switch the lights on again (that would lead
-    # them to stay on till the entire house is switched off). We don't know on
-    # beforehand at what time the lights are switched off, so instead we check
-    # if the automation reponsible for switching them on already ran today.
-    - condition: template
-      value_template: >-
-        {{
-          state_attr(
-            'automation.attic_lights_off_when_everyone_away_weekdays_between_19_00_20_00',
-            'last_triggered'
-          ) != none and
-          now().strftime('%j') | int > state_attr(
-            'automation.attic_lights_off_when_everyone_away_weekdays_between_19_00_20_00',
-            'last_triggered'
-          ).strftime('%j') | int
-        }}
-  action:
     - service: scene.turn_on
       target:
         entity_id: scene.attic_away
-  mode: single
-# N.B. This automation's name is used in the previous automation!
-- alias: >-
-    💡 | ✈️ Attic lights off when everyone away (weekdays between 19:00 - 20:00)
-  id: 7b9daada-513f-43c8-8715-10568d2d16a9
-  trigger:
-    - platform: time
-      at: "19:00:00"
-  condition:
-    - condition: state
-      entity_id: light.attic
-      state: "on"
-    - condition: state
-      entity_id: group.family
-      state: not_home
-  action:
+    # Wait until it's 19:00
+    - if:
+        - condition: time
+          before: "19:00:00"
+      then:
+        - wait_for_trigger:
+            - platform: time
+              at: "19:00:00"
+          # Should never timeout; if it does, best to continue...
+          timeout: "04:00:00"
+          continue_on_timeout: true
+    # Then delay for a random interval between "now" and 20:00 — can probably
+    # fold the preceding "if" into the below template, but this way (with as
+    # little time arithmetic as possible) it's much easier to understand.
     - delay: >-
-        {{ range(0, 3600) | random }}
+        {{ range(0, (today_at("20:00") - now()).seconds) | random }}
     - condition: state
       entity_id: group.family
       state: not_home
