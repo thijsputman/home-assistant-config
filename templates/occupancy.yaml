@@ -39,8 +39,8 @@
             requirement...
           #}
           {{
-            (trigger.from_state.last_changed | as_local) +
-              timedelta(seconds = 30) >= now()
+            (trigger.from_state.last_changed | as_local)
+              <= now() - timedelta(seconds = 30)
             and
             (trigger.from_state.last_changed | as_local) +
               timedelta(minutes = 30) >= now()
