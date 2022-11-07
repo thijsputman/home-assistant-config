@@ -47,8 +47,10 @@
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12
   trigger:
     # The sensor updates every 5-minutes — holding the state for 6-minutes
-    # allows transient failures (ones that appear for only a single 5-minute
-    # interval) to be filtered out
+    # allows transient and short-lived failures (ones that appear for only a
+    # single 5-minute interval) to be filtered out. At the cost of making the
+    # reporting somewhat less accurate and responsive it filters out a lot of
+    # noise...
     - platform: state
       entity_id: sensor.failed_devices
       not_to:

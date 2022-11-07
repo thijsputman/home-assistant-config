@@ -1,3 +1,4 @@
 failed_devices_active:
   name: Failed devices — active
   initial: "[]"
+  max: 255

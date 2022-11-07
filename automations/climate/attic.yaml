@@ -95,10 +95,10 @@
           entity_id: binary_sensor.occupancy_attic
           from: "off"
           to: "on"
-      timeout: "01:30:00"
+      timeout: "01:00:00"
       continue_on_timeout: true
     # Only continue (i.e. switch the radiator off) if the timer expired (i.e.
-    # the light in the Attic was not switched on within 90 minutes)
+    # the light in the Attic was not switched on within 60 minutes)
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}

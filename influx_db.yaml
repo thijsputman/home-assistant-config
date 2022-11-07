@@ -94,6 +94,7 @@ include:
     # up over time...
     - sensor.aarlo_battery_level_front
     - sensor.aarlo_battery_level_back
+    - sensor.aarlo_battery_level_balcony
 # Ignore immutable/irrelevant attributes
 # N.B. Overlapping combinations of "component_config_domain" and "..._glob" are
 # ignored. So, either define a domain or one (or more) globs for entities _in_
