@@ -8,6 +8,7 @@
       entity_id:
         - binary_sensor.vibration_102
         - binary_sensor.vibration_106
+      from: "off"
       to: "on"
     - platform: state
       entity_id:
@@ -30,7 +31,17 @@
       # bumping into a chair from detecting occupancy....
       state: >-
         {% if this.state == 'off' %}
+          {#
+            The sensor's "last changed" should be at least 30-seconds old. The
+            attributes lag slightly behind the main state; without this
+            condition a single event that updates both state and (one of) the
+            attributes would incorrectly satisfy the "*two* triggers"
+            requirement...
+          #}
           {{
+            (trigger.from_state.last_changed | as_local) +
+              timedelta(seconds = 30) >= now()
+            and
             (trigger.from_state.last_changed | as_local) +
               timedelta(minutes = 30) >= now()
           }}
