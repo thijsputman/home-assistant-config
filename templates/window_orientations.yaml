@@ -1,9 +1,8 @@
 # Some windows are often ajar/open for ventilation purposes. Relying solely on
 # contact sensors doesn't accurately represent their state. For these windows
 # an (additional) vibration sensor (which also reports orientation) is used.
-# For this approach to work, a certain (minimum) range of motion is required for
-# the various states of the window. As such, not all windows for which this
-# approach would be applicable can actually use it...
+# This only works well for windows that tilt on the horizontal plane, so not all
+# windows for which this approach would be applicable can actually use it...
 
 # Attic window
 - trigger:
@@ -43,67 +42,6 @@
         {% elif y <= -20 and z <= -52 %}
           ajar-locked
         {% elif y <= -40 and z <= -40 %}
-          ajar
-        {% else %}
-          open
-        {% endif %}
-# Bathroom window – requires a combination of the vibration and contact sensor
-# to determine its state
-- trigger:
-    - platform: state
-      entity_id: binary_sensor.vibration_146
-      attribute: orientation
-    - platform: state
-      entity_id: binary_sensor.openclose_17
-      to: ~
-      # Hold contact sensor state for 5 seconds. This ensures we directly end
-      # up in the final state (instead of transitioning through an intermediate
-      # state as the vibration sensor is a bit slower to update than the contact
-      # sensor) while still allowing a trigger on the contact sensor (as the
-      # vibration sensor isn't 100% reactive – especially not when carefully
-      # opening/closing the window).
-      for: 5
-  sensor:
-    - name: Bathroom window (position)
-      unique_id: 4d2dc71e-d179-407d-b891-c7d6c0e61407
-      icon: mdi:angle-obtuse
-      availability: >-
-        {{
-          states('binary_sensor.vibration_146')
-            not in ['unknown', 'unavailable']
-          and states('binary_sensor.openclose_17')
-            not in ['unknown', 'unavailable']
-          and state_attr('binary_sensor.vibration_146', 'orientation')
-            is not none
-        }}
-      state: >-
-        {%
-          set orientation =
-            state_attr('binary_sensor.vibration_146', 'orientation')
-        %}
-        {% set openclose = states('binary_sensor.openclose_17') %}
-        {% if orientation is none %}
-          {% set orientation = [-90, -90, -90] %}
-        {% endif %}
-        {#
-          Y and Z position are sufficient – disregard X. Values range from 90º
-          to -90º; in case of non-integer values default to -90 to ensure the
-          result falls through to the "open"-state.
-        #}
-        {% set y = orientation[1] | int(-90) %}
-        {% set z = orientation[2] | int(-90) %}
-        {% if openclose == 'off' %}
-          closed
-        {#
-          Very limited range – ensures fall through to the "open" state in case
-          the window is further ajar than physically possible.
-        #}
-        {%
-          elif
-            y >= 75 and y <= 77 and
-            z >= 13 and z <= 16 and
-            openclose == 'on'
-        %}
           ajar
         {% else %}
           open

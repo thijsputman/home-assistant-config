@@ -91,14 +91,6 @@ card:
           name: Bathroom
           icon: mdi:window-closed
           show_last_changed: true
-          card_mod:
-            style:
-              state-badge$ ha-state-icon$: |
-                {%- if states('sensor.bathroom_window_position') == 'open' -%}
-                  :host{
-                    color: var(--error-color) !important;
-                  }
-                {%- endif -%}
         - entity: binary_sensor.openclose_33
           name: Attic
           icon: mdi:window-closed
