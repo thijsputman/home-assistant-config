@@ -20,6 +20,9 @@ recorder:
   db_url: sqlite:////nvme/home-assistant_v2.db
   exclude: !include recorder_exclude.yaml
 
+shell_command:
+  restart_container: touch ./restart-container
+
 logger:
   default: warning
   filters: !include logger_filters.yaml

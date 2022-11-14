@@ -120,37 +120,6 @@
                   devices | join('<br>◾ ')
                 -}}
   mode: restart
-# The Recorder's SQLite-database is on a separate NVMe USB-drive that – although
-# generally stable – occasionally disconnects. It reconnects right away and the
-# filesystem is automatically remounted, but Docker doesn't take very kindly to
-# this: All containers using the volume need to be stopped and only then (once
-# they're all down) restarted for the volume to become accessible again...
-- alias: 📱 | 💽 Notify on Recorder-component failure
-  id: 28b00ed1-a3b0-4d7f-97bc-b1faf3b446d1
-  trigger:
-    platform: event
-    event_type: system_log_event
-    event_data:
-      level: ERROR
-      name: homeassistant.components.recorder
-  condition: []
-  action:
-    # Explicitly block any further runs of this automation while the
-    # notification is up (i.e. once a notification is up, no additional
-    # notifications are raised)
-    - service: script.persistent_notification
-      data:
-        group: general
-        channel: Alert
-        targetDevices: my
-        criticalNotification: true
-        title: 💽 Recorder-component failure!
-        message: >-
-          The recorder-component failed with the folllowing error:
-          <br><br>
-          {{ trigger.event.data.message }}
-  mode: single
-  max_exceeded: silent
 # Mopidy on the Bedroom speaker occasionally hangs/crashes — on the Home
 # Assistant side it gets stuck on "playing". Since the speaker is only used for
 # short announcements, having it in the playing-state for more than 10-minutes

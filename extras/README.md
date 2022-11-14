@@ -11,3 +11,5 @@ Some extras I'm using in combination with my Home Assistant instance.
 - [`📁 deconz`](./deconz/README.md) – deCONZ related
 - [`📁 bt-mqtt-gateway`](./bt-mqtt-gateway/README.md) – Bluetooth-gateway (for a
   set of Mi Flora devices)
+- [`📄 restart-container.sh`](./restart-container.sh) – Handle Home
+  Assistant-container restart requests

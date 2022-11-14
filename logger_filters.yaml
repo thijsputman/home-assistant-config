@@ -1,3 +1,16 @@
+# When database file becomes unavailable, Home Assistant quickly runs itself
+# into the ground (OOM-killer gets involved 😉) reporting the below two errors
+# over and over again — the hope is that by not logging these, Home Assistant
+# will at least keep running (which is better than crashing, restarting and
+# coming backup in safe mode without anything working).
+# This might cause some more benign errors to be filtered out too, for now
+# that's an acceptable trade off...
+homeassistant.components.recorder.core:
+  - >-
+    ^Error while processing event EventTask\(
+  - >-
+    ^Unrecoverable sqlite3 database corruption detected: (.*) unable to open
+    database file
 homeassistant.helpers.entity:
   # Neato
   - >-
