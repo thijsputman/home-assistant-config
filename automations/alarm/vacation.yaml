@@ -5,11 +5,32 @@
       entity_id: alarm_control_panel.home_alarm
       to: armed_away
       for: "16:00:00"
+    - platform: homeassistant
+      id: start
+      event: start
   condition:
     - condition: state
       entity_id: input_boolean.alarm_vacation_mode
       state: "off"
   action:
+    # As this automation has a rather long-running trigger, a secondary trigger
+    # on Home Assistant start is provided to ensure restarts don't interfer with
+    # the logic: If Home Assistant starts while the alarm is "Armed Away", wait
+    # for 16-hours for it to disarm. If that does *not* happen, toggle on
+    # Vacation-mode.
+    - if:
+        - condition: trigger
+          id: start
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_away
+      then:
+        - wait_for_trigger:
+            - platform: state
+              entity_id: alarm_control_panel.home_alarm
+              from: armed_away
+          timeout: "16:00:00"
+          continue_on_timeout: false
     - service: input_boolean.turn_on
       entity_id: input_boolean.alarm_vacation_mode
 - alias: ✈️ | 🚨 Disable Vacation-mode (alarm disarmed)
