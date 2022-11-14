@@ -3,8 +3,7 @@ card_mod:
   style:
     .: |
       ha-card {
-        background: var(--llh-mod-card-background);
-        box-shadow: var(--llh-mod-card-box-shadow);
+        background: var(--card-background-color, white);
       }
     hui-vertical-stack-card$: |
       hui-entities-card, hui-button-card{

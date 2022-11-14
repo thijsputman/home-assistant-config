@@ -68,8 +68,7 @@ cards:
         card_mod:
           style: |
             ha-card {
-              background: var(--llh-mod-card-background);
-              box-shadow: var(--llh-mod-card-box-shadow);
+              background: var(--card-background-color, white);
             }
         card:
           type: grid
@@ -165,8 +164,7 @@ cards:
         card_mod:
           style: |
             ha-card {
-              background: var(--llh-mod-card-background);
-              box-shadow: var(--llh-mod-card-box-shadow);
+              background: var(--card-background-color, white);
             }
         card:
           type: grid

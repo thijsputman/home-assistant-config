@@ -1,6 +1,10 @@
 type: custom:mod-card
 card_mod:
   style:
+    .: |
+      ha-card {
+        border-width: 0px;
+      }
     hui-horizontal-stack-card$: |
       :host div#root > *{
         flex: 1 0 auto;
