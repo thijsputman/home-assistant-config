@@ -20,3 +20,4 @@ stat $nvme_path/home-assistant_v2.db # Feed this through to MAILTO (cron)
 docker-compose -f $container_path/docker-compose.yml start $container
 
 rm $container_path/config/restart-container
+date +%s >> $container_path/config/var/container-restarts.log

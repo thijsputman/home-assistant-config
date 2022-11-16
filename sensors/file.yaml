@@ -1,0 +1,5 @@
+- platform: file
+  file_path: /config/var/container-restarts.log
+  name: Container restart
+  value_template: >-
+    {{ value | as_datetime }}

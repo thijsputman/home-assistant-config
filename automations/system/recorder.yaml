@@ -114,29 +114,24 @@
     - delay: "00:10:00"
   mode: single
   max_exceeded: warning
-- alias: 📱 | 💽 Notify on successful container restart
+- alias: 📱 Notify on container restart
   id: 9f3418fe-874f-4d68-9ed1-48224450f03a
   trigger:
-    platform: event
-    event_type: system_log_event
-    event_data:
-      level: WARNING
-      name: homeassistant.components.recorder.util
+    - platform: homeassistant
+      event: start
   condition:
+    # The external script tracks container restart timestamp in a log-file
+    # (mapped to "sensor.container_restart"). If Home Assistant starts within
+    # 5-minutes of a container restart, assume that was the reason.
     - condition: template
       value_template: >-
         {{
-          trigger.event.data.message is search(
-            "^The system could not validate that the sqlite3 database at "
-            ~ ".*\.db was shutdown cleanly") or
-          trigger.event.data.message is search("^Ended unfinished session")
+          states('sensor.container_restart') | as_datetime
+            >= now() - timedelta(minutes = 5)
         }}
   action:
-    # Replace the previously raised failure notification with a "success"
-    # notification ("success" — as it's difficult to determine if the restart
-    # didn't cause any follow on issues). Again there are multiple triggers to
-    # increase reliability; the automation blocks on the notification as a
-    # single notification is sufficient...
+    # Replace the previously raised failure notification with a restart
+    # notification instead
     - service: script.persistent_notification
       data:
         group: general
