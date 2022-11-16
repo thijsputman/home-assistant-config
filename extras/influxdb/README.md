@@ -73,3 +73,12 @@ npm install
   conflict on the USB bus)
 - **8-11-2022 @ 00:00 CET** renamed `binary_sensor.vacation_mode` into
   `input_boolean.alarm_vacation_mode`
+- **9-11-2022 @ 02:00 CET** until **09:00 CET** — No data reported due to
+  continuing SSD issues; additional hickups win the evening while
+  troubleshooting...
+- **14-11-2022 @ 15:30 CET** — Physically swapped (and renamed) the `Front` and
+  `Balcony` Arlo cameras. Motion detection on the (old) `Front` Arlo Pro 2 unit
+  appears irreparably broken. To prevent unnecessary fidgeting for now, swapped
+  it with the (much more recent) Balcony camera
+- **16-11-2022 @ 02:30 CET** until **11:00 CET** — Vacation-mode got erroneously
+  activated

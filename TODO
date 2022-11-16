@@ -388,3 +388,6 @@
       be caused by
       [a deCONZ issue](https://forum.phoscon.de/t/since-migrating-deconz-plugin-from-2-14-1-to-2-15-3-heiman-hs2wd-e-siren-sensors-become-note-reachable-after-a-few-hours/1951)
       (and not an actual hardware issue). See if deCONZ 2.17 resolves this...
+- [ ] The single Pi-hole instance is a **substantial** single point of failure
+      in the network; consider running a backup Pi-hole on another machine
+      (configs will need to be synced though)

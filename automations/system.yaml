@@ -186,7 +186,10 @@
   condition:
     - condition: template
       value_template: >-
-        {{ "No deconz_event tied to device " in trigger.event.data.message }}
+        {{
+          trigger.event.data.message is search(
+            "No deconz_event tied to device ")
+        }}
   action:
     # Give deCONZ a bit of time to initialise; repeated failures will simply
     # trigger this automation again...
