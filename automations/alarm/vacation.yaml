@@ -12,6 +12,9 @@
     - condition: state
       entity_id: input_boolean.alarm_vacation_mode
       state: "off"
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
   action:
     # As this automation has a rather long-running trigger, a secondary trigger
     # on Home Assistant start is provided to ensure restarts don't interfer with
@@ -21,9 +24,6 @@
     - if:
         - condition: trigger
           id: start
-        - condition: state
-          entity_id: alarm_control_panel.home_alarm
-          state: armed_away
       then:
         - wait_for_trigger:
             - platform: state
