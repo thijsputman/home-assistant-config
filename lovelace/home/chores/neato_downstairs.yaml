@@ -1,10 +1,20 @@
 type: custom:vacuum-card
 style: |
   ha-card{
-    --primary-color: var(--paper-item-icon-color);
+    --primary-text-color: #E5E5E5;
+    --vc-primary-text-color: #E5E5E5;
+    --vc-secondary-text-color: #717881;
+    --vc-icon-color: #717881;
+    --vc-toolbar-icon-color: var(--paper-item-icon-color);
+  }
+  div.toolbar {
+    border-bottom-left-radius: var(--ha-card-border-radius, 12px);
+    border-bottom-right-radius: var(--ha-card-border-radius, 12px);
   }
   ha-card .preview{
     background-color: #333D4A;
+    border-top-left-radius: var(--ha-card-border-radius, 12px);
+    border-top-right-radius: var(--ha-card-border-radius, 12px);
   }
   ha-card img.map{
     min-height: 300px;
