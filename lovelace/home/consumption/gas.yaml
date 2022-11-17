@@ -78,7 +78,6 @@ cards:
                 style: |
                   ha-card {
                     border: 0px;
-                    box-shadow: unset;
                   }
                   ha-card div.info{
                     padding-bottom: 0px;
@@ -98,7 +97,6 @@ cards:
                 style: |
                   ha-card {
                     border: 0px;
-                    box-shadow: unset;
                   }
                   ha-card div.icon{
                     display: none;
@@ -119,7 +117,6 @@ cards:
                 style: |
                   ha-card {
                     border: 0px;
-                    box-shadow: unset;
                   }
                   ha-card div.header{
                     display: none;
@@ -137,7 +134,6 @@ cards:
                 style: |
                   ha-card {
                     border: 0px;
-                    box-shadow: unset;
                   }
                   ha-card div.header{
                     display: none;
@@ -174,7 +170,6 @@ cards:
                 style: |
                   ha-card {
                     border: 0px;
-                    box-shadow: unset;
                   }
                   ha-card div.info{
                     padding-bottom: 0px;
@@ -196,7 +191,6 @@ cards:
                 style: |
                   ha-card {
                     border: 0px;
-                    box-shadow: unset;
                   }
                   ha-card div.icon{
                     display: none;
@@ -218,7 +212,6 @@ cards:
                 style: |
                   ha-card {
                     border: 0px;
-                    box-shadow: unset;
                   }
                   ha-card div.header{
                     display: none;
@@ -238,7 +231,6 @@ cards:
                 style: |
                   ha-card {
                     border: 0px;
-                    box-shadow: unset;
                   }
                   ha-card div.header{
                     display: none;

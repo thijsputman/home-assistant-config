@@ -13,7 +13,6 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
           }
@@ -40,7 +39,6 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
           }
           ha-card div.header{
             display: none;
@@ -57,7 +55,6 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
             padding-top: 0px !important;
             margin-top: 0px !important;
           }

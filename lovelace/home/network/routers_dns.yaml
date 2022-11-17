@@ -20,7 +20,6 @@ card:
           .: |
             ha-card {
               border: 0px;
-              box-shadow: unset;
             }
           div.entity:
             $:
@@ -58,7 +57,6 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
           }
       name: 8-hour trend
       hour24: true

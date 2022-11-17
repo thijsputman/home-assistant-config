@@ -13,8 +13,6 @@ card_mod:
       $: |
         ha-card {
           border: 0px;
-          border-radius: 0px !important;
-          box-shadow: unset;
           padding-bottom: 0px !important;
           margin-bottom: 0px !important;
         }
@@ -23,6 +21,12 @@ card:
   type: vertical-stack
   cards:
     - type: custom:mini-graph-card
+      card_mod:
+        style: |
+          ha-card {
+            border-bottom-right-radius: 0px;
+            border-bottom-left-radius: 0px;
+          }
       name: Particulate matter (past 48h)
       icon: mdi:smog
       hour24: true
@@ -70,6 +74,7 @@ card:
       card_mod:
         style: |
           ha-card {
+            border-radius: 0px;
             padding-top: 4px !important;
             margin-top: 0px !important;
             background: linear-gradient(#D9E4E8, #FFFFFF 18%);
@@ -123,6 +128,8 @@ card:
       card_mod:
         style: |
           ha-card {
+            border-top-right-radius: 0px;
+            border-top-left-radius: 0px;
             padding-top: 4px !important;
             margin-top: 0px !important;
             background: linear-gradient(#D9E4E8, #FFFFFF 18%);

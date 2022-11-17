@@ -13,8 +13,6 @@ card_mod:
       $: |
         ha-card {
           border: 0px;
-          border-radius: 0px !important;
-          box-shadow: unset;
           padding-bottom: 0px !important;
           margin-bottom: 0px !important;
         }
@@ -23,6 +21,12 @@ card:
   type: vertical-stack
   cards:
     - type: custom:mini-graph-card
+      card_mod:
+        style: |
+          ha-card {
+            border-bottom-right-radius: 0px;
+            border-bottom-left-radius: 0px;
+          }
       name: Temperature (past 48h)
       hour24: true
       hours_to_show: 48
@@ -74,6 +78,7 @@ card:
       card_mod:
         style: |
           ha-card {
+            border-radius: 0px;
             padding-top: 4px !important;
             margin-top: 0px !important;
             background: linear-gradient(#D4D4D4, #FFFFFF 18%);
@@ -133,8 +138,8 @@ card:
         style: |
           ha-card {
             border: 0px;
-            border-radius: 0px !important;
-            box-shadow: unset;
+            border-top-right-radius: 0px;
+            border-top-left-radius: 0px;
             background-color: #D4D4D4;
             --weather-icon-cloud-front-color: aliceblue;
             --weather-icon-cloud-back-color: lightsteelblue;

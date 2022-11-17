@@ -24,7 +24,6 @@ card:
           style: |
             ha-card{
               border: 0px;
-              box-shadow: unset;
               padding-top: 2px !important;
               padding-bottom: 0px !important;
             }
@@ -55,7 +54,6 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
             padding-bottom: 0px !important;
           }
           ha-card header{
@@ -102,7 +100,6 @@ card:
           style: |
             ha-card {
               border: 0px;
-              box-shadow: unset;
               padding-top: 0px !important;
               padding-bottom: 0px !important;
             }
@@ -160,7 +157,6 @@ card:
           style: |
             ha-card{
               border: 0px;
-              box-shadow: unset;
               padding-bottom: 0px !important;
             }
             ha-card section.body{
@@ -186,7 +182,6 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
             padding-bottom: 0px !important;
           }
           ha-card header{
@@ -223,7 +218,6 @@ card:
           style: |
             ha-card {
               border: 0px;
-              box-shadow: unset;
               padding-bottom: 0px !important;
             }
         entity: climate.tado_smart_ac_control_bedroom
@@ -247,7 +241,6 @@ card:
           style: |
             ha-card{
               border: 0px;
-              box-shadow: unset;
               --cool-color: var(--primary-color) !important;
             }
             ha-card section.body{
@@ -293,7 +286,6 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
             padding-bottom: 0px !important;
           }
           ha-card header{
@@ -328,7 +320,6 @@ card:
           style: |
             ha-card {
               border: 0px;
-              box-shadow: unset;
               padding-bottom: 0px !important;
             }
         entity: climate.tado_smart_ac_control_attic
@@ -352,7 +343,6 @@ card:
           style: |
             ha-card{
               border: 0px;
-              box-shadow: unset;
               --cool-color: var(--primary-color) !important;
             }
             ha-card section.body{

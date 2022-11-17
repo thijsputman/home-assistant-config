@@ -18,8 +18,8 @@ card:
         style: |
           ha-card {
             border: 0px;
-            border-radius: 0px !important;
-            box-shadow: unset;
+            border-bottom-right-radius: 0px;
+            border-bottom-left-radius: 0px;
           }
       name: Humidity Bathroom (past 4h)
       hour24: true
@@ -59,8 +59,8 @@ card:
           .: |
             ha-card {
               border: 0px;
-              border-radius: 0px !important;
-              box-shadow: unset;
+              border-top-right-radius: 0px;
+              border-top-left-radius: 0px;
               background-color: #F3F9FD;
               padding-top: 0px !important;
               padding-bottom: 4px !important;

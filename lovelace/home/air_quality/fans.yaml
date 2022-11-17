@@ -18,8 +18,8 @@ card:
         style: |
           ha-card {
             border: 0px;
-            border-radius: 0px !important;
-            box-shadow: unset;
+            border-bottom-right-radius: 0px;
+            border-bottom-left-radius: 0px;
           }
       name: Fan speeds (past 48h)
       icon: mdi:fan
@@ -75,8 +75,8 @@ card:
         style: |
           ha-card {
             border: 0px;
-            border-radius: 0px !important;
-            box-shadow: unset;
+            border-top-right-radius: 0px;
+            border-top-left-radius: 0px;
             background-color: #D4D4D4;
             padding-bottom: 4px !important;
           }

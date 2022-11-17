@@ -18,8 +18,8 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
-            border-radius: 0px;
+            border-bottom-right-radius: 0px;
+            border-bottom-left-radius: 0px;
           }
       name: Wind speed (past 48h & 10-day max)
       hour24: true
@@ -55,11 +55,11 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
+            border-top-right-radius: 0px;
+            border-top-left-radius: 0px;
             margin: 0px !important;
             padding: 8px 0px 0px 0px !important;
             background-color: #E8E8E8;
-            border-radius: 0px;
           }
       hours_to_show: 240
       group_by: date

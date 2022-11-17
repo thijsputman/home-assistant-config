@@ -16,7 +16,6 @@ card:
           }
           ha-card {
             border: 0px;
-            box-shadow: unset;
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
             --paper-item-icon-active-color: var(--warning-color);
@@ -42,7 +41,6 @@ card:
           }
           ha-card {
             border: 0px;
-            box-shadow: unset;
             padding-top: 0px !important;
             margin-top: 0px !important;
             padding-bottom: 0px !important;
@@ -77,7 +75,6 @@ card:
         style: |
           ha-card {
             border: 0px;
-            box-shadow: unset;
             padding-top: 0px !important;
             margin-top: 0px !important;
             --paper-item-icon-active-color: var(--warning-color);

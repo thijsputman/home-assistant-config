@@ -43,7 +43,6 @@ card:
                 border: 3px solid var(--label-badge-green);
               {%- endif -%}
               border-bottom-width: 0px;
-              box-shadow: unset;
               background-color: black;
               padding-bottom: 1px !important;
               margin-bottom: 0px !important;
@@ -89,7 +88,6 @@ card:
                 border: 3px solid var(--label-badge-green);
               {%- endif -%}
               border-top-width: 0px;
-              box-shadow: unset;
               background-color: black;
               padding-bottom: 0px !important;
               margin-bottom: 0px !important;
@@ -117,7 +115,6 @@ card:
           style: |
             ha-card{
               border: 0px;
-              box-shadow: unset;
               padding-top: 0px !important;
               margin-top: 0px !important;
             }
