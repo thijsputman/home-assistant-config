@@ -200,6 +200,13 @@ views:
               - !include home/chores/neato_downstairs.yaml
               - !include home/chores/afvalwijzer.yaml
       - !include home/chores/neato_upstairs.yaml
+  # Hobby
+  - title: Hobby
+    path: hobby
+    icon: mdi:hammer-screwdriver
+    badges: []
+    cards:
+      - !include home/hobby/prusa.yaml
   # Media
   - title: Media
     path: media

@@ -1,0 +1,47 @@
+- sensor:
+    - name: Prusa MINI+ Job Name
+      unique_id: d94c72e0-2a0f-487a-9b0e-1317d374d472
+      icon: mdi:file-image-outline
+      availability: >-
+        {{
+          states('sensor.prusa_mini_filename')
+            not in ['unknown', 'unavailable']
+        }}
+      state: >-
+        {{
+          (
+            states('sensor.prusa_mini_filename') |
+            regex_findall_index(this.attributes.regex)
+          )[0]
+        }}
+      attributes:
+        layer_height: >-
+          {{
+            (
+              states('sensor.prusa_mini_filename') |
+              regex_findall_index(this.attributes.regex)
+            )[1]
+          }}
+        material: >-
+          {{
+            (
+              states('sensor.prusa_mini_filename') |
+              regex_findall_index(this.attributes.regex)
+            )[2]
+          }}
+        duration: >-
+          {{
+            timedelta(
+              hours =
+                (states('sensor.prusa_mini_filename') |
+                regex_findall_index(this.attributes.regex)
+              )[3] | int(0),
+              minutes =
+                (states('sensor.prusa_mini_filename') |
+                regex_findall_index(this.attributes.regex)
+              )[4] | int
+            )
+          }}
+        # Poor man's variable 😉
+        regex: >-
+          (.*)_(0\.\d{2})mm_([A-Z]{,4})_MINI_(?:(?:(\d{,2})h|)(\d{2})m)\.gcode
