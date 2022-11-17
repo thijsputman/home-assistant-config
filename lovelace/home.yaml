@@ -159,6 +159,7 @@ views:
       - !include home/network/bandwidth_ping.yaml
       - !include home/network/pihole.yaml
       - !include home/network/routers_dns.yaml
+      - !include home/network/gammu.yaml
   # Weather
   - title: Weather
     path: weather

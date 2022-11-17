@@ -135,3 +135,5 @@ card:
             buttons:
               - entity: switch.co2_sensor_sonair_wardrobe
                 name: false
+        - entity: switch.smart_plug_6
+          name: Attic

@@ -1,0 +1,13 @@
+type: custom:mini-graph-card
+name: Gammu signal strength (past 48h)
+icon: mdi:sim
+hour24: true
+decimals: 0
+points_per_hour: 1
+hours_to_show: 48
+lower_bound: ~40
+entities:
+  - entity: sensor.gammu_signal_strength
+    name: signal-strength
+    show_points: false
+    show_fill: true
