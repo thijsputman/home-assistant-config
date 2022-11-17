@@ -5,7 +5,7 @@ style: |
     --vc-primary-text-color: #E5E5E5;
     --vc-secondary-text-color: #717881;
     --vc-icon-color: #717881;
-    --vc-toolbar-icon-color: var(--paper-item-icon-color);
+    --vc-toolbar-icon-color: #333D4A;
   }
   div.toolbar {
     border-bottom-left-radius: var(--ha-card-border-radius, 12px);
