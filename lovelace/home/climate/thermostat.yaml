@@ -62,6 +62,12 @@ card:
           ha-card section.body{
             display: none;
           }
+          ha-card header ha-icon[icon="mdi:home-roof"]{
+            color: var(--paper-item-icon-color) !important;
+          }
+          ha-card header ha-icon[icon="mdi:account-check"]{
+            color: var(--paper-item-icon-active-color) !important;
+          }
       entity: climate.tado_smart_thermostat
       hide:
         setpoint: true
@@ -76,6 +82,8 @@ card:
         faults:
           - entity: climate.tado_smart_radiator_attic
             icon: mdi:home-roof
+            hide_inactive: false
+          - entity: binary_sensor.occupancy_attic
             hide_inactive: false
           - entity: !secret tado_ru1_battery_state
             icon: mdi:battery-20
