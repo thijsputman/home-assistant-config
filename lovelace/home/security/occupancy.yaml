@@ -10,11 +10,9 @@ cards:
     card:
       type: horizontal-stack
       cards:
-        - type: entities
-          entities:
-            - entity: !secret person_1
-              name: ​ # Abusing ZWSP to visually hide the name
-        - type: entities
-          entities:
-            - entity: !secret person_2
-              name: ​
+        - type: tile
+          entity: !secret person_1
+          show_entity_picture: true
+        - type: tile
+          entity: !secret person_2
+          show_entity_picture: true
