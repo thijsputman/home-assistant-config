@@ -1,5 +1,5 @@
 - alias: >-
-    🎛️ | 💤/✈️ Kitchen tablet screen off (everyone asleep / everyone away)
+    📊 | 💤/✈️ Kitchen tablet screen off (everyone asleep / everyone away)
   id: c82e78e4-d54f-48d0-be93-6d2be002d1b7
   trigger:
     - platform: state
@@ -20,7 +20,7 @@
       entity_id: switch.p20hd_eea_screen
   mode: single
 - alias: >-
-    🎛️ | 💤/✈️ Kitchen tablet screen on (everyone awake / someone home)
+    📊 | 💤/✈️ Kitchen tablet screen on (everyone awake / someone home)
   id: 2bb72694-569c-4203-9524-09ccbe70cc3f
   trigger:
     - platform: state

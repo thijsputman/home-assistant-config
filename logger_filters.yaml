@@ -6,8 +6,7 @@
 # This might cause some more benign errors to be filtered out too, for now
 # that's an acceptable trade off...
 homeassistant.components.recorder.core:
-  - >-
-    ^Error while processing event EventTask\(
+  - ^Error while processing event EventTask\(
   - >-
     ^Unrecoverable sqlite3 database corruption detected: (.*) unable to open
     database file

@@ -65,7 +65,7 @@ card:
           ha-card header ha-icon[icon="mdi:home-roof"]{
             color: var(--paper-item-icon-color) !important;
           }
-          ha-card header ha-icon[icon="mdi:account-check"]{
+          ha-card header ha-icon.active[icon="mdi:account-check"]{
             color: var(--paper-item-icon-active-color) !important;
           }
       entity: climate.tado_smart_thermostat

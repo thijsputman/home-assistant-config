@@ -25,6 +25,7 @@ include:
     - input_boolean.alarm_vacation_mode
     - sensor.time_of_day
     - media_player.nvidia_shield_tv
+    - sensor.prusa_mini_printer_state
     # WeeWX
     - sensor.weewx_outside_temperature
     - sensor.weewx_outside_temperature_balcony
@@ -81,6 +82,8 @@ include:
     - sensor.power_86_actual # Washing machine
     - sensor.power_88_actual # Dishwasher
     - sensor.power_99 # Airco (Attic)
+    - sensor.power_163 # Desk 1 (Attic)
+    - sensor.power_165 # Desk 2 (Attic)
     - sensor.power_all_lights
     - sensor.ups_power_usage
     - sensor.power_108 # Television (i.e. Multimedia hub)
