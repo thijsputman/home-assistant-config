@@ -4,10 +4,10 @@ homeassistant:
   customize: !include customize.yaml
   allowlist_external_dirs:
     - /config/var
-    - /nvme/var
+    - /gtx/var
   media_dirs:
     sd: /config/var
-    nvme: /nvme/var
+    gtx: /gtx/var
 
 frontend:
   extra_module_url:
@@ -17,7 +17,7 @@ system_log:
   fire_event: true
 
 recorder:
-  db_url: sqlite:////nvme/home-assistant_v2.db
+  db_url: sqlite:////gtx/home-assistant_v2.db
   exclude: !include recorder_exclude.yaml
 
 shell_command:
@@ -61,7 +61,7 @@ aarlo:
   tfa_host: imap.gmail.com:993
   tfa_username: !secret aarlo_imap_user
   tfa_password: !secret aarlo_imap_password
-  save_media_to: /nvme/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
+  save_media_to: /gtx/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
 
 alarm_control_panel:
   - platform: aarlo
