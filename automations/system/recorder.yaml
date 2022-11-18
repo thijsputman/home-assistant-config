@@ -14,7 +14,9 @@
 # from any of these issues (it could potentially be the RTL9210 firmware, but
 # the version of smartmontools on Ubuntu 20.04 is too old to check that 🤐).
 
-# Somewhat superfluous failure-notification; left in place for now
+# Somewhat superfluous failure-notification. Left in place with a 6-minute delay
+# which effectively makes this the backstop notification (i.e., it is only send
+# if the container restart fails).
 - alias: 📱 | 💽 Notify on Recorder-component failure
   id: 28b00ed1-a3b0-4d7f-97bc-b1faf3b446d1
   trigger:
@@ -25,6 +27,18 @@
       name: homeassistant.components.recorder.core
   condition: []
   action:
+    - delay: "00:06:00"
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          targetDevices: my
+          message: >-
+            💽 Recorder-component failure!\n
+            The recorder-component failed with the folllowing error:
+            \n\n
+            {{ trigger.event.data.message }}
     # Explicitly block any further runs of this automation while the
     # notification is up (i.e. once a notification is up, no additional
     # notifications are raised)
@@ -82,16 +96,6 @@
   action:
     # Request the Home Assistant-container to be restarted
     - service: shell_command.restart_container
-    - service: script.turn_on
-      target:
-        entity_id: script.sms_notification
-      data:
-        variables:
-          targetDevices: my
-          message: >-
-            💥 Requested Home Assistant-container restart!\n
-            The restart should occur somewhere within the next 5-minutes;
-            please stand-by...
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
