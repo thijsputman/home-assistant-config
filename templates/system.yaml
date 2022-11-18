@@ -115,6 +115,9 @@
             {# Last notification #}
             {% elif entity_id is search('^sensor\.last_notification_.+') %}
               {# Ignored; unavailable as part of normal operation #}
+            {# Prusa MINI+ (template sensor) #}
+            {% elif entity_id == 'sensor.prusa_mini_job_name' %}
+              {# Ignored; only available when in-use #}
             {# Failed devices (this sensor) #}
             {% elif entity_id == 'sensor.failed_devices' %}
               {# Ignored #}
@@ -132,10 +135,10 @@
               {# Ignored; unavailable/unknown under normal circumstances #}
             {# Meater #}
             {% elif entity_id is search('^sensor\.meater_probe_.+') %}
-              {# Ignored; Meater Probe is only available when in-use #}
+              {# Ignored; only available when in-use #}
             {# Prusa MINI+ #}
             {% elif entity_id is search('.+\.prusa_mini_.+') %}
-              {# Ignored; Prusa MINI+ is only available when in-use #}
+              {# Ignored; only available when in-use #}
             {# Fully Kiosk Browser #}
             {%
               elif entity_id is search('^number\..+_screen(|saver)_brightness')

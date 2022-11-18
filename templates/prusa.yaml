@@ -8,40 +8,53 @@
             not in ['unknown', 'unavailable']
         }}
       state: >-
+        {%
+          set regex =
+            "(.*)_(0\.\d{1,2})mm_([A-Z]{1,4})_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode"
+        %}
         {{
           (
             states('sensor.prusa_mini_filename') |
-            regex_findall_index(this.attributes.regex)
+            regex_findall_index(regex)
           )[0]
         }}
       attributes:
         layer_height: >-
+          {%
+            set regex =
+              "(.*)_(0\.\d{1,2})mm_([A-Z]{1,4})_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode"
+          %}
           {{
             (
               states('sensor.prusa_mini_filename') |
-              regex_findall_index(this.attributes.regex)
+              regex_findall_index(regex)
             )[1]
           }}
         material: >-
+          {%
+            set regex =
+              "(.*)_(0\.\d{1,2})mm_([A-Z]{1,4})_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode"
+          %}
           {{
             (
               states('sensor.prusa_mini_filename') |
-              regex_findall_index(this.attributes.regex)
+              regex_findall_index(regex)
             )[2]
           }}
         duration: >-
+          {%
+            set regex =
+              "(.*)_(0\.\d{1,2})mm_([A-Z]{1,4})_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode"
+          %}
           {{
             timedelta(
               hours =
                 (states('sensor.prusa_mini_filename') |
-                regex_findall_index(this.attributes.regex)
+                regex_findall_index(regex)
               )[3] | int(0),
               minutes =
                 (states('sensor.prusa_mini_filename') |
-                regex_findall_index(this.attributes.regex)
+                regex_findall_index(regex)
               )[4] | int
             )
           }}
-        # Poor man's variable 😉
-        regex: >-
-          (.*)_(0\.\d{2})mm_([A-Z]{,4})_MINI_(?:(?:(\d{,2})h|)(\d{2})m)\.gcode
