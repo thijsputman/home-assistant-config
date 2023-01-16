@@ -3,7 +3,8 @@ card_mod:
   style:
     .: |
       ha-card {
-        background: var(--card-background-color, white);
+        background: var(--llh-mod-card-background);
+        border: var(--llh-mod-card-border);
       }
     hui-vertical-stack-card$: |
       hui-entity-card, hui-picture-entity-card, hui-entities-card,
@@ -73,7 +74,6 @@ card:
           style:
             .: |
               ha-card {
-
                 border: 0px;
                 border-radius: 0px;
                 background: #B2B2B2;

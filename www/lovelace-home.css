@@ -1,0 +1,12 @@
+/*
+ * I'm (ab)using lovelace-card-mod to create visual composites of multiple
+ * individual Lovelace cards. By default, lovelace-card-mod removes the
+ * background and box-shadow from the ha-card element it inserts. These two
+ * variables are used to restore the default background and border (without
+ * repeating the settings all over the place).
+ */
+:root {
+  --llh-mod-card-background: var(--card-background-color, white);
+  --llh-mod-card-border: 1px solid
+    var(--ha-card-border-color, var(--divider-color, #e0e0e0));
+}

@@ -15,7 +15,7 @@ custom CSS.
 ## Javascript modules
 
 - `aarlo-glance.js?v=0.2.6.1`
-- `card-mod.js?v=3.1.5`
+- `card-mod.js?v=3.2.0`
 - `compass-card.js?v=1.6.1`
 - `hass-hue-icons.js?v=1.2.20`
 - `home-assistant-sun-card.js?v=0.1.4`

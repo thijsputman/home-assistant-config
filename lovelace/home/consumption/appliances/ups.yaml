@@ -2,7 +2,8 @@ type: custom:mod-card
 card_mod:
   style: |
     ha-card {
-      background: var(--card-background-color, white);
+      background: var(--llh-mod-card-background);
+      border: var(--llh-mod-card-border);
     }
 report_size: 5
 card:
