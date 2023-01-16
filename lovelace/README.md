@@ -20,7 +20,7 @@ custom CSS.
 - `hass-hue-icons.js?v=1.2.20`
 - `home-assistant-sun-card.js?v=0.1.4`
 - `layout-card.js?v=2.4.4`
-- `logbook-card.js?v=1.5.1`
+- `logbook-card.js?v=1.9.3`
 - `mini-graph-card-bundle.js?v=0.11.0`
 - `paper-buttons-row.js?v=2.0.0`
 - `simple-thermostat.js?v=2.5.0`

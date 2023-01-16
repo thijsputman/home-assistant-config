@@ -118,6 +118,9 @@ card:
               padding-top: 0px !important;
               margin-top: 0px !important;
             }
+            ha-card .card-header{
+              display: none;
+            }
             ha-card .card-content.grid{
               padding-top: 8px;
             }
@@ -136,12 +139,11 @@ card:
               color: var(--secondary-text-color);
             }
         entity: binary_sensor.aarlo_motion_back_combined
-        title: false
         no_event: No motion detected in the past 24 hours.
         history: 1
         max_items: 10
         collapse: 1
-        hiddenState:
+        hidden_state:
           - "off"
           - unknown
           - unavailable
