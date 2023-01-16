@@ -92,6 +92,12 @@ media_player:
   - platform: mpd
     name: Pi0 speaker (Bedroom)
     host: pi0-speaker.sgraastra
+  - platform: mpd
+    name: Pi0-W2 speaker (Bedroom)
+    host: pi0-w2.sgraastra
+  - platform: mpd
+    name: BPI-M2 Zero speaker (Living Room)
+    host: bpi-m2z.sgraastra
 
 # Fireplace
 rest_command:

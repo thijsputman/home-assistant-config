@@ -21,6 +21,7 @@ include:
     - sensor.energy_consumption_tarif_2 # peak (kWh)
     - sensor.gas_consumption # cumulative
     - sensor.hourly_gas_consumption # computed; prefer "gas_consumption"
+    - sensor.watermeter_total
     - group.family # occupancy
     - input_boolean.alarm_vacation_mode
     - sensor.time_of_day
