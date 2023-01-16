@@ -1,0 +1,6 @@
+speakers_all:
+  name: All speakers
+  icon: mdi:speaker-wireless
+  entities:
+    - media_player.pi0_w2_speaker_bedroom
+    - media_player.bpi_m2_zero_speaker_living_room

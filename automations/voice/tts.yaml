@@ -50,6 +50,8 @@
           {%- endif %}
           Sleep tight; good night.
         language: en-GB
+        options:
+          gender: female
     # Block while the TTS is running
     - delay: "00:00:20"
   mode: single

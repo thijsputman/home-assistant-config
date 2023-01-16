@@ -1,0 +1,47 @@
+- alias: 🔊 | ⏰ Hourly "Dong!"
+  id: d3514110-c85e-48ff-b60b-8dec439f0f6f
+  trigger:
+    - platform: time_pattern
+      hours: "*"
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: home
+    - condition: state
+      entity_id: media_player.nvidia_shield_tv
+      state: "off"
+    # Should not be in (the process of going to) bed
+    - condition: state
+      entity_id: script.lights_out
+      state: "off"
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    # There's a — intentional — delay between all lights going off and "Everyone
+    # asleep" activating. To prevent an hourly "Dong!" at this very critical
+    # moment, either some of the inside lights should be on, or it should _not_
+    # be dark outside...
+    - condition: or
+      conditions:
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.time_of_day
+              state: night
+        - condition: state
+          entity_id: group.light_inside_rooms
+          state: "on"
+  action:
+    - service: media_player.volume_set
+      data:
+        entity_id: group.speakers_all
+        volume_level: 0.60
+    - service: media_player.play_media
+      data:
+        media_content_type: audio/mpeg
+        media_content_id: media-source://media_source/sd/audio/hourly_dong.mp3
+      entity_id: group.speakers_all
+    # Block while sample is playing
+    - delay: "00:00:05"
+  mode: single
+  max_exceeded: silent
