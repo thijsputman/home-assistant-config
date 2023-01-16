@@ -16,16 +16,11 @@ card:
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
           }
-          ha-card ha-state-icon[data-state=off]{
-            {%- if states('switch.smart_plug_13') == 'off' -%}
+          {%- if states('switch.smart_plug_13') == 'off' -%}
+            ha-card ha-state-icon[data-state=off] {
               color: var(--disabled-text-color) !important;
-            {%- else -%}
-              color: #44739e !important;
-            {%- endif -%}
-          }
-          ha-card ha-state-icon[data-state=on]{
-            color: var(--success-color) !important;
-          }
+            }
+          {%- endif -%}
           ha-card span{
             font-size: 1rem;
             color: var(--paper-grey-500);

@@ -16,12 +16,6 @@ card:
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
           }
-          ha-card ha-state-icon[data-state=off]{
-            color: #44739e !important;
-          }
-          ha-card ha-state-icon[data-state=on]{
-            color: var(--success-color) !important;
-          }
           ha-card span{
             font-size: 1rem;
             color: var(--paper-grey-500);

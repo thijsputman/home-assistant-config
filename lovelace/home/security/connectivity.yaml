@@ -1,10 +1,4 @@
 type: glance
-card_mod:
-  style: |
-    ha-card {
-      --paper-item-icon-active-color: var(--state-on-color);
-      --paper-item-icon-color: var(--error-color);
-    }
 entities:
   - entity: binary_sensor.remote_ui
     name: Nabu Casa

@@ -56,9 +56,9 @@ card:
                     state_styles:
                       "on":
                         icon:
-                          color: var(--warning-color)
+                          color: rgb(var(--rgb-amber-color))
                         name:
-                          color: var(--warning-color)
+                          color: rgb(var(--rgb-amber-color))
                   - name: Vacation-mode
                     entity: input_boolean.alarm_vacation_mode
                     tap_action:
@@ -66,9 +66,9 @@ card:
                     state_styles:
                       "on":
                         icon:
-                          color: var(--warning-color)
+                          color: rgb(var(--rgb-amber-color))
                         name:
-                          color: var(--warning-color)
+                          color: rgb(var(--rgb-amber-color))
           - type: entity
             card_mod:
               style: |
@@ -147,4 +147,4 @@ card:
                     state_styles:
                       active:
                         button:
-                          color: var(--paper-item-icon-active-color)
+                          color: rgb(var(--rgb-amber-color))

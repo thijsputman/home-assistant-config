@@ -66,7 +66,7 @@ card:
             color: var(--paper-item-icon-color) !important;
           }
           ha-card header ha-icon.active[icon="mdi:account-check"]{
-            color: var(--paper-item-icon-active-color) !important;
+            color: rgb(var(--rgb-amber-color)) !important;
           }
       entity: climate.tado_smart_thermostat
       hide:
