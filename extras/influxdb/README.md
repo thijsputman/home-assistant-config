@@ -82,3 +82,6 @@ npm install
   it with the (much more recent) Balcony camera
 - **16-11-2022 @ 02:30 CET** until **11:00 CET** — Vacation-mode got erroneously
   activated
+- **29-12-2022** to **16-1-2023** — No data for
+  `sensor.pi_hole_dns_unique_clients` as a result of a Pi-hole update that broke
+  the Home Assistant integration

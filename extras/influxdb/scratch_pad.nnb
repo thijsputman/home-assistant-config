@@ -17,7 +17,14 @@
         {
             "language": "markdown",
             "source": [
-                "## Cumulative energy consumption – yesterday\n\nThe below use a \"1-hour aggregate-window mean\" as a poor man's way of turning kW\ninto kWh (better solutions exist – haven't really bothered yet though 😉).\n\nStill, this (rough) approach approximates the actual numbers quite well...\n\n```flux\nimport \"date\"\nimport \"experimental\"\n\nyesterday = date.truncate(\n  t: experimental.subDuration(d: 1d, from: now()),\n  unit: 1d\n)\n\nfrom(bucket: \"home-assistant\")\n  |> range(start: yesterday, stop: today())\n  |> filter(fn: \n    (r) => r[\"entity_id\"] == \"power_consumption\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1h, fn: mean)\n  |> cumulativeSum(columns: [\"_value\"])\n```"
+                "## Cumulative energy consumption – yesterday\n\nThe below use a \"1-hour aggregate-window mean\" as a poor man's way of turning kW\ninto kWh (better solutions exist – haven't really bothered yet though 😉).\n\nStill, this (rough) approach approximates the actual numbers quite well..."
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "```flux\nimport \"date\"\nimport \"experimental\"\n\nyesterday = date.truncate(\n  t: experimental.subDuration(d: 1d, from: now()),\n  unit: 1d\n)\n\nfrom(bucket: \"home-assistant\")\n  |> range(start: yesterday, stop: today())\n  |> filter(fn: \n    (r) => r[\"entity_id\"] == \"power_consumption\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1h, fn: mean)\n  |> cumulativeSum(columns: [\"_value\"])\n```"
             ],
             "outputs": []
         },
@@ -31,7 +38,14 @@
         {
             "language": "markdown",
             "source": [
-                "## Daily total energy consumption – past year\n\nEverything is a bit messed up timezone-wise: `today()` (and `yesterday` from the\nprevious query) are UTC-based, but do somehow correctly aggregate daily totals\nbased on CE(S)T dates... 🤔\n\nAlthough the data is correctly aggregated on CE(S)T dates, around the fringes of\nthe output some problems occur (see comment in the query).\n\nSetting the timezone of the aggregate-window(s) to the correct value has no\neffect (or, it makes things worse by offsetting all daily totals by one or two\nhours – CET or CEST respectively).\n\n```flux\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(fn:\n    (r) => r[\"entity_id\"] == \"power_consumption\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1h, fn: mean)\n  |> aggregateWindow(every: 1d, fn: sum)\n  // An additional/duplicate entry shows up for the last day in the result which\n  // contains one/two hours of data from the following day (the CET/CEST to UTC\n  // offset?). Grouping by \"_time\" and taking the \"last()\" entry for each group\n  // drops the invalid measurement from the result...\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> last()\n  |> timeShift(duration: -1d)\n```"
+                "## Daily total energy consumption – past year\n\nEverything is a bit messed up timezone-wise: `today()` (and `yesterday` from the\nprevious query) are UTC-based, but do somehow correctly aggregate daily totals\nbased on CE(S)T dates... 🤔\n\nAlthough the data is correctly aggregated on CE(S)T dates, around the fringes of\nthe output some problems occur (see comment in the query).\n\nSetting the timezone of the aggregate-window(s) to the correct value has no\neffect (or, it makes things worse by offsetting all daily totals by one or two\nhours – CET or CEST respectively)."
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "\n```flux\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(fn:\n    (r) => r[\"entity_id\"] == \"power_consumption\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1h, fn: mean)\n  |> aggregateWindow(every: 1d, fn: sum)\n  // An additional/duplicate entry shows up for the last day in the result which\n  // contains one/two hours of data from the following day (the CET/CEST to UTC\n  // offset?). Grouping by \"_time\" and taking the \"last()\" entry for each group\n  // drops the invalid measurement from the result...\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> last()\n  |> timeShift(duration: -1d)\n```"
             ],
             "outputs": []
         },
@@ -81,6 +95,34 @@
             "language": "javascript",
             "source": [
                 "import { op, table } from \"arquero\";\n\nconst query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(fn:\n    (r) => r[\"entity_id\"] == \"weewx_outside_temperature\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: mean)\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n\nconst dt = table({\n  time: result.map((obj) => obj[\"_time\"]),\n  value: result.map((obj) => obj[\"_value\"]),\n});\n\ndt.derive({ month: (d) => op.month(d.time), year: (d) => op.year(d.time) })\n  .groupby(\"year\", \"month\")\n  .rollup({ mean: (d) => op.mean(d.value) })\n  .print();\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "# Pi-hole unique clients"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"pi_hole_dns_unique_clients\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "# Watermeter total"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"watermeter_total\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
             ],
             "outputs": []
         },
