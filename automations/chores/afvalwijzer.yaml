@@ -1,16 +1,34 @@
-- alias: 📱 | ⏰ Trash reminder (Black and Green bins)
+- alias: 📱 | ⏰ Trash reminder
   id: 992518b0-4f2f-4a35-b262-c882d6330996
   trigger:
-    # Remind at 21:00 the day _before_ pickup
+    # Remind at 19:00 the day _before_ pickup
     - platform: time
-      at: "21:00:00"
+      at: "19:00:00"
   condition:
     - condition: state
       entity_id: sensor.afvalwijzer_tomorrow
       state:
         - restafval
         - gft
+        - papier
   action:
+    - variables:
+        trash: >-
+          {{ states('sensor.afvalwijzer_tomorrow') }}
+    - if:
+        - condition: state
+          entity_id: group.family
+          state: not_home
+      then:
+        # If no-one is home, delay the notification for up to 5-hours (until
+        # midnight) in case someone gets home later...
+        - wait_for_trigger:
+            - platform: state
+              entity_id: group.family
+              from: not_home
+              to: home
+          timeout: "05:00:00"
+          continue_on_timeout: false
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -19,35 +37,17 @@
           targetDevices: home
           channel: Reminder
           group: chores
-          title: ♻️ Trash reminder
+          title: >-
+            {{ '📦' if trash == 'papier' else '♻️' }} Trash reminder
           message: >-
-            Don't forget to put the
-              {%- if is_state('sensor.afvalwijzer_tomorrow', 'restafval')
-                %} <strong>black bin</strong>
-              {%- elif is_state('sensor.afvalwijzer_tomorrow', 'gft')
-                %} <strong>green bin</strong>
-              {%- endif
-            %} outside!
+            Don't forget to put the <strong>
+              {%- if trash == 'restafval' -%}
+                black bin
+              {%- elif trash == 'gft' -%}
+                green bin
+              {%- elif trash == 'papier' -%}
+                paper
+              {%- endif -%}
+            </strong> outside!
   mode: single
-- alias: 📱 | ⏰ Trash reminder (Paper)
-  id: 1f0e4981-921e-426f-a77d-05a1e6b8f478
-  trigger:
-    # Remind at 08:30 on the day of pickup
-    - platform: time
-      at: "08:30:00"
-  condition:
-    - condition: state
-      entity_id: sensor.afvalwijzer_today
-      state: papier
-  action:
-    - service: script.turn_on
-      target:
-        entity_id: script.persistent_notification
-      data:
-        variables:
-          targetDevices: home
-          channel: Reminder
-          group: chores
-          title: 📦 Trash reminder
-          message: Don't forget to put the <strong>paper</strong> outside!
-  mode: single
+  max_exceeded: silent
