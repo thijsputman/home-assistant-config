@@ -6,7 +6,12 @@
     - platform: state
       entity_id: sensor.prusa_mini_job_name
       to: unavailable
-  condition: []
+  condition:
+    # Only run if the Attic is unoccupied — if it's occupied I'm probably
+    # sitting next to the printer...
+    - condition: state
+      entity_id: binary_sensor.occupancy_attic
+      state: "off"
   action:
     # Printer should be idle, otherwise something else is happening... The
     # various Prusa sensor's don't all change at exactly the same moment; if the
@@ -37,3 +42,4 @@
             The Prusa MINI+ has finished printing
             <b>{{ trigger.from_state.state }}</b>.
   mode: single
+  max_exceeded: silent
