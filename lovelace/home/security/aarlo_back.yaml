@@ -54,16 +54,18 @@ card:
             }
         entity: camera.aarlo_back
         name: Back garden
-        show:
-          - motion
-          - battery_level
-          - signal_strength
-          - captured_today
-          - image_date
-        top_title: true
-        top_status: false
-        top_date: true
-        play_direct: true
+        global: muted
+        image_top:
+          - name
+          - date
+        image_bottom:
+          - stream,library,motion,battery,signal
+          - door,door2,light
+          - status
+        image_view: numeric,direct
+        image_click: recordings
+        library_view: download
+        library_sizes: 2
         door: binary_sensor.openclose_12
         door2: binary_sensor.openclose_34
         light: light.hue_filament_bulb_1
@@ -99,16 +101,18 @@ card:
             }
         entity: camera.aarlo_balcony
         name: Balcony
-        show:
-          - motion
-          - battery_level
-          - signal_strength
-          - captured_today
-          - image_date
-        top_title: true
-        top_status: false
-        top_date: true
-        play_direct: true
+        global: muted
+        image_top:
+          - name
+          - date
+        image_bottom:
+          - stream,library,motion,battery,signal
+          - door
+          - status
+        image_view: numeric,direct
+        image_click: recordings
+        library_view: download
+        library_sizes: 2
         door: binary_sensor.openclose_18
       - type: custom:logbook-card
         card_mod:

@@ -51,16 +51,18 @@ card:
             }
         entity: camera.aarlo_front
         name: Front garden
-        show:
-          - motion
-          - battery_level
-          - signal_strength
-          - captured_today
-          - image_date
-        top_title: true
-        top_status: false
-        top_date: true
-        play_direct: true
+        global: muted
+        image_top:
+          - name
+          - date
+        image_bottom:
+          - stream,library,motion,battery,signal
+          - door,door_bell,light
+          - status
+        image_view: numeric,direct
+        image_click: recordings
+        library_view: download
+        library_sizes: 2
         door: binary_sensor.openclose_16
         door_bell: binary_sensor.vibration_43
         light: light.hue_filament_bulb_1_2
