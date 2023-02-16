@@ -56,6 +56,12 @@
     # when today's alarm triggers _before_ tomorrow's preset alarm time (as
     # defined below). If the alarm is to sound a second time during the same
     # day, simple cancel the timer...
+    # The start of the timer is delayed by 30-seconds to ensure it doesn't
+    # create race-conditions with the other automations running at «wakeup»
+    # time (and thus unintentionally prevents them from running).
+    # Interestingly, this only recently (as of HA 2022.2) became an issue, prior
+    # to that it has worked fine without the delay for a long time... 🤨
+    - delay: "00:00:30"
     - service: timer.start
       entity_id: timer.wakeup_grace_time
     - choose:
