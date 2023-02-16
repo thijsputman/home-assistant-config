@@ -4,7 +4,7 @@ wakeup_alarm:
   sequence:
     - service: media_player.volume_set
       data:
-        entity_id: media_player.pi0_speaker_bedroom
+        entity_id: media_player.pi0_w2_speaker_bedroom
         volume_level: 0.45
     - repeat:
         count: 4
@@ -13,7 +13,7 @@ wakeup_alarm:
             data:
               media_content_type: audio/mpeg
               # cspell: disable-next-line
-              media_content_id: file:/var/lib/mopidy/media/4nsekecn.mp3
-            entity_id: media_player.pi0_speaker_bedroom
+              media_content_id: media-source://media_source/sd/audio/4nsekecn.mp3
+            entity_id: media_player.pi0_w2_speaker_bedroom
           - delay: "00:00:20"
   mode: single

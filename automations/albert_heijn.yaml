@@ -104,11 +104,11 @@
           }}
     - service: media_player.volume_set
       data:
-        entity_id: media_player.pi0_speaker_bedroom
+        entity_id: media_player.pi0_w2_speaker_bedroom
         volume_level: 0.45
     - service: tts.cloud_say
       data:
-        entity_id: media_player.pi0_speaker_bedroom
+        entity_id: media_player.pi0_w2_speaker_bedroom
         # cspell: disable
         # Cloud TTS chokes on "Heijn"...
         message: >-

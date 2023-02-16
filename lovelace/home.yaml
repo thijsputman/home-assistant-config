@@ -210,11 +210,24 @@ views:
       - !include home/hobby/prusa.yaml
   # Media
   - title: Media
+    type: custom:masonry-layout
     path: media
     icon: mdi:filmstrip
     badges: []
+    layout:
+      max_cols: 2
     cards:
-      - !include home/media/shield_tv.yaml
-      - type: media-control
-        entity: media_player.pi0_speaker_bedroom
-      - !include home/media/dvb.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/media/shield_tv.yaml
+          - !include home/media/dvb.yaml
+      - type: vertical-stack
+        cards:
+          - type: media-control
+            entity: media_player.bpi_m2_zero_speaker_living_room
+          - type: media-control
+            entity: media_player.pi0_speaker_bedroom
+          - type: media-control
+            entity: media_player.pi0_w2_speaker_bedroom
+          - type: media-control
+            entity: media_player.mpi_mq1_speaker_attic

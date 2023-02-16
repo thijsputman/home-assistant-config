@@ -98,6 +98,9 @@ media_player:
   - platform: mpd
     name: BPI-M2 Zero speaker (Living Room)
     host: bpi-m2z.sgraastra
+  - platform: mpd
+    name: MPi-MQ1 speaker (Attic)
+    host: mpi-mq1.sgraastra
 
 # Fireplace
 rest_command:

@@ -32,11 +32,11 @@
           continue_on_timeout: false
     - service: media_player.volume_set
       data:
-        entity_id: media_player.pi0_speaker_bedroom
+        entity_id: media_player.pi0_w2_speaker_bedroom
         volume_level: 0.25
     - service: tts.cloud_say
       data:
-        entity_id: media_player.pi0_speaker_bedroom
+        entity_id: media_player.pi0_w2_speaker_bedroom
         message: >-
           Switching off all lights.
           {% if states('input_boolean.alarm_auto_arm_night') == 'on' -%}
