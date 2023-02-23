@@ -37,9 +37,21 @@
           targetDevices: my
           channel: Reminder
           group: chores
+          tag: prusa_done
           title: 🖨️ Prusa MINI+ job completed
           message: >-
             The Prusa MINI+ has finished printing
             <b>{{ trigger.from_state.state }}</b>.
+    # Wait for up to 2-hours for a new print-job to start; in that case dismiss
+    # the active notification
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.prusa_mini_printer_state
+          to: printing
+      timeout: "02:00:00"
+      continue_on_timeout: false
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: prusa_done
   mode: single
   max_exceeded: silent
