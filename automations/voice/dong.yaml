@@ -1,8 +1,11 @@
 - alias: 🔊 | ⏰ Hourly "Dong!"
   id: d3514110-c85e-48ff-b60b-8dec439f0f6f
   trigger:
+    # It seems "hours: *" is not the way to go — it works but (appears?) to
+    # interfer with other automations running at the top of the hour... 🤨
     - platform: time_pattern
-      hours: "*"
+      seconds: 0
+      minutes: 0
   condition:
     - condition: state
       entity_id: group.family
@@ -10,17 +13,18 @@
     - condition: state
       entity_id: media_player.nvidia_shield_tv
       state: "off"
-    # Should not be in (the process of going to) bed
     - condition: state
       entity_id: script.lights_out
       state: "off"
     - condition: state
+      entity_id: script.wakeup_alarm
+      state: "off"
+    - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
-    # There's a — intentional — delay between all lights going off and "Everyone
-    # asleep" activating. To prevent an hourly "Dong!" at this very critical
-    # moment, either some of the inside lights should be on, or it should _not_
-    # be dark outside...
+    # There's a delay between all lights going off and "Everyone asleep"
+    # activating. To prevent an hourly "Dong!" during this delay, either some
+    # inside lights should be on, or it should _not_ be dark outside...
     - condition: or
       conditions:
         - condition: not
@@ -34,13 +38,36 @@
   action:
     - service: media_player.volume_set
       data:
-        entity_id: group.speakers_all
         volume_level: 0.60
-    - service: media_player.play_media
-      data:
-        media_content_type: audio/mpeg
-        media_content_id: media-source://media_source/sd/audio/hourly_dong.mp3
-      entity_id: group.speakers_all
+      target:
+        entity_id: group.speakers_all
+    # Hard-coded exception: Don't sound in the Bedroom after the 22:00 "Dong!"
+    # or before the 06:00 "Dong!"
+    - if:
+        - condition: time
+          after: "05:59:00"
+          before: "22:59:00"
+      then:
+        - service: media_player.play_media
+          data:
+            media_content_type: audio/mpeg
+            media_content_id: >-
+              media-source://media_source/sd/audio/hourly_dong.mp3
+          target:
+            entity_id:
+              - media_player.pi0_w2_speaker_bedroom
+              - media_player.bpi_m2_zero_speaker_living_room
+              - media_player.mpi_mq1_speaker_attic
+      else:
+        - service: media_player.play_media
+          data:
+            media_content_type: audio/mpeg
+            media_content_id: >-
+              media-source://media_source/sd/audio/hourly_dong.mp3
+          target:
+            entity_id:
+              - media_player.bpi_m2_zero_speaker_living_room
+              - media_player.mpi_mq1_speaker_attic
     # Block while sample is playing
     - delay: "00:00:05"
   mode: single
