@@ -129,7 +129,6 @@ light: !include lights.yaml
 
 template: !include_dir_merge_list templates/
 
-plant: !include plants.yaml
 fan: !include fans.yaml
 switch: !include switches.yaml
 

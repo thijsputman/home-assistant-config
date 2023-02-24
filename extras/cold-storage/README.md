@@ -2,6 +2,7 @@
 
 - [Gammu (Vodafone NL prepaid top-up)](#gammu-vodafone-nl-prepaid-top-up)
 - [Synology](#synology)
+- [`bt-mqtt-gateway`](#bt-mqtt-gateway)
 
 ## Gammu (Vodafone NL prepaid top-up)
 
@@ -35,3 +36,9 @@ was mainly still running for sentimental reasons, I've switched it off...
 - [`📄 synology/automations.yaml`](./synology/automations.yaml)
 - [`📄 synology/dashboards.yaml`](./synology/dashboards.yaml)
 - [`📄 synology/sensors.yaml`](./synology/sensors.yaml)
+
+## `bt-mqtt-gateway`
+
+Used as Bluetooth-gateway for a set of Mi Flora devices
+
+- [`📁 bt-mqtt-gateway`](./bt-mqtt-gateway/README.md)
