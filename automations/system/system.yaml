@@ -120,34 +120,6 @@
                   devices | join('<br>◾ ')
                 -}}
   mode: restart
-# Mopidy on the Bedroom speaker occasionally hangs/crashes — on the Home
-# Assistant side it gets stuck on "playing". Since the speaker is only used for
-# short announcements, having it in the playing-state for more than 10-minutes
-# would indicate Mopidy has crashed...
-- alias: 📱 | 🔊 Notify on Pi0 speaker (Bedroom) failure
-  id: 00bf6d58-5d91-482c-a4af-21c889999519
-  trigger:
-    - platform: state
-      entity_id: media_player.pi0_speaker_bedroom
-      to: playing
-      for: "00:10:00"
-  condition: []
-  action:
-    - service: script.turn_on
-      target:
-        entity_id: script.persistent_notification
-      data:
-        variables:
-          group: general
-          channel: Alert
-          targetDevices: my
-          criticalNotification: true
-          title: 💥 Pi0 speaker (Bedroom) failure!
-          message: >-
-            Mopidy on the Bedroom speaker appears to have crashed; the speaker
-            has been in the playing-state for {{
-              relative_time(now() - trigger.for) }}.
-  mode: single
 # Occasionally, a race-condition occurs at startup where the deCONZ-integration
 # isn't yet up and running when the automations (that depend on devices provided
 # by deCONZ) are loaded. This causes all automations that depend on deCONZ

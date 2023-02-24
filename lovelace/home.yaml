@@ -226,8 +226,6 @@ views:
           - type: media-control
             entity: media_player.bpi_m2_zero_speaker_living_room
           - type: media-control
-            entity: media_player.pi0_speaker_bedroom
-          - type: media-control
             entity: media_player.pi0_w2_speaker_bedroom
           - type: media-control
             entity: media_player.mpi_mq1_speaker_attic

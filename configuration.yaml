@@ -88,10 +88,7 @@ camera:
 media_player:
   # Arlo
   - platform: aarlo
-  # Pi0 speaker (Bedroom)
-  - platform: mpd
-    name: Pi0 speaker (Bedroom)
-    host: pi0-speaker.sgraastra
+  # Speakers
   - platform: mpd
     name: Pi0-W2 speaker (Bedroom)
     host: pi0-w2.sgraastra
