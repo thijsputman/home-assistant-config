@@ -22,6 +22,20 @@
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
+    # Keep a 20-second window around «wakeup» time to prevent a race-condition
+    # with the wakeup alarm which (generally speaking), fires at the top of the
+    # hour too... Only enforced when the wakeup "grace-time" timer is _idle_;
+    # if it's _active_, wakeup time has passed and we're evaluating tomorrow's
+    # «wakeup» time as-if it were today's (which is nonsense).
+    - >-
+      {{
+        (
+          today_at(states('input_datetime.wakeup')) -
+            timedelta(seconds = 10) >= now() or
+          today_at(states('input_datetime.wakeup')) +
+            timedelta(seconds = 10) <= now()
+        ) or states('timer.wakeup_grace_time') == 'active'
+      }}
     # There's a delay between all lights going off and "Everyone asleep"
     # activating. To prevent an hourly "Dong!" during this delay, either some
     # inside lights should be on, or it should _not_ be dark outside...
