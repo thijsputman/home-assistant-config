@@ -124,10 +124,13 @@
   action:
     - service: light.turn_on
       data:
-        xy_color:
-          - 0.4448
-          - 0.4066
-        brightness: 240
+        color_temp_kelvin: 2000
+        brightness: 5
+      entity_id: light.bedroom
+    - service: light.turn_on
+      data:
+        color_temp_kelvin: 3800
+        brightness: 255
         transition: 1200
       entity_id: light.bedroom
     # Switch the Bedroom light off after 2 hours (accounting for the wakeup
