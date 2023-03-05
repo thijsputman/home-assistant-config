@@ -1,0 +1,115 @@
+# "TTS attention"-automations trigger important, but non-urgent/time-sensitive,
+# notifications to be announced throughout the house.
+#
+# The announcements are queued up as they occur using "script.tts_queue". When
+# any of the below automations trigger, they raise a "tss_attention" event with
+# the relevant speaker (i.e., where to announce) in the event-data. This results
+# in "script.tts_queue" releasing its queue into "script.tts_announce" which
+# subsequently reads out all announcements.
+#
+# The goal is to define triggers that indicate immediate and purposeful human
+# action (as opposed to most other automations which try to abstract away from
+# explicit human actions). The thinking being that the best moment to send out
+# (a blast of) TTS notification(s) is when someone is actively "interacting"
+# with a room (e.g., switching on the lights; opening a window).
+
+- alias: 🔊 | 👀 TTS attention — Attic
+  id: c832165f-53c5-425e-a6dc-e3002b72bdde
+  trigger:
+    # Interaction with Attic Hue Tap
+    - platform: event
+      event_type: hue_event
+      event_data:
+        id: attic_switch_button
+        type: initial_press
+    # Change of position/orientation for the Attic window
+    - platform: state
+      entity_id: sensor.attic_window_position
+      to: ~
+  condition:
+    - condition: state
+      entity_id: script.tts_queue
+      state: "on"
+  action:
+    - event: tts_attention
+      event_data:
+        speaker: media_player.mpi_mq1_speaker_attic
+  mode: single
+  max_exceeded: silent
+- alias: 🔊 | 👀 TTS attention — Living Room
+  id: 5d9c02cb-4720-46f0-b22d-87e278490cb9
+  trigger:
+    # Interaction with the Hue Taps in the Living Room
+    - platform: event
+      event_type: hue_event
+      event_data:
+        id: living_room_switch_garden_button
+        type: initial_press
+    - platform: event
+      event_type: hue_event
+      event_data:
+        id: living_room_switch_couch_button
+        type: initial_press
+    # Interaction with the tablet in the Kitchen
+    - platform: state
+      entity_id: switch.p20hd_eea_screensaver
+      from: "on"
+      to: "off"
+    # Interaction with the Magic Cube
+    - platform: event
+      event_type: deconz_event
+      event_data:
+        id: mi_magic_cube
+    # Motion at the Kitchen counter
+    - platform: state
+      entity_id:
+        - binary_sensor.presence_53 # Sink
+        - binary_sensor.presence_155 # Coffee machine
+      from: "off"
+      to: "on"
+    # Switching off the Shield TV
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from:
+        - standby
+        - playing
+        - paused
+        - idle
+      to: "off"
+  condition:
+    - condition: state
+      entity_id: script.tts_queue
+      state: "on"
+  action:
+    - event: tts_attention
+      event_data:
+        speaker: media_player.bpi_m2_zero_speaker_living_room
+  mode: single
+  max_exceeded: silent
+- alias: 🔊 | 👀 TTS attention — Bedroom
+  id: 9e6be318-a6e4-4dc4-9536-bd8175580bd2
+  trigger:
+    # Interaction with Bedroom Hue Tap
+    - platform: event
+      event_type: hue_event
+      event_data:
+        id: bedroom_switch_button
+        type: initial_press
+  condition:
+    - condition: state
+      entity_id: script.tts_queue
+      state: "on"
+    # In the Bedroom we're a bit more strict: Don't trigger when everyone's
+    # asleep, nor during the hard-coded "quiet hours".
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: time
+      after: "06:00:00"
+      before: "22:00:00"
+  action:
+    - event: tts_attention
+      event_data:
+        speaker: media_player.pi0_w2_speaker_bedroom
+  mode: single
+  max_exceeded: silent

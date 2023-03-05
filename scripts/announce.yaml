@@ -1,0 +1,287 @@
+tts_queue:
+  alias: TTS queue
+  description: >-
+    Queue a message to be announced at a later point in time. The queue is
+    released whenever a "tts_attention"-event is received.
+  icon: mdi:speaker-message
+  fields:
+    message:
+      description: The message to queue for announcement
+      required: true
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    messageDuration:
+      description: >-
+        The length (in seconds) of the spoken out announcement (when omitted,
+        a crude heuristic is applied)
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 60
+    expiry:
+      description: Validity of the announcement (default 2-hours)
+      required: false
+      selector:
+        time: # yamllint disable-line rule:empty-values
+    tag:
+      description: Announcement tag
+      required: false
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    speaker:
+      description: >-
+        Preferred speaker-entity (defaults to first speaker with attention) —
+        best used in combination with a relatively short "messageDuration".
+      required: false
+      selector:
+        entity:
+          include_entities:
+            - media_player.pi0_w2_speaker_bedroom
+            - media_player.bpi_m2_zero_speaker_living_room
+            - media_player.mpi_mq1_speaker_attic
+  variables:
+    expiry: >-
+      {% if expiry is not defined %}
+        {{ "02:00:00" }}
+      {% else %}
+        {{ expiry }}
+      {% endif %}
+  sequence:
+    - repeat:
+        sequence:
+          - wait_for_trigger:
+              - platform: event
+                id: attention
+                event_type: tts_attention
+              - platform: event
+                event_type: tts_queue_abort
+                event_data:
+                  tag: >-
+                    {% if tag is defined %}
+                      {{ tag }}
+                    {% else %}
+                      {#
+                        For manual intervention / debugging purposes
+                      #}
+                      ABORT_{{ context.id }}
+                    {% endif %}
+              - platform: event
+                event_type: tts_queue_abort_all
+            timeout: >-
+              {{ expiry }}
+            continue_on_timeout: false
+        # No repeats necessary if no preferred speaker is defined. Otherwise,
+        # keep repeating until the preferred speaker has attention. After three
+        # repeats, announce on whatever speaker has attention.
+        # The "wait-for-trigger" timeout is reset at every repeat, so to prevent
+        # the announcement for getting stuck "indefinitely", at some point we
+        # give up and simply announce on the first available speaker.
+        until: >-
+          {{
+            speaker is not defined or (
+              wait.trigger.id == 'attention' and
+                wait.trigger.event.data.speaker == speaker
+            ) or repeat.index > 3
+          }}
+    - condition: >-
+        {{ wait.trigger.id == 'attention' }}
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          speaker: >-
+            {{ wait.trigger.event.data.speaker }}
+          message: >-
+            {{ message }}
+          messageDuration: >-
+            {% if messageDuration is number %}
+              {{ messageDuration }}
+            {% endif %}
+          chime: true
+          priority: regular
+  mode: parallel
+  max: 8
+tts_announce:
+  alias: TTS announce
+  icon: mdi:speaker-message
+  fields:
+    speaker:
+      description: Speaker-entity to announce (defaults to all speakers)
+      required: true
+      selector:
+        entity:
+          include_entities:
+            - group.speakers_all
+            - media_player.pi0_w2_speaker_bedroom
+            - media_player.bpi_m2_zero_speaker_living_room
+            - media_player.mpi_mq1_speaker_attic
+    message:
+      description: The message to announce
+      required: true
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    messageDuration:
+      description: >-
+        The length (in seconds) of the spoken out announcement (when omitted,
+        a crude heuristic is applied)
+      required: false
+      selector:
+        number:
+          min: 1
+          max: 60
+    chime:
+      description: Chime before announcing (default true)
+      required: false
+      selector:
+        boolean: # yamllint disable-line rule:empty-values
+    priority:
+      description: Message priority (default "regular")
+      required: false
+      selector:
+        select:
+          options:
+            - attention
+            - regular
+            - whisper
+  variables:
+    speaker: >-
+      {% if speaker is not defined %}
+        group.speakers_all
+      {% else %}
+        speaker
+      {% endif %}
+    volume: >-
+      {% if priority == 'attention' %}
+        0.45
+      {% elif priority == 'whisper' %}
+        0.15
+      {% else %}
+        0.30
+      {% endif %}
+  sequence:
+    # Only announce when someone's home
+    - condition: state
+      entity_id: group.family
+      state: home
+    # Optional chime before the announcement. If multiple announcements are
+    # queued, use a different chime to "bridge" the messages.
+    - if: >-
+        {{ chime is true }}
+      then:
+        - if: >-
+            {{ this.attributes.current == 0 }}
+          then:
+            - service: script.tts_chime
+              data:
+                type: >-
+                  {% if priority in ['attention', 'whisper'] %}
+                    {{ priority }}
+                  {% else %}
+                    announce
+                  {% endif %}
+                speaker: >-
+                  {{ speaker }}
+          else:
+            - service: script.tts_chime
+              data:
+                type: bridge
+                speaker: >-
+                  {{ speaker }}
+    - service: media_player.volume_set
+      data:
+        volume_level: >-
+          {{ volume }}
+      target:
+        entity_id: >-
+          {{ speaker }}
+    - service: tts.cloud_say
+      data:
+        message: >-
+          {{ message }}
+        language: en-GB
+        options:
+          gender: female
+      target:
+        entity_id: >-
+          {{ speaker }}
+    # For queued execution to work properly, the script needs to block while
+    # the announcement is playing...
+    - delay: >-
+        {#
+          Crude heuristic to determine the duration of a spoken out string
+        #}
+        {% if messageDuration is not number %}
+          {{
+            [ 1, (message | length / 14) | round(0) ] | max
+          }}
+        {% else %}
+          {{ messageDuration | int }}
+        {% endif %}
+  mode: queued
+  max: 8
+tts_chime:
+  alias: TTS chime
+  icon: mdi:instrument-triangle
+  fields:
+    speaker:
+      description: Speaker-entity to chime
+      required: true
+      selector:
+        entity:
+          include_entities:
+            - group.speakers_all
+            - media_player.pi0_w2_speaker_bedroom
+            - media_player.bpi_m2_zero_speaker_living_room
+            - media_player.mpi_mq1_speaker_attic
+    type:
+      description: Type of chime (default "announce")
+      required: false
+      selector:
+        select:
+          options:
+            - attention
+            - announce
+            - whisper
+            - bridge
+  sequence:
+    - variables:
+        sample: >-
+          {% if type == 'bridge' %}
+            Pollen.ogg
+          {% elif type == 'attention' %}
+            Crosswalk.ogg
+          {% elif type == 'whisper' %}
+            Beginning.ogg
+          {% else %}
+            Night_Sky.ogg
+          {% endif %}
+        volume: >-
+          {% if type == 'attention' %}
+            0.65
+          {% elif type == 'whisper' %}
+            0.25
+          {% elif type == 'bridge' %}
+            0.25
+          {% else %}
+            0.45
+          {% endif %}
+    - service: media_player.volume_set
+      data:
+        volume_level: >-
+          {{ volume }}
+      target:
+        entity_id: >-
+          {{ speaker }}
+    - service: media_player.play_media
+      data:
+        media_content_type: audio/ogg
+        media_content_id: >-
+          media-source://media_source/sd/audio/{{- sample -}}
+      target:
+        entity_id: >-
+          {{ speaker }}
+    # Block during the chime
+    - delay: "00:00:01"
+  mode: single
