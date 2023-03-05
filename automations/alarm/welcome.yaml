@@ -4,6 +4,7 @@
     - platform: state
       entity_id: alarm_control_panel.home_alarm
       from:
+        - arming
         - armed_away
         - armed_night
       to: disarmed

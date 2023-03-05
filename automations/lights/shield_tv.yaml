@@ -3,15 +3,10 @@
   trigger:
     - platform: state
       entity_id: media_player.nvidia_shield_tv
-      from: standby
-      to: playing
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: paused
-      to: playing
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: idle
+      from:
+        - standby
+        - paused
+        - idle
       to: playing
   condition:
     # Only act if Living room lights are on
@@ -56,27 +51,17 @@
     - platform: state
       entity_id: media_player.nvidia_shield_tv
       from: playing
-      to: paused
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: playing
-      to: standby
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: playing
-      to: idle
+      to:
+        - paused
+        - standby
+        - idle
     - platform: state
       entity_id: media_player.nvidia_shield_tv
       from: "off"
-      to: standby
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: "off"
-      to: idle
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: "off"
-      to: paused
+      to:
+        - standby
+        - idle
+        - paused
   condition:
     # Only act if Living room lights are on _and_ it's not daytime. They daytime-
     # condition is the easiest way to prevent turning the lights back on when it's
@@ -133,19 +118,11 @@
   trigger:
     - platform: state
       entity_id: media_player.nvidia_shield_tv
-      from: standby
-      to: "off"
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: playing
-      to: "off"
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: paused
-      to: "off"
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: idle
+      from:
+        - standby
+        - playing
+        - paused
+        - idle
       to: "off"
   condition:
     # Only act if Living room lights are on _and_ it's not daytime

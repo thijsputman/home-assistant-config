@@ -141,6 +141,9 @@
               elif entity_id is search('^number\..+_screen(|saver)_brightness')
             %}
               {# Ignored; unavailable/unknown under normal circumstances #}
+            {# Phoscon Hive #}
+            {% elif entity_id == 'light.extended_color_light_23' %}
+              {# Ignored; only available when switched on #}
             {% else %}
               {% set matched = device_attr(device_id(entity_id), 'name') %}
             {% endif %}
