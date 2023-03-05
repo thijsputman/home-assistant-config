@@ -20,6 +20,9 @@
       entity_id: script.wakeup_alarm
       state: "off"
     - condition: state
+      entity_id: script.tts_announce
+      state: "off"
+    - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
     # Keep a 20-second window around «wakeup» time to prevent a race-condition
@@ -55,8 +58,7 @@
         volume_level: 0.60
       target:
         entity_id: group.speakers_all
-    # Hard-coded exception: Don't sound in the Bedroom after the 22:00 "Dong!"
-    # or before the 06:00 "Dong!"
+    # In the Bedroom, the "Dong!" only sounds between 06:00 and 22:00
     - if:
         - condition: time
           after: "05:59:00"
@@ -68,10 +70,7 @@
             media_content_id: >-
               media-source://media_source/sd/audio/hourly_dong.mp3
           target:
-            entity_id:
-              - media_player.pi0_w2_speaker_bedroom
-              - media_player.bpi_m2_zero_speaker_living_room
-              - media_player.mpi_mq1_speaker_attic
+            entity_id: group.speakers_all
       else:
         - service: media_player.play_media
           data:
@@ -79,10 +78,12 @@
             media_content_id: >-
               media-source://media_source/sd/audio/hourly_dong.mp3
           target:
-            entity_id:
-              - media_player.bpi_m2_zero_speaker_living_room
-              - media_player.mpi_mq1_speaker_attic
-    # Block while sample is playing
-    - delay: "00:00:05"
+            entity_id: >-
+              {#
+                Remove all entities with "bedroom" in their id from the group
+              #}
+              {{
+                expand('group.speakers_all') | map(attribute='entity_id') |
+                reject('search', 'bedroom') | join(',')
+              }}
   mode: single
-  max_exceeded: silent
