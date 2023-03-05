@@ -19,6 +19,16 @@
     - variables:
         trash: >-
           {{ states('sensor.afvalwijzer_tomorrow') }}
+        message: >-
+          Don't forget to put the <strong>
+            {%- if trash == 'restafval' -%}
+              black bin
+            {%- elif trash == 'gft' -%}
+              green bin
+            {%- elif trash == 'papier' -%}
+              paper
+            {%- endif -%}
+          </strong> outside!
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -30,14 +40,14 @@
           title: >-
             {{ '📦' if trash == 'papier' else '♻️' }} Trash reminder
           message: >-
-            Don't forget to put the <strong>
-              {%- if trash == 'restafval' -%}
-                black bin
-              {%- elif trash == 'gft' -%}
-                green bin
-              {%- elif trash == 'papier' -%}
-                paper
-              {%- endif -%}
-            </strong> outside!
+            {{ message }}
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          expiry: "06:00:00"
+          message: >-
+            {{ message }}
   mode: single
   max_exceeded: silent

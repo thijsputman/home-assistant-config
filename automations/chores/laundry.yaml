@@ -39,6 +39,14 @@
           title: 👖 Washing machine is done
           message: >-
             Time to take the laundry from the washing machine...
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          tag: washing_machine
+          message: >-
+            The washing machine is done; time to take the laundry out...
     # The washing machine turns itself off when it's done, so it's not possible
     # to use its power consumption to determine if it has been emptied (i.e
     # interacted with). Instead, use a sensor stuck to its door...
@@ -59,9 +67,24 @@
             - service: persistent_notification.dismiss
               data:
                 notification_id: washing_machine
+            - event: tts_queue_abort
+              event_data:
+                tag: washing_machine
       # Door was _not_ opened within two hours of completing the run (i.e.
       # trigger timed out) – raise the alert level...
       default:
+        - event: tts_queue_abort
+          event_data:
+            tag: washing_machine
+        - service: script.turn_on
+          target:
+            entity_id: script.tts_announce
+          data:
+            variables:
+              priority: attention
+              message: >-
+                The washing machine finished at {{ done_at }}, time to take the
+                laundry out!
         - service: script.turn_on
           target:
             entity_id: script.persistent_notification
@@ -88,8 +111,6 @@
             notification_id: washing_machine
   mode: single
   max_exceeded: silent
-  trace:
-    stored_traces: 15
 - alias: 📱 | 👖 Notify on dryer done or reservoir full
   id: 72c3b569-a2e9-4c9e-85f1-cf9bbf49c86e
   trigger:
@@ -160,6 +181,15 @@
                   title: 👖 Dryer reservoir is full!
                   message: >-
                     Empty the reservoir so the dryer can continue its run...
+            - service: script.turn_on
+              target:
+                entity_id: script.tts_queue
+              data:
+                variables:
+                  tag: dryer
+                  message: >-
+                    The dryer reservoir is full! Empty the reservoir so the
+                    dryer can continue its run...
     # Dismiss notification when dryer is switched off or when it appears to be
     # continuing its run – the latter case mainly occurs if the  reservoir was
     # full, but can also be triggered if a second run is started without first
@@ -177,7 +207,8 @@
     - service: persistent_notification.dismiss
       data:
         notification_id: dryer
+    - event: tts_queue_abort
+      event_data:
+        tag: dryer
   mode: single
   max_exceeded: silent
-  trace:
-    stored_traces: 15
