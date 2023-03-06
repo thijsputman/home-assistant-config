@@ -25,6 +25,9 @@
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
+    - condition: state
+      entity_id: input_boolean.housekeeper_present
+      state: "off"
     # Keep a 20-second window around «wakeup» time to prevent a race-condition
     # with the wakeup alarm which (generally speaking), fires at the top of the
     # hour too... Only enforced when the wakeup "grace-time" timer is _idle_;

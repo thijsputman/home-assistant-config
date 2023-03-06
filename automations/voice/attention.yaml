@@ -30,6 +30,11 @@
     - condition: state
       entity_id: script.tts_queue
       state: "on"
+    # Don't release the queue when the housekeeper is present — attention is
+    # most likely not triggered by one of the house's occupants
+    - condition: state
+      entity_id: input_boolean.housekeeper_present
+      state: "off"
   action:
     - event: tts_attention
       event_data:
@@ -80,6 +85,9 @@
     - condition: state
       entity_id: script.tts_queue
       state: "on"
+    - condition: state
+      entity_id: input_boolean.housekeeper_present
+      state: "off"
   action:
     - event: tts_attention
       event_data:
@@ -99,6 +107,9 @@
     - condition: state
       entity_id: script.tts_queue
       state: "on"
+    - condition: state
+      entity_id: input_boolean.housekeeper_present
+      state: "off"
     # In the Bedroom we're a bit more strict: Don't trigger when everyone's
     # asleep, nor during the hard-coded "quiet hours".
     - condition: state
