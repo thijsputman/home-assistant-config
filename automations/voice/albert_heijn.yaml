@@ -69,7 +69,17 @@
       from:
         - unavailable
         - unknown
-  condition: []
+  condition:
+    # Prevent trigger on reload of the underlying template-entity. As it is not
+    # possible to use a combination of "from" and "not_to" for the trigger, an
+    # additional condition is needed.
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.last_notification_albert_heijn_eta
+          state:
+            - unknown
+            - unavailable
   action:
     - service: script.turn_on
       target:

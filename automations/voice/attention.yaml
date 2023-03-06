@@ -25,7 +25,12 @@
     # Change of position/orientation for the Attic window
     - platform: state
       entity_id: sensor.attic_window_position
-      to: ~
+      not_from:
+        - unavailable
+        - unknown
+      not_to:
+        - unavailabe
+        - unknown
   condition:
     - condition: state
       entity_id: script.tts_queue
