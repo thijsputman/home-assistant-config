@@ -44,40 +44,58 @@
       # cspell: disable
       availability: >-
         {#
-          Message should have been posted _less_ than 1-hour ago – the sensor
-          assumes the ETA concerns today; this prevents old/stale messages from
+          Message should have been posted _less_ than 1-hour ago – unless the
+          message explicitly mentions "morgen" (tomorrow), the sensor assumes
+          the ETA concerns today. As such, this prevents old/stale messages from
           unintentionally being interpreted as still relevant...
         #}
-        {{
-          state_attr('sensor.last_notification_unprocessed', 'post_time') |
+        {%
+          if state_attr('sensor.last_notification_unprocessed', 'post_time') |
             as_timestamp(0) | as_datetime >= now() - timedelta(hours=1) and
           states('sensor.last_notification_unprocessed') is
             search(
-              'verwacht(?:en)? tussen \d{2}:\d{2} ' ~
+              'verwacht(?:en)?(?: ?morgen) tussen \d{2}:\d{2} ' ~
               'en \d{2}:\d{2} uur bij je te zijn')
-        }}
+        %}
+          {{ true }}
+        {# Ignore the "Er is een update over je bestelling online"-message #}
+        {% elif states('sensor.last_notification_unprocessed') is
+            search('een update over je bestelling') and
+          this.state not in ['unknown', 'unavailable']
+        %}
+          {{ true }}
+        {% endif %}
       attributes:
         interval: >-
           {%
             set eta = states('sensor.last_notification_unprocessed')  |
-                regex_findall(
-                  'verwacht(?:en)? tussen (\d{2}:\d{2}) ' ~
-                  'en (\d{2}:\d{2}) uur bij je te zijn')
+                regex_findall('tussen (\d{2}:\d{2}) en (\d{2}:\d{2}) uur')
           %}
           {% if eta != [] and eta[0] != [] %}
             {{
               (today_at(eta[0][1]) | as_timestamp -
                 today_at(eta[0][0]) | as_timestamp) | int(0)
             }}
+          {# Otherwise, retain the current interval-attribute #}
+          {% elif this.attributes.interval > 0 %}
+            {{ this.attributes.interval }}
           {% endif %}
       state: >-
         {%
-          set eta = states('sensor.last_notification_unprocessed')  |
-              regex_findall(
-                'verwacht(?:en)? tussen (\d{2}:\d{2}) ' ~
-                'en (\d{2}:\d{2}) uur bij je te zijn')
+          set eta = states('sensor.last_notification_unprocessed') |
+              regex_findall('tussen (\d{2}:\d{2}) en (\d{2}:\d{2}) uur')
         %}
         {% if eta != [] and eta[0] != [] %}
-          {{ today_at(eta[0][0]) }}
+          {%
+            if states('sensor.last_notification_unprocessed')
+              is search(' morgen ')
+          %}
+            {{ today_at(eta[0][0]) + timedelta(days = 1) }}
+          {% else %}
+            {{ today_at(eta[0][0]) }}
+          {% endif %}
+        {# Otherwise, retain the current state #}
+        {% elif this.state not in ['unknown', 'unavailable'] %}
+          {{ this.state }}
         {% endif %}
       # cspell: enable
