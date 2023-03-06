@@ -1,0 +1,43 @@
+# Note that input_boolean.everyone_asleep is toggled regardless of presence
+# (i.e. it is also toggled when no-one is home). This keeps the overall setup
+# as simple as possible. In the limited number of cases where asleep/awake-
+# triggers should not cause things to happen when no-one is home, explicit
+# exceptions are put in place...
+- alias: 💤 | 💡 Everyone asleep (all lights off)
+  id: cdec9ae5-d391-4826-a957-36fb823a73a7
+  trigger:
+    - platform: state
+      from: "on"
+      to: "off"
+      for: "00:20:00"
+      entity_id: group.light_inside_rooms
+  condition:
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: state
+      entity_id: group.light_inside_rooms
+      state: "off"
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: night
+  action:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.everyone_asleep
+  mode: single
+# The "everyone awake"-transition fires once daily as a result of people waking
+# up (at the first "wakeup" time of the day). Note that there are other events
+# (irrespective of "wakeup" time) that can trigger this transition too...
+- alias: 💤 | ⏰ Everyone awake (at «wakeup» time)
+  id: dfe729c9-436a-4fdb-8970-b68492d9a1a2
+  trigger:
+    - platform: time
+      at: input_datetime.wakeup
+  condition:
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "on"
+  action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.everyone_asleep
+  mode: single

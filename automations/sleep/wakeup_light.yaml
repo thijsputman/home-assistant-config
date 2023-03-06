@@ -1,0 +1,48 @@
+- alias: 💡 | 💤 Wakeup light bedroom (at «wakeup light start» time)
+  id: 8dfa00b1-9749-4b77-b0c9-7eceaf146bf6
+  trigger:
+    - platform: time
+      at: input_datetime.wakeup_light_start
+  condition:
+    - condition: state
+      entity_id: light.bedroom
+      state: "off"
+    # N.B. Compared to the wakeup alarm automation the omission of the occupancy
+    # condition is intentionally (as the daily wakeup light is considered to be
+    # part of occupancy simulation)
+    - condition: state
+      entity_id: timer.wakeup_grace_time
+      state: idle
+    - condition: state
+      entity_id: input_boolean.wakeup_alarm_mute
+      state: "off"
+  action:
+    - service: light.turn_on
+      data:
+        color_temp_kelvin: 2000
+        brightness: 5
+      entity_id: light.bedroom
+    - service: light.turn_on
+      data:
+        color_temp_kelvin: 3800
+        brightness: 255
+        transition: 1200
+      entity_id: light.bedroom
+    # Switch the Bedroom light off after 2 hours (accounting for the wakeup
+    # light duration)
+    - wait_for_trigger:
+        - platform: state
+          entity_id: light.bedroom
+          from: "on"
+          to: "off"
+      timeout: "02:20:00"
+      continue_on_timeout: true
+    # Trigger expired – continue; otherwise we abort (as the light was already
+    # switched off)
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    - service: light.turn_off
+      entity_id: light.bedroom
+  mode: single
+  max_exceeded: silent

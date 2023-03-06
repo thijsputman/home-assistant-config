@@ -1,0 +1,65 @@
+- alias: 🛒 | 🔊 Announce Albert Heijn ETA (wakeup alarm snoozed or silenced)
+  id: 381fa915-60ea-4d01-ab6c-51d245da3b8d
+  trigger:
+    - platform: event
+      event_type: timer.started
+      event_data:
+        entity_id: timer.wakeup_snooze_time
+    - platform: event
+      event_type: wakeup_alarm_silenced
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.last_notification_albert_heijn_eta
+          state:
+            - unavailable
+            - unknown
+    # Albert Heijn ETA is for today
+    - condition: template
+      value_template: >-
+        {{
+          states('sensor.last_notification_albert_heijn_eta') | as_datetime
+            >= today_at('00:00:00')
+        }}
+  action:
+    - delay: 5
+    - variables:
+        eta_start: >-
+          {%-
+            set start = states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime
+          -%}
+          {{ start.hour }}:{{ start.minute }}
+        eta_end: >-
+          {%-
+            set end = states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime + timedelta(seconds=state_attr(
+                  'sensor.last_notification_albert_heijn_eta', 'interval'))
+          -%}
+          {{ end.hour }}:{{ end.minute }}
+        eta_minutes: >-
+          {{
+            ((states('sensor.last_notification_albert_heijn_eta') |
+              as_timestamp - now() | as_timestamp) / 60) | int
+          }}
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          speaker: media_player.pi0_w2_speaker_bedroom
+          # cspell: disable
+          # Cloud TTS chokes on "Heijn"...
+          message: >-
+            Good morning, Albert Heyn expects to arrive between {{ eta_start }}
+            and {{ eta_end }}. That is in
+            {% if eta_minutes < 55 %}
+              {{ eta_minutes }} minutes...
+            {% elif eta_minutes < 60 %}
+              about an hour...
+            {% else %}
+              more than an hour...
+            {% endif %}
+          # cspell: enable
+  mode: single
