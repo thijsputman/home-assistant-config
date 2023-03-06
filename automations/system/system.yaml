@@ -42,6 +42,18 @@
             <br><br>◾ {{
               sensors | join('<br>◾ ')
             -}}
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          expiry: "06:00:00"
+          message: >-
+            There {% if sensors | length > 1 %}
+              are {{ sensors | length }} sensors
+            {% else %}
+              is 1 sensor
+            {% endif %} with a battery level below 10%
   mode: single
 - alias: 📱 Notify on device failure (unavailable/unknown/none-state)
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12

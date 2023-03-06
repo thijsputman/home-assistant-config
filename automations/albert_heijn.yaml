@@ -102,22 +102,20 @@
             ((states('sensor.last_notification_albert_heijn_eta') |
               as_timestamp - now() | as_timestamp) / 60) | int
           }}
-    - service: media_player.volume_set
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
       data:
-        entity_id: media_player.pi0_w2_speaker_bedroom
-        volume_level: 0.45
-    - service: tts.cloud_say
-      data:
-        entity_id: media_player.pi0_w2_speaker_bedroom
-        # cspell: disable
-        # Cloud TTS chokes on "Heijn"...
-        message: >-
-          Good morning, Albert Heyn expects to arrive between {{ eta_start }}
-          and {{ eta_end }}. That is in {% if eta_minutes < 60 -%}
-            {{ eta_minutes }} minutes...
-          {% else -%}
-            more than an hour...
-          {% endif %}
-        # cspell: enable
-        language: en-GB
+        variables:
+          speaker: media_player.pi0_w2_speaker_bedroom
+          # cspell: disable
+          # Cloud TTS chokes on "Heijn"...
+          message: >-
+            Good morning, Albert Heyn expects to arrive between {{ eta_start }}
+            and {{ eta_end }}. That is in {% if eta_minutes < 60 -%}
+              {{ eta_minutes }} minutes...
+            {% else -%}
+              more than an hour...
+            {% endif %}
+          # cspell: enable
   mode: single

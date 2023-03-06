@@ -199,7 +199,7 @@ tts_announce:
     - service: tts.cloud_say
       data:
         message: >-
-          {{ message }}
+          {{ message | regex_replace(' *\n+ *', ' ') }}
         language: en-GB
         options:
           gender: female
@@ -214,7 +214,11 @@ tts_announce:
         #}
         {% if messageDuration is not number %}
           {{
-            [ 1, (message | length / 14) | round(0) ] | max
+            [ 1, (
+              message |
+                regex_replace(' *\n+ *', ' ') |
+                regex_replace('<.+?>', '') | length / 14
+            ) | round(0) ] | max
           }}
         {% else %}
           {{ messageDuration | int }}

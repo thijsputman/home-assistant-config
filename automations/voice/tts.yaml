@@ -30,29 +30,24 @@
           timeout: 10
           # Abort if "Lights out" didn't start
           continue_on_timeout: false
-    - service: media_player.volume_set
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
       data:
-        entity_id: media_player.pi0_w2_speaker_bedroom
-        volume_level: 0.25
-    - service: tts.cloud_say
-      data:
-        entity_id: media_player.pi0_w2_speaker_bedroom
-        message: >-
-          Switching off all lights.
-          {% if states('input_boolean.alarm_auto_arm_night') == 'on' -%}
-            The Home Alarm will arm once everyone is asleep.
-          {%- endif %}
-          {% if states('input_boolean.wakeup_alarm_mute') == 'off' -%}
-            The wakeup alarm will sound at {{
-              today_at(states('input_datetime.wakeup')) |
-              as_timestamp | timestamp_custom('%H:%M')
-            -}}.
-          {%- endif %}
-          Sleep tight; good night.
-        language: en-GB
-        options:
-          gender: female
-    # Block while the TTS is running
-    - delay: "00:00:20"
+        variables:
+          speaker: media_player.pi0_w2_speaker_bedroom
+          priority: whisper
+          message: >-
+            Switching off all lights.
+            {% if states('input_boolean.alarm_auto_arm_night') == 'on' -%}
+              The Home Alarm will arm once everyone is asleep.
+            {%- endif %}
+            {% if states('input_boolean.wakeup_alarm_mute') == 'off' -%}
+              The wakeup alarm will sound at {{
+                today_at(states('input_datetime.wakeup')) |
+                as_timestamp | timestamp_custom('%H:%M')
+              -}}.
+            {%- endif %}
+            Sleep tight; good night.
   mode: single
   max_exceeded: silent

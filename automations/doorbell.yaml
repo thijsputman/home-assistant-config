@@ -38,7 +38,7 @@
           speaker: media_player.mpi_mq1_speaker_attic
           priority: attention
           message: >-
-            The doorbell just rang; there's someone at the front door!
+            The doorbell just rang...
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
@@ -103,7 +103,7 @@
                 variables:
                   expiry: "01:00:00"
                   message: >-
-                    The doorbell rang {{ rang_at | relative_time }} aog, but
+                    The doorbell rang {{ rang_at | relative_time }} ago, but
                     no-one opened the door...
       # Otherwise (i.e. the door was opened/closed), dismiss the notification
       default:
