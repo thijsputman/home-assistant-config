@@ -16,7 +16,7 @@
     # If "Lights out" isn't yet running, double pressing the Smart Switches
     # starts that too (at the same time as this automation). To ensure the TTS
     # runs as expected in that case, don't directly abort if "Lights out" isn't
-    # running but instead give it a short grace period to start.
+    # running but instead give it a short grace-period to start.
     - if:
         condition: state
         entity_id: script.lights_out
@@ -39,15 +39,27 @@
           priority: whisper
           message: >-
             Switching off all lights.
-            {% if states('input_boolean.alarm_auto_arm_night') == 'on' -%}
+            {% if states('input_boolean.alarm_auto_arm_night') == 'on' %}
               The Home Alarm will arm once everyone is asleep.
-            {%- endif %}
-            {% if states('input_boolean.wakeup_alarm_mute') == 'off' -%}
+            {% endif %}
+            {% if states('input_boolean.wakeup_alarm_mute') == 'off' %}
               The wakeup alarm will sound at {{
                 today_at(states('input_datetime.wakeup')) |
                 as_timestamp | timestamp_custom('%H:%M')
-              -}}.
-            {%- endif %}
-            Sleep tight; good night.
+              }}.
+            {% endif %}
+            {%
+              if states('sensor.last_notification_albert_heijn_eta')
+                not in ['unknown', 'unavailable']
+            %}
+              {%
+                set ah_eta =
+                  states('sensor.last_notification_albert_heijn_eta') |
+                  as_datetime
+              %}
+              Albert Heyn expects to arrive around
+              {{ ah_eta.hour }}:{{ ah_eta.minute }}.
+            {% endif %}
+            Good night; sleep tight...
   mode: single
   max_exceeded: silent

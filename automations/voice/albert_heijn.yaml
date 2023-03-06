@@ -49,7 +49,6 @@
       data:
         variables:
           speaker: media_player.pi0_w2_speaker_bedroom
-          # cspell: disable
           # Cloud TTS chokes on "Heijn"...
           message: >-
             Good morning, Albert Heyn expects to arrive between {{ eta_start }}
@@ -61,5 +60,28 @@
             {% else %}
               more than an hour...
             {% endif %}
-          # cspell: enable
   mode: single
+- alias: 🛒 | 🔊 Queue Albert Heijn ETA announcement
+  id: 4bc40f3a-f99c-4a8e-a76d-69bbe6992366
+  trigger:
+    - platform: state
+      entity_id: sensor.last_notification_albert_heijn_eta
+      from:
+        - unavailable
+        - unknown
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          expiry: "06:00:00"
+          message: >-
+            {%
+              set eta = states('sensor.last_notification_albert_heijn_eta') |
+                as_datetime
+            %}
+            {% set tomorrow = eta.day != now().day %}
+            Albert Heyn expects to arrive {% if tomorrow is true%}
+            tomorrow {% endif %} around {{ eta.hour }}:{{ eta.minute }}.
