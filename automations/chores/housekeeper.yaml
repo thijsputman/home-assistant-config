@@ -1,0 +1,36 @@
+- alias: 🧹 | 📅 Housekeeper present (calendar-event)
+  id: 7e72e8cd-405c-4999-bc96-dd361ab5d533
+  trigger:
+    - platform: calendar
+      id: start
+      event: start
+      entity_id: calendar.home
+      offset: -00:30:00
+    - platform: calendar
+      id: end
+      event: end
+      entity_id: calendar.home
+      offset: "00:30:00"
+  condition:
+    - >-
+      {{ trigger.calendar_event.summary == 'Housekeeper' }}
+  action:
+    - if:
+        - condition: trigger
+          id: start
+        - condition: state
+          entity_id: input_boolean.housekeeper_present
+          state: "off"
+      then:
+        - service: input_boolean.turn_on
+          entity_id: input_boolean.housekeeper_present
+    - if:
+        - condition: trigger
+          id: end
+        - condition: state
+          entity_id: input_boolean.housekeeper_present
+          state: "on"
+      then:
+        - service: input_boolean.turn_off
+          entity_id: input_boolean.housekeeper_present
+  mode: parallel

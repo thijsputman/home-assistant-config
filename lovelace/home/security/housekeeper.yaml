@@ -1,7 +1,8 @@
 type: glance
 entities:
-  - entity: binary_sensor.housekeeper_present
+  - entity: input_boolean.housekeeper_present
     name: Housekeeper
+    tap-action: more-info
   - entity: vacuum.neato_d7
     name: Downstairs
   - entity: vacuum.d7_upstairs

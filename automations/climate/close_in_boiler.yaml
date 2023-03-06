@@ -115,7 +115,7 @@
   id: 343f7cd2-0d2e-4ba0-9c93-c7da76a150e1
   trigger:
     - platform: state
-      entity_id: binary_sensor.housekeeper_present
+      entity_id: input_boolean.housekeeper_present
       from: "off"
       to: "on"
   condition:
@@ -133,7 +133,7 @@
   id: a127ff85-054e-4b15-8e00-5c849a5a4ed3
   trigger:
     - platform: state
-      entity_id: binary_sensor.housekeeper_present
+      entity_id: input_boolean.housekeeper_present
       from: "on"
       to: "off"
   condition:

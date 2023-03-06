@@ -69,7 +69,7 @@
           entity_id: alarm_control_panel.home_alarm
           state: armed_away
     - condition: state
-      entity_id: binary_sensor.housekeeper_present
+      entity_id: input_boolean.housekeeper_present
       state: "off"
   action:
     - service: alarm_control_panel.alarm_arm_away
@@ -129,7 +129,7 @@
   id: 3e6dc009-efd8-4c15-bb6d-52430aa7d32c
   trigger:
     - platform: state
-      entity_id: binary_sensor.housekeeper_present
+      entity_id: input_boolean.housekeeper_present
       from: "off"
       to: "on"
   condition:
@@ -146,7 +146,7 @@
   id: 5cf9fd2b-f126-4a13-a637-213be05d1cea
   trigger:
     - platform: state
-      entity_id: binary_sensor.housekeeper_present
+      entity_id: input_boolean.housekeeper_present
       from: "on"
       to: "off"
   condition:

@@ -45,7 +45,7 @@
       state: "on"
     # Keep Vacation-mode active while the housekeeper is present
     - condition: state
-      entity_id: binary_sensor.housekeeper_present
+      entity_id: input_boolean.housekeeper_present
       state: "off"
   action:
     - service: input_boolean.turn_off
