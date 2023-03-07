@@ -4,7 +4,12 @@
     - platform: state
       entity_id: media_player.nvidia_shield_tv
       from:
-        - standby
+        # Temporarily disabled: After upgrading my Shield TV to Android 11, it
+        # started having short (10-second) "standby-hiccups" wherein its state
+        # transitions to "standby" for no apparent/good reason. Luckily, the
+        # "standby"-state is irrelevant for the purpose of these automations, so
+        # it can safely be ignored...
+        # - standby
         - paused
         - idle
       to: playing
@@ -53,8 +58,14 @@
       from: playing
       to:
         - paused
-        - standby
         - idle
+    # Again, a temporary addition: Prevent a transition when there's a short
+    # "standby-hiccup"...
+    - platform: state
+      entity_id: media_player.nvidia_shield_tv
+      from: playing
+      to: standby
+      for: "00:00:30"
     - platform: state
       entity_id: media_player.nvidia_shield_tv
       from: "off"
@@ -63,16 +74,16 @@
         - idle
         - paused
   condition:
-    # Only act if Living room lights are on _and_ it's not daytime. They daytime-
-    # condition is the easiest way to prevent turning the lights back on when it's
-    # not needed (as it's most likely light enough during the day).
-    # The "light on"-condition might seem counter-intuitive, but even when playing
-    # some lights in the Living room remain on. As _all_ Shield TV automations are
-    # conditional on the lights being on, the Shield TV alone can never turn the
-    # lights on if they weren't on to begin with.
+    # Only act if Living room lights are on _and_ it's not daytime. They
+    # daytime- condition is the easiest way to prevent turning the lights back
+    # on when it's not needed (as it's most likely light enough during the day).
+    # The "light on"-condition might seem counter-intuitive, but even when
+    # playing some lights in the Living room remain on. As _all_ Shield TV
+    # automations are conditional on the lights being on, the Shield TV alone
+    # can never turn the lights on if they weren't on to begin with.
     # This is the cleanest way (i.e. dependent only on the state of the Living
-    # room lights) to prevent the Shield TV from turning on the lights if it wakes
-    # up unattended at the night...
+    # room lights) to prevent the Shield TV from turning on the lights if it
+    # wakes up unattended at the night...
     - condition: state
       entity_id: light.living_room
       state: "on"
