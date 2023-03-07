@@ -46,8 +46,9 @@ card:
               background-color: black;
               padding-bottom: 0px !important;
               margin-bottom: 0px !important;
+              min-height: 220px;
             }
-            ha-card div.base-16x9 > img{
+            img.aarlo-image{
               width: 101% !important;
             }
         entity: camera.aarlo_front

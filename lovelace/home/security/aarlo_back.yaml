@@ -49,8 +49,9 @@ card:
               margin-bottom: 0px !important;
               border-bottom-left-radius: 0px !important;
               border-bottom-right-radius: 0px !important;
+              min-height: 220px;
             }
-            ha-card div.base-16x9 > img{
+            img.aarlo-image{
               width: 101% !important;
             }
         entity: camera.aarlo_back
@@ -96,8 +97,9 @@ card:
               margin-bottom: 0px !important;
               border-top-left-radius: 0px !important;
               border-top-right-radius: 0px !important;
+              min-height: 220px;
             }
-            ha-card div.base-16x9 > img{
+            img.aarlo-image{
               width: 101% !important;
             }
         entity: camera.aarlo_balcony
