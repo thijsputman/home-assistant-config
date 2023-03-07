@@ -3,18 +3,18 @@
   trigger:
     - platform: state
       entity_id: sensor.last_notification_albert_heijn_eta
-      to: ~
+      not_from:
+        - unavailable
+        - unknown
+      not_to:
+        - unavailabe
+        - unknown
   condition:
     - condition: state
       entity_id: group.family
       state: home
     - condition: time
       before: input_datetime.wakeup
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: sensor.last_notification_albert_heijn_eta
-          state: unavailable
     # Ensure Albert Heijn ETA is for *today* — the subsequent time comparison
     # assumes it is (so crazy stuff happens if we don't explicitly check for it
     # here)

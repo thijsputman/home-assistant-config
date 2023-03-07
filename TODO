@@ -9,9 +9,9 @@
 - [Dashboards](#dashboards)
 - [Notifications](#notifications)
   - [Mobile](#mobile)
-  - [TTS](#tts)
+  - [Voice / TTS](#voice--tts)
   - [SMS](#sms)
-- [Climate & Air-quality](#climate--air-quality)
+- [Climate \& Air-quality](#climate--air-quality)
   - [Bugs](#bugs-1)
   - [Features](#features-1)
 - [Lights](#lights)
@@ -22,7 +22,7 @@
   - [Features](#features-3)
 - [Arlo](#arlo)
 - [Network](#network)
-- [Devices & Hardware](#devices--hardware)
+- [Devices \& Hardware](#devices--hardware)
 
 ## General
 
@@ -34,12 +34,6 @@
   - Appears to be the result of the UPS power consumption not fluctuating
     enough. It stays at the same level for long periods; if that happens at the
     end of the day, the final hours of the day aren't counted...
-- [ ] The Mi Flora sensors (connected via `bt2mqtt`) stop reporting data when
-      they fail, but under normal operation they might also not report updated
-      data for quite some time... Add an automation that "invalidates" these
-      devices after none of their sensors updates over a 24-hour window? This
-      way a failure will (eventually) show up through the generic "device
-      failure"-automation
 - [ ] ❗ The "auto"-mode for the tado° Attic heating appears to not be restored
       at the end of the day; this results in the schedule not getting applied
       the following day (and the heating only turning on when occupancy is
@@ -193,10 +187,9 @@
       on the length of the message and provide a clear indication the message
       got truncated...
 
-### TTS
+### Voice / TTS
 
-- [ ] Use VLC (instead of native Android notifications) for TTS on the tablet in
-      the Kitchen – has a much more natural voice
+🎉
 
 ### SMS
 

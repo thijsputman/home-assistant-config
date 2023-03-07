@@ -13,7 +13,6 @@ entity_globs:
   - sensor.dd_wrt_*_total_octets
   - sensor.dd_wrt_*_bps
   - sensor.*_raw
-  - sensor.9292_*
   - sensor.pi_hole_ads_*
   - sensor.ups_battery_run*
   # Utility Meter – DSMR
