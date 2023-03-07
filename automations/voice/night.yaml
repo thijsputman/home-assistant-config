@@ -1,0 +1,72 @@
+- alias: 🔊 | 🕹️ Goodnight message (bedside Smart Switches)
+  id: 01987760-fad4-4e0c-a525-8d77c6c5cae3
+  trigger:
+    - device_id: da1237666189a9a364fa383795ba532d
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
+      subtype: turn_on
+  condition: []
+  action:
+    # If "Lights out" isn't yet running, double pressing the Smart Switches
+    # starts that too (at the same time as this automation). To ensure the TTS
+    # runs as expected, don't directly abort if "Lights out" isn't running;
+    # instead give it a couple seconds and try again...
+    # Intentionally not using a "wait-for-trigger" as past experience has shown
+    # that in this specific instance, "Lights out" often started "in between"
+    # the state check and the trigger becoming active (essentially missing the
+    # intended state-transition). The below is crude, but more reliable.
+    - if:
+        condition: state
+        entity_id: script.lights_out
+        state: "off"
+      then:
+        - delay: 3
+        - condition: state
+          entity_id: script.lights_out
+          state: "on"
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          speaker: media_player.pi0_w2_speaker_bedroom
+          priority: whisper
+          message: >-
+            Switching off all lights.
+            {{ states('sensor.voice_goodnight_message') }}
+            Good night; sleep tight...
+  mode: single
+  max_exceeded: silent
+- alias: 🔊 | 📟 Goodnight message (triggered from Kitchen tablet)
+  id: 4bce7cff-f340-4fd7-9b18-b6a7aa85d38f
+  trigger:
+    - platform: state
+      entity_id: script.lights_out
+      from: "off"
+      to: "on"
+  variables:
+    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
+  condition:
+    - >-
+      {{ trigger.to_state.context.user_id == tablet_kitchen_user_id }}
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          speaker: media_player.bpi_m2_zero_speaker_living_room
+          priority: whisper
+          message: >-
+            "Lights out"-sequence started; in the next five-minutes all lights
+            will switch off.
+            {{ states('sensor.voice_goodnight_message') }}
+            Good night...
+  mode: single
+  max_exceeded: silent

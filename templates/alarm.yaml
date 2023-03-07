@@ -1,0 +1,85 @@
+# Track some simple numeric statistics while the Home Alarm is armed. Useful for
+# reporting in the morning and/or when coming home.
+
+- trigger:
+    - platform: state
+      id: aarlo
+      entity_id: binary_sensor.aarlo_motion_front
+      from: "off"
+      to: "on"
+    - platform: state
+      id: aarlo
+      entity_id: binary_sensor.aarlo_motion_back
+      from: "off"
+      to: "on"
+    - platform: state
+      id: aarlo
+      entity_id: binary_sensor.aarlo_motion_balcony
+      from: "off"
+      to: "on"
+    # Reset when Home Alarm gets armed
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - armed_night
+        - armed_away
+  sensor:
+    - name: Activity while armed — Arlo
+      unique_id: d689fd5b-a3bb-4e72-b4ac-5851ac1407f6
+      icon: mdi:motion-sensor
+      state: >-
+        {%
+          if trigger.id == 'aarlo' and
+            states('alarm_control_panel.home_alarm') != 'disarmed'
+        %}
+          {{ this.state | int(0) + 1 }}
+        {% else %}
+          0
+        {% endif %}
+      attributes:
+        front: >-
+          {%
+            if trigger.entity_id is search('front') and
+              states('alarm_control_panel.home_alarm') != 'disarmed'
+          %}
+            {{ this.attributes.front | int(0) + 1 }}
+          {% else %}
+            0
+          {% endif %}
+        back: >-
+          {%
+            if (
+              trigger.entity_id is search('back') or
+                trigger.entity_id is search('balcony')
+              )
+              and states('alarm_control_panel.home_alarm') != 'disarmed'
+          %}
+            {{ this.attributes.back | int(0) + 1 }}
+          {% else %}
+            0
+          {% endif %}
+- trigger:
+    - platform: state
+      id: doorbell
+      entity_id: binary_sensor.vibration_43
+      from: "off"
+      to: "on"
+    # Reset when Home Alarm gets armed
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - armed_night
+        - armed_away
+  sensor:
+    - name: Activity while armed — Doorbell
+      unique_id: af8b198f-b766-4818-9b39-06cb5738739b
+      icon: mdi:doorbell
+      state: >-
+        {%
+          if trigger.id == 'doorbell' and
+            states('alarm_control_panel.home_alarm') != 'disarmed'
+        %}
+          {{ this.state | int(0) + 1 }}
+        {% else %}
+          0
+        {% endif %}

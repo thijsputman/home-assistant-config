@@ -1,0 +1,129 @@
+- alias: 🔊 | ✈️ Queue welcome home announcement (someone home)
+  id: 4cfd2c21-b014-4b43-b8ad-99db4dc9cb6d
+  trigger:
+    # Should be away for more than 90-minutes to receive a "Welcome home"
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_away
+      for: "01:30:00"
+  condition:
+    # It is possible for the alarm to arm while in Vacation-mode (e.g. the
+    # housekeeper visits)
+    - condition: state
+      entity_id: input_boolean.alarm_vacation_mode
+      state: "off"
+  action:
+    - wait_for_trigger:
+        - platform: state
+          id: vacation_mode
+          entity_id: input_boolean.alarm_vacation_mode
+          from: "off"
+          to: "on"
+        - platform: state
+          id: disarmed
+          entity_id: alarm_control_panel.home_alarm
+          from: armed_away
+          to:
+            - pending
+            - disarmed
+      # Vacation-mode should kick in well before this moment...
+      timeout: "24:00:00"
+      continue_on_timeout: false
+    # No value in summarising a vacation's worth of announcements, so only
+    # continue on the "disarmed" trigger — another automation handles clearing
+    # the queued up announcements when Vacation-mode switches off.
+    - condition: trigger
+      id: disarmed
+    # Wait for pending Home Alarm to disarm; abort if it doesn't
+    - if:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: pending
+      then:
+        - wait_for_trigger:
+            - platform: state
+              entity_id: alarm_control_panel.home_alarm
+              from: pending
+              to: disarmed
+          timeout: 60
+          continue_on_timeout: false
+    # Abort all queued up announcements
+    - event: tts_queue_abort_all
+    # Manually capture the "TTS attention"-event. The message is rendered the
+    # moment the announcement gets queued; this would prevent it from working
+    # properly as there will _always_ be a single person home at that time
+    # (namely, the person who's phone got detected first). By delaying the
+    # rendering until the last moment, chances are better (not 100% though) that
+    # it'll work as intended/expected.
+    - wait_for_trigger:
+        - platform: event
+          event_type: tts_attention
+          event_data:
+            speaker: media_player.bpi_m2_zero_speaker_living_room
+      timeout: "00:10:00"
+      continue_on_timeout: false
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          speaker: media_player.bpi_m2_zero_speaker_living_room
+          message: >-
+            {#
+              This is only works because there's two occupants with a single
+              phone each, so the "not_home" phone always belongs to the person
+              who's away...
+              The reason the "source"-device from the above person's can't be
+              used is the fact that each person has two devices: One (GPS-
+              tracked) phone and one device who's MAC address is tracked on the
+              network. The latter is often faster to respond, but of course
+              doesn't provide an actual GPS location.
+            #}
+            {%
+              set home = expand('group.family') |
+                selectattr('state', '==', 'home') |
+                map(attribute = 'name') | list
+            %}
+            Welcome home
+            {% if home | length == 1 %}
+              {{ home | first | regex_replace(' .*$', '') }}
+            {% endif %}!
+            {%
+              set away =
+                expand(
+                  'device_tracker.pixel_6_pro',
+                  'device_tracker.sm_g990b2'
+                ) |
+                selectattr('state', '==', 'not_home') |
+                map(attribute = 'entity_id') | list
+            %}
+            {% if away | length == 1 %}
+              {%
+                set person_away = expand('group.family') |
+                  selectattr('state', '==', 'not_home') | list | first
+              %}
+              {%
+                set sensor = 'sensor.' ~ away | first |
+                  regex_replace('^.*\.', '') ~ '_geocoded_location'
+              %}
+              You are the only person home;
+              {{ person_away.name | regex_replace(' .*$', '') }} left
+              {{ person_away.last_changed | relative_time }} ago and is
+              currently somewhere in {{ state_attr(sensor, 'locality') }}.
+            {% endif %}
+            While you were away,
+            {% if states('sensor.voice_activity_while_armed') | trim  == '' %}
+               nothing of interest happened
+            {% else %}
+              {{ states('sensor.voice_activity_while_armed') }}
+            {% endif %}.
+- alias: 🔊 | ✈️ Clear queued up announcements (back from vacation)
+  id: 2ee10a57-7f48-4a3b-9877-39ddff276020
+  trigger:
+    - platform: state
+      entity_id: input_boolean.alarm_vacation_mode
+      from: "on"
+      to: "off"
+  condition: []
+  action:
+    - event: tts_queue_abort_all

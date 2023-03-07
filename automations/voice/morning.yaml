@@ -1,0 +1,27 @@
+- alias: 🔊 | 💤 Queue "Good morning!" announcement (everyone awake)
+  id: f1a0a203-6d0e-4c91-99a8-ced118c4c478
+  trigger:
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: home
+    # Don't bother just saying "Good morning!"
+    - >-
+      {{ states('sensor.voice_activity_while_armed') | trim != '' }}
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          expiry: "03:00:00"
+          speaker: media_player.bpi_m2_zero_speaker_living_room
+          message: >-
+            {{ 'Good morning' if now().hour <= 11 else 'Good afternoon' }}!
+            While you were asleep,
+            {{ states('sensor.voice_activity_while_armed') }}.
+  mode: single

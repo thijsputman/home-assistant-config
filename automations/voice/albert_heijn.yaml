@@ -49,9 +49,8 @@
       data:
         variables:
           speaker: media_player.pi0_w2_speaker_bedroom
-          # Cloud TTS chokes on "Heijn"...
           message: >-
-            Good morning, Albert Heyn expects to arrive between {{ eta_start }}
+            Good morning, Albert Heijn expects to arrive between {{ eta_start }}
             and {{ eta_end }}. That is in
             {% if eta_minutes < 55 %}
               {{ eta_minutes }} minutes...
@@ -72,7 +71,7 @@
   condition:
     # Prevent trigger on reload of the underlying template-entity. As it is not
     # possible to use a combination of "from" and "not_to" for the trigger, an
-    # additional condition is needed.
+    # additional condition is required...
     - condition: not
       conditions:
         - condition: state
@@ -93,5 +92,5 @@
                 as_datetime
             %}
             {% set tomorrow = eta.day != now().day %}
-            Albert Heyn expects to arrive {% if tomorrow is true%}
+            Albert Heijn expects to arrive {% if tomorrow is true%}
             tomorrow {% endif %} around {{ eta.hour }}:{{ eta.minute }}.

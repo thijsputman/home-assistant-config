@@ -1,0 +1,106 @@
+# Reusable pieces of "voice" (TTS-text).
+
+# Activity while armed: "the doorbell rang [x] times and Arlo detected motion
+# [x] times at the front and [x] times at the back"
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.activity_while_armed_doorbell
+        - sensor.activity_while_armed_arlo
+      not_from:
+        - unavailable
+        - unknown
+      not_to:
+        - unavailabe
+        - unknown
+  sensor:
+    - name: Voice — Activity while armed
+      unique_id: d39f715f-66ab-47a4-97e8-fee91f168fec
+      icon: mdi:voicemail
+      state: >-
+        {%
+          set activity_arlo =
+            states('sensor.activity_while_armed_arlo') | int(0)
+        %}
+        {%
+          set activity_doorbell =
+            states('sensor.activity_while_armed_doorbell') | int(0)
+        %}
+        {% if activity_arlo + activity_doorbell > 0 %}
+          {% if activity_doorbell > 0 %}
+            the doorbell rang {{ activity_doorbell ~ ' times'
+              if activity_doorbell > 1 else 'once' }}.
+          {% endif %}
+          {% if activity_arlo > 0 %}
+            {% if activity_doorbell > 0 %}
+              and
+            {% endif%}
+            {%
+              set motion_front = state_attr(
+                'sensor.activity_while_armed_arlo', 'front') | int(0)
+            %}
+            {%
+              set motion_back = state_attr(
+                'sensor.activity_while_armed_arlo', 'back') | int(0)
+            %}
+            {% set motion = [] %}
+            {% if motion_front > 0 %}
+              {%
+                set motion = motion + [
+                  (motion_front ~ ' times' if motion_front > 1 else 'once')
+                  ~ ' at the front'
+                ]
+              %}
+            {% endif %}
+            {% if motion_back > 0 %}
+              {%
+                set motion = motion + [
+                  (motion_back ~ ' times' if motion_back > 1 else 'once')
+                  ~ ' at the back'
+                ]
+              %}
+            {% endif %}
+            Arlo detected motion {{ motion | join(' and ') }}
+          {% endif %}
+        {% endif %}
+# Goodnight message: "The Home Alarm will arm once everyone is asleep. The
+# wakeup alarm will sound at [x]. Albert Heijn expects to arrive around [x]."
+- trigger:
+    - platform: state
+      entity_id:
+        - input_boolean.alarm_auto_arm_night
+        - input_boolean.wakeup_alarm_mute
+        - input_datetime.wakeup
+        - sensor.last_notification_albert_heijn_eta
+      not_from:
+        - unavailable
+        - unknown
+      not_to:
+        - unavailabe
+        - unknown
+  sensor:
+    - name: Voice — Goodnight message
+      unique_id: 4a6aad5c-898c-4c0b-a56f-2da0eddc057f
+      icon: mdi:voicemail
+      state: >-
+        {% if states('input_boolean.alarm_auto_arm_night') == 'on' %}
+          The Home Alarm will arm once everyone is asleep.
+        {% endif %}
+        {% if states('input_boolean.wakeup_alarm_mute') == 'off' %}
+          The wakeup alarm will sound at {{
+            today_at(states('input_datetime.wakeup')) |
+            as_timestamp | timestamp_custom('%H:%M')
+          }}.
+        {% endif %}
+        {%
+          if states('sensor.last_notification_albert_heijn_eta')
+            not in ['unknown', 'unavailable']
+        %}
+          {%
+            set ah_eta =
+              states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime
+          %}
+          Albert Heijn expects to arrive around
+          {{ ah_eta.hour }}:{{ ah_eta.minute }}.
+        {% endif %}

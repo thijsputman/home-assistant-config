@@ -199,7 +199,11 @@ tts_announce:
     - service: tts.cloud_say
       data:
         message: >-
-          {{ message | regex_replace(' *\n+ *', ' ') }}
+          {#
+            Compress all consecutive whitespaces into a single space and replace
+            "ij" with "y" (en-GB Cloud TTS trips over that one).
+          #}
+          {{ message | regex_replace(' *\n+ *', ' ') | replace('ij', 'y') }}
         language: en-GB
         options:
           gender: female
@@ -210,7 +214,8 @@ tts_announce:
     # the announcement is playing...
     - delay: >-
         {#
-          Crude heuristic to determine the duration of a spoken out string
+          Crude heuristic to determine the duration of a spoken out string.
+          Compress all whitespace; remove all HTML-tags.
         #}
         {% if messageDuration is not number %}
           {{
