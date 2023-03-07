@@ -22,7 +22,7 @@ custom CSS.
 - `layout-card.js?v=2.4.4`
 - `logbook-card.js?v=1.9.3`
 - `mini-graph-card-bundle.js?v=0.11.0`
-- `paper-buttons-row.js?v=2.0.0`
+- `paper-buttons-row.js?v=2.1.2`
 - `simple-thermostat.js?v=2.5.0`
 - `slider-entity-row.js?v=17.2.1`
 - `vacuum-card.js?v=2.6.2`
