@@ -46,7 +46,7 @@
         variables:
           tag: washing_machine
           message: >-
-            The washing machine is done; time to take the laundry out...
+            The washing machine is done.
     # The washing machine turns itself off when it's done, so it's not possible
     # to use its power consumption to determine if it has been emptied (i.e
     # interacted with). Instead, use a sensor stuck to its door...
@@ -73,6 +73,10 @@
       # Door was _not_ opened within two hours of completing the run (i.e.
       # trigger timed out) – raise the alert level...
       default:
+        - variables:
+            message: >-
+              The washing machine finished at <strong>{{ done_at }}</strong>,
+              time to take the laundry out!
         - event: tts_queue_abort
           event_data:
             tag: washing_machine
@@ -83,8 +87,7 @@
             variables:
               priority: attention
               message: >-
-                The washing machine finished at {{ done_at }}, time to take the
-                laundry out!
+                {{ message }}
         - service: script.turn_on
           target:
             entity_id: script.persistent_notification
@@ -97,8 +100,7 @@
               targetDevices: all
               title: 👖 Take the laundry from the washing machine!
               message: >-
-                The washing machine finished at <strong>{{ done_at }}</strong>,
-                time to take the laundry out!
+                {{ message }}
         - wait_for_trigger:
             - platform: state
               entity_id: binary_sensor.openclose_158
@@ -188,8 +190,8 @@
                 variables:
                   tag: dryer
                   message: >-
-                    The dryer reservoir is full! Empty the reservoir so the
-                    dryer can continue its run...
+                    The dryer reservoir is full! Empty it so the dryer can
+                    continue its run...
     # Dismiss notification when dryer is switched off or when it appears to be
     # continuing its run – the latter case mainly occurs if the  reservoir was
     # full, but can also be triggered if a second run is started without first
