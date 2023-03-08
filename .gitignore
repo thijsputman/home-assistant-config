@@ -19,4 +19,5 @@
 /known_devices.yaml
 
 .env
+NOTES
 node_modules/

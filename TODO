@@ -4,27 +4,31 @@
 
 - [General](#general)
   - [Bugs](#bugs)
+  - [Home Assistant Updates](#home-assistant-updates)
   - [Features](#features)
   - [Development Environment](#development-environment)
 - [Dashboards](#dashboards)
   - [Bugs](#bugs-1)
   - [General](#general-1)
 - [Notifications](#notifications)
+  - [Bugs](#bugs-2)
   - [Mobile](#mobile)
   - [Voice / TTS](#voice--tts)
   - [SMS](#sms)
 - [Climate \& Air-quality](#climate--air-quality)
-  - [Bugs](#bugs-1)
+  - [Bugs](#bugs-3)
   - [Features](#features-1)
 - [Lights](#lights)
-  - [Bugs](#bugs-2)
+  - [Bugs](#bugs-4)
   - [Features](#features-2)
 - [Alarm](#alarm)
-  - [Bugs](#bugs-3)
+  - [Bugs](#bugs-5)
   - [Features](#features-3)
 - [Arlo](#arlo)
 - [Network](#network)
 - [Devices \& Hardware](#devices--hardware)
+  - [General](#general-2)
+  - [HA Yellow](#ha-yellow)
 
 ## General
 
@@ -44,6 +48,20 @@
       `Close-in boiler (Kitchen)` as `Power 151`? The device name is correctly
       set in Home Assistant — perhaps reset the device's name in deCONZ to see
       if the resolves the issue?
+
+### Home Assistant Updates
+
+Changes to Home Assistant; to be further explored/implemented (or just for
+future reference).
+
+- [ ] [2022.9: Bluetooth proxies](https://www.home-assistant.io/blog/2022/09/07/release-20229/#bluetooth-everywhere)
+      — get some ESP32 units and tool this up around the house
+- [ ] [2022.10: Subviews for dashboard](https://www.home-assistant.io/blog/2022/10/05/release-202210/#subviews-for-dashboards)
+- [ ] [2022.12: Tile card](https://www.home-assistant.io/blog/2022/12/07/release-202212/#tile-card-gets-features)
+      — further implement these around the dashboards
+- [ ] [2023.2: Grouping sensors](https://www.home-assistant.io/blog/2023/02/01/release-20232/#grouping-sensors)
+      — and related helper changes (could replace some of the older "arithmetic"
+      templates)
 
 ### Features
 
@@ -105,8 +123,8 @@
     three device types is unique enough – which it might).
 - [ ] Experiment with using the amount of rain and the (WeeWX calculated)
       evapotranspiration to indicate whether the garden should be watered
-- [ ] It could be nice to also track water consumption. See for example
-      <https://www.ztatz.nl/p1-monitor-watermeter/>
+- [x] ~~It could be nice to also track water consumption. See for example
+      <https://www.ztatz.nl/p1-monitor-watermeter/>~~
   - Apart from tracking consumption, it could also serve as an (early) warning
     in case of water leaks
 - [ ] Use the power consumption sensor for the "multimedia hub" in the Living
@@ -132,19 +150,8 @@
     quality metrics (these windows are regularly used for ventilation
     purposes)~~
 - [ ] Rename `neato_d7` to `d7_downstairs` to match the new upstairs unit
-- [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
-      other Qingping senors
-- [ ] A sudden substantial increase in PM indicates a fire (or some kind of
-      calamity); experiment with using this to trigger the alarm – additionally,
-      increases in CO₂ levels when no-one is home (i.e. Home Alarm is "Armed
-      away") might indicate some-one is in the house...
-- [ ] See if there's any benefit to using the newly introduced
-      [backup feature](https://www.home-assistant.io/blog/2022/04/06/release-20224/#backups-for-home-assistant-core--container-installs)
-      — in addition to the existing backup solution
-  - For now it appears to unconditionally include _everything_ inside
-    `📂 config` folder (including `📂 var`, which really doesn't have to be
-    backed up — only reason it skips the database is because that's located on
-    an external drive). For now hold off on this...
+- [ ] Explicitly check the (most relevant) arguments for (important) scripts and
+      if they're invalid, write an error to the log to aid in debugging?
 
 ### Development Environment
 
@@ -177,6 +184,12 @@
   - Add state and control for the Attic exhaust fan
 
 ## Notifications
+
+### Bugs
+
+- [ ] `script.persistent_notification`'s "home"-state should ideally be based on
+      the person's `person`-entity state, not on their mobile phone's state
+      (this uses GPS and is less reactive than the overall `person`-state)
 
 ### Mobile
 
@@ -253,6 +266,13 @@
       radiator on". This is currently hard-coded in multiple automations based
       on temperature setpoints (> 16ºC and 18ºC respectively). Better to
       abstract this away.
+- [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
+      other Qingping senors
+- [ ] A sudden substantial increase in PM indicates a fire (or some kind of
+      calamity); experiment with using this to trigger the alarm – additionally,
+      increases in CO₂ levels when no-one is home (i.e. Home Alarm is "Armed
+      away") might indicate some-one is in the house...
+  - ❗ This can actually be used for room occupancy detection too...
 
 ## Lights
 
@@ -375,11 +395,8 @@
 
 ## Devices & Hardware
 
-- [ ] ❗Upgrade Shield TV to it latest (Android 11-based) "experience" — this
-      could potentially break its current (AndroidTV) integration with Home
-      Assistant (see [#65397](https://github.com/home-assistant/core/pull/65397)
-      and friends), so reserve some time to either setup a custom integration
-      (or custom ADB command)
+### General
+
 - [ ] The Xiaomi two-gang Zigbee relay in the Attic hallway sometimes refuses to
       switch off one of its gangs (always the same). The Zigbee network thinks
       the light is off (it's actually still on); turning it off again properly
@@ -398,3 +415,11 @@
 - [ ] The single Pi-hole instance is a **substantial** single point of failure
       in the network; consider running a backup Pi-hole on another machine
       (configs will need to be synced though)
+
+### HA Yellow
+
+- [ ] Switch Home Assistant container over to the HA Yellow device
+  - Start experimenting with Thread/Matter
+- [ ] Run ESPHome and the Matter server as part of the `docker-compose` for Home
+      Assistant
+  - Move `deconz` and `mosquitto` out of it into their own "stacks"
