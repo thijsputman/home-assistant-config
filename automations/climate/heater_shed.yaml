@@ -5,12 +5,9 @@
       entity_id: sensor.temperature_27
       below: 6
       for: "00:10:00"
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state"
+    # Trigger on Home Assistant (re)start to prevent missing the "held state"
     - platform: homeassistant
       event: start
-    - platform: event
-      event_type: automation_reloaded
   condition:
     - condition: state
       entity_id: switch.smart_plug_5
@@ -29,12 +26,8 @@
       entity_id: sensor.temperature_27
       for: "00:10:00"
       above: 8
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state"
     - platform: homeassistant
       event: start
-    - platform: event
-      event_type: automation_reloaded
   condition:
     - condition: state
       entity_id: switch.smart_plug_5
@@ -46,6 +39,8 @@
     - service: switch.turn_off
       entity_id: switch.smart_plug_5
   mode: single
+# Fallback in case the above automations somehow fail to switch off the heater
+# properly...
 - alias: 🌡️ | ⏰ Turn off shed electric heater (after 4 hours)
   id: b7f7997a-cb1d-45cb-a061-e6ee6d61abbc
   trigger:

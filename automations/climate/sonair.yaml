@@ -72,12 +72,9 @@
       above: 6
       below: 28
       for: "01:00:00"
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state"
+    # Trigger on Home Assistant (re)start to prevent missing the "held state"
     - platform: homeassistant
       event: start
-    - platform: event
-      event_type: automation_reloaded
   condition:
     - condition: state
       entity_id: fan.sonair_living_room
@@ -112,14 +109,9 @@
       entity_id: sensor.weewx_outside_temperature
       above: 28
       for: "01:00:00"
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state"
     - platform: homeassistant
       id: start
       event: start
-    - platform: event
-      id: reload
-      event_type: automation_reloaded
   condition:
     - condition: state
       entity_id: fan.sonair_living_room
@@ -130,14 +122,14 @@
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
-    # Abort if triggered by a start/reload event and the temperature isn't out
-    # of bounds
+    # Abort if triggered by a start event and the temperature isn't out of
+    # bounds
     - condition: or
       conditions:
         - condition: not
           conditions:
             - condition: trigger
-              id: [start, reload] # yamllint disable-line rule:brackets
+              id: start
         - condition: or
           conditions:
             - condition: numeric_state
@@ -174,12 +166,8 @@
       entity_id: sensor.weewx_outside_temperature
       below: 28
       for: "01:00:00"
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state"
     - platform: homeassistant
       event: start
-    - platform: event
-      event_type: automation_reloaded
   condition:
     - condition: state
       entity_id: fan.sonair_guestroom
@@ -215,14 +203,9 @@
       entity_id: sensor.weewx_outside_temperature
       above: 28
       for: "01:00:00"
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state"
     - platform: homeassistant
       id: start
       event: start
-    - platform: event
-      id: reload
-      event_type: automation_reloaded
   condition:
     - condition: state
       entity_id: fan.sonair_guestroom
@@ -230,14 +213,14 @@
     - condition: state
       entity_id: switch.co2_sensor_sonair_guestroom
       state: "off"
-    # Abort if triggered by a start/reload event and the temperature isn't out
-    # of bounds
+    # Abort if triggered by a start event and the temperature isn't out of
+    # bounds
     - condition: or
       conditions:
         - condition: not
           conditions:
             - condition: trigger
-              id: [start, reload] # yamllint disable-line rule:brackets
+              id: start
         - condition: or
           conditions:
             - condition: numeric_state
@@ -261,12 +244,8 @@
       entity_id: sensor.weewx_outside_temperature
       above: 28
       for: "01:00:00"
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state"
     - platform: homeassistant
       event: start
-    - platform: event
-      event_type: automation_reloaded
   condition:
     - condition: state
       entity_id: fan.sonair_wardrobe
@@ -302,12 +281,8 @@
       entity_id: sensor.weewx_outside_temperature
       below: 28
       for: "01:00:00"
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state"
     - platform: homeassistant
       event: start
-    - platform: event
-      event_type: automation_reloaded
   condition:
     - condition: state
       entity_id: fan.sonair_wardrobe

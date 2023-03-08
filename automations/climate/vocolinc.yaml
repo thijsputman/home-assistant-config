@@ -10,12 +10,10 @@
       entity_id: group.family
       from: home
       to: not_home
-    # Trigger on Home Assistant (re)start and automations reloaded to prevent
-    # missing the "held state" (and staying on indefinitely)
+    # Trigger on Home Assistant (re)start to prevent missing the "held state"
+    # (and staying on indefinitely)
     - platform: homeassistant
       event: start
-    - platform: event
-      event_type: automation_reloaded
   condition: []
   action:
     - service: humidifier.turn_off
