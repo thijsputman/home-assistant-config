@@ -46,7 +46,7 @@ card:
               background-color: black;
               padding-bottom: 0px !important;
               margin-bottom: 0px !important;
-              min-height: 220px;
+              min-height: 15em;
             }
             img.aarlo-image{
               width: 101% !important;
@@ -60,9 +60,8 @@ card:
         image_bottom:
           - stream,library,motion,battery,signal
           - door,door_bell,light
-          - status
         image_view: numeric,direct
-        image_click: recordings
+        image_click: recording
         library_view: download
         library_sizes: 2
         door: binary_sensor.openclose_16

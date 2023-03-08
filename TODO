@@ -7,6 +7,8 @@
   - [Features](#features)
   - [Development Environment](#development-environment)
 - [Dashboards](#dashboards)
+  - [Bugs](#bugs-1)
+  - [General](#general-1)
 - [Notifications](#notifications)
   - [Mobile](#mobile)
   - [Voice / TTS](#voice--tts)
@@ -150,6 +152,18 @@
       to committing (and as part of the linter GitHub Action)
 
 ## Dashboards
+
+### Bugs
+
+- [ ] Using the `direct-stream` option in the `image-view`-list of
+      `lovelace-hass-aarlo` causes some funky behaviour: It streams the video
+      (as intended), but also starts streaming _all_ other camera's visible on
+      the dashboard. Leaving it on `direct` mitigates the issue for now...
+  - Appears to keep going after closing the dashboard; the error-log fills up
+    with
+    `Error opening stream (INVALIDDATA, Invalid data found when processing input)`
+
+### General
 
 - [ ] SMS functionality: Show cellular reception
 - [ ] Add an overview of motion/vibration sensors
