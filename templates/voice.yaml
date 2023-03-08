@@ -13,6 +13,8 @@
       not_to:
         - unavailabe
         - unknown
+    - platform: homeassistant
+      event: start
   sensor:
     - name: Voice — Activity while armed
       unique_id: d39f715f-66ab-47a4-97e8-fee91f168fec
@@ -78,6 +80,8 @@
       not_to:
         - unavailabe
         - unknown
+    - platform: homeassistant
+      event: start
   sensor:
     - name: Voice — Goodnight message
       unique_id: 4a6aad5c-898c-4c0b-a56f-2da0eddc057f

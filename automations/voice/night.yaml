@@ -27,9 +27,11 @@
         state: "off"
       then:
         - delay: 3
-        - condition: state
-          entity_id: script.lights_out
-          state: "on"
+    # Mental note: This should be _outside_ "then"; if it's inside it just
+    # aborts the rest of the "then" block, not the entire automation...
+    - condition: state
+      entity_id: script.lights_out
+      state: "on"
     - service: script.turn_on
       target:
         entity_id: script.tts_announce
@@ -39,7 +41,9 @@
           priority: whisper
           message: >-
             Switching off all lights.
-            {{ states('sensor.voice_goodnight_message') }}
+            {% if states('sensor.voice_goodnight_message') | trim != '' %}
+              {{ states('sensor.voice_goodnight_message') }}
+            {% endif %}
             Good night; sleep tight...
   mode: single
   max_exceeded: silent
@@ -66,7 +70,9 @@
           message: >-
             "Lights out"-sequence started; in the next five-minutes all lights
             will switch off.
-            {{ states('sensor.voice_goodnight_message') }}
+            {% if states('sensor.voice_goodnight_message') | trim != '' %}
+              {{ states('sensor.voice_goodnight_message') }}
+            {% endif %}
             Good night...
   mode: single
   max_exceeded: silent
