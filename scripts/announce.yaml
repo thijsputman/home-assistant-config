@@ -160,6 +160,12 @@ tts_announce:
       {% else %}
         0.30
       {% endif %}
+    chime: >-
+      {% if chime is not defined %}
+        {{ true }}
+      {% else %}
+        {{ false }}
+      {% endif %}
   sequence:
     # Only announce when someone's home
     - condition: state
