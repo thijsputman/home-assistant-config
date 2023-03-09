@@ -65,6 +65,9 @@
       entity_id: switch.p20hd_eea_screensaver
       from: "on"
       to: "off"
+      # Wait a short while; when the screensaver gets disabled attention is
+      # initially direct towards the tablet...
+      for: "00:00:10"
     # Interaction with the Magic Cube
     - platform: event
       event_type: deconz_event

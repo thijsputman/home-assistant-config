@@ -38,4 +38,12 @@
   action:
     - service: switch.turn_on
       entity_id: switch.p20hd_eea_screen
+    # Turn the screensaver off and then back on again; prevents the screen
+    # from getting stuck in a weird "flickering" state
+    - delay: 1
+    - service: switch.turn_off
+      entity_id: switch.p20hd_eea_screensaver
+    - delay: 2
+    - service: switch.turn_on
+      entity_id: switch.p20hd_eea_screensaver
   mode: single
