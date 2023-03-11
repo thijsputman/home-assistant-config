@@ -56,17 +56,18 @@
           entity_id: group.light_inside_rooms
           state: "on"
   action:
-    - service: media_player.volume_set
-      data:
-        volume_level: 0.60
-      target:
-        entity_id: group.speakers_all
     # In the Bedroom, the "Dong!" only sounds between 06:00 and 22:00
     - if:
         - condition: time
           after: "05:59:00"
           before: "22:59:00"
       then:
+        # Also, lower the (overall) volume a bit during "nighttime"
+        - service: media_player.volume_set
+          data:
+            volume_level: 0.40
+          target:
+            entity_id: group.speakers_all
         - service: media_player.play_media
           data:
             media_content_type: audio/mpeg
@@ -75,6 +76,11 @@
           target:
             entity_id: group.speakers_all
       else:
+        - service: media_player.volume_set
+          data:
+            volume_level: 0.60
+          target:
+            entity_id: group.speakers_all
         - service: media_player.play_media
           data:
             media_content_type: audio/mpeg
