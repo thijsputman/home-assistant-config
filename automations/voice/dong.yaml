@@ -62,10 +62,9 @@
           after: "05:59:00"
           before: "22:59:00"
       then:
-        # Also, lower the (overall) volume a bit during "nighttime"
         - service: media_player.volume_set
           data:
-            volume_level: 0.40
+            volume_level: 0.60
           target:
             entity_id: group.speakers_all
         - service: media_player.play_media
@@ -76,9 +75,10 @@
           target:
             entity_id: group.speakers_all
       else:
+        # Also, lower the (overall) volume a bit during "nighttime"
         - service: media_player.volume_set
           data:
-            volume_level: 0.60
+            volume_level: 0.30
           target:
             entity_id: group.speakers_all
         - service: media_player.play_media
