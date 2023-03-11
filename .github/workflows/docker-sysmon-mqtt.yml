@@ -1,6 +1,6 @@
 name: Docker — sysmon-mqtt
 
-on: workflow_dispatch
+on: [workflow_dispatch, push]
 
 jobs:
   build_push:
