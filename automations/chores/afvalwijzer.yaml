@@ -34,7 +34,7 @@
         entity_id: script.persistent_notification
       data:
         variables:
-          targetDevices: home
+          targetDevices: all
           channel: Reminder
           group: chores
           title: >-

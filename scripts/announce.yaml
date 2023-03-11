@@ -20,8 +20,9 @@ tts_queue:
           min: 1
           max: 60
     expiry:
-      description: Validity of the announcement (default 2-hours)
+      description: Validity of the announcement
       required: false
+      default: "02:00:00"
       selector:
         time: # yamllint disable-line rule:empty-values
     tag:
@@ -108,8 +109,9 @@ tts_announce:
   icon: mdi:speaker-message
   fields:
     speaker:
-      description: Speaker-entity to announce (defaults to all speakers)
+      description: Speaker-entity to announce
       required: true
+      default: group.speakers_all
       selector:
         entity:
           include_entities:
@@ -132,13 +134,15 @@ tts_announce:
           min: 1
           max: 60
     chime:
-      description: Chime before announcing (default true)
+      description: Chime before announcing
       required: false
+      default: true
       selector:
         boolean: # yamllint disable-line rule:empty-values
     priority:
-      description: Message priority (default "regular")
+      description: Message priority
       required: false
+      default: regular
       selector:
         select:
           options:
