@@ -17,6 +17,7 @@
 # Privacy sensitive
 /secrets.yaml
 /known_devices.yaml
+/extras/androidtv/keys/
 
 .env
 NOTES

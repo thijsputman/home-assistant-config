@@ -1,0 +1,6 @@
+#!/command/execlineb -P
+# shellcheck disable=SC1000-SC9999
+
+with-contenv
+importas -i device ANDROIDTV_DEVICE
+s6-setuidgid androidtv /androidtv/androidtv.sh ${device}

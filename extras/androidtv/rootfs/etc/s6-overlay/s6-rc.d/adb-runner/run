@@ -1,0 +1,13 @@
+#!/command/execlineb -P
+# shellcheck disable=SC1000-SC9999
+
+with-contenv
+importas ADB_TRACE ADB_TRACE
+
+# Sadly, execlineb's "s6-setuidgid" doesn't suffice here — we need to really
+# login as "androidtv" for adb to get the point...
+# Don't want to run adb as root, and more importantly: There's no other way to
+# move "/root/.android" to a more acceptable location (as per
+# <https://issuetracker.google.com/issues/160478861>).
+
+sudo -u androidtv adb -a nodaemon server start
