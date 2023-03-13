@@ -6,6 +6,8 @@ multisubstitute
 {
   importas -i broker MQTT_BROKER
   importas -i device DEVICE_NAME
+  importas SYSMON_HA_DISCOVER SYSMON_HA_DISCOVER
+  importas SYSMON_INTERVAL SYSMON_INTERVAL
   importas -D0 uid PUID
   importas -D0 gid PGID
 }
