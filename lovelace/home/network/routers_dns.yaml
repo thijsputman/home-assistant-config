@@ -46,7 +46,7 @@ card:
                   content: "2"
                 }
           icon: mdi:router-wireless
-        - entity: sensor.pi_hole_1_minute_load
+        - entity: sensor.pi_hole_cpu_load
           icon: mdi:pi-hole
       show_name: false
       show_icon: true
@@ -80,7 +80,7 @@ card:
           name: DD-WRT-2 (%)
           show_points: false
           show_fill: false
-        - entity: sensor.pi_hole_1_minute_load
+        - entity: sensor.pi_hole_cpu_load
           name: Pi-hole (%)
           show_points: false
           show_fill: false

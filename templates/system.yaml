@@ -71,6 +71,9 @@
               {% else %}
                 {% set matched = 'Pi4' %}
               {% endif %}
+            {# HA Yellow #}
+            {% elif entity_id is search('^sensor\.ha_yellow_.+') %}
+              {% set matched = 'HA Yellow' %}
             {# Aarlo #}
             {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+') %}
               {#
