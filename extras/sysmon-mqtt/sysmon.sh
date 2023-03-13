@@ -30,7 +30,7 @@ ha_discover(){
   # Attempt to retrieve existing UUID; otherwise generate a new one
 
   if config=$(mosquitto_sub -h "$mqtt_host" -C 1 -W 3 \
-    -t "homeassistant/sensor/sysmon_${device}_${attribute}/config" \
+    -t "homeassistant/sensor/sysmon/${device}_${attribute}/config" \
     2> /dev/null) ; then
     unique_id=$(echo "$config" | jq -r -c '.unique_id')
   else
