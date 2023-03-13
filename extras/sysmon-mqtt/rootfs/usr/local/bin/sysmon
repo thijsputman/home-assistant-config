@@ -1,0 +1,14 @@
+#!/command/execlineb -P
+# shellcheck disable=SC1000-SC9999
+
+with-contenv
+multisubstitute
+{
+  importas -i broker MQTT_BROKER
+  importas -i device DEVICE_NAME
+  importas SYSMON_HA_DISCOVER SYSMON_HA_DISCOVER
+  importas SYSMON_INTERVAL SYSMON_INTERVAL
+  importas -D0 uid PUID
+  importas -D0 gid PGID
+}
+s6-setuidgid ${uid}:${gid} /sysmon/sysmon.sh ${broker} ${device}

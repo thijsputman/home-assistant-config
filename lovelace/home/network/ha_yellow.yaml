@@ -17,21 +17,19 @@ card:
             margin: 0px !important;
             padding: 0px !important;
           }
-      title: Raspberry Pi 4 – Sandbox
+      title: Home Assistant Yellow
       entities:
-        - entity: sensor.pi4_sandbox_cpu_load
+        - entity: sensor.ha_yellow_cpu_load
           name: CPU
-        - entity: sensor.pi4_sandbox_mem_used
+        - entity: sensor.ha_yellow_mem_used
           name: Memory
-        - entity: sensor.pi4_sandbox_cpu_temp
+        - entity: sensor.ha_yellow_cpu_temp
           name: Temp
-        - entity: sensor.pi4_sandbox_power_usage
-          name: Power
       show_name: false
       show_icon: true
       show_state: true
       state_color: false
-      columns: 4
+      columns: 3
     - type: custom:mini-graph-card
       card_mod:
         style: |
@@ -55,18 +53,18 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.pi4_sandbox_mem_used
+        - entity: sensor.ha_yellow_mem_used
           name: Memory (%)
           show_points: false
           show_fill: true
           color: thistle
-        - entity: sensor.pi4_sandbox_cpu_load
+        - entity: sensor.ha_yellow_cpu_load
           name: CPU (%)
           show_points: false
           show_fill: false
           color: var(--accent-color)
-        - entity: sensor.pi4_sandbox_power_usage
-          name: Power (W) →
+        - entity: sensor.ha_yellow_cpu_temp
+          name: Temperature (ºC) →
           show_points: false
           show_fill: false
           y_axis: secondary

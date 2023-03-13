@@ -154,12 +154,19 @@ views:
     icon: mdi:lan
     badges: []
     cards:
-      - !include home/network/pi4.yaml
-      - !include home/network/pi4_sandbox.yaml
-      - !include home/network/bandwidth_ping.yaml
-      - !include home/network/pihole.yaml
-      - !include home/network/routers_dns.yaml
-      - !include home/network/gammu.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/network/pi4.yaml
+          - !include home/network/pi4_sandbox.yaml
+          - !include home/network/ha_yellow.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/network/bandwidth_ping.yaml
+          - !include home/network/pihole.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/network/routers_dns.yaml
+          - !include home/network/gammu.yaml
   # Weather
   - title: Weather
     path: weather

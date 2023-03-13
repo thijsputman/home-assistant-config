@@ -1,6 +1,7 @@
 # Home Assistant Configuration
 
 [![Lint codebase](https://github.com/thijsputman/home-assistant-config/actions/workflows/linter.yml/badge.svg?branch=main)](https://github.com/thijsputman/home-assistant-config/actions/workflows/linter.yml)
+[![Docker — sysmon-mqtt](https://github.com/thijsputman/home-assistant-config/actions/workflows/docker-sysmon-mqtt.yml/badge.svg)](https://github.com/thijsputman/home-assistant-config/actions/workflows/docker-sysmon-mqtt.yml)
 
 The _live_ configuration of my personal Home Assistant instance.
 
@@ -32,12 +33,23 @@ pipx install yamllint
 chmod +x .git/hooks/pre-commit
 ```
 
+## Extras
+
+Apart from the Home Assistant configuration, this repository contains several
+"extras" that form a part of my Home Assistant setup too.
+
+Thee most relevant ones are:
+
+- [📦 TC66C – MQTT Bridge](https://github.com/thijsputman/tc66c-mqtt)
+- [📦 Simple system monitoring over MQTT](./extras/sysmon-mqtt/README.md)
+
+For a complete overview see the [`📁 extras/`](./extras/README.md) folder.
+
 ## Further Reading
 
 - [`📄 TODO`](./TODO)
 - [`📁 custom_components/`](./custom_components/README.md)
 - [`📁 docs/`](./docs/README.md)
-- [`📁 extras/`](./extras/README.md)
 - [`📁 lovelace/`](./lovelace/README.md)
 
 ## License

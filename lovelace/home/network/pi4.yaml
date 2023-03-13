@@ -19,11 +19,11 @@ card:
           }
       title: Raspberry Pi 4
       entities:
-        - entity: sensor.pi4_1_minute_load
+        - entity: sensor.pi4_cpu_load
           name: CPU
-        - entity: sensor.pi4_memory_used_percentage
+        - entity: sensor.pi4_mem_used
           name: Memory
-        - entity: sensor.pi4_cpu_temperature
+        - entity: sensor.pi4_cpu_temp
           name: Temp
         - entity: sensor.pi4_power_usage
           name: Power
@@ -55,12 +55,12 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.pi4_memory_used_percentage
+        - entity: sensor.pi4_mem_used
           name: Memory (%)
           show_points: false
           show_fill: true
           color: thistle
-        - entity: sensor.pi4_1_minute_load
+        - entity: sensor.pi4_cpu_load
           name: CPU (%)
           show_points: false
           show_fill: false
