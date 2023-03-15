@@ -4,7 +4,7 @@ The `sysmon-mqtt`-script is used on a variety of single board computers (mainly
 Raspberry Pis) to provide basic performance metrics to Home Assistant.
 
 These used to be retrieved via SNMP (and for
-[some devices](../dd-wrt/README.md#SNMP) they still are). That works fine, but
+[some devices](../dd-wrt/README.md#snmp) they still are). That works fine, but
 felt a bit archaic and somewhat overkill for the purpose: Not all metrics were
 directly addressable via SNMP (e.g., retrieving CPU temperature required
 defining a custom OID and calling a shell-script) and most other metrics
@@ -27,16 +27,19 @@ Currently, the following metrics are provided:
 
 - `cpu_load` — the 1-minute load as a percentage of maximum nominal load (e.g.
   for a quad-core system, 100% represents a 1-minute load of 4.0)
-- `cpu_temp` — CPU temperature in degrees Celcius (read from
+- `cpu_temp` — CPU temperature in degrees Celsius (read from
   `/sys/class/thermal/thermal_zone0/temp`)
 - `mem_used` — Memory in use (_excluding_ buffers and caches) as a percentage of
   total available memory
+- `bandwidth` — Average bandwidth (receive and transmit) for individual network
+  adapters in kbps during the monitoring interval
 
 The metrics are provided as a JSON-object in the `sysmon/[device-name]/state`
 topic.
 
 A `sysmon/[device-name]/connected` topic (with value `0` or `1`) is provided as
-an indication of whether the script is active.
+an indication of whether the script is active. When the script starts, reporting
+the connected `1` is delayed until stable metrics are available.
 
 ### Home Assistant discovery
 
@@ -86,22 +89,27 @@ restart)...
 From the shell:
 
 ```shell
-./sysmon.sh [mqtt-broker] [device-name]
+./sysmon.sh mqtt-broker device-name [network-adapters]
 ```
 
-- `mqtt-broker` — hostname or IP address of the MQTT broker
-- `device-name` — name of the device to monitor; this value is used to construct
-  MQTT topic names _and_ the sensor names used in Home Assistant (use only
-  lowercase alphanumeric characters and underscores)
+- `mqtt-broker` — hostname or IP address of the MQTT-broker
+- `device-name` — **human-friendly** name of the device being monitored (e.g.,
+  "My Raspberry Pi"); a low-fidelity version (`my_raspberry_pi`) is
+  automatically generated and used to construct MQTT-topics and Home Assistant
+  entity-ids
+- `network-adapters` (optional) — one or more network adapters to monitor as a
+  space-delimited list (e.g., `'eth0 wlan0'`; mind the quotes when specifying
+  more than one adapter)
 
 The following _optional_ environment variables can be used to further influence
 the script's behaviour:
 
 - `SYSMON_HA_DISCOVER` (default: `true`) — set to `false` to disable publishing
-  Home Assistant discovery messages
-- `SYSMON_INTERVAL` (default: `30s`) — set the interval at which metrics are
-  reported; the value is passed to `sleep` directly, so anything it accepts as
-  its duration will do
+  to Home Assistant discovery topic
+- `SYSMON_HA_TOPIC` (default: `homeassistant`) — base for the Home Assistant
+  discovery topic
+- `SYSMON_INTERVAL` (default: `30`) — set the interval (in seconds) at which
+  metrics are reported
 
 ### Docker
 
@@ -122,6 +130,8 @@ services:
     environment:
       - MQTT_BROKER=
       - DEVICE_NAME=
+    # Optional: Enable bandwidth monitoring
+    # - NETWORK_ADAPTERS=
     # Optional: Drop permissions to the provided UID/GID-combination
     # - PUID=1000
     # - PGID=1000
@@ -147,7 +157,8 @@ Type=simple
 Restart=on-failure
 # Update the below match your environment
 User=[user]
-ExecStart=/usr/bin/env bash /home/[user]/sysmon.sh [mqtt-broker] [device-name]
+ExecStart=/usr/bin/env bash /home/<user>/sysmon.sh \
+  mqtt-broker device-name [network-adapters]
 
 [Install]
 WantedBy=multi-user.target
