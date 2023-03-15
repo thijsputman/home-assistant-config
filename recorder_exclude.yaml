@@ -15,6 +15,7 @@ entity_globs:
   - sensor.*_raw
   - sensor.pi_hole_ads_*
   - sensor.ups_battery_run*
+  - sensor.*_heartbeat
   # Utility Meter – DSMR
   - sensor.daily_energy_*
   - sensor.monthly_energy_*

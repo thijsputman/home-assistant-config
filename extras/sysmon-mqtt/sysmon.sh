@@ -39,8 +39,13 @@ ha_discover(){
 
   local name=${1}
   local attribute=${2}
-  local unit=${3}
-  local class_icon=${4}
+  local class_icon=(${3})
+  local unit=${4}
+
+  local value_template="value_json.${attribute//\//.} | float(0) | round(2)"
+  local state_topic="sysmon/$device/state"
+  local property_class=""
+  local property_icon=""
 
   # Attempt to retrieve existing UUID; otherwise generate a new one
 
@@ -57,19 +62,32 @@ ha_discover(){
     unique_id=$(cat /proc/sys/kernel/random/uuid)
   fi
 
-  # Select between "icon" and "device_class"
+  # Construct "device_class"- and "icon"-properties
 
   if [ -n "$class_icon" ] ; then
-    if [[ "$class_icon" =~ ^mdi: ]] ; then
-      class_icon_property="\"icon\": \"$class_icon\","
+    if [ "${#class_icon[@]}" -gt 1 ] ; then
+        property_class="\"device_class\": \"${class_icon[0]}\","
+        property_icon="\"icon\": \"${class_icon[1]}\","
+    elif [[ "$class_icon" =~ ^mdi: ]] ; then
+      property_icon="\"icon\": \"$class_icon\","
     else
-      class_icon_property="\"device_class\": \"$class_icon\","
+      property_class="\"device_class\": \"$class_icon\","
     fi
-  else
-    class_icon_property=""
   fi
 
-  # Construct discovery-payload
+  # Heartbeat has an exceptional setup
+
+  if [ "$attribute" == "heartbeat" ] ; then
+    state_topic="sysmon/$device/connected"
+    value_template='(value | int(0) | as_datetime)'
+  fi
+
+  # Construct Home Assistant discovery-payload
+  #
+  # A combination of "expire_after" and "availability/value_template" is used
+  # to determine the sensor's availability. In principle, "expire_after" and a
+  # "payload > 0"-template would suffice — the provided template handles edge
+  # cases (MQTT component/HA reload) more gracefully though...
 
   local payload
   payload=$(tr -s ' ' <<- EOF
@@ -82,15 +100,22 @@ ha_discover(){
           "name": $(echo -n "$device_name" | jq -R -s '.'),
           "manufacturer": "sysmon-mqtt"
       },
-      $class_icon_property
-      "state_topic": "sysmon/$device/state",
+      $property_class
+      $property_icon
+      "state_topic": "$state_topic",
       "unit_of_measurement": "$unit",
-      "value_template":
-        "{{ (value_json.${attribute//\//.} | float(0)) | round(2) }}",
+      "value_template": "{{ $value_template }}",
+      "expire_after": "$((10#$SYSMON_INTERVAL*3))",
       "availability": {
         "topic": "sysmon/$device/connected",
-        "payload_available": "1",
-        "payload_not_available": "0"
+        "payload_available": "online",
+        "payload_not_available": "offline",
+        "value_template": $(jq -R -s '.' <<< \
+          "{{
+            'online' if (value | int(0) | as_datetime) + timedelta(
+              seconds = $((10#$SYSMON_INTERVAL*3))
+            ) >= now() else 'offline'
+          }}")
       }
     }
 		EOF
@@ -103,16 +128,17 @@ ha_discover(){
 
 if [ "$SYSMON_HA_DISCOVER" == true ] ; then
 
-  ha_discover 'CPU temperature' cpu_temp '°C' temperature
-  ha_discover 'CPU load' cpu_load '%' 'mdi:chip'
-  ha_discover 'Memory usage' mem_used '%' 'mdi:memory'
+  ha_discover 'Heartbeat' 'heartbeat' 'timestamp mdi:heart-pulse'
+  ha_discover 'CPU temperature' cpu_temp temperature '°C'
+  ha_discover 'CPU load' cpu_load 'mdi:chip' '%'
+  ha_discover 'Memory usage' mem_used 'mdi:memory' '%'
 
   for adapter in "${eth_adapters[@]}" ; do
 
     ha_discover "Bandwidth in (${adapter})" "bandwidth/${adapter}/rx" \
-      'kbit/s' data_rate
+      'data_rate mdi:download-network' 'kbit/s'
     ha_discover "Bandwidth out (${adapter})" "bandwidth/${adapter}/tx" \
-      'kbit/s' data_rate
+      'data_rate mdi:upload-network' 'kbit/s'
 
   done
 
@@ -133,7 +159,7 @@ _join() { local IFS="$1" ; shift ; echo "$*" ; }
 
 cpu_cores=$(nproc --all)
 rx_prev=() ; tx_prev=()
-second_loop=false
+first_loop=true
 
 while true ; do
 
@@ -202,17 +228,14 @@ while true ; do
   mosquitto_pub -h "$mqtt_host" \
     -t "sysmon/$device/state" -m "$payload" || true
 
-  # Publish "connected" after the _second_ payload is sent — this prevents
-  # periodic metrics (e.g. bandwidth) from needlessly dropping to zero in Home
-  # Assistant's graphs...
+  # Start publishing the "heartbeat" only after the _second_ payload is sent
 
-  if [ -v second_loop ] && [ "$second_loop" == true ] ; then
-
+  if [ ! -v first_loop ] ; then
     mosquitto_pub -r -q 1 -h "$mqtt_host" \
-      -t "sysmon/$device/connected" -m 1 || true
-    unset second_loop
+      -t "sysmon/$device/connected" -m "$(date +%s)" || true
+  fi
 
-  elif [ -v second_loop ] ; then second_loop=true ; fi
+  unset first_loop
 
   # Force $SYSMON_INTERVAL to base10; exits in case of invalid value
   sleep "$((10#$SYSMON_INTERVAL))s" &

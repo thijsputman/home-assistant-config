@@ -14,6 +14,7 @@ Hence, `sysmon-mqtt`: A simple shell-script to capture a handful of common
 metrics and push them over MQTT to Home Assistant.
 
 - [Metrics](#metrics)
+  - [Heartbeat](#heartbeat)
   - [Home Assistant discovery](#home-assistant-discovery)
 - [Setup](#setup)
   - [Broker](#broker)
@@ -37,9 +38,21 @@ Currently, the following metrics are provided:
 The metrics are provided as a JSON-object in the `sysmon/[device-name]/state`
 topic.
 
-A `sysmon/[device-name]/connected` topic (with value `0` or `1`) is provided as
-an indication of whether the script is active. When the script starts, reporting
-the connected `1` is delayed until stable metrics are available.
+### Heartbeat
+
+A persistent `sysmon/[device-name]/connected` topic is provided as an indication
+of whether the script is active. Its value works as a "heartbeat": It contains
+the Unix timestamp of the most recent reporting iteration, or `0` if the script
+was gracefully shutdown.
+
+In case a stale timestamp is present, it may be assumed the script (or the
+machine its running on) has crashed / dropped from the network. Stale is best
+defined as three times the reporting interval. For the default configuration
+that would amount to 90 seconds.
+
+When the script starts, reporting the heartbeat is delayed until the script's
+_second_ iteration. This ensures all metrics have stabilised (e.g., bandwidth is
+averaged over the reporting interval; during the first interval it reports `0`).
 
 ### Home Assistant discovery
 
