@@ -53,7 +53,7 @@ ha_discover(){
 
   local name=${1}
   local attribute=${2}
-  local class_icon=(${3})
+  read -r -a class_icon <<< "$3"
   local unit=${4}
 
   # Attempt to retrieve existing UUID; otherwise generate a new one
@@ -71,19 +71,19 @@ ha_discover(){
     unique_id=$(< /proc/sys/kernel/random/uuid)
   fi
 
-  # Construct "device_class"- and "icon"-properties
+  # Construct "device_class"- and/or "icon"-properties
 
   local device_class=""
   local icon=""
 
-  if [ -n "$class_icon" ] ; then
+  if [ -n "${class_icon[0]}" ] ; then
     if [ "${#class_icon[@]}" -gt 1 ] ; then
         device_class="${class_icon[0]}"
         icon="${class_icon[1]}"
-    elif [[ "$class_icon" =~ ^mdi: ]] ; then
-      icon=$class_icon
+    elif [[ "${class_icon[0]}" =~ ^mdi: ]] ; then
+      icon="${class_icon[0]}"
     else
-      device_class="$class_icon"
+      device_class="${class_icon[0]}"
     fi
   fi
 
@@ -91,12 +91,18 @@ ha_discover(){
   #
   # A combination of "expire_after" and "availability/value_template" is used
   # to determine the sensor's availability. In principle, "expire_after" and a
-  # "payload > 0"-template would suffice — the provided template handles edge
-  # cases (MQTT component/HA reload) more gracefully though...
+  # simple ("payload > 0") template would suffice — the provided template
+  # handles edge cases (MQTT component/HA reload) more gracefully though...
 
   local value_template="value_json.${attribute//\//.} | float(0) | round(2)"
   local state_topic="sysmon/$device/state"
   local expire_after=$((10#$SYSMON_INTERVAL*3))
+  local availability_template
+  availability_template=$(tr -s ' ' | tr -d '\n' <<- EOF
+    'online' if (value | int(0) | as_datetime) + timedelta(
+      seconds = ${expire_after}) >= now() else 'offline'
+		EOF
+  ) # N.B., EOF-line should be indented with tabs!
 
   # Heartbeat has an exceptional setup
 
@@ -104,9 +110,13 @@ ha_discover(){
     state_topic="sysmon/$device/connected"
     value_template='(value | int(0) | as_datetime)'
     expire_after=0
+    # For zero-expiry, the "simple" behaviour is actually what we need...
+    availability_template="'online' if value | int(0) > 0 else 'offline'"
   fi
 
   local payload
+  # Use of cat is intentional to redirect stderr to /dev/null
+  # shellcheck disable=SC2002
   payload=$(tr -s ' ' <<- EOF
     {
       "name": $(echo -n "$device_name $name" | jq -R -s '.'),
@@ -120,8 +130,8 @@ ha_discover(){
             2> /dev/null | tr -d '\0' || true)",
           "sw_version": "$(uname -smr)"
       },
-      "device_class": "$device_class",
-      "icon": "$icon",
+      $([ -n "$device_class" ] && echo "\"device_class\": \"$device_class\",")
+      $([ -n "$icon" ] && echo "\"icon\": \"$icon\",")
       "state_topic": "$state_topic",
       "unit_of_measurement": "$unit",
       "value_template": "{{ $value_template }}",
@@ -130,12 +140,7 @@ ha_discover(){
         "topic": "sysmon/$device/connected",
         "payload_available": "online",
         "payload_not_available": "offline",
-        "value_template": $(jq -R -s '.' <<< "\
-          {{
-            'online' if (value | int(0) | as_datetime) + timedelta(
-              seconds = $$expire_after) >= now() else 'offline'
-          }}
-        ")
+        "value_template": "{{ $availability_template }}"
       }
     }
 		EOF
