@@ -12,6 +12,7 @@ if [ -e /etc/systemd/system/sysmon-mqtt.service ] ; \
   then systemctl stop sysmon-mqtt ; fi
 
 wget -O sysmon.sh "$(tr -d ' ' <<< "$sysmon_url")"
+chown "$USER:$(id -gn)" sysmon.sh
 chmod +x sysmon.sh
 
 if [ ! -e /etc/systemd/system/sysmon-mqtt.service ] ; then

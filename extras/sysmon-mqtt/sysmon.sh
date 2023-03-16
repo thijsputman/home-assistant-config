@@ -115,7 +115,9 @@ ha_discover(){
   fi
 
   local payload
-  # Use of cat is intentional to redirect stderr to /dev/null
+  # For "model", the use of cat is intentional (it redirects "not found"-errors
+  # to /dev/null). Furthermore, no model is reported in Docker-containers while
+  # <https://github.com/moby/moby/issues/43419> is unresolved.
   # shellcheck disable=SC2002
   payload=$(tr -s ' ' <<- EOF
     {
