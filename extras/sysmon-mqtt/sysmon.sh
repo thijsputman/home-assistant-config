@@ -14,8 +14,16 @@ mqtt_host="${1:?"Missing MQTT-broker hostname!"}"
 device_name="${2:?"Missing device name!"}"
 read -r -a eth_adapters <<< "$3"
 
-# Test the broker (assumes Mosquitto) — exits on failure
-mosquitto_sub -C 1 -h "$mqtt_host" -t \$SYS/broker/version
+# Exit-trap handler
+
+goodbye(){
+  rc="$?"
+  mosquitto_pub -r -q 1 -h "$mqtt_host" \
+    -t "sysmon/$device/connected" -m 0 || true
+  # Reset EXIT-trap to prevent running twice (due to "set -e")
+  trap - EXIT
+  exit "$rc"
+}
 
 # Clean parameters to be used in MQTT-topic names — reduce them to lowercase
 # alphanumeric and underscores; exit if nothing remains
@@ -35,17 +43,18 @@ mqtt_clean(){
 device=$(mqtt_clean "$device_name")
 ha_topic=$(mqtt_clean "$SYSMON_HA_TOPIC")
 
+# Test the broker (assumes Mosquitto) — exits on failure
+mosquitto_sub -C 1 -h "$mqtt_host" -t \$SYS/broker/version
+
+mosquitto_pub -r -q 1 -h "$mqtt_host" \
+  -t "sysmon/$device/connected" -m '-1' || true
+
 ha_discover(){
 
   local name=${1}
   local attribute=${2}
   local class_icon=(${3})
   local unit=${4}
-
-  local value_template="value_json.${attribute//\//.} | float(0) | round(2)"
-  local state_topic="sysmon/$device/state"
-  local property_class=""
-  local property_icon=""
 
   # Attempt to retrieve existing UUID; otherwise generate a new one
 
@@ -59,27 +68,23 @@ ha_discover(){
   fi
 
   if ! [[ "$unique_id" =~ ^[0-9a-z-]{36}$ ]] ; then
-    unique_id=$(cat /proc/sys/kernel/random/uuid)
+    unique_id=$(< /proc/sys/kernel/random/uuid)
   fi
 
   # Construct "device_class"- and "icon"-properties
 
+  local device_class=""
+  local icon=""
+
   if [ -n "$class_icon" ] ; then
     if [ "${#class_icon[@]}" -gt 1 ] ; then
-        property_class="\"device_class\": \"${class_icon[0]}\","
-        property_icon="\"icon\": \"${class_icon[1]}\","
+        device_class="${class_icon[0]}"
+        icon="${class_icon[1]}"
     elif [[ "$class_icon" =~ ^mdi: ]] ; then
-      property_icon="\"icon\": \"$class_icon\","
+      icon=$class_icon
     else
-      property_class="\"device_class\": \"$class_icon\","
+      device_class="$class_icon"
     fi
-  fi
-
-  # Heartbeat has an exceptional setup
-
-  if [ "$attribute" == "heartbeat" ] ; then
-    state_topic="sysmon/$device/connected"
-    value_template='(value | int(0) | as_datetime)'
   fi
 
   # Construct Home Assistant discovery-payload
@@ -88,6 +93,18 @@ ha_discover(){
   # to determine the sensor's availability. In principle, "expire_after" and a
   # "payload > 0"-template would suffice — the provided template handles edge
   # cases (MQTT component/HA reload) more gracefully though...
+
+  local value_template="value_json.${attribute//\//.} | float(0) | round(2)"
+  local state_topic="sysmon/$device/state"
+  local expire_after=$((10#$SYSMON_INTERVAL*3))
+
+  # Heartbeat has an exceptional setup
+
+  if [ "$attribute" == "heartbeat" ] ; then
+    state_topic="sysmon/$device/connected"
+    value_template='(value | int(0) | as_datetime)'
+    expire_after=0
+  fi
 
   local payload
   payload=$(tr -s ' ' <<- EOF
@@ -98,24 +115,27 @@ ha_discover(){
       "device": {
           "identifiers": "sysmon_${device}",
           "name": $(echo -n "$device_name" | jq -R -s '.'),
-          "manufacturer": "sysmon-mqtt"
+          "manufacturer": "sysmon-mqtt",
+          "model": "$(cat /sys/firmware/devicetree/base/model \
+            2> /dev/null | tr -d '\0' || true)",
+          "sw_version": "$(uname -smr)"
       },
-      $property_class
-      $property_icon
+      "device_class": "$device_class",
+      "icon": "$icon",
       "state_topic": "$state_topic",
       "unit_of_measurement": "$unit",
       "value_template": "{{ $value_template }}",
-      "expire_after": "$((10#$SYSMON_INTERVAL*3))",
+      "expire_after": "$expire_after",
       "availability": {
         "topic": "sysmon/$device/connected",
         "payload_available": "online",
         "payload_not_available": "offline",
-        "value_template": $(jq -R -s '.' <<< \
-          "{{
+        "value_template": $(jq -R -s '.' <<< "\
+          {{
             'online' if (value | int(0) | as_datetime) + timedelta(
-              seconds = $((10#$SYSMON_INTERVAL*3))
-            ) >= now() else 'offline'
-          }}")
+              seconds = $$expire_after) >= now() else 'offline'
+          }}
+        ")
       }
     }
 		EOF
@@ -143,17 +163,6 @@ if [ "$SYSMON_HA_DISCOVER" == true ] ; then
   done
 
 fi
-
-trap goodbye INT HUP TERM EXIT
-
-goodbye(){
-  rc="$?"
-  mosquitto_pub -r -q 1 -h "$mqtt_host" \
-    -t "sysmon/$device/connected" -m 0 || true
-  # Reset EXIT-trap to prevent running twice (due to "set -e")
-  trap - EXIT
-  exit "$rc"
-}
 
 _join() { local IFS="$1" ; shift ; echo "$*" ; }
 
@@ -185,8 +194,8 @@ while true ; do
 
     # Attempt to strip $adapter down to a single path-component; exits if the
     # adapter doesn't exist
-    rx=$(cat "/sys/class/net/${adapter%%/*}/statistics/rx_bytes")
-    tx=$(cat "/sys/class/net/${adapter%%/*}/statistics/tx_bytes")
+    rx=$(< "/sys/class/net/${adapter%%/*}/statistics/rx_bytes")
+    tx=$(< "/sys/class/net/${adapter%%/*}/statistics/tx_bytes")
 
     # Only run when "prev" is initialised
     if [ "${#rx_prev[@]}" -eq "${#eth_adapters[@]}" ] ; then
@@ -228,14 +237,19 @@ while true ; do
   mosquitto_pub -h "$mqtt_host" \
     -t "sysmon/$device/state" -m "$payload" || true
 
-  # Start publishing the "heartbeat" only after the _second_ payload is sent
+  # Start publishing a "heartbeat" from the second iteration onward; during the
+  # _first_ iteration, setup the exit-trap: This ensures errors during init (and
+  # those while gathering the first set of metrics) are not trapped and will
+  # leave the connected-state as "-1".
 
-  if [ ! -v first_loop ] ; then
+  if [ "$first_loop" == false ] ; then
+
     mosquitto_pub -r -q 1 -h "$mqtt_host" \
       -t "sysmon/$device/connected" -m "$(date +%s)" || true
-  fi
 
-  unset first_loop
+  else trap goodbye INT HUP TERM EXIT ; fi
+
+  first_loop=false
 
   # Force $SYSMON_INTERVAL to base10; exits in case of invalid value
   sleep "$((10#$SYSMON_INTERVAL))s" &

@@ -42,17 +42,18 @@ topic.
 
 A persistent `sysmon/[device-name]/connected` topic is provided as an indication
 of whether the script is active. Its value works as a "heartbeat": It contains
-the Unix timestamp of the most recent reporting iteration, or `0` if the script
-was gracefully shutdown.
+the Unix timestamp of the most recent reporting iteration, `-1` while the script
+is initialising, and `0` if the script was gracefully shutdown.
 
 In case a stale timestamp is present, it may be assumed the script (or the
 machine its running on) has crashed / dropped from the network. Stale is best
 defined as three times the reporting interval. For the default configuration
 that would amount to 90 seconds.
 
-When the script starts, reporting the heartbeat is delayed until the script's
-_second_ iteration. This ensures all metrics have stabilised (e.g., bandwidth is
-averaged over the reporting interval; during the first interval it reports `0`).
+When the script starts, a heartbeat of `-1` is reported until the script's
+_second_ iteration. This is done to allow the metrics to stabilise (e.g.,
+bandwidth is averaged over the reporting interval; during the first interval it
+always reports `0`).
 
 ### Home Assistant discovery
 
@@ -140,6 +141,11 @@ services:
   sysmon-mqtt:
     image: thijsputman/sysmon-mqtt:latest
     restart: unless-stopped
+    # To monitor the host's (instead of the container's) bandwidth, mount the
+    # host's sysfs (read-only) into the container — a more granular approach
+    # would probably be better; this is okayish for now though...
+    # volumes:
+    #   - /sys:/sys:ro
     environment:
       - MQTT_BROKER=
       - DEVICE_NAME=
@@ -155,7 +161,7 @@ the Docker-container to further modify its behaviour.
 
 ### `systemd`
 
-Alternatively, it's trivial to run the script as a `systemd` service using
+Alternatively, it's trivial to run the script as a `systemd`-service using
 something along the lines of the below configuration:
 
 **`📄 /etc/systemd/system/sysmon-mqtt.service`**
@@ -171,7 +177,7 @@ Restart=on-failure
 # Update the below match your environment
 User=[user]
 ExecStart=/usr/bin/env bash /home/<user>/sysmon.sh \
-  mqtt-broker device-name [network-adapters]
+  mqtt-broker "Device Name" [network-adapters]
 
 [Install]
 WantedBy=multi-user.target
@@ -181,6 +187,16 @@ Reload, enable and start the service:
 
 ```shell
 sudo systemctl daemon-reload
-sudo systemctl enable sysmon-mqtt.service
-sudo systemctl start sysmon-mqtt.service
+sudo systemctl enable sysmon-mqtt
+sudo systemctl start sysmon-mqtt
+```
+
+To facilitate this setup process, a setup-script is provided:
+[`📄 install.sh`](./install.sh).
+
+For the very brave, the script can also be run from GitHub directly:
+
+```shell
+curl -fsSL https://github.com/thijsputman/home-assistant-config/raw/main/\
+extras/sysmon-mqtt/install.sh | sudo -E bash -s - mqtt-broker "Device Name"
 ```
