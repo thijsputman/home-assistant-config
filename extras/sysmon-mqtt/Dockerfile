@@ -1,5 +1,6 @@
 FROM alpine:3.17
 ARG S6_OVERLAY_VERSION=3.1.4.1
+ENV SYSMON_IN_DOCKER=true
 
 SHELL ["/bin/ash", "-euo", "pipefail", "-c"]
 

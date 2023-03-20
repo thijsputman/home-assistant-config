@@ -34,6 +34,11 @@ Currently, the following metrics are provided:
   total available memory
 - `bandwidth` — Average bandwidth (receive and transmit) for individual network
   adapters in kbps during the monitoring interval
+- `apt` — Number of APT packages that can upgraded
+  - This assumes a Debian(-derived) distribution; the APT-related metrics are
+    automatically disabled when no `apt`-binary is present
+- `reboot_required` — Reports `1` if a system reboot is required as a result of
+  APT package upgrades
 
 The metrics are provided as a JSON-object in the `sysmon/[device-name]/state`
 topic.
@@ -66,6 +71,11 @@ already present `device-name` will re-use the existing sensor-entity `unique_id`
 values (and thus "adopt" the previous instance's sensors in Home Assistant).
 This behaviour is intended to allow "fixed" sensor-entities in Home Assistant
 (which can easily be customised via the GUI).
+
+The `apt`-metric is presented as a Home Assistant
+[Update-entity](https://www.home-assistant.io/integrations/update.mqtt/). For
+its "entity-picture" to show, copy [`🖼️ /www/debian.png`](/www/debian.png) into
+your Home Assistant's local webroot.
 
 To unregister (a set of) metrics from Home Assistant, simply remove their
 topics/messages from the `homeassistant/sensors/sysmon` tree with (for example)
@@ -124,14 +134,26 @@ the script's behaviour:
   discovery topic
 - `SYSMON_INTERVAL` (default: `30`) — set the interval (in seconds) at which
   metrics are reported
+- `SYSMON_APT` (default: `true`) — set to `false` to disable reporting
+  APT-related metrics (`apt` and `reboot_required`)
+  - Automatically disabled when no `apt`-binary is present, _or_ when running
+    inside a Docker-container (see below)
 
 ### Docker
 
-The simplest (if somewhat overkill) way of running the script is via the
-Docker-container published on
+The simplest (if somewhat overkill and slightly limited) way of running the
+script is via the Docker-container published on
 [Docker Hub](https://hub.docker.com/r/thijsputman/sysmon-mqtt) or
 [GHCR](https://github.com/thijsputman/home-assistant-config/pkgs/container/sysmon-mqtt).
 Container images are available for `amd64`, `arm64` and `armhf`.
+
+For bandwidth monitoring to work, you'll need to mount the host's `/sys`-sysfs
+into the container (see below for instructions).
+
+Furthermore, the APT-related metrics are automatically _disabled_ when running
+inside a Docker-container. They would report the container's state instead of
+the host's state and thus make no sense. Attempting to "push" this information
+into the container is unwieldy/infeasible (and probably undesirable too).
 
 Use the below `📄 docker-compose.yml` and start using `docker-compose up -d`:
 
@@ -141,9 +163,7 @@ services:
   sysmon-mqtt:
     image: thijsputman/sysmon-mqtt:latest
     restart: unless-stopped
-    # To monitor the host's (instead of the container's) bandwidth, mount the
-    # host's sysfs (read-only) into the container — a more granular approach
-    # would probably be better; this is okayish for now though...
+    # Mount host's /sys-sysfs (read-only) into the container
     # volumes:
     #   - /sys:/sys:ro
     environment:
@@ -161,7 +181,7 @@ the Docker-container to further modify its behaviour.
 
 ### `systemd`
 
-Alternatively, it's trivial to run the script as a `systemd`-service using
+Alternatively, it's possible to run the script as a `systemd`-service using
 something along the lines of the below configuration:
 
 **`📄 /etc/systemd/system/sysmon-mqtt.service`**
@@ -191,10 +211,13 @@ sudo systemctl enable sysmon-mqtt
 sudo systemctl start sysmon-mqtt
 ```
 
-To facilitate this setup process, a setup-script is provided:
-[`📄 install.sh`](./install.sh).
+To facilitate this setup process, a setup-script (suitable for Debian(-derived)
+distributions) is provided: [`📄 install.sh`](./install.sh). Once installed,
+running the script again will pull the latest version of `📄 sysmon.sh` from
+GitHub.
 
-For the very brave, the script can also be run from GitHub directly:
+For the very brave, the script can also be run from GitHub directly (don't
+forget to fill out `mqtt-broker` and `"Device Name"` first!):
 
 ```shell
 curl -fsSL https://github.com/thijsputman/home-assistant-config/raw/main/\
