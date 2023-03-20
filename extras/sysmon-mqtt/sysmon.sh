@@ -361,7 +361,7 @@ while true ; do
   first_loop=false
 
   # Track ticks and hourly-trigger
-  ticks+=1
+  ticks=$((ticks+1))
   hourly=false
   if [ "$ticks" -gt "$hourly_ticks" ] ; then hourly=true ; ticks=0 ; fi
 
