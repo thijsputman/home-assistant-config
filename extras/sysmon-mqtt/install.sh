@@ -12,7 +12,7 @@ if [ -e /etc/systemd/system/sysmon-mqtt.service ] ; \
   then systemctl stop sysmon-mqtt ; fi
 
 wget -O sysmon.sh "$(tr -d ' ' <<< "$sysmon_url")"
-chown "$USER:$(id -gn)" sysmon.sh
+chown "${SUDO_USER:-$(whoami)}:" sysmon.sh
 chmod +x sysmon.sh
 
 if [ ! -e /etc/systemd/system/sysmon-mqtt.service ] ; then
@@ -32,7 +32,7 @@ if [ ! -e /etc/systemd/system/sysmon-mqtt.service ] ; then
     [Service]
     Type=simple
     Restart=on-failure
-    User=$USER
+    User=${SUDO_USER:-$(whoami)}
     ExecStart=/usr/bin/env bash $(pwd)/sysmon.sh \
       $mqtt_host "$device_name"
 
