@@ -210,10 +210,16 @@ tts_announce:
       data:
         message: >-
           {#
-            Compress all consecutive whitespaces into a single space and replace
-            "ij" with "y" (en-GB Cloud TTS trips over that one).
+            Compress all whitespace; remove all HTML-tags (they are pronounced,
+            instead of being used as intonation hints as I would've hoped);
+            replace "ij" with "y" (en-GB Cloud TTS trips over it).
           #}
-          {{ message | regex_replace(' *\n+ *', ' ') | replace('ij', 'y') }}
+          {{
+            message |
+              regex_replace(' *\n+ *', ' ') |
+              regex_replace('<.+?>', '') |
+              replace('ij', 'y')
+          }}
         language: en-GB
         options:
           gender: female

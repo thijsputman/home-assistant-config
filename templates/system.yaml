@@ -54,6 +54,7 @@
         %}
         {% for entity_id in entity_ids %}
           {% set matched = 'unknown' %}
+          {# Individual entities (not part of a device) #}
           {% if device_id(entity_id) == None %}
             {# WeeWX #}
             {% if entity_id is search('^sensor\.weewx_.+') %}
@@ -64,16 +65,6 @@
               {% if entity_id is not search('_wind_.*direction') %}
                 {% set matched = 'WeeWX' %}
               {% endif %}
-            {# Pi4 #}
-            {% elif entity_id is search('^sensor\.pi4_.+') %}
-              {% if entity_id is search('_sandbox_') %}
-                {% set matched = 'Pi4 Sandbox' %}
-              {% else %}
-                {% set matched = 'Pi4' %}
-              {% endif %}
-            {# HA Yellow #}
-            {% elif entity_id is search('^sensor\.ha_yellow_.+') %}
-              {% set matched = 'HA Yellow' %}
             {# Aarlo #}
             {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+') %}
               {#
@@ -125,6 +116,7 @@
             {% else %}
               {% set matched = state_attr(entity_id, 'friendly_name') %}
             {% endif %}
+          {# Devices #}
           {% else %}
             {# Mobile App #}
             {%
@@ -143,7 +135,7 @@
             {%
               elif entity_id is search('^number\..+_screen(|saver)_brightness')
             %}
-              {# Ignored; unavailable/unknown under normal circumstances #}
+              {# Ignored; unavailable/unknown when screen switched off #}
             {# Phoscon Hive #}
             {% elif entity_id == 'light.extended_color_light_23' %}
               {# Ignored; only available when switched on #}
