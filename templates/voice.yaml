@@ -101,10 +101,19 @@
             not in ['unknown', 'unavailable']
         %}
           {%
-            set ah_eta =
-              states('sensor.last_notification_albert_heijn_eta') |
-              as_datetime
+            set ah_eta = states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime | as_timestamp
           %}
-          Albert Heijn expects to arrive around
-          {{ ah_eta.hour }}:{{ ah_eta.minute }}.
+          {#
+            Albert Heijn ETA is only relevant if it's for _tomorrow_; otherwise
+            we might replay this morning's delivery announcement...
+          #}
+          {%
+            if ah_eta | timestamp_custom('%Y-%m-%d') ==
+              (now() + timedelta(hours=24)) |
+                as_timestamp | timestamp_custom('%Y-%m-%d')
+          %}
+            Albert Heijn expects to arrive around
+            {{ ah_eta | timestamp_custom('%H:%S') }}.
+          {% endif %}
         {% endif %}

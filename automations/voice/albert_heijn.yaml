@@ -65,26 +65,32 @@
   trigger:
     - platform: state
       entity_id: sensor.last_notification_albert_heijn_eta
-      from:
-        - unavailable
+      not_to:
         - unknown
+        - unavailable
   condition:
-    # Prevent trigger on reload of the underlying template-entity. As it is not
-    # possible to use a combination of "from" and "not_to" for the trigger, an
-    # additional condition is required...
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: sensor.last_notification_albert_heijn_eta
-          state:
-            - unknown
-            - unavailable
+    # Only relevant if the delivery is scheduled for today or tomorrow
+    - >-
+      {%
+        set eta = states('sensor.last_notification_albert_heijn_eta') |
+          as_datetime | as_timestamp | timestamp_custom('%Y-%m-%d')
+      %}
+      {{
+        eta == now() | as_timestamp | timestamp_custom('%Y-%m-%d') or
+        eta == (now() + timedelta(hours=24)) | as_timestamp |
+          timestamp_custom('%Y-%m-%d')
+      }}
   action:
+    # Abort any previously scheduled (and now invalid) announcements...
+    - event: tts_queue_abort
+      event_data:
+        tag: albert_heijn_eta
     - service: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
         variables:
+          tag: albert_heijn_eta
           expiry: "06:00:00"
           message: >-
             {%
