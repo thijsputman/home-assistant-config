@@ -24,14 +24,21 @@
         type: initial_press
     # Change of position/orientation for the Attic window
     - platform: state
+      id: attic_window
       entity_id: sensor.attic_window_position
-      not_from:
-        - unavailable
-        - unknown
       not_to:
         - unavailabe
         - unknown
   condition:
+    # It seems using a combination of not_from/not_to to filter out transitions
+    # that go "through" unavailable/unknown (happens, for example, when template
+    # sensors are reloaded) doesn't work... So, rely on a template-condition
+    # that achieves the same (in a somewhat more convoluted manner).
+    - >-
+      {{
+        trigger.id != 'attic_window' or
+          trigger.from_state.state not in ['unavailable', 'unknown']
+      }}
     - condition: state
       entity_id: script.tts_queue
       state: "on"

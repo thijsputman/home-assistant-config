@@ -7,9 +7,6 @@
       entity_id:
         - sensor.activity_while_armed_doorbell
         - sensor.activity_while_armed_arlo
-      not_from:
-        - unavailable
-        - unknown
       not_to:
         - unavailabe
         - unknown
@@ -74,9 +71,6 @@
         - input_boolean.wakeup_alarm_mute
         - input_datetime.wakeup
         - sensor.last_notification_albert_heijn_eta
-      not_from:
-        - unavailable
-        - unknown
       not_to:
         - unavailabe
         - unknown

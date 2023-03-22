@@ -3,9 +3,6 @@
   trigger:
     - platform: state
       entity_id: sensor.last_notification_albert_heijn_eta
-      not_from:
-        - unavailable
-        - unknown
       not_to:
         - unavailabe
         - unknown
