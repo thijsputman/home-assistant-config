@@ -189,7 +189,8 @@ something along the lines of the below configuration:
 ```conf
 [Unit]
 Description=Simple system monitoring over MQTT
-After=network.target
+After=network-online.target
+Wants=network-online.target
 
 [Service]
 Type=simple
@@ -201,6 +202,14 @@ ExecStart=/usr/bin/env bash /home/<user>/sysmon.sh \
 
 [Install]
 WantedBy=multi-user.target
+```
+
+This unit configuration aims to start `sysmon-mqtt` _after_ the network comes
+online. For this to work properly, the output of the below command should be
+`enabled` on your system.
+
+```shell
+systemctl is-enabled systemd-networkd-wait-online.service
 ```
 
 Reload, enable and start the service:
