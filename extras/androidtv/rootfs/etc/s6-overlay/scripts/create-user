@@ -2,28 +2,31 @@
 
 set -eo pipefail
 
-if [ -n "$PUID" ] && [ -n "$PGID" ] ; then
+if ! id -u androidtv &>/dev/null ; then
 
-  addgroup --gid "$PGID" androidtv
-  adduser --system --uid "$PUID" --gid "$PGID" androidtv
+  if [ -n "$PUID" ] && [ -n "$PGID" ] ; then
 
-else
+    addgroup --gid "$PGID" androidtv
+    adduser --system --uid "$PUID" --gid "$PGID" androidtv
 
-  addgroup androidtv
-  adduser --system --group androidtv androidtv
+  else
+
+    addgroup androidtv
+    adduser --system --group androidtv androidtv
+
+  fi
 
 fi
 
 # Symlink ADB-keys into AndroidTV's home-directory (where adb is hard-coded
 # to look for them)
 
+mkdir -p /home/androidtv/.android
+chown -R androidtv:androidtv /home/androidtv/.android
+
 if [ -f /androidtv/keys/adbkey ] && [ -f /androidtv/keys/adbkey.pub ] ; then
 
-  mkdir -p /home/androidtv/.android
-
-  ln -s /androidtv/keys/adbkey /home/androidtv/.android/adbkey
-  ln -s /androidtv/keys/adbkey.pub /home/androidtv/.android/adbkey.pub
-
-  chown -R androidtv:androidtv /home/androidtv/.android
+  ln -sf /androidtv/keys/adbkey /home/androidtv/.android/adbkey
+  ln -sf /androidtv/keys/adbkey.pub /home/androidtv/.android/adbkey.pub
 
 fi

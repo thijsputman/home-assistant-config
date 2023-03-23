@@ -58,7 +58,9 @@ server (defeating the purpose).
 
 Actual remote connections are also possible. In that case, ensure the
 container's port-forwarding (see below) is setup as `5037:5037/tcp` (_without_
-the leading `127.0.0.:` as that limits it to local connections only).
+the leading `127.0.0.:` as that limits it to local connections only). Note that
+configuration access in this way poses a substantial security-risk to your
+Android device...
 
 ## Setup
 

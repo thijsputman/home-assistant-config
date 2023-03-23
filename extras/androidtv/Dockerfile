@@ -6,7 +6,7 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 # Install dependencies
 
 RUN apt update && apt install -y \
-  adb \
+  'adb=1:10.0.*' \
   sudo \
   wget \
   xz-utils && \
@@ -30,6 +30,9 @@ COPY androidtv.sh .
 
 # Restore SHELL to its default
 SHELL ["/bin/sh", "-c"]
+
+HEALTHCHECK --interval=5m --timeout=5s --retries=2 CMD \
+  adb devices || exit 1
 
 ENTRYPOINT ["/init"]
 
