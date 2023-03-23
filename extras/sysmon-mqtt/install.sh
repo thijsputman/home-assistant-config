@@ -4,6 +4,7 @@ export DEBIAN_FRONTEND=noninteractive
 
 mqtt_host="${1:?"Missing MQTT-broker hostname!"}"
 device_name="${2:?"Missing device name!"}"
+network_adapters="$3"
 
 sysmon_url="https://github.com/thijsputman/home-assistant-config/raw/main/ \
   extras/sysmon-mqtt/sysmon.sh"
@@ -37,7 +38,7 @@ tee /etc/systemd/system/sysmon-mqtt.service <<- EOF > /dev/null
   Restart=on-failure
   User=${SUDO_USER:-$(whoami)}
   ExecStart=/usr/bin/env bash $(pwd)/.sysmon-mqtt \
-    $mqtt_host "$device_name"
+    $mqtt_host "$device_name" "$network_adapters"
 
   [Install]
   WantedBy=multi-user.target

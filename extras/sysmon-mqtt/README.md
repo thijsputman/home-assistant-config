@@ -232,3 +232,10 @@ forget to fill out `mqtt-broker` and `"Device Name"` first!):
 curl -fsSL https://github.com/thijsputman/home-assistant-config/raw/main/\
 extras/sysmon-mqtt/install.sh | sudo -E bash -s - mqtt-broker "Device Name"
 ```
+
+As an optional third argument, a list of network adapters to monitor can also be
+passed in:
+
+```shell
+./install.sh mqtt-broker device-name "eth0 wlan0"
+```
