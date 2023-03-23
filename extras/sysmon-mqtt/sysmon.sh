@@ -131,7 +131,7 @@ ha_discover(){
   elif [ "$attribute" = "reboot_required" ] ; then
     expire_after=0
     value_template=$(tr -d '\n' <<- EOF
-      'ON' if value_json.${attribute//\//.} == 1 else 'OFF'
+      'ON' if (value_json.${attribute//\//.} | int(0)) == 1 else 'OFF'
 			EOF
     ) # N.B., EOF-line should be indented with tabs!
   fi
