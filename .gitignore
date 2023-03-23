@@ -12,6 +12,7 @@
 /var
 /home-assistant_v2.db*
 /*.log*
+/*.pickle
 /restart-container
 
 # Privacy sensitive

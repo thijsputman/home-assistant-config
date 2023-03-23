@@ -106,6 +106,14 @@ rest_command:
   fireplace_stop:
     url: http://pi4.sgraastra:9000/hooks/fireplace-stop
 
+# Feedreader
+feedreader:
+  urls:
+    - https://rpilocator.com/feed/?cat=cm4
+  scan_interval:
+    minutes: 30
+  max_entries: 5
+
 notify:
   - name: All devices
     platform: group

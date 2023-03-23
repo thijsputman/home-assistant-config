@@ -33,11 +33,21 @@ persistent_notification:
     # Optional notification actions (next to the always-present "Dismiss"-
     # action). To act on these, a custom [tag] needs to be provided as the
     # actions will be "ACTION_1_[tag]" and "ACTION_2_[tag]" respectively.
+    # There's one exceptional case: If both "action_1" and "uri_1" are provided,
+    # the first action will open the provided URI on the phone. In this case
+    # (for Android-compatibility), the action is hardcoded to "URI" and can thus
+    # not be acted upon on the Home Assistant side...
     action_1:
       description: Mobile devices – First notification action
       required: false
       selector:
         text: # yamllint disable-line rule:empty-values
+    uri_1:
+      description: Mobile devices – URI for first notification action
+      required: false
+      selector:
+        text:
+          type: url
     action_2:
       description: Mobile devices – Second notification action
       required: false
@@ -193,11 +203,19 @@ persistent_notification:
               title: Dismiss
             - action: >-
                 {% if action_1 is defined %}
-                  ACTION_1_{{ tag }}
+                  {% if uri_1 is defined %}
+                    URI
+                  {% else %}
+                    ACTION_1_{{ tag }}
+                  {% endif %}
                 {% endif %}
               title: >-
                 {% if action_1 is defined %}
                   {{ action_1 }}
+                {% endif %}
+              uri: >-
+                {% if uri_1 is defined %}
+                  {{ uri_1 }}
                 {% endif %}
             - action: >-
                 {% if action_2 is defined %}
