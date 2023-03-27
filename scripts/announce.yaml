@@ -206,9 +206,8 @@ tts_announce:
       target:
         entity_id: >-
           {{ speaker }}
-    - service: tts.cloud_say
-      data:
-        message: >-
+    - variables:
+        announcement: >-
           {#
             Compress all whitespace; remove all HTML-tags (they are pronounced,
             instead of being used as intonation hints as I would've hoped);
@@ -220,12 +219,20 @@ tts_announce:
               regex_replace('<.+?>', '') |
               replace('ij', 'y')
           }}
+    - service: tts.cloud_say
+      data:
+        message: >-
+          {{ announcement }}
         language: en-GB
         options:
           gender: female
       target:
         entity_id: >-
           {{ speaker }}
+    - service: notify.log_tts_announce
+      data:
+        message: >-
+          {{ speaker }}: {{ announcement }}
     # For queued execution to work properly, the script needs to block while
     # the announcement is playing...
     - delay: >-
@@ -234,13 +241,7 @@ tts_announce:
           Compress all whitespace; remove all HTML-tags.
         #}
         {% if messageDuration is not number %}
-          {{
-            [ 1, (
-              message |
-                regex_replace(' *\n+ *', ' ') |
-                regex_replace('<.+?>', '') | length / 14
-            ) | round(0) ] | max
-          }}
+          {{ [ 1, (announcement | length / 14) | round(0) ] | max }}
         {% else %}
           {{ messageDuration | int }}
         {% endif %}

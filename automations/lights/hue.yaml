@@ -170,7 +170,7 @@
           {%- if wait.trigger is not none -%}
             {{ (20 - wait.remaining) | round(0) }}
           {%- endif -%}
-    - service: notify.hue_scene_heuristic
+    - service: notify.log_hue_scene_heuristic
       data:
         message: >-
           Hue scene heuristic failure: {{ trigger.entity_id }} transitioned {%
