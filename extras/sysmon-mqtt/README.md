@@ -141,21 +141,39 @@ the script's behaviour:
 
 ### Docker
 
-The simplest (if somewhat overkill and slightly limited) way of running the
-script is via the Docker-container published on
-[Docker Hub](https://hub.docker.com/r/thijsputman/sysmon-mqtt) or
+The simplest (if slightly constrained) way of running the script is via the
+Docker-container published on
+[Docker Hub](https://hub.docker.com/r/thijsputman/sysmon-mqtt) and
 [GHCR](https://github.com/thijsputman/home-assistant-config/pkgs/container/sysmon-mqtt).
 Container images are available for `amd64`, `arm64` and `armhf`.
 
 For bandwidth monitoring to work, you'll need to mount the host's `/sys`-sysfs
-into the container (see below for instructions).
+into the container (as is done in the below
+[`📄 docker-compose.yml`](#docker-composeyml)). Alternatively, you can use
+`network_mode: host`.
 
-Furthermore, the APT-related metrics are automatically _disabled_ when running
+The `/sys`-approach is preferred as it's more flexible (i.e., it can be used to
+gather additional information such as the device model) and offers better
+security: The container's network remains isolated; instead it gains _read-only_
+access to `/sys` with Docker's AppArmor policies applied to prevent access to
+sensitive information.
+
+These AppArmor policies currently _prevent_ reporting the device model from
+inside the container though 😵 — see
+[moby#434199](https://github.com/moby/moby/issues/43419) for details. Until that
+issue is resolved, you'll need to run a privileged container (easiest, if
+slightly too broad, is via `privileged: true`) which is **_not_** worth the risk
+just to have the device model reported.
+
+If you don't care about bandwidth monitoring (and/or the device model), the
+`/sys`-mount can be removed.
+
+Finally, the APT-related metrics are automatically _disabled_ when running
 inside a Docker-container. They would report the container's state instead of
 the host's state and thus make no sense. Attempting to "push" this information
 into the container is unwieldy/infeasible (and probably undesirable too).
 
-Use the below `📄 docker-compose.yml` and start using `docker-compose up -d`:
+#### `docker-compose.yml`
 
 ```yaml
 version: "2.3"
@@ -164,16 +182,16 @@ services:
     image: thijsputman/sysmon-mqtt:latest
     restart: unless-stopped
     # Mount host's /sys-sysfs (read-only) into the container
-    # volumes:
-    #   - /sys:/sys:ro
+    volumes:
+      - /sys:/sys:ro
     environment:
       - MQTT_BROKER=
       - DEVICE_NAME=
-    # Optional: Enable bandwidth monitoring
-    # - NETWORK_ADAPTERS=
-    # Optional: Drop permissions to the provided UID/GID-combination
-    # - PUID=1000
-    # - PGID=1000
+      # Optional: Specify network adapters for bandwidth monitoring
+      - NETWORK_ADAPTERS=
+      # Optional: Drop permissions to the provided UID/GID-combination
+      - PUID=
+      - PGID=
 ```
 
 The optional environment variables provided above can of course be passed into
@@ -191,10 +209,13 @@ something along the lines of the below configuration:
 Description=Simple system monitoring over MQTT
 After=network-online.target
 Wants=network-online.target
+StartLimitIntervalSec=120
+StartLimitBurst=3
 
 [Service]
 Type=simple
 Restart=on-failure
+RestartSec=30
 # Update the below match your environment
 User=[user]
 ExecStart=/usr/bin/env bash /home/<user>/sysmon.sh \

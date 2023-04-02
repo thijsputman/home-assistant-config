@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 
+set -euo pipefail
+
 export DEBIAN_FRONTEND=noninteractive
 
 mqtt_host="${1:?"Missing MQTT-broker hostname!"}"
 device_name="${2:?"Missing device name!"}"
-network_adapters="$3"
+network_adapters="${3:-}"
 
 sysmon_url="https://github.com/thijsputman/home-assistant-config/raw/main/ \
   extras/sysmon-mqtt/sysmon.sh"
@@ -32,13 +34,16 @@ tee /etc/systemd/system/sysmon-mqtt.service <<- EOF > /dev/null
   Description=Simple system monitoring over MQTT
   After=network-online.target
   Wants=network-online.target
+  StartLimitIntervalSec=120
+  StartLimitBurst=3
 
   [Service]
   Type=simple
   Restart=on-failure
+  RestartSec=30
   User=${SUDO_USER:-$(whoami)}
   ExecStart=/usr/bin/env bash $(pwd)/.sysmon-mqtt \
-    $mqtt_host "$device_name" "$network_adapters"
+    $mqtt_host "$device_name" ${network_adapters:+\""$network_adapters"\"}
 
   [Install]
   WantedBy=multi-user.target

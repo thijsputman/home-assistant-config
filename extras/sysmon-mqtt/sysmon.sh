@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-set -eo pipefail
+set -euo pipefail
 
 # Defaults for optional settings (from global environment)
 
@@ -24,7 +24,8 @@ fi
 
 mqtt_host="${1:?"Missing MQTT-broker hostname!"}"
 device_name="${2:?"Missing device name!"}"
-read -r -a eth_adapters <<< "$3"
+# Optional
+read -r -a eth_adapters <<< "${3:-}"
 
 # Exit-trap handler
 
@@ -66,7 +67,8 @@ ha_discover(){
   local name=${1}
   local attribute=${2}
   read -r -a class_icon <<< "$3"
-  local unit=${4}
+  # Optional
+  local unit=${4:-}
   local entity=${5:-sensor}
 
   # Attempt to retrieve existing UUID; otherwise generate a new one
@@ -126,7 +128,10 @@ ha_discover(){
     value_template="(value | int(0) | as_datetime)"
   elif [ "$attribute" = "apt" ] ; then
     expire_after=0
-    entity_picture="/local/debian.png"
+    if command -v lsb_release &> /dev/null ; then
+      entity_picture="/local/sysmon-mqtt/$(lsb_release -ds | cut -d ' ' -f1 | \
+        tr '[:upper:]' '[:lower:]').png"
+    fi
     value_template="value_json.${attribute//\//.} | to_json"
   elif [ "$attribute" = "reboot_required" ] ; then
     expire_after=0
@@ -143,8 +148,8 @@ ha_discover(){
 
   local payload
   # For "model", the use of cat is intentional (it redirects "not found"-errors
-  # to /dev/null). Furthermore, no model is reported in Docker-containers while
-  # <https://github.com/moby/moby/issues/43419> remains open.
+  # to /dev/null). Furthermore, no model is reported in (non-privileged) Docker-
+  # containers while <https://github.com/moby/moby/issues/43419> remains open...
   # shellcheck disable=SC2002
   payload=$(tr -s ' ' <<- EOF
     {
@@ -185,7 +190,8 @@ ha_discover(){
 
 if [ "$SYSMON_HA_DISCOVER" = true ] ; then
 
-  ha_discover 'Heartbeat' 'heartbeat' 'timestamp mdi:heart-pulse'
+  ha_discover Heartbeat heartbeat 'timestamp mdi:heart-pulse'
+  ha_discover Uptime uptime 'duration mdi:timer-outline' s
   ha_discover 'CPU temperature' cpu_temp temperature '°C'
   ha_discover 'CPU load' cpu_load 'mdi:chip' '%'
   ha_discover 'Memory usage' mem_used 'mdi:memory' '%'
@@ -200,9 +206,9 @@ if [ "$SYSMON_HA_DISCOVER" = true ] ; then
   done
 
   if [ "$SYSMON_APT" = true ] ; then
-    ha_discover 'APT upgrades' 'apt' 'mdi:package-up' '' 'update'
-    ha_discover 'Reboot required' 'reboot_required' 'mdi:restart' '' \
-      'binary_sensor'
+    ha_discover 'APT upgrades' apt 'mdi:package-up' '' update
+    ha_discover 'Reboot required' reboot_required 'mdi:restart' '' \
+      binary_sensor
   fi
 
 fi
@@ -216,6 +222,9 @@ hourly=true
 ticks=0
 
 while true ; do
+
+  # Uptime
+  uptime=$(cat /proc/uptime | cut -d ' ' -f1)
 
   # CPU temperature
   cpu_temp=$(awk '{printf "%3.2f", $0/1000 }' < \
@@ -329,6 +338,7 @@ while true ; do
 
   payload=$(tr -s ' ' <<- EOF
     {
+      "uptime": "$uptime",
       "cpu_temp": "$cpu_temp",
       "cpu_load": "$cpu_load",
       "mem_used": "$mem_used",
