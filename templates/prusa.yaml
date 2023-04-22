@@ -9,52 +9,55 @@
         }}
       state: >-
         {%
-          set regex =
-            "(.*)_(0\.\d{1,2})mm_([A-Z]{1,4})_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode"
+          set match = states('sensor.prusa_mini_filename') |
+            regex_findall(
+              "^(.*?)(?:_0\.\d{1,2}n)?_0\.\d{1,2}mm_.*_MINI_.*\.gcode$"
+            )
         %}
         {{
-          (
-            states('sensor.prusa_mini_filename') |
-            regex_findall_index(regex)
-          )[0]
+          match[0] if (match | length > 0) else 'unknown'
         }}
       attributes:
-        layer_height: >-
+        nozzle: >-
           {%
-            set regex =
-              "(.*)_(0\.\d{1,2})mm_([A-Z]{1,4})_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode"
+            set match = states('sensor.prusa_mini_filename') |
+              regex_findall(
+                "^.*_(0\.\d{1,2})n_.*_MINI_.*\.gcode$"
+              )
           %}
           {{
-            (
-              states('sensor.prusa_mini_filename') |
-              regex_findall_index(regex)
-            )[1]
+            match[0] | float if (match | length > 0) else ''
+          }}
+        layer_height: >-
+          {%
+            set match = states('sensor.prusa_mini_filename') |
+              regex_findall(
+                "^.*?(?:_0\.\d{1,2}n)?_(0\.\d{1,2})mm_.*_MINI_.*\.gcode$"
+              )
+          %}
+          {{
+            match[0] | float if (match | length > 0) else ''
           }}
         material: >-
           {%
-            set regex =
-              "(.*)_(0\.\d{1,2})mm_([A-Z]{1,4})_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode"
+            set match = states('sensor.prusa_mini_filename') |
+              regex_findall(
+                "^.*_([A-Z]{2,4})_MINI_.*\.gcode$"
+              )
           %}
           {{
-            (
-              states('sensor.prusa_mini_filename') |
-              regex_findall_index(regex)
-            )[2]
+            match[0] if (match | length > 0) else ''
           }}
         duration: >-
           {%
-            set regex =
-              "(.*)_(0\.\d{1,2})mm_([A-Z]{1,4})_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode"
+            set match = states('sensor.prusa_mini_filename') |
+              regex_findall(
+                "^.*_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode$"
+              )
           %}
           {{
             timedelta(
-              hours =
-                (states('sensor.prusa_mini_filename') |
-                regex_findall_index(regex)
-              )[3] | int(0),
-              minutes =
-                (states('sensor.prusa_mini_filename') |
-                regex_findall_index(regex)
-              )[4] | int
-            )
+              hours = match[0][0] | int(0),
+              minutes = match[0][1] | int
+            ) if (match | length > 0) else ''
           }}

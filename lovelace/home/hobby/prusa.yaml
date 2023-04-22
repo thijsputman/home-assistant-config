@@ -109,10 +109,16 @@ card:
             attribute: material
             name: Material
           - entity: sensor.prusa_mini_job_name
-            icon: mdi:printer-3d-nozzle-outline
+            icon: mdi:layers
             type: attribute
             attribute: layer_height
             name: Layer height
+            suffix: mm
+          - entity: sensor.prusa_mini_job_name
+            icon: mdi:printer-3d-nozzle-outline
+            type: attribute
+            attribute: nozzle
+            name: Nozzle
             suffix: mm
     - type: conditional
       conditions:
