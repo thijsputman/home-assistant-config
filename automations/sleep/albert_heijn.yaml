@@ -10,26 +10,29 @@
     - condition: state
       entity_id: group.family
       state: home
-    - condition: time
-      before: input_datetime.wakeup
-    # Ensure Albert Heijn ETA is for *today* — the subsequent time comparison
-    # assumes it is (so crazy stuff happens if we don't explicitly check for it
-    # here)
-    - condition: template
-      value_template: >-
-        {{
-          (states('sensor.last_notification_albert_heijn_eta') |
-            as_datetime | as_timestamp | timestamp_custom('%Y-%m-%d')
-          ) == (now() | as_timestamp | timestamp_custom('%Y-%m-%d'))
-        }}
-    # Albert Heijn ETA is at most 15-minutes _after_ «wakeup» time (our
-    # "wakeup grace-period")
-    - condition: template
-      value_template: >-
-        {{
-          states('sensor.last_notification_albert_heijn_eta') | as_datetime
-            - timedelta(minutes=15) <= today_at(states('input_datetime.wakeup'))
-        }}
+    # Only act if ETA is in the future — the next condition assumes "future"
+    # entails either today or tomorrow. Currently, no effort is made to guard
+    # against ETA being further in the future; cross that bridge if we ever get
+    # there...
+    - >-
+      {{
+        states('sensor.last_notification_albert_heijn_eta') |
+          as_datetime > now()
+      }}
+    # Prepone «wakeup» time if Albert Heijn's ETA is within a 15-minute interval
+    # of it.
+    # When «wakeup» time is in the past, we assume we're operating on tomorrow's
+    # wakeup time (and simply add 24-hours to the comparison logic; this works
+    # great except when changing to/from DST, alas 😉).
+    - >-
+      {% set eta = states('sensor.last_notification_albert_heijn_eta') |
+          as_datetime - timedelta(minutes=15) %}
+      {% set wakeup = today_at(states('input_datetime.wakeup')) %}
+      {{
+        eta <= wakeup or (
+          now() > wakeup and eta <= (wakeup + timedelta(hours=24))
+        )
+      }}
   action:
     # Set «wakeup» time to 15-minutes _before_ Albert Heijn ETA — note that
     # "input_datetime.wakeup" only cares about the time component; the date

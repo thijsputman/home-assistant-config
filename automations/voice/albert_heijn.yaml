@@ -23,7 +23,6 @@
             >= today_at('00:00:00')
         }}
   action:
-    - delay: 5
     - variables:
         eta_start: >-
           {%-
@@ -43,6 +42,13 @@
             ((states('sensor.last_notification_albert_heijn_eta') |
               as_timestamp - now() | as_timestamp) / 60) | int
           }}
+    # Abort any previously queued up announcements — they're superseded by this
+    # "Good morning"-announcement...
+    - event: tts_queue_abort
+      event_data:
+        tag: albert_heijn_eta
+    # Slight delay for "ergonomical" reasons
+    - delay: 5
     - service: script.turn_on
       target:
         entity_id: script.tts_announce
@@ -51,13 +57,15 @@
           speaker: media_player.pi0_w2_speaker_bedroom
           message: >-
             Good morning, Albert Heijn expects to arrive between {{ eta_start }}
-            and {{ eta_end }}. That is in
-            {% if eta_minutes < 55 %}
-              {{ eta_minutes }} minutes...
-            {% elif eta_minutes < 60 %}
-              about an hour...
+            and {{ eta_end }}. That is
+            {% if eta_minutes < 5 %}
+              about now!
+            {% elif eta_minutes < 55 %}
+              in about {{ ((eta_minutes / 5) | round * 5) }} minutes...
+            {% elif eta_minutes < 65 %}
+              in about an hour...
             {% else %}
-              more than an hour...
+              in more than an hour...
             {% endif %}
   mode: single
 - alias: 🛒 | 🔊 Queue Albert Heijn ETA announcement
@@ -69,16 +77,13 @@
         - unknown
         - unavailable
   condition:
-    # Only relevant if the delivery is scheduled for today or tomorrow
+    # Only relevant if ETA is in the future — prevents both stale notifications
+    # (and the occasional notification that arrives after its actual ETA) from
+    # getting announced
     - >-
-      {%
-        set eta = states('sensor.last_notification_albert_heijn_eta') |
-          as_datetime | as_timestamp | timestamp_custom('%Y-%m-%d')
-      %}
       {{
-        eta == now() | as_timestamp | timestamp_custom('%Y-%m-%d') or
-        eta == (now() + timedelta(hours=24)) | as_timestamp |
-          timestamp_custom('%Y-%m-%d')
+        states('sensor.last_notification_albert_heijn_eta') |
+          as_datetime > now()
       }}
   action:
     # Abort any previously scheduled (and now invalid) announcements...
@@ -98,5 +103,10 @@
                 as_datetime
             %}
             {% set tomorrow = eta.day != now().day %}
-            Albert Heijn expects to arrive {% if tomorrow is true%}
-            tomorrow {% endif %} around {{ eta.hour }}:{{ eta.minute }}.
+            Albert Heijn expects to arrive
+            {#
+              This implicitly assumes Albert Heijn never sends notifications
+              more than a day in advance...
+            #}
+            {% if tomorrow is true%} tomorrow {% endif %}
+            around {{ eta | as_timestamp | timestamp_custom('%H:%S') }}.
