@@ -233,7 +233,7 @@ tts_announce:
           #}
           {{
             message |
-              regex_replace(' *\n+ *', ' ') |
+              regex_replace('[ \n]+', ' ') |
               regex_replace('<.+?>', '') |
               replace('ij', 'y')
           }}

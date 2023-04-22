@@ -12,9 +12,9 @@
       data:
         variables:
           group: general
-          channel: Alert
+          channel: Notification
           targetDevices: my
-          criticalNotification: true
+          criticalNotification: false
           title: 🛍️ Compute Module 4 in-stock!
           action_1: Check it out!
           uri_1: >-

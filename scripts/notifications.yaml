@@ -124,7 +124,7 @@ persistent_notification:
         notify.all_devices
       {% endif %}
     lovelaceMessage: >-
-      {{ message | regex_replace(' *\n+ *', ' ') | trim }}
+      {{ message | regex_replace('[ \n]+', ' ') | trim }}
       {%- if image is defined -%}
         <br><br>![embedded image]({{ image }})
       {%- endif -%}
@@ -171,7 +171,7 @@ persistent_notification:
             {{ title }}
           {% endif %}
         message: >-
-          {{ message | regex_replace(' *\n+ *', ' ') }}
+          {{ message | regex_replace('[ \n]+', ' ') }}
         data:
           tag: >-
             {{ tag }}
@@ -391,7 +391,7 @@ sms_notification:
     cleanMessage: >-
       {{
         message |
-        regex_replace(' *\n+ *', ' ') |
+        regex_replace('[ \n]+', ' ') |
         regex_replace('\\\\n +', '\\\\n')
       }}
   sequence:

@@ -32,8 +32,9 @@
     # No value in summarising a vacation's worth of announcements, so only
     # continue on the "disarmed" trigger — another automation handles clearing
     # the queued up announcements when Vacation-mode switches off.
-    - condition: trigger
-      id: disarmed
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id == 'disarmed' }}
     # Wait for pending Home Alarm to disarm; abort if it doesn't
     - if:
         - condition: state
