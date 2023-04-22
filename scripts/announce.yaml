@@ -49,6 +49,9 @@ tts_queue:
         {{ expiry }}
       {% endif %}
   sequence:
+    - variables:
+        queued_at: >-
+          {{ now() }}
     - repeat:
         sequence:
           - wait_for_trigger:
@@ -87,6 +90,21 @@ tts_queue:
           }}
     - condition: >-
         {{ wait.trigger.id == 'attention' }}
+    # Message preprocessing — replace a handful of "magic markers" with their
+    # actual content. Currently, the following markers are supported:
+    #
+    # - %TIME_AGO%: Amount of time passed (using "relative_time") since the
+    #   announcement was queued
+    # - %LOCATION%: Name of area where attention was triggered (i.e., where the
+    #   announcement is being played)
+    - variables:
+        message: >-
+          {{
+            message |
+              replace('%TIME_AGO%',
+                queued_at | as_datetime | relative_time) |
+              replace('%LOCATION%', wait.trigger.event.data.area)
+          }}
     - service: script.turn_on
       target:
         entity_id: script.tts_announce
