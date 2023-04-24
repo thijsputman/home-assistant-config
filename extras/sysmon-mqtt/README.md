@@ -32,6 +32,7 @@ Currently, the following metrics are provided:
   `/sys/class/thermal/thermal_zone0/temp`)
 - `mem_used` — Memory in use (_excluding_ buffers and caches) as a percentage of
   total available memory
+- `uptime` — Uptime in seconds
 - `bandwidth` — Average bandwidth (receive and transmit) for individual network
   adapters in kbps during the monitoring interval
 - `apt` — Number of APT packages that can upgraded
@@ -74,8 +75,9 @@ This behaviour is intended to allow "fixed" sensor-entities in Home Assistant
 
 The `apt`-metric is presented as a Home Assistant
 [Update-entity](https://www.home-assistant.io/integrations/update.mqtt/). For
-its "entity-picture" to show, copy [`🖼️ /www/debian.png`](/www/debian.png) into
-your Home Assistant's local webroot.
+its "entity-picture" to show, copy the images from
+[`📂 /www/sysmon-mqtt`](/www/sysmon-mqtt) into your Home Assistant's local
+webroot.
 
 To unregister (a set of) metrics from Home Assistant, simply remove their
 topics/messages from the `homeassistant/sensors/sysmon` tree with (for example)
@@ -246,17 +248,18 @@ distributions) is provided: [`📄 install.sh`](./install.sh). Once installed,
 running the script again will pull the latest version of `📄 sysmon.sh` from
 GitHub.
 
-For the very brave, the script can also be run from GitHub directly (don't
-forget to fill out `mqtt-broker` and `"Device Name"` first!):
-
-```shell
-curl -fsSL https://github.com/thijsputman/home-assistant-config/raw/main/\
-extras/sysmon-mqtt/install.sh | sudo -E bash -s - mqtt-broker "Device Name"
-```
-
-As an optional third argument, a list of network adapters to monitor can also be
+The script requires `mqtt-broker` and `"Device Name"` to be provided. As an
+optional third argument, a list of network adapters to monitor can also be
 passed in:
 
 ```shell
-./install.sh mqtt-broker device-name "eth0 wlan0"
+./install.sh mqtt-broker "Device Name" "eth0 wlan0"
+```
+
+For the very brave, the script can be run from GitHub directly:
+
+```shell
+curl -fsSL https://github.com/thijsputman/home-assistant-config/raw/main/\
+extras/sysmon-mqtt/install.sh | sudo -E bash -s - \
+mqtt-broker "Device Name" "eth0 wlan0"
 ```
