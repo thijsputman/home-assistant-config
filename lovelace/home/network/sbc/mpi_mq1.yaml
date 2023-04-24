@@ -17,42 +17,17 @@ card:
             margin: 0px !important;
             padding: 0px !important;
           }
-      title: Home Assistant Yellow
+      title: MPi MQ1 — Attic
       entities:
-        - entity: sensor.ha_yellow_cpu_load
-        - entity: sensor.ha_yellow_mem_used
-        - entity: sensor.ha_yellow_cpu_temp
-        - entity: sensor.ha_yellow_uptime
+        - entity: sensor.mpi_mq1_cpu_load
+        - entity: sensor.mpi_mq1_mem_used
+        - entity: sensor.mpi_mq1_cpu_temp
+        - entity: sensor.mpi_mq1_uptime
       show_name: false
       show_icon: true
       show_state: true
       state_color: false
       columns: 4
-    - type: markdown
-      card_mod:
-        style:
-          .: |
-            ha-card {
-              border: 0px;
-              margin: 0px !important;
-              padding: 0px !important;
-            }
-          ha-markdown$ha-alert$: |
-            div.info{
-              margin-bottom: 6px;
-            }
-      content: >-
-        {% set update_id = 'update.ha_yellow_apt' %}
-        {% if states(update_id) == 'on' -%}
-          <ha-alert alert-type="info">**{{-device_attr(update_id,
-            'name')-}}** has {{ state_attr(update_id,
-            'latest_version') }} package upgrade(s) available.
-          </ha-alert>
-        {%- endif %}
-        {% if states('binary_sensor.ha_yellow_reboot_required') == 'on' -%}
-          <ha-alert alert-type="warning">**{{-device_attr(update_id,
-            'name')-}}** requires a restart.</ha-alert>
-        {%- endif %}
     - type: custom:mini-graph-card
       card_mod:
         style: |
@@ -76,17 +51,17 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.ha_yellow_mem_used
+        - entity: sensor.mpi_mq1_mem_used
           name: Memory (%)
           show_points: false
           show_fill: true
           color: thistle
-        - entity: sensor.ha_yellow_cpu_load
+        - entity: sensor.mpi_mq1_cpu_load
           name: CPU (%)
           show_points: false
           show_fill: false
           color: var(--accent-color)
-        - entity: sensor.ha_yellow_cpu_temp
+        - entity: sensor.mpi_mq1_cpu_temp
           name: Temperature (ºC)
           show_points: false
           show_fill: false

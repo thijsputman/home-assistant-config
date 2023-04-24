@@ -15,6 +15,7 @@ custom CSS.
 ## Javascript modules
 
 - `aarlo-glance.js?v=0.2.6.1`
+- [`auto-entities.js?v=1.12.1`](https://github.com/thomasloven/lovelace-auto-entities)
 - `card-mod.js?v=3.2.0`
 - `compass-card.js?v=1.6.1`
 - `hass-hue-icons.js?v=1.2.20`

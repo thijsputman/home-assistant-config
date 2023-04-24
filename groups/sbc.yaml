@@ -1,0 +1,39 @@
+sbc_apt:
+  name: Single-board computers (APT upgrades)
+  icon: mdi:raspberry-pi
+  entities:
+    - update.bpi_m2_zero_apt
+    - update.bpi_m2_zero_2_apt
+    - update.ha_yellow_apt
+    - update.mpi_mq1_2_apt
+    - update.mpi_mq1_apt
+    - update.pi0_ant_apt
+    - update.pi0_dsmr_apt
+    - update.pi0_w2_apt
+    - update.pi4_apt
+    - update.pi4_sandbox_apt
+    - update.pi4_sandcastle_apt
+    - update.pi_hole_apt
+sbc_reboot:
+  name: Single-board computers (reboot required)
+  icon: mdi:restart
+  entities:
+    - binary_sensor.bpi_m2_zero_reboot_required
+    - binary_sensor.bpi_m2_zero_2_reboot_required
+    - binary_sensor.ha_yellow_reboot_required
+    - binary_sensor.mpi_mq1_2_reboot_required
+    - binary_sensor.mpi_mq1_reboot_required
+    - binary_sensor.pi0_ant_reboot_required
+    - binary_sensor.pi0_dsmr_reboot_required
+    - binary_sensor.pi0_w2_reboot_required
+    - binary_sensor.pi4_reboot_required
+    - binary_sensor.pi4_sandbox_reboot_required
+    - binary_sensor.pi4_sandcastle_reboot_required
+    - binary_sensor.pi_hole_reboot_required
+pihole_update:
+  name: Pi-hole (updates available)
+  icon: mdi:package-variant-closed-plus
+  entities:
+    - update.pi_hole_core_update_available
+    - update.pi_hole_ftl_update_available
+    - update.pi_hole_web_update_available

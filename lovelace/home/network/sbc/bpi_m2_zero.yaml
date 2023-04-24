@@ -17,16 +17,12 @@ card:
             margin: 0px !important;
             padding: 0px !important;
           }
-      title: Raspberry Pi 4 – Sandbox
+      title: BPi M2 Zero — Living Room
       entities:
-        - entity: sensor.pi4_sandbox_cpu_load
-          name: CPU
-        - entity: sensor.pi4_sandbox_mem_used
-          name: Memory
-        - entity: sensor.pi4_sandbox_cpu_temp
-          name: Temp
-        - entity: sensor.pi4_sandbox_power_usage
-          name: Power
+        - entity: sensor.bpi_m2_zero_cpu_load
+        - entity: sensor.bpi_m2_zero_mem_used
+        - entity: sensor.bpi_m2_zero_cpu_temp
+        - entity: sensor.bpi_m2_zero_uptime
       show_name: false
       show_icon: true
       show_state: true
@@ -55,18 +51,18 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.pi4_sandbox_mem_used
+        - entity: sensor.bpi_m2_zero_mem_used
           name: Memory (%)
           show_points: false
           show_fill: true
           color: thistle
-        - entity: sensor.pi4_sandbox_cpu_load
+        - entity: sensor.bpi_m2_zero_cpu_load
           name: CPU (%)
           show_points: false
           show_fill: false
           color: var(--accent-color)
-        - entity: sensor.pi4_sandbox_power_usage
-          name: Power (W) →
+        - entity: sensor.bpi_m2_zero_cpu_temp
+          name: Temperature (ºC)
           show_points: false
           show_fill: false
           y_axis: secondary
