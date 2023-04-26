@@ -221,6 +221,12 @@ first_loop=true
 hourly=true
 ticks=0
 
+# ZFS ARC — minimum size
+if [ -f /proc/spl/kstat/zfs/arcstats ] ; then
+  zfs_arc_min=$(awk '/^c_min/ {printf "%.0f", $3/1024 }' < \
+    /proc/spl/kstat/zfs/arcstats)
+fi
+
 while true ; do
 
   # Uptime
@@ -236,7 +242,24 @@ while true ; do
       result){printf \"%3.2f\", result[1]*100/$cpu_cores}")
 
   # Memory usage (1 - total / available)
-  mem_used=$(free | awk 'NR==2{printf "%3.2f", (1-($7/$2))*100 }')
+
+  mem_total=$(free | awk 'NR==2{print $2}')
+  mem_avail=$(free | awk 'NR==2{print $7}')
+
+  # Account for ZFS ARC — this is "buff/cache", but counted as "used" by the
+  # kernel in Linux. Approach taken from btop: If current ARC size is greater
+  # than its minimum size (lower than which it'll never go), assume the surplus
+  # to be available memory.
+  if [ -n "$zfs_arc_min" ] ; then
+    zfs_arc_size=$(awk '/^size/ {printf "%.0f", $3/1024}' < \
+      /proc/spl/kstat/zfs/arcstats)
+    if [ "$zfs_arc_size" -gt "$zfs_arc_min" ] ; then
+      mem_avail=$((mem_avail+zfs_arc_size-zfs_arc_min))
+    fi
+  fi
+
+  mem_used=$(awk \
+    '{printf "%3.2f", (1-($1/$2))*100}' <<< "$mem_avail $mem_total")
 
   # Bandwith (in kbps; measured over the "sysmon interval")
 
