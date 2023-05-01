@@ -9,6 +9,7 @@ set -euo pipefail
 : "${SYSMON_INTERVAL:=30}"
 : "${SYSMON_IN_DOCKER:=false}"
 : "${SYSMON_APT:=true}"
+: "${SYSMON_APT_CHECK:=}"
 
 # Compute number of ticks per hour; additionally, forces $SYSMON_INTERVAL to
 # base10 — exits in case of an invalid value for the interval
@@ -221,6 +222,15 @@ first_loop=true
 hourly=true
 ticks=0
 
+# Set APT-check output file (defaults to temporary file)
+if [ "$SYSMON_APT" = true ] ; then
+  if [ -n "$SYSMON_APT_CHECK" ] ; then
+    touch "$SYSMON_APT_CHECK" && apt_check="$SYSMON_APT_CHECK"
+  else
+    apt_check=$(mktemp -t sysmon.apt-check.XXXXXXXX)
+  fi
+fi
+
 # ZFS ARC — minimum size
 if [ -f /proc/spl/kstat/zfs/arcstats ] ; then
   zfs_arc_min=$(awk '/^c_min/ {printf "%.0f", $3/1024 }' < \
@@ -304,9 +314,9 @@ while true ; do
   payload_apt=()
   reboot_required=0
 
-  if [ "$SYSMON_APT" = true ] ; then
+  if [ -v apt_check ] ; then
 
-    if [ -v apt_check ] && [ -s "$apt_check" ] ; then
+    if [ -s "$apt_check" ] ; then
 
       payload_apt+=("$(tr -s ' ' <<- EOF
         "title": "APT",
@@ -322,7 +332,7 @@ while true ; do
 
     if [ "$hourly" = true ] ; then
 
-      apt_check=$(mktemp -t sysmon.apt-check.XXXXXXXX)
+      > $apt_check
 
       # Fork it off so we don't block on waiting for this to complete
       (
@@ -351,7 +361,7 @@ while true ; do
 
     # Reboot-required
 
-    if [ -s /var/run/reboot-required ] ; then
+    if [ -f /var/run/reboot-required ] ; then
       reboot_required=1
     fi
 

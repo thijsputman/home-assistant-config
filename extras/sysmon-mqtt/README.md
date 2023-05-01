@@ -16,6 +16,7 @@ metrics and push them over MQTT to Home Assistant.
 - [Metrics](#metrics)
   - [Heartbeat](#heartbeat)
   - [Home Assistant discovery](#home-assistant-discovery)
+  - [APT-check](#apt-check)
 - [Setup](#setup)
   - [Broker](#broker)
 - [Usage](#usage)
@@ -83,6 +84,32 @@ To unregister (a set of) metrics from Home Assistant, simply remove their
 topics/messages from the `homeassistant/sensors/sysmon` tree with (for example)
 `mosquitto_pub`.
 
+### APT-check
+
+The APT update check refreshes its status once per hour; by default it stores
+this status in a temporary file. It is possible to change this behaviour by
+setting the `SYSMON_APT_CHECK` environment variable to a filename of your choice
+(eg. `~/.apt-check`). In this way, APT-check's status output can be used by
+other scripts.
+
+The contents of the status file are as follows:
+
+```text
+<# of package upgrades available>
+
+"The following packages can be upgraded:\n\<list of upgradable packages>"
+```
+
+The first line is either `0` or a positive integer, the second line is empty and
+the third line contains a list of upgradable packages. The third line is
+JSON-encoded and (due to a Home Assistant imposed limit) restricted to a maximum
+of 255-characters (_prior_ to JSON-encoding).
+
+While APT-check refreshes its status, the file is empty. This is done to prevent
+leaving stale information in case of failures. There is thus a small chance of a
+race-condition: To prevent this, wait until the status file has a non-zero size
+before continuing...
+
 ## Setup
 
 The script depends on `bash`,
@@ -140,6 +167,8 @@ the script's behaviour:
   APT-related metrics (`apt` and `reboot_required`)
   - Automatically disabled when no `apt`-binary is present, _or_ when running
     inside a Docker-container (see below)
+- `SYSMON_APT_CHECK` (default: `<temporary file>`) — override the location of
+  the file used to store APT-check's status
 
 ### Docker
 
@@ -222,6 +251,8 @@ RestartSec=30
 User=[user]
 ExecStart=/usr/bin/env bash /home/<user>/sysmon.sh \
   mqtt-broker "Device Name" [network-adapters]
+# Optional: Provide additional environment variables
+Environment=""
 
 [Install]
 WantedBy=multi-user.target
