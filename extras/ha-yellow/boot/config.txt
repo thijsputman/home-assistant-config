@@ -1,0 +1,30 @@
+kernel=vmlinuz
+cmdline=cmdline.txt
+initramfs initrd.img followkernel
+arm_64bit=1
+
+# Audio output, I2C and SPI interfaces on the GPIO header. As these parameters
+# relate to the base device-tree, they must appear *before* any other dtoverlay=
+# specification
+dtparam=audio=off
+dtparam=i2s=off
+dtparam=i2c_arm=off
+dtparam=spi=off
+
+# Don't automatically load overlays for detected cameras and DSI displays
+camera_auto_detect=0
+display_auto_detect=0
+
+# Enable the serial pins
+enable_uart=1
+uart_2ndstage=1
+
+# Free up full-fledged PL011 UART for J11
+dtoverlay=miniuart-bt
+
+# No HDMI on Yellow, but we can't set to 16 since we need the full firmware
+# for codecs
+gpu_mem=32
+
+[all]
+device_tree=bcm2711-rpi-cm4-ha-yellow.dtb

@@ -9,6 +9,7 @@ Some extras I'm using in combination with my Home Assistant setup:
 - [`📁 dd-wrt`](./dd-wrt/README.md) – DD-WRT related
 - [`📁 deconz`](./deconz/README.md) – deCONZ related
 - [`📁 femon`](./femon/README.md) – DVB-T frontend signal monitor
+- [`📁 ha-yellow`](./ha-yellow/README.md) – Home Assistant Yellow related
 - [`📁 influxdb`](./influxdb/README.md) – InfluxDB scratch-pad
 - [`📁 sysmon-mqtt`](./sysmon-mqtt/README.md) – Simple system monitoring over
   MQTT
