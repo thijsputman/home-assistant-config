@@ -1,0 +1,44 @@
+# yamllint disable rule:empty-values
+substitutions:
+  name: m5stack-atom-lite
+  friendly_name: M5Stack Atom Lite
+packages:
+  esphome.bluetooth-proxy: >-
+    github://esphome/bluetooth-proxies/m5stack-atom-lite.yaml@main
+esphome:
+  name: ${name}
+  name_add_mac_suffix: true
+  friendly_name: ${friendly_name}
+logger:
+  level: DEBUG
+debug:
+  update_interval: 30s
+api:
+  encryption:
+    key: #...
+ota:
+  password: !secret ota_password
+wifi:
+  ssid: !secret wifi_devices_ssid
+  password: !secret wifi_devices_password
+  fast_connect: true
+button:
+  - platform: restart
+    name: Restart
+sensor:
+  - platform: debug
+    free:
+      name: Heap (free)
+    loop_time:
+      name: Loop time
+  - platform: wifi_signal
+    name: WiFi signal
+    update_interval: 60s
+  - platform: uptime
+    name: Uptime
+text_sensor:
+  - platform: wifi_info
+    ssid:
+      name: WiFi SSID
+    bssid:
+      name: WiFi BSSID

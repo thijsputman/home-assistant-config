@@ -28,6 +28,7 @@
 - [Network](#network)
 - [Devices \& Hardware](#devices--hardware)
   - [General](#general-2)
+  - [Bluetooth](#bluetooth)
   - [HA Yellow](#ha-yellow)
 
 ## General
@@ -54,9 +55,6 @@
 Changes to Home Assistant; to be further explored/implemented (or just for
 future reference).
 
-- [ ] [2022.9: Bluetooth proxies](https://www.home-assistant.io/blog/2022/09/07/release-20229/#bluetooth-everywhere)
-      — get some ESP32 units and tool this up around the house
-- [ ] [2022.10: Subviews for dashboard](https://www.home-assistant.io/blog/2022/10/05/release-202210/#subviews-for-dashboards)
 - [ ] [2022.12: Tile card](https://www.home-assistant.io/blog/2022/12/07/release-202212/#tile-card-gets-features)
       — further implement these around the dashboards
 - [ ] [2023.2: Grouping sensors](https://www.home-assistant.io/blog/2023/02/01/release-20232/#grouping-sensors)
@@ -415,6 +413,19 @@ future reference).
 - [ ] The single Pi-hole instance is a **substantial** single point of failure
       in the network; consider running a backup Pi-hole on another machine
       (configs will need to be synced though)
+
+### Bluetooth
+
+- [ ] The M5Stack Atom Lite Bluetooth proxies appear to be working just fine
+  - [ ] Consider moving the Air Monitor Lite-devices (Xiaomi Miot) over from
+        WiFi to Bluetooth — only makes sense if it's possible to use them
+        disconnected from the WiFi though (there are no problems with the Xiaomi
+        Miot integration; just seems more sensible to run these devices over
+        Bluetooth)
+  - [ ] Conversely: See if it's possible to disable Bluetooth on the
+        `Air Monitor Lite`-devices when used over WiFi — the unbound Bluetooth
+        devices are effectively "leaking" occupancy information (ie. CO₂ levels)
+        to the outside world...
 
 ### HA Yellow
 
