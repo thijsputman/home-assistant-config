@@ -1,0 +1,38 @@
+type: custom:mini-graph-card
+name: Wi-Fi signal strength (past 48h)
+icon: mdi:wifi
+hour24: true
+decimals: 0
+points_per_hour: 1
+hours_to_show: 48
+upper_bound: ~-55
+lower_bound: ~-70
+aggregate_func: min
+color_thresholds:
+  - value: -55
+    color: "#3498db"
+  - value: -70
+    color: darkgrey
+  - value: -80
+    color: "#333333"
+show:
+  labels: hover
+entities:
+  - entity: sensor.m5stack_atom_lite_841714_wifi_signal
+    unit: dBm — Attic
+    show_state: true
+    show_graph: false
+  - entity: sensor.m5stack_atom_lite_842c58_wifi_signal
+    name: Living room
+    color: lightgrey
+    show_points: false
+    show_fill: false
+  - entity: sensor.m5stack_atom_lite_8426b4_wifi_signal
+    name: Guestroom
+    color: darkgrey
+    show_points: false
+    show_fill: false
+  - entity: sensor.m5stack_atom_lite_841714_wifi_signal
+    name: Attic
+    show_points: false
+    show_fill: true

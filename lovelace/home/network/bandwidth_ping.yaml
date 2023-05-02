@@ -36,11 +36,17 @@ card:
         fill: fade
       entities:
         - entity: sensor.dd_wrt_1_wan_in_mbps
+          unit: Mbps — Download
+          show_state: true
+          show_graph: false
+        - entity: sensor.dd_wrt_1_wan_in_mbps
           name: Download (Mbps)
+          color: "#ff9800"
           show_points: false
           show_fill: false
         - entity: sensor.dd_wrt_1_wan_out_mbps
           name: Upload (Mbps)
+          color: "#3498db"
           show_points: false
     - type: custom:mini-graph-card
       card_mod:
@@ -58,7 +64,7 @@ card:
       aggregate_func: max
       logarithmic: true
       lower_bound: 0
-      upper_bound: ~600
+      upper_bound: ~60
       cache: true
       icon: mdi:speedometer
       show:
