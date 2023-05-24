@@ -13,7 +13,7 @@ homeassistant.components.recorder.core:
 homeassistant.helpers.entity:
   # Neato
   - >-
-    ^Update of (sensor|switch|vacuum)\.(neato|d7)_[a-z0-9_]+ is taking over
+    ^Update of (sensor|switch|vacuum)\.d7_[a-z0-9_]+ is taking over
     [0-9]+ seconds$
   # Xiaomi MIoT
   - >-

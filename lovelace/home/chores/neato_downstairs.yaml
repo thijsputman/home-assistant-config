@@ -25,19 +25,19 @@ style: |
   ha-card .stats .stats-block:nth-child(1)::first-letter{
     text-transform: capitalize;
   }
-  {% if state_attr('vacuum.neato_d7', 'clean_stop') is not none %}
+  {% if state_attr('vacuum.d7_downstairs', 'clean_stop') is not none %}
     ha-card .stats .stats-block:nth-child(1) .stats-subtitle::after{
       content: " {{ relative_time(
                       strptime(
-                        state_attr('vacuum.neato_d7', 'clean_stop'),
+                        state_attr('vacuum.d7_downstairs', 'clean_stop'),
                         '%Y-%m-%dT%H:%M:%SZ'
                       )
                     )
                   }} ago";
     }
   {% endif %}
-entity: vacuum.neato_d7
-map: camera.neato_d7_cleaning_map
+entity: vacuum.d7_downstairs
+map: camera.d7_downstairs_cleaning_map
 stats:
   default:
     - attribute: launched_from
@@ -49,7 +49,7 @@ shortcuts:
   - name: Clean the Kitchen
     service: neato.custom_cleaning
     service_data:
-      entity_id: vacuum.neato_d7
+      entity_id: vacuum.d7_downstairs
       mode: 2
       navigation: 1
       category: 4
@@ -58,7 +58,7 @@ shortcuts:
   - name: Clean the Lunch area
     service: neato.custom_cleaning
     service_data:
-      entity_id: vacuum.neato_d7
+      entity_id: vacuum.d7_downstairs
       mode: 2
       navigation: 1
       category: 4
@@ -67,7 +67,7 @@ shortcuts:
   - name: Clean the Ensuite
     service: neato.custom_cleaning
     service_data:
-      entity_id: vacuum.neato_d7
+      entity_id: vacuum.d7_downstairs
       mode: 2
       navigation: 1
       category: 4
@@ -76,7 +76,7 @@ shortcuts:
   - name: Clean the Living room
     service: neato.custom_cleaning
     service_data:
-      entity_id: vacuum.neato_d7
+      entity_id: vacuum.d7_downstairs
       mode: 2
       navigation: 1
       category: 4

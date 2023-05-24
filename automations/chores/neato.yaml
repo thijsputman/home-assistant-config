@@ -8,7 +8,7 @@
     # indicates it's "docked").
     - platform: numeric_state
       entity_id:
-        - sensor.neato_d7_battery
+        - sensor.d7_downstairs_battery
         - sensor.d7_upstairs_battery
       below: 95
       for: "03:00:00"
@@ -46,7 +46,7 @@
   trigger:
     - platform: state
       entity_id:
-        - vacuum.neato_d7
+        - vacuum.d7_downstairs
         - vacuum.d7_upstairs
       attribute: status
       to:
@@ -107,13 +107,13 @@
   condition:
     - condition: state
       entity_id:
-        - switch.neato_d7_schedule
+        - switch.d7_downstairs_schedule
         - switch.d7_upstairs_schedule
       state: "on"
   action:
     - service: switch.turn_off
       entity_id:
-        - switch.neato_d7_schedule
+        - switch.d7_downstairs_schedule
         - switch.d7_upstairs_schedule
   mode: single
 - alias: 🧹 | ✈️ Enable Neato schedules (back from vacation)
@@ -126,12 +126,12 @@
   condition:
     - condition: state
       entity_id:
-        - switch.neato_d7_schedule
+        - switch.d7_downstairs_schedule
         - switch.d7_upstairs_schedule
       state: "off"
   action:
     - service: switch.turn_on
       entity_id:
-        - switch.neato_d7_schedule
+        - switch.d7_downstairs_schedule
         - switch.d7_upstairs_schedule
   mode: single
