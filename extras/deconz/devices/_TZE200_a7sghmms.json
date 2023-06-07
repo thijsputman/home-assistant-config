@@ -1,0 +1,134 @@
+{
+  "schema": "devcap1.schema.json",
+  "manufacturername": "_TZE200_a7sghmms",
+  "modelid": "TS0601",
+  "product": "Tuya Smart Watering Timer",
+  "sleeper": false,
+  "status": "Gold",
+  "subdevices": [
+    {
+      "type": "$TYPE_ON_OFF_OUTPUT",
+      "restapi": "/lights",
+      "uuid": ["$address.ext", "0x01"],
+      "items": [
+        {
+          "name": "attr/id"
+        },
+        {
+          "name": "attr/lastannounced"
+        },
+        {
+          "name": "attr/lastseen"
+        },
+        {
+          "name": "attr/manufacturername"
+        },
+        {
+          "name": "attr/modelid"
+        },
+        {
+          "name": "attr/name"
+        },
+        {
+          "name": "attr/swversion",
+          "parse": {
+            "fn": "zcl",
+            "ep": 1,
+            "cl": "0x0000",
+            "at": "0x0001",
+            "script": "tuya_swversion.js"
+          },
+          "read": { "fn": "zcl", "ep": 1, "cl": "0x0000", "at": "0x0001" }
+        },
+        {
+          "name": "attr/type"
+        },
+        {
+          "name": "attr/uniqueid"
+        },
+        {
+          "name": "state/alert",
+          "public": false,
+          "default": "none"
+        },
+        {
+          "name": "state/on",
+          "refresh.interval": 300,
+          "read": {
+            "fn": "tuya"
+          },
+          "write": {
+            "dpid": "0x02",
+            "dt": "0x10",
+            "eval": "Item.val == 1 ? 1 : 0;",
+            "fn": "tuya"
+          },
+          "parse": {
+            "dpid": "0x02",
+            "eval": "Item.val = Attr.val;",
+            "fn": "tuya"
+          }
+        },
+        {
+          "name": "state/reachable"
+        }
+      ]
+    },
+    {
+      "type": "$TYPE_CONSUMPTION_SENSOR",
+      "restapi": "/sensors",
+      "uuid": ["$address.ext", "0x01", "0x0702"],
+      "items": [
+        {
+          "name": "attr/id"
+        },
+        {
+          "name": "attr/lastannounced"
+        },
+        {
+          "name": "attr/lastseen"
+        },
+        {
+          "name": "attr/manufacturername"
+        },
+        {
+          "name": "attr/modelid"
+        },
+        {
+          "name": "attr/name"
+        },
+        {
+          "name": "attr/type"
+        },
+        {
+          "name": "attr/uniqueid"
+        },
+        {
+          "name": "config/on"
+        },
+        {
+          "name": "config/reachable"
+        },
+        {
+          "name": "config/battery",
+          "parse": {
+            "fn": "tuya",
+            "dpid": "0x6C",
+            "eval": "Item.val = Attr.val;"
+          }
+        },
+        {
+          "name": "state/consumption",
+          "parse": {
+            "fn": "tuya",
+            "dpid": "0x6F",
+            "eval": "Item.val = Attr.val * 1000;"
+          }
+        },
+        {
+          "name": "state/lastupdated"
+        }
+      ]
+    }
+  ]
+}
