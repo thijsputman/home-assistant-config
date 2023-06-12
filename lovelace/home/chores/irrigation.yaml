@@ -1,0 +1,56 @@
+type: custom:mod-card
+card_mod:
+  style:
+    .: |
+      ha-card {
+        background: var(--llh-mod-card-background);
+        border: var(--llh-mod-card-border);
+      }
+    hui-vertical-stack-card$: |
+      mini-graph-card, hui-button-card{
+        margin: 0px !important;
+      }
+report_size: 5
+card:
+  type: vertical-stack
+  cards:
+    - type: custom:mini-graph-card
+      card_mod:
+        style: |
+          ha-card {
+            border: 0px;
+            border-bottom-right-radius: 0px;
+            border-bottom-left-radius: 0px;
+          }
+      name: Irrigation — Balcony (last run)
+      hour24: true
+      hours_to_show: 1
+      points_per_hour: 60
+      lower_bound: 0
+      cache: true
+      show:
+        labels: hover
+        labels_secondary: hover
+        fill: fade
+      decimals: 0
+      entities:
+        - entity: sensor.consumption_170
+          show_points: false
+          color: "#4291ce"
+    - type: button
+      card_mod:
+        style:
+          .: |
+            ha-card {
+              border: 0px;
+              border-top-right-radius: 0px;
+              border-top-left-radius: 0px;
+              background-color: #F3F9FD;
+              padding-top: 0px !important;
+              padding-bottom: 4px !important;
+            }
+      tap_action:
+        action: toggle
+      entity: switch.on_off_output_24
+      icon_height: 65px
+      show_name: false

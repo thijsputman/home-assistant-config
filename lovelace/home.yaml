@@ -229,17 +229,19 @@ views:
           - !include home/weather/forecast.yaml
   # Chores
   - icon: mdi:broom
+    type: custom:masonry-layout
     title: Chores
     path: chores
     badges: []
+    layout:
+      min_height: 1
     cards:
-      - type: horizontal-stack
+      - type: vertical-stack
         cards:
-          - type: vertical-stack
-            cards:
-              - !include home/chores/neato_downstairs.yaml
-              - !include home/chores/afvalwijzer.yaml
-      - !include home/chores/neato_upstairs.yaml
+          - !include home/chores/neato_downstairs.yaml
+          - !include home/chores/neato_upstairs.yaml
+      - !include home/chores/irrigation.yaml
+      - !include home/chores/afvalwijzer.yaml
   # Hobby
   - title: Hobby
     path: hobby
