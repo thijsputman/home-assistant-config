@@ -376,4 +376,10 @@ card:
               name: false
             fan_only: false
           swing:
+            _name: Swing-mode
             _hide_when_off: true
+            "on":
+              icon: mdi:weather-windy
+              name: false
+            "off":
+              name: false
