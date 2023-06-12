@@ -1,84 +1,90 @@
-type: custom:vacuum-card
-style: |
-  ha-card{
-    --primary-text-color: #E5E5E5;
-    --vc-primary-text-color: #E5E5E5;
-    --vc-secondary-text-color: #717881;
-    --vc-icon-color: #717881;
-    --vc-toolbar-icon-color: #333D4A;
-  }
-  div.toolbar {
-    border-bottom-left-radius: var(--ha-card-border-radius, 12px);
-    border-bottom-right-radius: var(--ha-card-border-radius, 12px);
-  }
-  ha-card .preview{
-    background-color: #333D4A;
-    border-top-left-radius: var(--ha-card-border-radius, 12px);
-    border-top-right-radius: var(--ha-card-border-radius, 12px);
-  }
-  ha-card img.map{
-    min-height: 300px;
-  }
-  ha-card .preview .metadata .status-text{
-    text-transform: lowercase;
-  }
-  ha-card .stats .stats-block:nth-child(1)::first-letter{
-    text-transform: capitalize;
-  }
-  {% if state_attr('vacuum.d7_downstairs', 'clean_stop') is not none %}
-    ha-card .stats .stats-block:nth-child(1) .stats-subtitle::after{
-      content: " {{ relative_time(
-                      strptime(
-                        state_attr('vacuum.d7_downstairs', 'clean_stop'),
-                        '%Y-%m-%dT%H:%M:%SZ'
-                      )
-                    )
-                  }} ago";
-    }
-  {% endif %}
-entity: vacuum.d7_downstairs
-map: camera.d7_downstairs_cleaning_map
-stats:
-  default:
-    - attribute: launched_from
-      subtitle: last run
-    - attribute: clean_area
-      unit: m²
-      subtitle: cleaned area
-shortcuts:
-  - name: Clean the Kitchen
-    service: neato.custom_cleaning
-    service_data:
-      entity_id: vacuum.d7_downstairs
-      mode: 2
-      navigation: 1
-      category: 4
-      zone: Kitchen
-    icon: hue:room-kitchen
-  - name: Clean the Lunch area
-    service: neato.custom_cleaning
-    service_data:
-      entity_id: vacuum.d7_downstairs
-      mode: 2
-      navigation: 1
-      category: 4
-      zone: Family room
-    icon: hue:room-dining
-  - name: Clean the Ensuite
-    service: neato.custom_cleaning
-    service_data:
-      entity_id: vacuum.d7_downstairs
-      mode: 2
-      navigation: 1
-      category: 4
-      zone: Dining room
-    icon: mdi:vanity-light
-  - name: Clean the Living room
-    service: neato.custom_cleaning
-    service_data:
-      entity_id: vacuum.d7_downstairs
-      mode: 2
-      navigation: 1
-      category: 4
-      zone: Living room
-    icon: hue:room-living
+# Somewhere in the upgrade HA 2023.3 → 2023.6 and vacuum-card 2.6.2 → 2.7.1,
+# the "proper" card-mod implementation stopped working. Wrapping the entire
+# thing in a custom:mod-card restores the expected behaviour. Leaving a note
+# here as this might come around and bite me in the future...
+
+type: custom:mod-card
+card_mod:
+  style:
+    vacuum-card$: |
+      ha-card{
+        --primary-text-color: #E5E5E5;
+        --vc-primary-text-color: #E5E5E5;
+        --vc-secondary-text-color: #717881;
+        --vc-icon-color: #717881;
+        --vc-toolbar-icon-color: #333D4A;
+      }
+      ha-card .preview{
+        background-color: #333D4A;
+      }
+      ha-card img.map{
+        height: 260px;
+      }
+      ha-card div.metadata{
+        margin-top: 0px !important;
+      }
+      ha-card .preview .metadata .status-text{
+        text-transform: lowercase;
+      }
+      ha-card .stats .stats-block:nth-child(1)::first-letter{
+        text-transform: capitalize;
+      }
+      {% if state_attr('vacuum.d7_downstairs', 'clean_stop') is not none %}
+        ha-card .stats .stats-block:nth-child(1) .stats-subtitle::after{
+          content: " {{ relative_time(
+                          strptime(
+                            state_attr('vacuum.d7_downstairs', 'clean_stop'),
+                            '%Y-%m-%dT%H:%M:%SZ'
+                          )
+                        )
+                      }} ago";
+        }
+      {% endif %}
+card:
+  type: custom:vacuum-card
+  entity: vacuum.d7_downstairs
+  map: camera.d7_downstairs_cleaning_map
+  stats:
+    default:
+      - attribute: launched_from
+        subtitle: last run
+      - attribute: clean_area
+        unit: m²
+        subtitle: cleaned area
+  shortcuts:
+    - name: Clean the Kitchen
+      service: neato.custom_cleaning
+      service_data:
+        entity_id: vacuum.d7_downstairs
+        mode: 2
+        navigation: 1
+        category: 4
+        zone: Kitchen
+      icon: hue:room-kitchen
+    - name: Clean the Lunch area
+      service: neato.custom_cleaning
+      service_data:
+        entity_id: vacuum.d7_downstairs
+        mode: 2
+        navigation: 1
+        category: 4
+        zone: Family room
+      icon: hue:room-dining
+    - name: Clean the Ensuite
+      service: neato.custom_cleaning
+      service_data:
+        entity_id: vacuum.d7_downstairs
+        mode: 2
+        navigation: 1
+        category: 4
+        zone: Dining room
+      icon: mdi:vanity-light
+    - name: Clean the Living room
+      service: neato.custom_cleaning
+      service_data:
+        entity_id: vacuum.d7_downstairs
+        mode: 2
+        navigation: 1
+        category: 4
+        zone: Living room
+      icon: hue:room-living

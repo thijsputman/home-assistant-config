@@ -48,17 +48,6 @@
             ) | round(2)
           }}
     # Washing machine
-    binary_washing_machine:
-      friendly_name: Washing machine
-      device_class: power
-      value_template: >-
-        {%- if states('sensor.power_86_actual') in ['unknown', 'unavailable'] -%}
-          {{ states('sensor.power_86_actual') }}
-        {%- elif states('sensor.power_86_actual')|float > 0 -%}
-          on
-        {%- else -%}
-          off
-        {%- endif -%}
     monthly_consumption_costs_washing_machine:
       friendly_name: Monthly costs (Washing machine)
       unit_of_measurement: €
@@ -101,18 +90,6 @@
             ) | round(2)
           }}
     # Dishwasher
-    binary_dishwasher:
-      friendly_name: Dishwasher
-      device_class: power
-      # Dryer's idle/standby consumption is 3 Watt
-      value_template: >-
-        {%- if states('sensor.power_88_actual') in ['unknown', 'unavailable'] -%}
-          {{ states('sensor.power_88_actual') }}
-        {%- elif states('sensor.power_88_actual')|float > 3 -%}
-          on
-        {%- else -%}
-          off
-        {%- endif -%}
     monthly_consumption_costs_dishwasher:
       friendly_name: Monthly costs (Dishwasher)
       unit_of_measurement: €
@@ -134,18 +111,6 @@
             ) | round(2)
           }}
     # Airco (Attic)
-    binary_airco_attic:
-      friendly_name: Airco (Attic)
-      device_class: power
-      # Airco idle/standby consumption is 1 Watt
-      value_template: >-
-        {%- if states('sensor.power_99') in ['unknown', 'unavailable'] -%}
-          {{ states('sensor.power_99') }}
-        {%- elif states('sensor.power_99')|float > 1 -%}
-          on
-        {%- else -%}
-          off
-        {%- endif -%}
     monthly_consumption_costs_airco_attic:
       friendly_name: Monthly costs (Airco – Attic)
       unit_of_measurement: €
@@ -166,29 +131,7 @@
                 states('input_number.rate_energy_peak')|float)
             ) | round(2)
           }}
-    # All lights
-    monthly_consumption_costs_all_lights:
-      friendly_name: Monthly costs (All lights)
-      unit_of_measurement: €
-      # Use average of the two rates to approximate costs
-      value_template: >-
-        {{
-          (
-            (states('sensor.monthly_consumption_all_lights')|float *
-              (states('input_number.rate_energy_peak')|float +
-              states('input_number.rate_energy_offpeak')|float) / 2)
-          ) | round(2)
-        }}
-      attribute_templates:
-        last_period: >-
-          {{
-            (
-              (state_attr('sensor.monthly_consumption_all_lights',
-                  'last_period')|float *
-                (states('input_number.rate_energy_peak')|float +
-                states('input_number.rate_energy_offpeak')|float) / 2)
-            ) | round(2)
-          }}
+    # UPS
     monthly_consumption_costs_ups:
       friendly_name: Monthly costs (Back-UPS Pro 900)
       unit_of_measurement: €

@@ -29,7 +29,7 @@ card:
       name: Airco – Attic
       tap_action:
         action: more-info
-      entity: sensor.binary_airco_attic
+      entity: binary_sensor.airco_attic
       show_name: true
       show_icon: true
       show_state: false

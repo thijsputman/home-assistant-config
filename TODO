@@ -93,13 +93,10 @@ future reference).
     actually useful given the above considerations; remove the ones that are
     not...
 - [ ] Clean up `📄 sensors.yaml` (i.e., move its contents into the `📁 sensors`
-      folder). ~~Do the same with the binary sensors (move them from
-      `📄 configuration.yaml` into `📁 sensors_binary`).~~
+      folder).
   - Reimplement all template sensors using
     [the new format](https://www.home-assistant.io/integrations/template) and
     move them into the `📁 templates` folder
-  - There's a handful of template sensors (`sensor.binary_...`) that should've
-    been implemented as template binary sensors – correct those
   - Use
     [**trigger-based template sensors**](https://www.home-assistant.io/integrations/template/#configuration-for-trigger-based-template-sensors)
     where appropriate. For example, several sensors in

@@ -1,14 +1,49 @@
 - sensor:
+    # All lights
+    - name: Monthly costs (All lights)
+      unique_id: 286f2b11-44bb-4a50-af03-6dbfe48ce726
+      unit_of_measurement: €
+      availability: >-
+        {{
+          has_value('sensor.monthly_consumption_all_lights')
+        }}
+      # Use average of the two rates to approximate costs
+      state: >-
+        {{
+          (
+            (states('sensor.monthly_consumption_all_lights') | float *
+              (
+                states('input_number.rate_energy_peak') | float +
+                states('input_number.rate_energy_offpeak') | float
+              ) / 2)
+          ) | round(2)
+        }}
+      attributes:
+        last_period: >-
+          {{
+            (
+              (state_attr('sensor.monthly_consumption_all_lights',
+                  'last_period') | float *
+                (
+                  states('input_number.rate_energy_peak') | float +
+                  states('input_number.rate_energy_offpeak') | float
+                ) / 2)
+            ) | round(2)
+          }}
     # Television (i.e. "Multimedia hub")
     - name: Monthly costs (Television)
       unique_id: 619f29c6-d3db-48ba-827f-1cb7aaa7d3d5
       unit_of_measurement: €
+      availability: >-
+        {{
+          has_value('sensor.monthly_consumption_television')
+        }}
       # Runs mostly during peak-hours, use peak-rate to approximate costs
       state: >-
         {{
           (
-            (states('sensor.monthly_consumption_television')|float *
-              states('input_number.rate_energy_peak')|float)
+            (states('sensor.monthly_consumption_television') | float *
+              states('input_number.rate_energy_peak') | float)
           ) | round(2)
         }}
       attributes:
@@ -16,8 +51,8 @@
           {{
             (
               (state_attr('sensor.monthly_consumption_television',
-                  'last_period')|float *
-                states('input_number.rate_energy_peak')|float)
+                  'last_period') | float *
+                states('input_number.rate_energy_peak') | float)
             ) | round(2)
           }}
     # Sonair – combined measurement for all three Sonair units and the fan in
@@ -30,10 +65,10 @@
       # power data it makes sense to report it as the combined total
       availability: >-
         {{
-          states('sensor.power_110') not in ['unknown', 'unavailable'] or
-          states('sensor.power_113') not in ['unknown', 'unavailable'] or
-          states('sensor.power_115') not in ['unknown', 'unavailable'] or
-          states('sensor.power_149_actual') not in ['unknown', 'unavailable']
+          has_value('sensor.power_110') and
+          has_value('sensor.power_113') and
+          has_value('sensor.power_115') and
+          has_value('sensor.power_149_actual')
         }}
       state: >-
         {{
@@ -51,11 +86,10 @@
       # the cumulative number...
       availability: >-
         {{
-          states('sensor.consumption_111') not in ['unknown', 'unavailable'] and
-          states('sensor.consumption_114') not in ['unknown', 'unavailable'] and
-          states('sensor.consumption_116') not in ['unknown', 'unavailable'] and
-          states('sensor.consumption_148_actual') not in
-            ['unknown', 'unavailable']
+          has_value('sensor.consumption_111') and
+          has_value('sensor.consumption_114') and
+          has_value('sensor.consumption_116') and
+          has_value('sensor.consumption_148_actual')
         }}
       state: >-
         {{
@@ -69,6 +103,10 @@
     - name: Monthly costs (Sonair – combined)
       unique_id: 373d8b30-e8d3-4995-8a10-8e76e515d8a1
       unit_of_measurement: €
+      availability: >-
+        {{
+          has_value('sensor.monthly_consumption_sonair_combined')
+        }}
       # Runs mostly during peak-hours, use peak-rate to approximate costs
       state: >-
         {{
@@ -90,13 +128,19 @@
     - name: Monthly costs (Airco – Bedroom)
       unique_id: c7aad2d5-7536-4143-82bb-2b2fc62a86f4
       unit_of_measurement: €
+      availability: >-
+        {{
+          has_value('sensor.monthly_consumption_airco_bedroom')
+        }}
       # Runs all-day round, use average of the two rates to approximate costs
       state: >-
         {{
           (
-            (states('sensor.monthly_consumption_airco_bedroom')|float *
-              (states('input_number.rate_energy_peak')|float +
-              states('input_number.rate_energy_offpeak')|float) / 2)
+            (states('sensor.monthly_consumption_airco_bedroom') | float *
+              (
+                states('input_number.rate_energy_peak') | float +
+                states('input_number.rate_energy_offpeak') | float
+              ) / 2)
           ) | round(2)
         }}
       attributes:
@@ -116,7 +160,7 @@
       device_class: power
       icon: mdi:television
       availability: >-
-        {{ states('sensor.power_108') not in ['unknown', 'unavailable'] }}
+        {{ has_value('sensor.power_108') }}
       # Idle/standby consumption is anywhere between 5 and 20 Watt
       state: >-
         {%- if states('sensor.power_108')|float(0) > 20 -%}
@@ -130,12 +174,23 @@
       device_class: power
       icon: mdi:air-filter
       availability: >-
-        {{
-          states('sensor.power_sonair_combined') not in
-            ['unknown', 'unavailable']
-        }}
+        {{ has_value('sensor.power_sonair_combined') }}
       state: >-
         {%- if states('sensor.power_sonair_combined')|int(0) > 0 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
+    # Airco (Attic)
+    - name: Airco (Attic)
+      unique_id: 6cf706bc-7c95-4ec0-a522-dc207a8e720c
+      device_class: power
+      icon: mdi:hvac
+      availability: >-
+        {{ has_value('sensor.power_99') }}
+      # Idle/standby consumption is 1 Watt
+      state: >-
+        {%- if states('sensor.power_99')|float > 1 -%}
           on
         {%- else -%}
           off
@@ -146,10 +201,37 @@
       device_class: power
       icon: mdi:hvac
       availability: >-
-        {{ states('sensor.power_117') not in ['unknown', 'unavailable'] }}
+        {{ has_value('sensor.power_117') }}
       # Idle/standby consumption is below 5 Watt
       state: >-
         {%- if states('sensor.power_117')|float(0) > 5 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
+    # Dishwasher
+    - name: Dishwasher
+      unique_id: 3fda1cfb-c3bc-4474-b2c1-f8658679058f
+      device_class: power
+      icon: mdi:dishwasher
+      availability: >-
+        {{ has_value('sensor.power_88_actual') }}
+      # Idle/standby consumption is 3 Watt
+      state: >-
+        {%- if states('sensor.power_88_actual')|float > 3 -%}
+          on
+        {%- else -%}
+          off
+        {%- endif -%}
+    # Washing machine
+    - name: Washing machine
+      unique_id: a3237e4c-c072-4b1a-99e6-78272059975b
+      device_class: power
+      icon: mdi:washing-machine
+      availability: >-
+        {{ has_value('sensor.power_86_actual') }}
+      state: >-
+        {%- if states('sensor.power_86_actual')|float > 0 -%}
           on
         {%- else -%}
           off
@@ -160,8 +242,8 @@
       device_class: power
       icon: mdi:tumble-dryer
       availability: >-
-        {{ states('sensor.power_83') not in ['unknown', 'unavailable'] }}
-      # Dryer's idle/standby consumption is 2 Watt
+        {{ has_value('sensor.power_83') }}
+      # Idle/standby consumption is 2 Watt
       state: >-
         {%- if states('sensor.power_83')|float(0) > 2 -%}
           on

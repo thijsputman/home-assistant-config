@@ -28,7 +28,7 @@ card:
           }
       tap_action:
         action: more-info
-      entity: sensor.binary_washing_machine
+      entity: binary_sensor.washing_machine
       show_name: true
       show_icon: true
       show_state: false
