@@ -6,7 +6,7 @@ decimals: 0
 points_per_hour: 1
 hours_to_show: 48
 upper_bound: ~-55
-lower_bound: ~-70
+lower_bound: ~-80
 aggregate_func: min
 color_thresholds:
   - value: -55

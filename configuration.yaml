@@ -53,6 +53,7 @@ utility_meter: !include utility_meter.yaml
 aarlo:
   username: !secret arlo_username
   password: !secret arlo_password
+  backend: sse
   refresh_devices_every: 2
   stream_timeout: 120
   user_agent: linux
