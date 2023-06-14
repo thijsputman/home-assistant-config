@@ -1,0 +1,26 @@
+version: "3"
+services:
+  piper:
+    container_name: piper
+    # image: rhasspy/wyoming-piper
+    build:
+      context: https://github.com/rhasspy/wyoming-addons.git#master:piper
+      args:
+        TARGETARCH: arm
+        TARGETVARIANT: "64"
+        PIPER_LIB_VERSION: "0.0.3"
+        PIPER_RELEASE: v1.0.0
+    user: 1000:1003
+    command:
+      - --voice
+      - en-us-danny-low
+      # en-us-ryan-low
+      # en-us-ryan-medium
+      # en-gb-southern_english_female-low
+      - --length-scale
+      - "1.15"
+    volumes:
+      - ./data:/data
+    ports:
+      - 10200:10200
+    restart: unless-stopped
