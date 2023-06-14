@@ -1,4 +1,4 @@
-- alias: 🔊 | ✈️ Queue welcome home announcement (someone home)
+- alias: 🔊 | ✈️ "Welcome home!" announcement (someone home)
   id: 4cfd2c21-b014-4b43-b8ad-99db4dc9cb6d
   trigger:
     # Should be away for more than 90-minutes to receive a "Welcome home"
@@ -6,6 +6,10 @@
       entity_id: alarm_control_panel.home_alarm
       to: armed_away
       for: "01:30:00"
+  variables:
+    activity_while_armed: >-
+      {% from 'voice.jinja' import activity_while_armed %}
+      {{ activity_while_armed() }}
   condition:
     # It is possible for the alarm to arm while in Vacation-mode (e.g. the
     # housekeeper visits)
@@ -113,10 +117,10 @@
               currently somewhere in {{ state_attr(sensor, 'locality') }}.
             {% endif %}
             While you were away,
-            {% if states('sensor.voice_activity_while_armed') | trim  == '' %}
+            {% if activity_while_armed | trim  == '' %}
                nothing of interest happened
             {% else %}
-              {{ states('sensor.voice_activity_while_armed') }}
+              {{ activity_while_armed }}
             {% endif %}.
 - alias: 🔊 | ✈️ Clear queued up announcements (back from vacation)
   id: 2ee10a57-7f48-4a3b-9877-39ddff276020

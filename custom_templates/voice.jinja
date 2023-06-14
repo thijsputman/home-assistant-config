@@ -1,0 +1,97 @@
+{#
+  "The Home Alarm will arm once everyone is asleep. The wakeup alarm will sound
+  at [x]."
+#}
+
+{% macro goodnight_alarm() %}
+
+  {% if states('input_boolean.alarm_auto_arm_night') == 'on' %}
+    The Home Alarm will arm once everyone is asleep.
+  {% endif %}
+  {% if states('input_boolean.wakeup_alarm_mute') == 'off' %}
+    The wakeup alarm will sound at {{
+      today_at(states('input_datetime.wakeup')) |
+      as_timestamp | timestamp_custom('%H:%M')
+    }}.
+  {% endif %}
+
+{% endmacro %}
+
+{#
+  "the doorbell rang [x] times and Arlo detected motion [x] times at the front
+  and [x] times at the back"
+#}
+
+{% macro activity_while_armed() %}
+
+  {%
+    set activity_arlo =
+      states('sensor.activity_while_armed_arlo') | int(0)
+  %}
+  {%
+    set activity_doorbell =
+      states('sensor.activity_while_armed_doorbell') | int(0)
+  %}
+  {% if activity_arlo + activity_doorbell > 0 %}
+    {% if activity_doorbell > 0 %}
+      the doorbell rang {{ activity_doorbell ~ ' times'
+        if activity_doorbell > 1 else 'once' }}.
+    {% endif %}
+    {% if activity_arlo > 0 %}
+      {% if activity_doorbell > 0 %}
+        and
+      {% endif%}
+      {%
+        set motion_front = state_attr(
+          'sensor.activity_while_armed_arlo', 'front') | int(0)
+      %}
+      {%
+        set motion_back = state_attr(
+          'sensor.activity_while_armed_arlo', 'back') | int(0)
+      %}
+      {% set motion = [] %}
+      {% if motion_front > 0 %}
+        {%
+          set motion = motion + [
+            (motion_front ~ ' times' if motion_front > 1 else 'once')
+            ~ ' at the front'
+          ]
+        %}
+      {% endif %}
+      {% if motion_back > 0 %}
+        {%
+          set motion = motion + [
+            (motion_back ~ ' times' if motion_back > 1 else 'once')
+            ~ ' at the back'
+          ]
+        %}
+      {% endif %}
+      Arlo detected motion {{ motion | join(' and ') }}
+    {% endif %}
+  {% endif %}
+
+{% endmacro %}
+
+{# "Albert Heijn expects to arrive [tomorrow] around [x]." #}
+
+{% macro albert_heijn_eta() %}
+
+  {%
+    if states('sensor.last_notification_albert_heijn_eta')
+      not in ['unknown', 'unavailable']
+  %}
+    {%
+      set eta = states('sensor.last_notification_albert_heijn_eta') |
+        as_datetime
+    %}
+    {% set tomorrow = eta.day != now().day %}
+    Albert Heijn expects to arrive
+    {#
+      This implicitly assumes Albert Heijn never sends notifications
+      more than a day in advance...
+    #}
+    {% if tomorrow is true%} tomorrow {% endif %}
+    around {{ eta | as_timestamp | timestamp_custom('%H:%S') }}.
+  {% endif %}
+
+{% endmacro %}

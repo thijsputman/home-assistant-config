@@ -1,4 +1,4 @@
-- alias: 🔊 | 🕹️ Goodnight message (bedside Smart Switches)
+- alias: 🔊 | 🕹️ Trigger "Goodnight" announcements (bedside Smart Switches)
   id: 01987760-fad4-4e0c-a525-8d77c6c5cae3
   trigger:
     - device_id: da1237666189a9a364fa383795ba532d
@@ -26,28 +26,44 @@
         entity_id: script.lights_out
         state: "off"
       then:
+        # Additionally, the delay also serves to ensure the TTS queue is
+        # properly filled before firing "tts_announce"
         - delay: 3
     # Mental note: This should be _outside_ "then"; if it's inside it just
     # aborts the rest of the "then" block, not the entire automation...
     - condition: state
       entity_id: script.lights_out
       state: "on"
-    - service: script.turn_on
-      target:
-        entity_id: script.tts_announce
-      data:
-        variables:
-          speaker: media_player.pi0_w2_speaker_bedroom
-          priority: whisper
-          message: >-
-            Switching off all lights.
-            {% if states('sensor.voice_goodnight_message') | trim != '' %}
-              {{ states('sensor.voice_goodnight_message') }}
-            {% endif %}
-            Good night; sleep tight...
+    - event: tts_announce
+      event_data:
+        speaker: media_player.pi0_w2_speaker_bedroom
+        tag: goodnight
   mode: single
   max_exceeded: silent
-- alias: 🔊 | 📟 Goodnight message (triggered from Kitchen tablet)
+- alias: >-
+    🔊 | 🕹️ Trigger "Goodnight" announcements ("Lights out" triggered from
+    Kitchen tablet)
+  id: 6af957b0-bc4e-489c-8ff7-4ae492b7ca21
+  trigger:
+    - platform: state
+      entity_id: script.lights_out
+      from: "off"
+      to: "on"
+      # Slight delay to allow for the TTS queue to fill
+      for: 2
+  variables:
+    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
+  condition:
+    - >-
+      {{ trigger.to_state.context.user_id == tablet_kitchen_user_id }}
+  action:
+    - event: tts_announce
+      event_data:
+        speaker: media_player.bpi_m2_zero_speaker_living_room
+        tag: goodnight
+  mode: single
+  max_exceeded: silent
+- alias: 🔊 | 💡 Queue "Goodnight" announcements ("Lights out" triggered)
   id: 4bce7cff-f340-4fd7-9b18-b6a7aa85d38f
   trigger:
     - platform: state
@@ -55,24 +71,68 @@
       from: "off"
       to: "on"
   variables:
-    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
-  condition:
-    - >-
-      {{ trigger.to_state.context.user_id == tablet_kitchen_user_id }}
+    goodnight_alarm: >-
+      {% from 'voice.jinja' import goodnight_alarm %}
+      {{ goodnight_alarm() }}
+    albert_heijn_eta: >-
+      {% from 'voice.jinja' import albert_heijn_eta %}
+      {{ albert_heijn_eta() }}
   action:
     - service: script.turn_on
       target:
-        entity_id: script.tts_announce
+        entity_id: script.tts_queue
       data:
         variables:
-          speaker: media_player.bpi_m2_zero_speaker_living_room
+          channel: announce
+          tag: goodnight
           priority: whisper
-          message: >-
-            "Lights out"-sequence started; in the next five-minutes all lights
-            will switch off.
-            {% if states('sensor.voice_goodnight_message') | trim != '' %}
-              {{ states('sensor.voice_goodnight_message') }}
-            {% endif %}
-            Good night...
+          message: Switching off all lights.
+    - if:
+        - >-
+          {{ goodnight_alarm | trim != '' }}
+      then:
+        - service: script.turn_on
+          target:
+            entity_id: script.tts_queue
+          data:
+            variables:
+              channel: announce
+              tag: goodnight
+              priority: whisper
+              chime: false
+              message: >-
+                {{ goodnight_alarm }}
+    - if:
+        - >-
+          {{ albert_heijn_eta | trim != '' }}
+        # Only relevant if Albert Heijn ETA is in the future — otherwise we're
+        # probably about to replay this morning's announcement...
+        - >-
+          {{
+            states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime > now()
+          }}
+      then:
+        - service: script.turn_on
+          target:
+            entity_id: script.tts_queue
+          data:
+            variables:
+              channel: announce
+              tag: goodnight
+              priority: whisper
+              chime: false
+              message: >-
+                {{ albert_heijn_eta }}
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: goodnight
+          priority: whisper
+          chime: false
+          message: Goodnight...
   mode: single
   max_exceeded: silent

@@ -1,3 +1,8 @@
+# The other "Good morning"-announcements are queued up at the "everyone awake"
+# trigger (a more straightforward trigger). Depending on how quickly we snooze
+# the wakeup alarm, the announcements could play a couple minutes later.
+# As the contents of the Albert Heijn ETA are highly time-sensitive, it's queued
+# up just before (ie, rendered) the announcements are played.
 - alias: 🛒 | 🔊 Announce Albert Heijn ETA (wakeup alarm snoozed or silenced)
   id: 381fa915-60ea-4d01-ab6c-51d245da3b8d
   trigger:
@@ -25,39 +30,38 @@
   action:
     - variables:
         eta_start: >-
-          {%-
-            set start = states('sensor.last_notification_albert_heijn_eta') |
-              as_datetime
-          -%}
-          {{ start.hour }}:{{ start.minute }}
+          {{-
+            states('sensor.last_notification_albert_heijn_eta') |
+              as_timestamp | timestamp_custom('%H:%M')
+          -}}
         eta_end: >-
-          {%-
-            set end = states('sensor.last_notification_albert_heijn_eta') |
+          {{-
+            (states('sensor.last_notification_albert_heijn_eta') |
               as_datetime + timedelta(seconds=state_attr(
                   'sensor.last_notification_albert_heijn_eta', 'interval'))
-          -%}
-          {{ end.hour }}:{{ end.minute }}
+            ) | as_timestamp | timestamp_custom('%H:%M')
+          -}}
         eta_minutes: >-
-          {{
+          {{-
             ((states('sensor.last_notification_albert_heijn_eta') |
               as_timestamp - now() | as_timestamp) / 60) | int
-          }}
-    # Abort any previously queued up announcements — they're superseded by this
+          -}}
+    # Abort any previously queued announcements — they're superseded by this
     # "Good morning"-announcement...
     - event: tts_queue_abort
       event_data:
         tag: albert_heijn_eta
-    # Slight delay for "ergonomical" reasons
-    - delay: 5
     - service: script.turn_on
       target:
-        entity_id: script.tts_announce
+        entity_id: script.tts_queue
       data:
         variables:
-          speaker: media_player.pi0_w2_speaker_bedroom
+          channel: announce
+          tag: good_morning
+          chime: false
           message: >-
-            Good morning, Albert Heijn expects to arrive between {{ eta_start }}
-            and {{ eta_end }}. That is
+            Albert Heijn expects to arrive between {{ eta_start }} and
+            {{ eta_end }}. That is
             {% if eta_minutes < 5 %}
               about now!
             {% elif eta_minutes < 55 %}
@@ -76,17 +80,23 @@
       not_to:
         - unknown
         - unavailable
+  variables:
+    albert_heijn_eta: >-
+      {% from 'voice.jinja' import albert_heijn_eta %}
+      {{ albert_heijn_eta() }}
   condition:
+    - >-
+      {{ albert_heijn_eta | trim != '' }}
     # Only relevant if ETA is in the future — prevents both stale notifications
     # (and the occasional notification that arrives after its actual ETA) from
-    # getting announced
+    # getting queued...
     - >-
       {{
         states('sensor.last_notification_albert_heijn_eta') |
           as_datetime > now()
       }}
   action:
-    # Abort any previously scheduled (and now invalid) announcements...
+    # Abort any previously queued (and now invalid) announcements...
     - event: tts_queue_abort
       event_data:
         tag: albert_heijn_eta
@@ -98,15 +108,4 @@
           tag: albert_heijn_eta
           expiry: "06:00:00"
           message: >-
-            {%
-              set eta = states('sensor.last_notification_albert_heijn_eta') |
-                as_datetime
-            %}
-            {% set tomorrow = eta.day != now().day %}
-            Albert Heijn expects to arrive
-            {#
-              This implicitly assumes Albert Heijn never sends notifications
-              more than a day in advance...
-            #}
-            {% if tomorrow is true%} tomorrow {% endif %}
-            around {{ eta | as_timestamp | timestamp_custom('%H:%S') }}.
+            {{ albert_heijn_eta }}

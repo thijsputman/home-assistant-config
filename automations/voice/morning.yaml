@@ -1,27 +1,64 @@
-- alias: 🔊 | 💤 Queue "Good morning!" announcement (everyone awake)
+- alias: >-
+    🔊 | 🕹️ Trigger "Good morning!" announcements (wakeup alarm snoozed
+    or silenced)
+  id: 5cfff24f-e0c7-422a-a181-9836432e1cf4
+  trigger:
+    - platform: event
+      event_type: timer.started
+      event_data:
+        entity_id: timer.wakeup_snooze_time
+    - platform: event
+      event_type: wakeup_alarm_silenced
+  action:
+    # Slight delay both for "ergonomic" reasons and to allow other automations
+    # to queue up their TTS announcements
+    - delay: 5
+    - event: tts_announce
+      event_data:
+        speaker: media_player.pi0_w2_speaker_bedroom
+        tag: good_morning
+- alias: 🔊 | 💤 Queue "Good morning!" (everyone awake)
   id: f1a0a203-6d0e-4c91-99a8-ced118c4c478
   trigger:
     - platform: state
       entity_id: input_boolean.everyone_asleep
       from: "on"
       to: "off"
-  condition:
-    - condition: state
-      entity_id: group.family
-      state: home
-    # Don't bother just saying "Good morning!"
-    - >-
-      {{ states('sensor.voice_activity_while_armed') | trim != '' }}
   action:
     - service: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
         variables:
-          expiry: "03:00:00"
-          speaker: media_player.bpi_m2_zero_speaker_living_room
+          channel: announce
+          tag: good_morning
+          expiry: "01:00:00"
+          message: Good morning!
+  mode: single
+- alias: 🔊 | 💤 Queue "Activity while armed" announcement (everyone awake)
+  id: bd31f54a-d88e-44d0-958b-4da2eb248150
+  trigger:
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
+  variables:
+    activity_while_armed: >-
+      {% from 'voice.jinja' import activity_while_armed %}
+      {{ activity_while_armed() }}
+  condition:
+    - >-
+      {{ activity_while_armed | trim != '' }}
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: good_morning
+          expiry: "01:00:00"
+          chime: false
           message: >-
-            {{ 'Good morning' if now().hour <= 11 else 'Good afternoon' }}!
-            While you were asleep,
-            {{ states('sensor.voice_activity_while_armed') }}.
+            While you were asleep, {{ activity_while_armed }}.
   mode: single
