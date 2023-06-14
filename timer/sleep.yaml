@@ -4,3 +4,7 @@ wakeup_grace_time:
 wakeup_snooze_time:
   name: Wakeup snooze time
   duration: "00:15:00"
+everyone_asleep_delay:
+  name: >-
+    "Everyone asleep" delay
+  duration: "00:20:00"

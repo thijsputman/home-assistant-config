@@ -9,19 +9,31 @@
     - platform: state
       from: "on"
       to: "off"
-      for: "00:20:00"
       entity_id: group.light_inside_rooms
-  condition:
-    - condition: state
-      entity_id: input_boolean.everyone_asleep
-      state: "off"
-    - condition: state
-      entity_id: group.light_inside_rooms
-      state: "off"
-    - condition: state
-      entity_id: sensor.time_of_day
-      state: night
   action:
+    # This timer allows other automations to modify their behaviour while we're
+    # waiting for everyone to go to sleep
+    - service: timer.start
+      target:
+        entity_id: timer.everyone_asleep_delay
+    - wait_for_trigger:
+        - platform: event
+          event_type: timer.finished
+          event_data:
+            entity_id: timer.everyone_asleep_delay
+      timeout: "01:00:00"
+      continue_on_timeout: true
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "off"
+        - condition: state
+          entity_id: group.light_inside_rooms
+          state: "off"
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: night
     - service: input_boolean.turn_on
       entity_id: input_boolean.everyone_asleep
   mode: single
