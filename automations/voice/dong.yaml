@@ -13,48 +13,23 @@
     - condition: state
       entity_id: media_player.nvidia_shield_tv
       state: "off"
+    # Don't play when going to sleep / being asleep
     - condition: state
       entity_id: script.lights_out
       state: "off"
     - condition: state
-      entity_id: script.wakeup_alarm
-      state: "off"
-    - condition: state
-      entity_id: script.tts_announce
-      state: "off"
+      entity_id: timer.everyone_asleep_delay
+      state: idle
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
+    # Don't play while waking up
     - condition: state
-      entity_id: input_boolean.housekeeper_present
+      entity_id: script.wakeup_alarm
       state: "off"
-    # Keep a 20-second window around «wakeup» time to prevent a race-condition
-    # with the wakeup alarm which (generally speaking), fires at the top of the
-    # hour too... Only enforced when the wakeup "grace-time" timer is _idle_;
-    # if it's _active_, wakeup time has passed and we're evaluating tomorrow's
-    # «wakeup» time as-if it were today's (which is nonsense).
-    - >-
-      {{
-        (
-          today_at(states('input_datetime.wakeup')) -
-            timedelta(seconds = 10) >= now() or
-          today_at(states('input_datetime.wakeup')) +
-            timedelta(seconds = 10) <= now()
-        ) or states('timer.wakeup_grace_time') == 'active'
-      }}
-    # There's a delay between all lights going off and "Everyone asleep"
-    # activating. To prevent an hourly "Dong!" during this delay, either some
-    # inside lights should be on, or it should _not_ be dark outside...
-    - condition: or
-      conditions:
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: sensor.time_of_day
-              state: night
-        - condition: state
-          entity_id: group.light_inside_rooms
-          state: "on"
+    - condition: state
+      entity_id: timer.wakeup_snooze_time
+      state: idle
   action:
     # In the Bedroom, the "Dong!" only sounds between 06:00 and 22:00
     - if:
@@ -62,37 +37,48 @@
           after: "05:59:00"
           before: "22:59:00"
       then:
-        - service: media_player.volume_set
-          data:
-            volume_level: 0.60
-          target:
-            entity_id: group.speakers_all
-        - service: media_player.play_media
-          data:
-            media_content_type: audio/mpeg
-            media_content_id: >-
-              media-source://media_source/sd/audio/hourly_dong.mp3
-          target:
-            entity_id: group.speakers_all
+        - if:
+            - condition: time
+              after: "11:59:00"
+              before: "12:01:00"
+          # Special "Dong!" at noon
+          then:
+            - service: script.turn_on
+              target:
+                entity_id: script.tts_announce
+              data:
+                variables:
+                  priority: attention
+                  duration: 3
+                  chime: false
+                  message: >-
+                    media-source://media_source/sd/audio/hourly_dong.mp3
+          else:
+            - service: script.turn_on
+              target:
+                entity_id: script.tts_announce
+              data:
+                variables:
+                  priority: attention
+                  duration: 2
+                  chime: false
+                  message: >-
+                    media-source://media_source/sd/audio/Gentle_gong.ogg
       else:
-        # Also, lower the (overall) volume a bit during "nighttime"
-        - service: media_player.volume_set
-          data:
-            volume_level: 0.30
+        - service: script.turn_on
           target:
-            entity_id: group.speakers_all
-        - service: media_player.play_media
+            entity_id: script.tts_announce
           data:
-            media_content_type: audio/mpeg
-            media_content_id: >-
-              media-source://media_source/sd/audio/hourly_dong.mp3
-          target:
-            entity_id: >-
-              {#
-                Remove all entities with "bedroom" in their id from the group
-              #}
-              {{
-                expand('group.speakers_all') | map(attribute='entity_id') |
-                reject('search', 'bedroom') | join(',')
-              }}
+            variables:
+              priority: whisper
+              duration: 2
+              chime: false
+              # Remove all entities with "bedroom" in their id from the group
+              speaker: >-
+                {{
+                  expand('group.speakers_all') | map(attribute='entity_id') |
+                  reject('search', 'bedroom') | join(',')
+                }}
+              message: >-
+                media-source://media_source/sd/audio/Gentle_gong.ogg
   mode: single
