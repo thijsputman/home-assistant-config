@@ -1,39 +1,94 @@
 tts_queue:
   alias: TTS queue
+  # The "tts_attention" and "tts_announce" events can contain the following
+  # event data:
+  #
+  # - speaker: The entity-id of the speaker on which to play the TTS queue. When
+  #   _not_ defined, queued notifications that _don't_ specify a speaker
+  #   preference are played on _all_ speakers (and all others are not released
+  #   from the queue).
+  #   By convention, all "tts_attention" events specify a speaker. Namely, the
+  #   speaker which has attention. For "tts_announce" events it depends on the
+  #   further context of the event (e.g. "Hourly Dong!" wants to be played on
+  #   all speakers and thus doesn't specify one).
+  # - tag: If defined on an event, only announcements with that specific tag
+  #   set are released from the queue. Mainly used to ensure "tts_announce"
+  #   events don't get mixed (e.g. "Hourly Dong!" wants to be played on all
+  #   speakers, but shouldn't interfer with a potential simultaneous set of
+  #   announcements that only wants to be played on a single speaker).
   description: >-
-    Queue a message to be announced at a later point in time. The queue is
-    released whenever a "tts_attention"-event is received.
+    Queue a message for announcement. There are two "channels": attention and
+    announce. The queue is released whenever the matching channel's event
+    (either "tts_attention" or "tts_announce") is raised.
+    The "attention"-channel is used to queue up (low-priority) announcements for
+    broadcast at an opportune moment later in time. The "announce"-channel is
+    used to queue up announcements for (near) immediate release. Functionally,
+    both channels behave identical.
   icon: mdi:speaker-message
   fields:
     message:
-      description: The message to queue for announcement
+      description: >-
+        The message to queue for announcement – to queue a sample instead of a
+        text message, use "media-source://..." as message
       required: true
       selector:
         text: # yamllint disable-line rule:empty-values
-    messageDuration:
+    duration:
       description: >-
         The length (in seconds) of the spoken out announcement (when omitted,
-        a crude heuristic is applied)
+        a crude heuristic is applied) – when providing a sample, provide the
+        sample's duration here!
       required: false
       selector:
         number:
           min: 1
-          max: 60
+          max: 300
     expiry:
-      description: Validity of the announcement
+      description: >-
+        Validity of the announcement – for the "attention"-channel defaults to
+        2-hours, for the "announce"-channel defaults to 5-minutes
       required: false
       default: "02:00:00"
       selector:
         time: # yamllint disable-line rule:empty-values
+    channel:
+      description: Message channel
+      required: false
+      default: attention
+      selector:
+        select:
+          options:
+            - attention
+            - announce
+    priority:
+      description: Message priority (ie, volume)
+      required: false
+      default: regular
+      selector:
+        select:
+          options:
+            - attention
+            - regular
+            - whisper
+    chime:
+      description: Chime before announcing
+      required: false
+      default: true
+      selector:
+        boolean: # yamllint disable-line rule:empty-values
     tag:
-      description: Announcement tag
+      description: >-
+        Announcement tag – can be used to abort queued announcements _and_ in
+        case of "tts_announce" events to only play announcements with a specific
+        tag
       required: false
       selector:
         text: # yamllint disable-line rule:empty-values
     speaker:
       description: >-
-        Preferred speaker-entity (defaults to first speaker with attention) —
-        best used in combination with a relatively short "messageDuration".
+        Preferred speaker-entity – first eligible speaker if not provided _or_
+        all speakers in case of "tts_announce" events that don't specify a
+        specific speaker
       required: false
       selector:
         entity:
@@ -44,9 +99,19 @@ tts_queue:
   variables:
     expiry: >-
       {% if expiry is not defined %}
-        {{ "02:00:00" }}
+        {% if channel == 'attention' %}
+          {{ 7200 }}
+        {% else %}
+          {{ 300 }}
+        {% endif %}
       {% else %}
         {{ expiry }}
+      {% endif %}
+    channel: >-
+      {% if channel not in ['attention', 'announce'] %}
+        attention
+      {% else %}
+        {{ channel }}
       {% endif %}
   sequence:
     - variables:
@@ -58,6 +123,9 @@ tts_queue:
               - platform: event
                 id: attention
                 event_type: tts_attention
+              - platform: event
+                id: announce
+                event_type: tts_announce
               - platform: event
                 event_type: tts_queue_abort
                 event_data:
@@ -72,38 +140,45 @@ tts_queue:
                     {% endif %}
               - platform: event
                 event_type: tts_queue_abort_all
+            # Ensure we respect the original timeout by updating it with the
+            # value of "wait.remaining" after each iteration
             timeout: >-
-              {{ expiry }}
+              {% if wait is defined and wait.remaining is defined %}
+                {{ wait.remaining }}
+              {% else %}
+                {{ expiry }}
+              {% endif %}
             continue_on_timeout: false
-        # No repeats necessary if no preferred speaker is defined. Otherwise,
-        # keep repeating until the preferred speaker has attention. After three
-        # repeats, announce on whatever speaker has attention.
-        # The "wait-for-trigger" timeout is reset at every repeat, so to prevent
-        # the announcement for getting stuck "indefinitely", at some point we
-        # give up and simply announce on the first available speaker.
+        # Hold announcement in queue until its channel (either "attention" or
+        # "announce") is triggered on its preferred speaker. Additionally, if
+        # the event has a tag set this needs to match the announcement's tag.
         until: >-
           {{
-            speaker is not defined or (
-              wait.trigger.id == 'attention' and
+            wait.trigger.id == channel and
+            (
+              speaker is not defined or (
+                wait.trigger.event.data.speaker is defined and
                 wait.trigger.event.data.speaker == speaker
-            ) or repeat.index > 3
+              )
+            ) and (
+              wait.trigger.event.data.tag is not defined or
+              wait.trigger.event.data.tag == tag
+            )
           }}
     - condition: >-
-        {{ wait.trigger.id == 'attention' }}
+        {{ wait.trigger.id in ['attention', 'announce'] }}
     # Message preprocessing — replace a handful of "magic markers" with their
     # actual content. Currently, the following markers are supported:
     #
     # - %TIME_AGO%: Amount of time passed (using "relative_time") since the
-    #   announcement was queued
-    # - %LOCATION%: Name of area where attention was triggered (i.e., where the
-    #   announcement is being played)
+    #               announcement was queued
     - variables:
         message: >-
           {{
             message |
               replace('%TIME_AGO%',
-                queued_at | as_datetime | relative_time) |
-              replace('%LOCATION%', wait.trigger.event.data.area)
+                queued_at | as_datetime | relative_time
+              )
           }}
     - service: script.turn_on
       target:
@@ -111,29 +186,40 @@ tts_queue:
       data:
         variables:
           speaker: >-
-            {{ wait.trigger.event.data.speaker }}
+            {{
+              wait.trigger.event.data.speaker if
+                wait.trigger.event.data.speaker is defined
+                else 'group.speakers_all'
+             }}
           message: >-
             {{ message }}
-          messageDuration: >-
-            {% if messageDuration is number %}
-              {{ messageDuration }}
+          duration: >-
+            {% if duration is number %}
+              {{ duration }}
             {% endif %}
-          chime: true
-          priority: regular
+          chime: >-
+            {{ chime }}
+          priority: >-
+            {{ priority }}
   mode: parallel
-  max: 8
+  max: 20
+  trace:
+    stored_traces: 20
 tts_announce:
   alias: TTS announce
+  description: >-
+    See "TTS queue" for more details.
   icon: mdi:speaker-message
   fields:
     speaker:
-      description: Speaker-entity to announce
+      description: >-
+        Speaker-entity to announce on – when omitted uses _all_ speakers;
+        multiple selection possible
       required: true
-      default: group.speakers_all
       selector:
         entity:
+          multiple: true
           include_entities:
-            - group.speakers_all
             - media_player.pi0_w2_speaker_bedroom
             - media_player.bpi_m2_zero_speaker_living_room
             - media_player.mpi_mq1_speaker_attic
@@ -142,15 +228,12 @@ tts_announce:
       required: true
       selector:
         text: # yamllint disable-line rule:empty-values
-    messageDuration:
-      description: >-
-        The length (in seconds) of the spoken out announcement (when omitted,
-        a crude heuristic is applied)
+    duration:
       required: false
       selector:
         number:
           min: 1
-          max: 60
+          max: 300
     chime:
       description: Chime before announcing
       required: false
@@ -158,7 +241,7 @@ tts_announce:
       selector:
         boolean: # yamllint disable-line rule:empty-values
     priority:
-      description: Message priority
+      description: Message priority (ie, volume)
       required: false
       default: regular
       selector:
@@ -172,21 +255,15 @@ tts_announce:
       {% if speaker is not defined %}
         group.speakers_all
       {% else %}
-        speaker
+        {{ speaker }}
       {% endif %}
     volume: >-
       {% if priority == 'attention' %}
-        0.45
+        0.55
       {% elif priority == 'whisper' %}
-        0.15
+        0.20
       {% else %}
-        0.30
-      {% endif %}
-    chime: >-
-      {% if chime is not defined %}
-        {{ true }}
-      {% else %}
-        {{ false }}
+        0.40
       {% endif %}
   sequence:
     # Only announce when someone's home
@@ -196,7 +273,7 @@ tts_announce:
     # Optional chime before the announcement. If multiple announcements are
     # queued, use a different chime to "bridge" the messages.
     - if: >-
-        {{ chime is true }}
+        {{ (chime | bool(true) if chime is defined else false) }}
       then:
         - if: >-
             {{ this.attributes.current == 0 }}
@@ -224,49 +301,72 @@ tts_announce:
       target:
         entity_id: >-
           {{ speaker }}
-    - variables:
-        announcement: >-
-          {#
-            Compress all whitespace; remove all HTML-tags (they are pronounced,
-            instead of being used as intonation hints as I would've hoped);
-            replace "ij" with "y" (en-GB Cloud TTS trips over it).
-          #}
-          {{
-            message |
-              regex_replace('[ \n]+', ' ') |
-              regex_replace('<.+?>', '') |
-              replace('ij', 'y')
-          }}
-    - service: tts.cloud_say
-      data:
-        message: >-
-          {{ announcement }}
-        language: en-GB
-        options:
-          gender: female
-      target:
-        entity_id: >-
-          {{ speaker }}
-    - service: notify.log_tts_announce
-      data:
-        message: >-
-          {{ speaker }}: {{ announcement }}
-    # For queued execution to work properly, the script needs to block while
-    # the announcement is playing...
-    - delay: >-
-        {#
-          Crude heuristic to determine the duration of a spoken out string.
-          Compress all whitespace; remove all HTML-tags.
-        #}
-        {% if messageDuration is not number %}
-          {{ [ 1, (announcement | length / 14) | round(0) ] | max }}
-        {% else %}
-          {{ messageDuration | int }}
-        {% endif %}
+    - if:
+        - >-
+          {{ message | trim is match('media-source:\/\/', True) }}
+      then:
+        - service: media_player.play_media
+          data:
+            media_content_type: music
+            media_content_id: >-
+              {{ message | trim }}
+          target:
+            entity_id: >-
+              {{ speaker }}
+        - service: notify.log_tts_announce
+          data:
+            message: >-
+              {{ speaker }}: Played sample "{{ message | trim }}"
+        - delay: >-
+            {{ duration | int(1) }}
+      else:
+        - variables:
+            announcement: >-
+              {#
+                Compress all whitespace; remove all HTML-tags (they are
+                pronounced, instead of being used as intonation hints as I
+                would've hoped); convert timestamps into a format slightly more
+                conductive to TTS; replace "ij" with "y" (English-language TTSs
+                trip over it).
+              #}
+              {{
+                message |
+                  regex_replace('[ \n]+', ' ') |
+                  regex_replace('<.+?>', '') |
+                  regex_replace('0([1-9]{1}):([0-9]{2})', '\g<1>:\g<2>') |
+                  regex_replace('([0-9]{1,2}):00', '\g<1> o\'clock') |
+                  replace('ij', 'y')
+              }}
+        - service: tts.speak
+          data:
+            cache: true
+            media_player_entity_id: >-
+              {{ speaker }}
+            message: >-
+              {{ announcement }}
+          target:
+            entity_id: tts.piper
+        - service: notify.log_tts_announce
+          data:
+            message: >-
+              {{ speaker }}: {{ announcement }}
+        # For queued execution to work properly, the script needs to block while
+        # the announcement is playing...
+        - delay: >-
+            {#
+              Crude heuristic to determine the duration of a spoken out string
+            #}
+            {% if duration is not number %}
+              {{ [ 1, (announcement | length / 14) | round(0) ] | max }}
+            {% else %}
+              {{ duration | int(5) }}
+            {% endif %}
   mode: queued
-  max: 8
+  max: 10
+  trace:
+    stored_traces: 20
 tts_chime:
-  alias: TTS chime
+  alias: TTS chime [internal]
   icon: mdi:instrument-triangle
   fields:
     speaker:
@@ -320,7 +420,7 @@ tts_chime:
           {{ speaker }}
     - service: media_player.play_media
       data:
-        media_content_type: audio/ogg
+        media_content_type: music
         media_content_id: >-
           media-source://media_source/sd/audio/{{- sample -}}
       target:
