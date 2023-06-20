@@ -3,7 +3,7 @@
         {
             "language": "markdown",
             "source": [
-                "# Gas Consumption"
+                "# Gas Consumption\n"
             ],
             "outputs": []
         },
@@ -17,7 +17,7 @@
         {
             "language": "markdown",
             "source": [
-                "```flux\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(fn:\n    (r) => r[\"entity_id\"] == \"gas_consumption\"\n      and r[\"_field\"] == \"value\"\n  )\n  // Gas usage (m³/h) is reported once per hour – derive to actual usage\n  |> derivative(unit: 1h, nonNegative:true)\n  |> aggregateWindow(every: 1h, fn: mean)\n  |> aggregateWindow(every: 1d, fn: sum)\n  // In September 2021, \"_measurement\" changed from m3 to m³ – this results in\n  // two groups of results that can be safely summed (there are no overlapping\n  // measurements). This also resolves a timezone issue which causes in a \n  // duplicate \"null\"-entry to show up for the last day in the result set.\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> sum()\n  // \"_time\" represents the end of the cumulative range (i.e., midnight of the\n  // next day) – substract one to show the correct day in the result set\n  |> timeShift(duration: -1d)\n```\n"
+                "```flux\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(fn:\n    (r) => r[\"entity_id\"] == \"gas_consumption\"\n      and r[\"_field\"] == \"value\"\n  )\n  // Gas usage (m³/h) is reported once per hour – derive to actual usage\n  |> derivative(unit: 1h, nonNegative:true)\n  |> aggregateWindow(every: 1h, fn: mean)\n  |> aggregateWindow(every: 1d, fn: sum)\n  // In September 2021, \"_measurement\" changed from m3 to m³ – this results in\n  // two groups of results that can be safely summed (there are no overlapping\n  // measurements). This also resolves a timezone issue which causes in a\n  // duplicate \"null\"-entry to show up for the last day in the result set.\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> sum()\n  // \"_time\" represents the end of the cumulative range (i.e., midnight of the\n  // next day) – substract one to show the correct day in the result set\n  |> timeShift(duration: -1d)\n```\n"
             ],
             "outputs": []
         },
@@ -38,7 +38,7 @@
         {
             "language": "markdown",
             "source": [
-                "## Graph daily gas usage"
+                "## Graph daily gas usage\n"
             ],
             "outputs": []
         },
@@ -52,7 +52,7 @@
         {
             "language": "markdown",
             "source": [
-                "## Monthly and yearly totals"
+                "## Monthly and yearly totals\n"
             ],
             "outputs": []
         },
@@ -73,7 +73,7 @@
         {
             "language": "markdown",
             "source": [
-                "# Graph daily gas usage – including 28-day moving average"
+                "# Graph daily gas usage – including 28-day moving average\n"
             ],
             "outputs": []
         },

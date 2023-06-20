@@ -316,7 +316,8 @@ tts_announce:
         - service: notify.log_tts_announce
           data:
             message: >-
-              {{ speaker }}: Played sample "{{ message | trim }}"
+              {{ speaker.split(',') if ',' in speaker else speaker }}:
+              Played sample "{{ message | trim }}"
         - delay: >-
             {{ duration | int(1) }}
       else:
@@ -349,7 +350,8 @@ tts_announce:
         - service: notify.log_tts_announce
           data:
             message: >-
-              {{ speaker }}: {{ announcement }}
+              {{ speaker.split(',') if ',' in speaker else speaker }}:
+              {{ announcement }}
         # For queued execution to work properly, the script needs to block while
         # the announcement is playing...
         - delay: >-
