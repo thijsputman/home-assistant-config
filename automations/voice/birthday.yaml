@@ -1,0 +1,27 @@
+- alias: 🔊 | 🎂 Queue "Happy birthday!"
+  id: 424f4e83-29a2-42b8-9031-07a1b1a0390d
+  trigger:
+    - platform: calendar
+      event: start
+      entity_id: calendar.home
+  condition:
+    - >-
+      {{
+        trigger.calendar_event.summary | trim
+          is match('(?:🎂 ?)?Birthday', True)
+      }}
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: good_morning
+          priority: attention
+          duration: 42
+          expiry: "12:00:00"
+          chime: false
+          message: >-
+            media-source://media_source/sd/audio/happy_birthday.ogg
+  mode: single
