@@ -10,6 +10,13 @@
       from: "on"
       to: "off"
       entity_id: group.light_inside_rooms
+  condition:
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: night
   action:
     # This timer allows other automations to modify their behaviour while we're
     # waiting for everyone to go to sleep
@@ -26,10 +33,10 @@
     - condition: and
       conditions:
         - condition: state
-          entity_id: input_boolean.everyone_asleep
+          entity_id: group.light_inside_rooms
           state: "off"
         - condition: state
-          entity_id: group.light_inside_rooms
+          entity_id: input_boolean.everyone_asleep
           state: "off"
         - condition: state
           entity_id: sensor.time_of_day

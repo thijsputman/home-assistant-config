@@ -13,7 +13,10 @@
       offset: "00:30:00"
   condition:
     - >-
-      {{ trigger.calendar_event.summary == 'Housekeeper' }}
+      {{
+        trigger.calendar_event.summary | trim
+          is match('(?:🧹 ?)?Housekeeper', True)
+      }}
   action:
     - if:
         - condition: trigger

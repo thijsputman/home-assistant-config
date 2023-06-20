@@ -1,11 +1,12 @@
 - alias: 📱 Sensor low battery notification (🔋 < 10%)
   id: bf5935e5-b716-4bfd-8949-71b01b4f484f
   variables:
-    # Exclude mobile devices
+    # Exclude some (mobile) devices
     exclude:
       - sensor.p20hd_eea_battery
       - sensor.sm_g990b2_battery_level
       - sensor.pixel_6_pro_battery_level
+      - sensor.battery_166_battery # Phoscon Hive
     sensors: >-
       {% set result = namespace(sensors=[]) %}
       {% for state in states.sensor |

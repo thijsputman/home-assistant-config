@@ -48,7 +48,7 @@
                 entity_id: script.tts_announce
               data:
                 variables:
-                  priority: attention
+                  priority: regular
                   duration: 3
                   chime: false
                   message: >-
@@ -70,7 +70,7 @@
             entity_id: script.tts_announce
           data:
             variables:
-              priority: whisper
+              priority: regular
               duration: 2
               chime: false
               # Remove all entities with "bedroom" in their id from the group

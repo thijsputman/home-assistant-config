@@ -198,9 +198,9 @@ tts_queue:
               {{ duration }}
             {% endif %}
           chime: >-
-            {{ chime }}
+            {{ chime | bool(true) if chime is defined else true }}
           priority: >-
-            {{ priority }}
+            {{ priority if priority is defined else none }}
   mode: parallel
   max: 20
   trace:
@@ -259,11 +259,11 @@ tts_announce:
       {% endif %}
     volume: >-
       {% if priority == 'attention' %}
-        0.55
+        0.65
       {% elif priority == 'whisper' %}
-        0.20
+        0.25
       {% else %}
-        0.40
+        0.45
       {% endif %}
   sequence:
     # Only announce when someone's home
@@ -273,7 +273,7 @@ tts_announce:
     # Optional chime before the announcement. If multiple announcements are
     # queued, use a different chime to "bridge" the messages.
     - if: >-
-        {{ (chime | bool(true) if chime is defined else false) }}
+        {{ chime | bool(true) if chime is defined else false }}
       then:
         - if: >-
             {{ this.attributes.current == 0 }}
