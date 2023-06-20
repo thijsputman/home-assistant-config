@@ -10,6 +10,9 @@ entities:
   - sensor.power_86 # Raw measurement (see *_actual)
   - sensor.power_88 # ↑
   - sensor.power_149 # ↑
+  - sensor.consumption_170 # Raw measurement (see *_cumulative)
+  - sensor.consumption_173 # ↑
+  # Miscellaneous
   - sensor.gammu_received_unprocessed_message
   - sensor.last_notification_unprocessed
   - sensor.failed_devices
