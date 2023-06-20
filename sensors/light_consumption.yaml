@@ -1,6 +1,0 @@
-- platform: integration
-  source: sensor.power_all_lights
-  name: Consumption (all lights)
-  unit_prefix: k
-  unit_time: h
-  round: 3

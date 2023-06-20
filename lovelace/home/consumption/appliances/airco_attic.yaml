@@ -47,7 +47,7 @@ card:
             padding: 0px;
             text-align: center;
           }
-      entity: sensor.monthly_consumption_costs_airco_attic
+      entity: sensor.monthly_costs_airco_attic
       attribute: last_period
       unit: € / month
     - type: custom:mini-graph-card

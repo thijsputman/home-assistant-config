@@ -47,7 +47,7 @@ card:
               padding: 0px;
               text-align: center;
             }
-        entity: sensor.monthly_consumption_costs_heater_shed
+        entity: sensor.monthly_costs_electric_heater_shed
         attribute: last_period
         unit: € / month
       - type: custom:mini-graph-card

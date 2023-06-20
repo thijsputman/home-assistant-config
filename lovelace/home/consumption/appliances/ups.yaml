@@ -17,12 +17,6 @@ card:
             padding-bottom: 0px !important;
             margin-bottom: 0px !important;
           }
-          ha-card ha-state-icon{
-            color: var(--paper-item-icon-color);
-          }
-          ha-card ha-state-icon[data-state=Online]{
-            color: rgb(var(--rgb-amber-color)) !important;
-          }
           ha-card span{
             font-size: 1rem;
             color: var(--paper-grey-500);
@@ -49,7 +43,7 @@ card:
             padding: 0px;
             text-align: center;
           }
-      entity: sensor.monthly_consumption_costs_ups
+      entity: sensor.monthly_costs_ups
       attribute: last_period
       unit: € / month
     - type: custom:mini-graph-card

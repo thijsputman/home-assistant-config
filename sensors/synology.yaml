@@ -1,6 +1,0 @@
-- platform: integration
-  source: sensor.ups_power_usage
-  name: Consumption (UPS)
-  unit_prefix: k
-  unit_time: h
-  round: 3

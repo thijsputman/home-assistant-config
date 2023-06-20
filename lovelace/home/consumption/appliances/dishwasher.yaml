@@ -46,7 +46,7 @@ card:
             padding: 0px;
             text-align: center;
           }
-      entity: sensor.monthly_consumption_costs_dishwasher
+      entity: sensor.monthly_costs_dishwasher
       attribute: last_period
       unit: € / month
     - type: custom:mini-graph-card

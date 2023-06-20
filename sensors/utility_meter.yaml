@@ -1,0 +1,7 @@
+- platform: derivative
+  name: Hourly Gas Consumption
+  round: 3
+  source: sensor.gas_consumption
+  unit_time: h
+  unit: m³/h
+  time_window: "01:00:00"

@@ -10,11 +10,6 @@ cards:
     show:
       labels: true
       labels_secondary: false
-    state_map:
-      - value: "off"
-        label: "0.000"
-      - value: "on"
-        label: "1.000"
     decimals: 3
     color_thresholds:
       - value: 0
@@ -90,7 +85,7 @@ cards:
                     vertical-align: text-bottom;
                     text-align: right;
                   }
-              entity: sensor.daily_gas_costs
+              entity: sensor.daily_costs_gas
               name: Today
               icon: mdi:cash
             - type: entity
@@ -109,7 +104,7 @@ cards:
                     vertical-align: text-bottom;
                     text-align: right;
                   }
-              entity: sensor.monthly_gas_costs_daily_average
+              entity: sensor.monthly_costs_daily_average_gas
               unit: € / day
               name: This month
               icon: mdi:cash
@@ -129,7 +124,7 @@ cards:
                     vertical-align: text-bottom;
                     text-align: right;
                   }
-              entity: sensor.monthly_gas_costs
+              entity: sensor.monthly_costs_gas
             - type: entity
               card_mod:
                 style: |
@@ -183,7 +178,7 @@ cards:
                     vertical-align: text-bottom;
                     text-align: right;
                   }
-              entity: sensor.daily_gas_costs
+              entity: sensor.daily_costs_gas
               attribute: last_period
               unit: €
               name: Yesterday
@@ -204,7 +199,7 @@ cards:
                     vertical-align: text-bottom;
                     text-align: right;
                   }
-              entity: sensor.monthly_gas_costs_daily_average
+              entity: sensor.monthly_costs_daily_average_gas
               attribute: last_period
               unit: € / day
               name: Last month
@@ -225,7 +220,7 @@ cards:
                     vertical-align: text-bottom;
                     text-align: right;
                   }
-              entity: sensor.monthly_gas_costs
+              entity: sensor.monthly_costs_gas
               attribute: last_period
               unit: €
             - type: entity

@@ -1,6 +1,9 @@
 entities:
-  - sensor.monthly_gas
+  # Utility Meter
+  - sensor.daily_energy
+  - sensor.daily_gas
   - sensor.monthly_energy
+  - sensor.monthly_gas
   - sensor.ups_nominal_real_power
   - sensor.power_86 # Raw measurement (see *_actual)
   - sensor.power_88 # ↑
@@ -17,12 +20,13 @@ entity_globs:
   - sensor.ups_battery_run*
   - sensor.*_heartbeat*
   - sensor.*_uptime*
-  # Utility Meter – DSMR
-  - sensor.daily_energy_*
-  - sensor.monthly_energy_*
-  - sensor.*_energy_costs*
-  - sensor.*_gas_costs*
+  # Utility Meter & Appliances derivates/costs
   - input_number.rate_*
-  # Utility Meter – Appliances
+  - sensor.daily_energy_*
+  - sensor.daily_costs_*
+  - sensor.daily_consumption_*
+  - sensor.monthly_energy_*
+  - sensor.monthly_costs_*
+  - sensor.monthly_costs_daily_average_*
   - sensor.monthly_consumption_*
   - sensor.monthly_costs_*

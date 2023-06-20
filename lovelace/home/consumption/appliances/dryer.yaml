@@ -46,7 +46,7 @@ card:
             padding: 0px;
             text-align: center;
           }
-      entity: sensor.monthly_consumption_costs_dryer
+      entity: sensor.monthly_costs_dryer
       attribute: last_period
       unit: € / month
     - type: custom:mini-graph-card
