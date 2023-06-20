@@ -5,3 +5,38 @@
   unit_time: h
   unit: m³/h
   time_window: "01:00:00"
+# Indicative measurements of flow-rates – the derivative-platform doesn't work
+# well here as these sensors update intermittently. That problem can be worked
+# around, but I feel the below approach is actually nicer... For more details
+# follow the thread here:
+#   <https://github.com/home-assistant/core/issues/83496#issuecomment-1515625003>
+#
+# The change-rate approximates the true derivative quite well; slightly under-
+# estimates , but more "responsive" to changes in the flow-rate. The below is
+# used for dashboarding and automations only, actual (long-term) consumption
+# should always be gauged via the source (cumulative) sensors.
+# There's a matching set of sensors in 📄 ./templates/utility_meter.yaml to
+# account for the fact statistics goes to "unknown" when there's no change (and
+# to allow for a proper "state_class" to be defined). The below are excluded
+# from the recorder – the template sensors should be used instead.
+- platform: statistics
+  name: Flow – Watermeter (statistics)
+  unique_id: 64452909-c360-4603-a9b9-291d9ae85223
+  entity_id: sensor.watermeter_total
+  state_characteristic: change
+  max_age:
+    minutes: 1
+- platform: statistics
+  name: Flow – Balcony valve (statistics)
+  unique_id: d34f6fd6-8e79-4b97-b789-508055843ca0
+  entity_id: sensor.consumption_170_cumulative
+  state_characteristic: change
+  max_age:
+    minutes: 1
+- platform: statistics
+  name: Flow – Garden valve (statistics)
+  unique_id: e90fbea8-2d10-411b-9652-c441eb06eb01
+  entity_id: sensor.consumption_173_cumulative
+  state_characteristic: change
+  max_age:
+    minutes: 1

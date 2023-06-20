@@ -17,6 +17,17 @@ monthly_energy_peak:
 monthly_gas:
   source: sensor.gas_consumption
   cycle: monthly
+# Waterlezer / Watermeter
+daily_water:
+  source: sensor.watermeter_total
+  unique_id: 1765efb7-683e-4674-acc1-09df6883813e
+  cycle: daily
+  periodically_resetting: false
+monthly_water:
+  source: sensor.watermeter_total
+  unique_id: 613b644b-74e4-4f8b-94cc-3fb27dd9652b
+  cycle: monthly
+  periodically_resetting: false
 # Appliances
 monthly_consumption_boiler_kitchen:
   source: sensor.consumption_58
@@ -51,3 +62,27 @@ monthly_consumption_sonair_combined:
 monthly_consumption_airco_bedroom:
   source: sensor.consumption_118
   cycle: monthly
+# Tuya Smart Watering Timer (see 📄 ./extras/deconz/README.md) – consumption
+# measurements for these reset after each watering cycle
+daily_consumption_170:
+  source: sensor.consumption_170
+  unique_id: f6bdc2fc-f9e1-4be9-b9b2-da91d13dad95
+  cycle: daily
+  periodically_resetting: true
+daily_consumption_173:
+  source: sensor.consumption_173
+  unique_id: 4792b42d-9cee-42de-bd78-fc17ed5054cd
+  cycle: daily
+  periodically_resetting: true
+# The utility meter provides an easy way to get a cumulative measurement.
+# According to the forums, if "cycle" (and "cron") are omitted, the measurement
+# never resets:
+#   <https://community.home-assistant.io/t/utility-meter-without-reset/195592/15>
+consumption_170_cumulative:
+  source: sensor.consumption_170
+  unique_id: 53ffefd2-1405-49b7-94ec-35cebd22af39
+  periodically_resetting: true
+consumption_173_cumulative:
+  source: sensor.consumption_173
+  unique_id: 21970e10-dba8-4a1b-9757-08a84b8600a6
+  periodically_resetting: true

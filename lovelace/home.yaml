@@ -5,7 +5,6 @@ views:
     title: Security
     panel: false
     icon: mdi:shield-home
-    badges: []
     cards:
       - type: vertical-stack
         cards:
@@ -26,7 +25,6 @@ views:
     type: custom:masonry-layout
     path: climate
     icon: mdi:home-thermometer
-    badges: []
     layout:
       min_height: 1
     cards:
@@ -65,7 +63,6 @@ views:
     type: custom:masonry-layout
     path: air-quality
     icon: mdi:fan
-    badges: []
     layout:
       min_height: 1
     cards:
@@ -79,7 +76,6 @@ views:
   - title: Lights
     path: lights
     icon: mdi:home-lightbulb-outline
-    badges: []
     cards:
       - !include home/lights/rooms.yaml
       - type: vertical-stack
@@ -129,30 +125,50 @@ views:
   - title: Consumption
     path: consumption
     icon: mdi:finance
-    badges: []
     cards:
-      - !include home/consumption/energy.yaml
-      - !include home/consumption/gas.yaml
-      - type: grid
+      - type: vertical-stack
         cards:
-          - !include home/consumption/appliances/lights.yaml
-          - !include home/consumption/appliances/ups.yaml
-          - !include home/consumption/appliances/boiler_kitchen.yaml
-          - !include home/consumption/appliances/dishwasher.yaml
-          - !include home/consumption/appliances/television.yaml
-          - !include home/consumption/appliances/sonair.yaml
-          - !include home/consumption/appliances/washing_machine.yaml
-          - !include home/consumption/appliances/dryer.yaml
-          - !include home/consumption/appliances/airco_attic.yaml
-          - !include home/consumption/appliances/airco_bedroom.yaml
-          - !include home/consumption/appliances/heater_shed.yaml
-        columns: 2
-        square: false
+          - !include home/consumption/energy.yaml
+          - type: button
+            name: Consumption » Appliances
+            icon: mdi:power-plug-outline
+            show_state: false
+            show_name: false
+            icon_height: 3em
+            tap_action:
+              action: navigate
+              navigation_path: consumption_appliances
+      - type: vertical-stack
+        cards:
+          - !include home/consumption/gas.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/consumption/water.yaml
+  # Consumption » Appliances
+  - title: Consumption » Appliances
+    type: custom:horizontal-layout
+    path: consumption_appliances
+    subview: true
+    icon: mdi:power-plug-outline
+    layout:
+      width: 200
+      max_cols: 6
+    cards:
+      - !include home/consumption/appliances/lights.yaml
+      - !include home/consumption/appliances/ups.yaml
+      - !include home/consumption/appliances/boiler_kitchen.yaml
+      - !include home/consumption/appliances/dishwasher.yaml
+      - !include home/consumption/appliances/television.yaml
+      - !include home/consumption/appliances/sonair.yaml
+      - !include home/consumption/appliances/washing_machine.yaml
+      - !include home/consumption/appliances/dryer.yaml
+      - !include home/consumption/appliances/airco_attic.yaml
+      - !include home/consumption/appliances/airco_bedroom.yaml
+      - !include home/consumption/appliances/heater_shed.yaml
   # Network
   - title: Network
     path: network
     icon: mdi:lan
-    badges: []
     cards:
       - type: vertical-stack
         cards:
@@ -182,7 +198,6 @@ views:
     path: network_sbc
     subview: true
     icon: mdi:raspberry-pi
-    badges: []
     layout:
       min_height: 1
     cards:
@@ -203,7 +218,6 @@ views:
   - title: Weather
     path: weather
     icon: mdi:weather-partly-cloudy
-    badges: []
     cards:
       - type: vertical-stack
         cards:
@@ -232,7 +246,6 @@ views:
     type: custom:masonry-layout
     title: Chores
     path: chores
-    badges: []
     layout:
       min_height: 1
     cards:
@@ -246,7 +259,6 @@ views:
   - title: Hobby
     path: hobby
     icon: mdi:hammer-screwdriver
-    badges: []
     cards:
       - !include home/hobby/prusa.yaml
   # Media
@@ -254,7 +266,6 @@ views:
     type: custom:masonry-layout
     path: media
     icon: mdi:filmstrip
-    badges: []
     layout:
       max_cols: 2
     cards:

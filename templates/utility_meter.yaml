@@ -320,3 +320,134 @@
             ) | round(2)
           }}
           {% endif %}
+    # Water
+    - name: Flow – Watermeter
+      unique_id: fda5a74c-137c-4142-a012-7f4cac933848
+      unit_of_measurement: L
+      state_class: measurement
+      state: >-
+        {{
+          (
+            states('sensor.flow_watermeter_statistics') | float(0)
+          ) | round(0) | int
+        }}
+    - name: Flow – Balcony valve
+      unique_id: 27dd3d82-1548-4a09-9524-90a466fa2efd
+      unit_of_measurement: L
+      state_class: measurement
+      state: >-
+        {{
+          (
+            states('sensor.flow_balcony_valve_statistics') | float(0)
+          ) | round(0) | int
+        }}
+    - name: Flow – Garden valve
+      unique_id: a9f761db-c1eb-4e74-85d5-c8a7621078cf
+      unit_of_measurement: L
+      state_class: measurement
+      state: >-
+        {{
+          (
+            states('sensor.flow_garden_valve_statistics') | float(0)
+          ) | round(0) | int
+        }}
+    - name: Daily costs (Water)
+      unique_id: 39798c29-6c2b-46e6-b130-9d4e47e727e2
+      unit_of_measurement: €
+      availability: >-
+        {{
+          has_value('sensor.daily_water')
+        }}
+      state: >-
+        {{
+          (
+            states('sensor.daily_water') | float / 1000 *
+            states('input_number.rate_water') | float
+          ) | round(2)
+        }}
+      attributes:
+        last_period: >-
+          {%
+            if state_attr('sensor.daily_water', 'last_period') | float(0) > 0
+          %}
+            {{
+              (
+                state_attr('sensor.daily_water', 'last_period') | float / 1000 *
+                states('input_number.rate_water') | float
+              ) | round(2)
+            }}
+          {% endif %}
+    - name: Monthly costs (Water)
+      unique_id: a654f010-854b-48df-9dca-5d9df9a5f97e
+      unit_of_measurement: €
+      availability: >-
+        {{
+          has_value('sensor.monthly_water')
+        }}
+      state: >-
+        {{
+          (
+            states('sensor.monthly_water') | float / 1000 *
+            states('input_number.rate_water') | float
+          ) | round(2)
+        }}
+      attributes:
+        last_period: >-
+          {%
+            if state_attr('sensor.monthly_water', 'last_period') | float(0) > 0
+          %}
+            {{
+              (
+                state_attr('sensor.monthly_water', 'last_period') | float / 1000 *
+                states('input_number.rate_water') | float
+              ) | round(2)
+            }}
+          {% endif %}
+    - name: Monthly costs – daily average (Water)
+      unique_id: 3da97065-77cc-480d-80e1-9fb8564e8bf4
+      unit_of_measurement: €
+      availability: >-
+        {{
+          has_value('sensor.daily_water') and has_value('sensor.monthly_water')
+        }}
+      state: >-
+        {% if now().today().day | int <= 1 %}
+          {{
+            (
+              states('sensor.daily_water') | float / 1000 *
+              states('input_number.rate_water') | float
+            ) | round(2)
+          }}
+        {% else %}
+          {{
+            (
+              (
+                (
+                  states('sensor.monthly_water') | float -
+                  states('sensor.daily_water') | float
+                ) / 1000 *
+                  states('input_number.rate_water') | float
+              ) / (now().today().day | int - 1)
+            ) | round(2)
+          }}
+        {% endif %}
+      attributes:
+        last_period: >-
+          {%
+            if state_attr('sensor.monthly_water', 'last_period') | float(0) > 0
+          %}
+            {{
+              (
+                (
+                  state_attr('sensor.monthly_water', 'last_period') |
+                    float / 1000 *
+                  states('input_number.rate_water') | float
+                ) / (
+                  strptime(
+                    state_attr('sensor.monthly_water', 'last_reset'),
+                    '%Y-%m-%dT%H:%M:%S.%f%z'
+                  ) - timedelta(days=1)
+                ).day | int
+              ) | round(2)
+            }}
+          {% endif %}

@@ -109,6 +109,12 @@
             {# Prusa MINI+ (template sensor) #}
             {% elif entity_id == 'sensor.prusa_mini_job_name' %}
               {# Ignored; only available when in-use #}
+            {# Water consumption #}
+            {% elif entity_id is search('^sensor\.flow_.+_statistics') %}
+              {#
+                Ignored; statistics sensors report unknown when no data is
+                available to compute the requested statistic
+              #}
             {# Failed devices (this sensor) #}
             {% elif entity_id == 'sensor.failed_devices' %}
               {# Ignored #}

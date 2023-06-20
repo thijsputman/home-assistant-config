@@ -1,0 +1,261 @@
+type: vertical-stack
+cards:
+  - type: custom:mini-graph-card
+    name: Water usage (past 48h)
+    hour24: true
+    hours_to_show: 48
+    points_per_hour: 1
+    lower_bound: 0
+    cache: true
+    show:
+      labels: true
+      labels_secondary: false
+    decimals: 0
+    color_thresholds:
+      - value: 0
+        color: "#f39c12"
+      - value: 80
+        color: "#d35400"
+      - value: 200
+        color: "#c0392b"
+    entities:
+      - entity: sensor.flow_watermeter
+        show_graph: false
+        unit: L
+      - entity: sensor.watermeter_total
+        show_points: false
+        show_fill: false
+        unit: L
+        aggregate_func: diff
+      - color: dimgray
+        entity: sensor.time_of_day_numeric
+        show_line: false
+        show_points: false
+        show_legend: false
+        y_axis: secondary
+        aggregate_func: max
+        smoothing: false
+      - color: dimgray
+        entity: input_boolean.everyone_asleep
+        show_line: false
+        show_points: false
+        show_legend: false
+        y_axis: secondary
+        aggregate_func: max
+        smoothing: false
+  - type: custom:mini-graph-card
+    hours_to_show: 240
+    group_by: date
+    name: Daily water usage (past 10 days)
+    hour24: true
+    lower_bound: 0
+    aggregate_func: diff
+    decimals: 0
+    cache: true
+    show:
+      graph: bar
+      labels: true
+    entities:
+      - entity: sensor.daily_water
+        show_graph: false
+      - entity: sensor.watermeter_total
+        unit: L
+        color: thistle
+        name: Water consumption
+  - type: horizontal-stack
+    cards:
+      - type: custom:mod-card
+        card_mod:
+          style: |
+            ha-card {
+              background: var(--llh-mod-card-background);
+              border: var(--llh-mod-card-border);
+            }
+        card:
+          type: grid
+          cards:
+            - type: entity
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                  }
+                  ha-card div.info{
+                    padding-bottom: 0px;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+              entity: sensor.daily_costs_water
+              name: Today
+              icon: mdi:cash
+            - type: entity
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                  }
+                  ha-card div.icon{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+              entity: sensor.monthly_costs_daily_average_water
+              unit: € / day
+              name: This month
+              icon: mdi:cash
+            - type: entity
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                  }
+                  ha-card div.header{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+              entity: sensor.monthly_costs_water
+            - type: entity
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                  }
+                  ha-card div.header{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    white-space: normal !important;
+                    overflow: hidden;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+                  ha-card span.value::before{
+                    content: "{{
+                      (states('sensor.monthly_water') | float(0) / 1000) |
+                        round(2)
+                    }} wrap"
+                  }
+              entity: sensor.monthly_water
+              unit: m³
+          columns: 1
+          square: false
+      - type: custom:mod-card
+        card_mod:
+          style: |
+            ha-card {
+              background: var(--llh-mod-card-background);
+              border: var(--llh-mod-card-border);
+            }
+        card:
+          type: grid
+          cards:
+            - type: entity
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                  }
+                  ha-card div.info{
+                    padding-bottom: 0px;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+              entity: sensor.daily_costs_water
+              attribute: last_period
+              unit: €
+              name: Yesterday
+              icon: mdi:cash
+            - type: entity
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                  }
+                  ha-card div.icon{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+              entity: sensor.monthly_costs_daily_average_water
+              attribute: last_period
+              unit: € / day
+              name: Last month
+              icon: mdi:cash
+            - type: entity
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                  }
+                  ha-card div.header{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+              entity: sensor.monthly_costs_water
+              attribute: last_period
+              unit: €
+            - type: entity
+              card_mod:
+                style: |
+                  ha-card {
+                    border: 0px;
+                  }
+                  ha-card div.header{
+                    display: none;
+                  }
+                  ha-card span.value{
+                    display: inline-block;
+                    white-space: normal !important;
+                    overflow: hidden;
+                    width: 3.2em;
+                    height: 0.92em;
+                    vertical-align: text-bottom;
+                    text-align: right;
+                  }
+                  ha-card span.value::before{
+                    content: "{{
+                      (state_attr('sensor.monthly_water', 'last_period') |
+                        float(0) / 1000) |
+                      round(2)
+                    }} wrap"
+                  }
+              entity: sensor.monthly_water
+              attribute: last_period
+              unit: m³
+          columns: 1
+          square: false

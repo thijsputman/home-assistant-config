@@ -22,9 +22,12 @@ include:
     - sensor.gas_consumption # cumulative
     - sensor.hourly_gas_consumption # computed; prefer "gas_consumption"
     - sensor.watermeter_total
+    - sensor.consumption_170_cumulative # Irrigation (Balcony)
+    - sensor.consumption_173_cumulative # Irrigation (Garden)
     - group.family # occupancy
     - input_boolean.alarm_vacation_mode
     - sensor.time_of_day
+    # Miscellaneous
     - media_player.nvidia_shield_tv
     - sensor.prusa_mini_printer_state
     # WeeWX

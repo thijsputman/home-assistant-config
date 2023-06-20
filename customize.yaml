@@ -35,3 +35,6 @@ sensor.binary_airco_attic:
 sensor.consumption_170:
   device_class: water
   unit_of_measurement: L
+sensor.consumption_173:
+  device_class: water
+  unit_of_measurement: L

@@ -22,3 +22,11 @@ rate_gas:
   step: 0.001
   initial: 2.57841
   unit_of_measurement: € / m³
+rate_water:
+  name: Water rate
+  icon: mdi:cash-lock
+  min: 0.0
+  max: 5.0
+  step: 0.01
+  initial: 1.21
+  unit_of_measurement: € / m³
