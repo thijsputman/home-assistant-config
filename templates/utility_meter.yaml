@@ -222,6 +222,16 @@
             }}
           {% endif %}
     # Gas
+    - name: Flow – Gas
+      unique_id: 09eec916-0c7d-49c8-b5eb-874fdbae5430
+      unit_of_measurement: m³/h
+      state_class: measurement
+      state: >-
+        {{
+          (
+            states('sensor.flow_gas_statistics') | float(0)
+          ) | round(3) | int
+        }}
     - name: Daily costs (Gas)
       unique_id: 2d9b26fa-f68b-4e19-a660-c29fd72560a8
       unit_of_measurement: €

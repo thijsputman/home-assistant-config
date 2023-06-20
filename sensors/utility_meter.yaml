@@ -20,6 +20,16 @@
 # to allow for a proper "state_class" to be defined). The below are excluded
 # from the recorder – the template sensors should be used instead.
 - platform: statistics
+  name: Flow – Gas (statistics)
+  unique_id: 23e9febe-732e-495d-a539-4893679ca10c
+  entity_id: sensor.gas_consumption
+  state_characteristic: change
+  precision: 3
+  # Reports (at most) once per hour
+  max_age:
+    hours: 1
+    minutes: 10
+- platform: statistics
   name: Flow – Watermeter (statistics)
   unique_id: 64452909-c360-4603-a9b9-291d9ae85223
   entity_id: sensor.watermeter_total
