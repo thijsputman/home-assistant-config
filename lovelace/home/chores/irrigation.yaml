@@ -24,11 +24,13 @@ cards:
                 border-bottom-right-radius: 0px;
                 border-bottom-left-radius: 0px;
               }
-          name: Irrigation — Balcony (last run)
+          name: Irrigation — Balcony
           hour24: true
           hours_to_show: 1
-          points_per_hour: 60
+          points_per_hour: 120
+          height: 90
           lower_bound: 0
+          upper_bound: ~5
           cache: true
           show:
             labels: hover
@@ -36,26 +38,65 @@ cards:
             fill: fade
           decimals: 0
           entities:
-            - entity: sensor.consumption_170
+            - entity: sensor.flow_balcony_valve
               show_points: false
               color: "#4291ce"
+              unit: L — current flow
         - type: button
           card_mod:
             style:
               .: |
                 ha-card {
                   border: 0px;
-                  border-top-right-radius: 0px;
-                  border-top-left-radius: 0px;
+                  border-radius: 0px;
                   background-color: #F3F9FD;
-                  padding-top: 0px !important;
-                  padding-bottom: 4px !important;
+                  padding-top: 8px !important;
+                  padding-bottom: 8px !important;
                 }
           tap_action:
             action: toggle
           entity: switch.on_off_output_24
           icon_height: 65px
           show_name: false
+        - type: custom:mini-graph-card
+          card_mod:
+            style: |
+              ha-card {
+                padding-top: 0px !important;
+                border: 0px;
+                background-color: #F3F9FD;
+                border-top-right-radius: 0px;
+                border-top-left-radius: 0px;
+              }
+          hours_to_show: 240
+          group_by: date
+          name: Irrigation — Balcony (past 10 days)
+          hour24: true
+          lower_bound: 0
+          upper_bound: ~50
+          lower_bound_secondary: 0
+          upper_bound_secondary: ~4
+          aggregate_func: diff
+          decimals: 0
+          cache: true
+          show:
+            name: false
+            icon: false
+            graph: bar
+            labels: true
+          entities:
+            - entity: sensor.daily_consumption_170
+              show_graph: false
+              unit: L — volume today
+            - entity: sensor.consumption_170_cumulative
+              unit: L
+              color: "#4291ce"
+              name: daily volume
+            - entity: sensor.weewx_evapotranspiration_total
+              name: evapotranspiration
+              unit: mm/day
+              color: "#dce2e6"
+              y_axis: secondary
   - type: custom:mod-card
     card_mod:
       style:
@@ -80,11 +121,13 @@ cards:
                 border-bottom-right-radius: 0px;
                 border-bottom-left-radius: 0px;
               }
-          name: Irrigation — Garden (last run)
+          name: Irrigation — Garden
           hour24: true
           hours_to_show: 1
-          points_per_hour: 60
+          points_per_hour: 120
+          height: 90
           lower_bound: 0
+          upper_bound: ~5
           cache: true
           show:
             labels: hover
@@ -92,23 +135,62 @@ cards:
             fill: fade
           decimals: 0
           entities:
-            - entity: sensor.consumption_173
+            - entity: sensor.flow_garden_valve
               show_points: false
               color: "#4291ce"
+              unit: L — current flow
         - type: button
           card_mod:
             style:
               .: |
                 ha-card {
                   border: 0px;
-                  border-top-right-radius: 0px;
-                  border-top-left-radius: 0px;
+                  border-radius: 0px;
                   background-color: #F3F9FD;
-                  padding-top: 0px !important;
-                  padding-bottom: 4px !important;
+                  padding-top: 8px !important;
+                  padding-bottom: 8px !important;
                 }
           tap_action:
             action: toggle
           entity: switch.on_off_output_25
           icon_height: 65px
           show_name: false
+        - type: custom:mini-graph-card
+          card_mod:
+            style: |
+              ha-card {
+                padding-top: 0px !important;
+                border: 0px;
+                background-color: #F3F9FD;
+                border-top-right-radius: 0px;
+                border-top-left-radius: 0px;
+              }
+          hours_to_show: 240
+          group_by: date
+          name: Irrigation — Garden (past 10 days)
+          hour24: true
+          lower_bound: 0
+          upper_bound: ~50
+          lower_bound_secondary: 0
+          upper_bound_secondary: ~4
+          aggregate_func: diff
+          decimals: 0
+          cache: true
+          show:
+            name: false
+            icon: false
+            graph: bar
+            labels: true
+          entities:
+            - entity: sensor.daily_consumption_173
+              show_graph: false
+              unit: L — volume today
+            - entity: sensor.consumption_173_cumulative
+              unit: L
+              color: "#4291ce"
+              name: daily volume
+            - entity: sensor.weewx_evapotranspiration_total
+              name: evapotranspiration
+              unit: mm/day
+              color: "#dce2e6"
+              y_axis: secondary
