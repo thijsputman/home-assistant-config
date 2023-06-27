@@ -4,7 +4,7 @@ rate_energy_peak:
   min: 0.0
   max: 1.0
   step: 0.001
-  initial: 0.73495
+  initial: 0.39820
   unit_of_measurement: € / kWh
 rate_energy_offpeak:
   name: Energy rate (off-peak)
@@ -12,7 +12,7 @@ rate_energy_offpeak:
   min: 0.0
   max: 1.0
   step: 0.001
-  initial: 0.58801
+  initial: 0.34502
   unit_of_measurement: € / kWh
 rate_gas:
   name: Gas rate
@@ -20,7 +20,7 @@ rate_gas:
   min: 0.0
   max: 5.0
   step: 0.001
-  initial: 2.57841
+  initial: 1.44579
   unit_of_measurement: € / m³
 rate_water:
   name: Water rate
