@@ -1,8 +1,25 @@
 - sensor:
     # Energy
+    - name: Energy consumption
+      unique_id: bbf3af84-ac94-4cc6-8d48-243bab149559
+      unit_of_measurement: kWh
+      state_class: total_increasing
+      availability: >-
+        {{
+          has_value('sensor.energy_consumption_tarif_1') or
+          has_value('sensor.energy_consumption_tarif_2')
+        }}
+      state: >-
+        {{
+          (
+            states('sensor.energy_consumption_tarif_1') | float(0) +
+            states('sensor.energy_consumption_tarif_2') | float(0)
+          ) | round(3)
+        }}
     - name: Daily energy
       unique_id: 39aa08f9-a48d-40da-b649-9047eebdc6fc
       unit_of_measurement: kWh
+      state_class: total_increasing
       availability: >-
         {{
           has_value('sensor.daily_energy_offpeak') or
@@ -34,6 +51,7 @@
     - name: Monthly energy
       unique_id: 16585486-2137-46d8-9530-9c5c6af61894
       unit_of_measurement: kWh
+      state_class: total_increasing
       availability: >-
         {{
           has_value('sensor.monthly_energy_offpeak') or
