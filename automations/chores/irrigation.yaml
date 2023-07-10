@@ -1,0 +1,30 @@
+# Backstops for the automatic watering valves – in case we forget to switch them
+# off, or an automations fails, prevent massive overwatering.
+- alias: 🌱/💧 | 🤖 Close Balcony water valve (💧 > 90 L)
+  id: 4ffa1d40-4a67-4613-8b9e-139964bcd199
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.consumption_170
+      above: 90
+  condition:
+    - condition: state
+      entity_id: switch.on_off_output_24
+      state: "on"
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.on_off_output_24
+- alias: 🌱/💧 | 🤖 Close Garden water valve (💧 > 250 L)
+  id: e634c0dc-84d6-4be1-b54c-f115c72160cb
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.consumption_173
+      above: 250
+  condition:
+    - condition: state
+      entity_id: switch.on_off_output_25
+      state: "on"
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.on_off_output_25
