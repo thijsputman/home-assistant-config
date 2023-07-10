@@ -4,7 +4,7 @@ cards:
     name: Water usage (past 48h)
     hour24: true
     hours_to_show: 48
-    points_per_hour: 1
+    points_per_hour: 2
     lower_bound: 0
     cache: true
     show:
@@ -13,11 +13,9 @@ cards:
     decimals: 0
     color_thresholds:
       - value: 0
-        color: "#f39c12"
-      - value: 80
-        color: "#d35400"
+        color: "#03a9f4"
       - value: 200
-        color: "#c0392b"
+        color: "#606060"
     entities:
       - entity: sensor.flow_watermeter
         show_graph: false
@@ -60,7 +58,7 @@ cards:
         show_graph: false
       - entity: sensor.watermeter_total
         unit: L
-        color: thistle
+        color: var(--blue-color)
         name: Water consumption
   - type: horizontal-stack
     cards:

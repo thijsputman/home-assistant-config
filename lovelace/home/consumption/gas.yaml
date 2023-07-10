@@ -4,7 +4,7 @@ cards:
     name: Gas usage (past 48h)
     hour24: true
     hours_to_show: 48
-    points_per_hour: 1
+    points_per_hour: 2
     lower_bound: 0
     cache: true
     show:
@@ -13,11 +13,9 @@ cards:
     decimals: 3
     color_thresholds:
       - value: 0
-        color: "#f39c12"
-      - value: 0.6
-        color: "#d35400"
-      - value: 1.2
-        color: "#c0392b"
+        color: "#ff9800"
+      - value: 0.8
+        color: "#795548"
     entities:
       - entity: sensor.hourly_gas_consumption
         name: Change rate
@@ -57,7 +55,7 @@ cards:
         show_graph: false
         unit: m³
       - entity: sensor.gas_consumption
-        color: thistle
+        color: var(--orange-color)
         name: Gas consumption
   - type: horizontal-stack
     cards:
