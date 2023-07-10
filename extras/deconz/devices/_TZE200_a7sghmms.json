@@ -47,11 +47,6 @@
           "name": "attr/uniqueid"
         },
         {
-          "name": "state/alert",
-          "public": false,
-          "default": "none"
-        },
-        {
           "name": "state/on",
           "refresh.interval": 300,
           "read": {
@@ -67,7 +62,11 @@
             "dpid": "0x02",
             "eval": "Item.val = Attr.val;",
             "fn": "tuya"
-          }
+          },
+          "default": 0
+        },
+        {
+          "name": "config/tuya_unlock"
         },
         {
           "name": "state/reachable"
@@ -111,19 +110,27 @@
         },
         {
           "name": "config/battery",
+          "read": {
+            "fn": "none"
+          },
           "parse": {
             "fn": "tuya",
             "dpid": "0x6C",
             "eval": "Item.val = Attr.val;"
-          }
+          },
+          "default": 0
         },
         {
           "name": "state/consumption",
+          "read": {
+            "fn": "none"
+          },
           "parse": {
             "fn": "tuya",
             "dpid": "0x6F",
             "eval": "Item.val = Attr.val * 1000;"
-          }
+          },
+          "default": 0
         },
         {
           "name": "state/lastupdated"
