@@ -1,0 +1,26 @@
+- sensor:
+    # "Net" evapotranspiration – no idea whether this truly makes sense, but it
+    # sort of looks like it does: Both values are integrated to mm/day (from
+    # mm/min and mm/hour respectively) and seem to track each other reasonably
+    # well over time.
+    # The idea here is to provide an indication of how much water the garden
+    # needs. For now this is graphed (as daily deltas) alongside the amount of
+    # water provided to the garden. Both daily "bars" should be roughly at the
+    # same level for the garden to get a (net) stable amount of water. The
+    # actual amount of watering required is (for now) empirically determined...
+    - name: Evapotranspiration (net)
+      unique_id: 2ea37b40-ea16-441f-ab77-19ea5cd4fc1e
+      unit_of_measurement: mm/day
+      state_class: total
+      availability: >-
+        {{
+          has_value('sensor.weewx_rain_total') and
+          has_value('sensor.weewx_evapotranspiration_total')
+        }}
+      state: >-
+        {{
+          (
+            states('sensor.weewx_evapotranspiration_total') | float -
+            states('sensor.weewx_rain_total') | float
+          ) | round(1)
+        }}

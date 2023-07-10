@@ -95,6 +95,11 @@ cards:
             - entity: sensor.weewx_evapotranspiration_total
               name: evapotranspiration
               unit: mm/day
+              color: "#6c757d"
+              y_axis: secondary
+            - entity: sensor.evapotranspiration_net
+              name: (net)
+              unit: mm/day
               color: "#dce2e6"
               y_axis: secondary
   - type: custom:mod-card
@@ -191,6 +196,11 @@ cards:
               name: daily volume
             - entity: sensor.weewx_evapotranspiration_total
               name: evapotranspiration
+              unit: mm/day
+              color: "#6c757d"
+              y_axis: secondary
+            - entity: sensor.evapotranspiration_net
+              name: (net)
               unit: mm/day
               color: "#dce2e6"
               y_axis: secondary
