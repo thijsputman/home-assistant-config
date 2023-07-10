@@ -3,7 +3,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.weewx_rain_rate_hour
-      above: 2.0
+      above: 1.0
   condition:
     - condition: state
       entity_id: sensor.attic_window_position
@@ -12,6 +12,14 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          priority: attention
+          message: >-
+            It's raining and the Attic window is open.
     # Explicitly block any further runs of this automation while the
     # notification is up (i.e. once a notification is up, no additional
     # notifications are raised)
@@ -32,7 +40,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.weewx_rain_rate_hour
-      below: 2.0
+      below: 1.0
       for: "00:10:00"
   condition: []
   action:
