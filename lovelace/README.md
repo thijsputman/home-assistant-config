@@ -21,12 +21,12 @@ custom CSS.
 - `hass-hue-icons.js?v=1.2.20`
 - `home-assistant-sun-card.js?v=0.1.4`
 - `layout-card.js?v=2.4.4`
-- [`logbook-card.js?v=1.11.0`](https://github.com/royto/logbook-card/releases/tag/1.11.0)
+- [`logbook-card.js?v=1.11.2`](https://github.com/royto/logbook-card/releases/tag/1.11.2)
 - [`mini-graph-card-bundle.js?v=0.12.0-dev.3`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.12.0-dev.3)
 - [`paper-buttons-row.js?v=2.1.3`](https://github.com/jcwillox/lovelace-paper-buttons-row/releases/tag/2.1.3)
 - `simple-thermostat.js?v=2.5.0`
 - `slider-entity-row.js?v=17.2.1`
-- [`vacuum-card.js?v=2.7.1`](https://github.com/denysdovhan/vacuum-card/releases/tag/v2.7.1)
+- [`vacuum-card.js?v=2.7.3`](https://github.com/denysdovhan/vacuum-card/releases/tag/v2.7.3)
 
 ## Custom CSS
 
