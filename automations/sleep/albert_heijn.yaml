@@ -10,10 +10,6 @@
     - condition: state
       entity_id: group.family
       state: home
-    # When reloading templates, the above "not_to" doesn't adequately guard
-    # against an invalid value for the sensor...
-    - >-
-      {{ has_value('sensor.last_notification_albert_heijn_eta') }}
     # Only act if ETA is in the future — the next condition assumes "future"
     # entails either today or tomorrow. Currently, no effort is made to guard
     # against ETA being further in the future; cross that bridge if we ever get
