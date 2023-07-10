@@ -28,7 +28,6 @@
   # Reports (at most) once per hour
   max_age:
     hours: 1
-    minutes: 10
 - platform: statistics
   name: Flow – Watermeter (statistics)
   unique_id: 64452909-c360-4603-a9b9-291d9ae85223

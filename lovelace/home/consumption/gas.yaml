@@ -17,7 +17,7 @@ cards:
       - value: 0.8
         color: "#795548"
     entities:
-      - entity: sensor.hourly_gas_consumption
+      - entity: sensor.flow_gas
         name: Change rate
         show_points: false
         show_fill: false
@@ -44,6 +44,15 @@ cards:
     name: Daily gas usage (past 10 days)
     hour24: true
     lower_bound: 0
+    # This (currently) results in an incorrect bar graph as a result of:
+    #   <https://github.com/kalkih/mini-graph-card/issues/848>
+    # Purely a visual defect; especially apparent during times with low gas
+    # usage (ie, in Summer) at which point the graph is less relevant anyway...
+    # The "diff"-aggregate function uses the first and last _measurements_ of
+    # the day (not the actual first/last values). Issue exists for all other
+    # (consumption) bar graphs too, but as the underlying data there updates
+    # much more frequently (gas updates once per hour), the issue is has little
+    # impact there.
     aggregate_func: diff
     decimals: 2
     cache: true
