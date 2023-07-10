@@ -485,7 +485,28 @@
           states('binary_sensor.presence_91') == 'off' and
           states('binary_sensor.presence_92') == 'off'
         }}
-    - delay: 60
+    # If the washing machine door was recently (ie, within the last 10-minutes)
+    # opened, wait a bit longer to ensure the lights aren't switched off when
+    # someone is (un)loading the washing machine...
+    - if:
+        - >-
+          {{
+            states.binary_sensor.openclose_158 is defined and
+            (states.binary_sensor.openclose_158.last_changed | as_local) +
+              timedelta(seconds = 600) >= now()
+          }}
+      then:
+        # Delay for _up to_ 10-minutes (discounting the time that passed since
+        # the door was opened; ensuring we never provide in a negative delay)
+        - delay: >-
+            {{
+              [0, 600 - (
+                now() | as_timestamp -
+                states.binary_sensor.openclose_158.last_changed | as_timestamp
+              ) | int ] | max
+            }}
+      else:
+        - delay: 60
     - condition: state
       entity_id: timer.attic_hallway_motion_pause
       state: idle
