@@ -85,3 +85,8 @@ npm install
 - **29-12-2022** to **16-1-2023** — No data for
   `sensor.pi_hole_dns_unique_clients` as a result of a Pi-hole update that broke
   the Home Assistant integration
+- **30-6-2023** — For most of June 2023, `sensor.weewx_wind_speed` reported
+  no/incorrect data due to plants getting in the way of the sensor
+- **19-7-2023** — Removed `sensor.hourly_gas_consumption`; a new approach to the
+  derivate is used on the Home Assistant dashboards, in Influx
+  `sensor.gas_consumption` should've already been used in instead...

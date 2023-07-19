@@ -20,7 +20,6 @@ include:
     - sensor.energy_consumption_tarif_1 # off-peak (kWh)
     - sensor.energy_consumption_tarif_2 # peak (kWh)
     - sensor.gas_consumption # cumulative
-    - sensor.hourly_gas_consumption # computed; prefer "gas_consumption"
     - sensor.watermeter_total
     - sensor.consumption_170_cumulative # Irrigation (Balcony)
     - sensor.consumption_173_cumulative # Irrigation (Garden)
