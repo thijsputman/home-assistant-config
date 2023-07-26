@@ -45,8 +45,10 @@
             variables:
               speaker: media_player.mpi_mq1_speaker_attic
               priority: attention
+              duration: 4
+              chime: false
               message: >-
-                The doorbell just rang...
+                media-source://media_source/sd/audio/doorbell.ogg
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification
