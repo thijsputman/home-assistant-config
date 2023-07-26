@@ -20,11 +20,14 @@
       window_size: "00:10:00"
       precision: 0
 - platform: integration
+  unique_id: d3d0b1ee-91bf-494c-a1fe-efae9ce92926
   source: sensor.weewx_rain_hour
   name: weewx_rain_total
   round: 1
   unit_time: h
+  method: left
 - platform: integration
+  unique_id: 9f633e47-9970-4dd5-a924-7f89b51b4821
   source: sensor.weewx_evapotranspiration
   name: weewx_evapotranspiration_total
   round: 4

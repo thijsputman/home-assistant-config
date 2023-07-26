@@ -77,17 +77,6 @@
             message: >-
               The washing machine finished at <strong>{{ done_at }}</strong>,
               time to take the laundry out!
-        - event: tts_queue_abort
-          event_data:
-            tag: washing_machine
-        - service: script.turn_on
-          target:
-            entity_id: script.tts_announce
-          data:
-            variables:
-              priority: attention
-              message: >-
-                {{ message }}
         - service: script.turn_on
           target:
             entity_id: script.persistent_notification
@@ -99,6 +88,17 @@
               tag: washing_machine
               targetDevices: all
               title: 👖 Take the laundry from the washing machine!
+              message: >-
+                {{ message }}
+        - event: tts_queue_abort
+          event_data:
+            tag: washing_machine
+        - service: script.turn_on
+          target:
+            entity_id: script.tts_queue
+          data:
+            variables:
+              tag: washing_machine
               message: >-
                 {{ message }}
         - wait_for_trigger:
