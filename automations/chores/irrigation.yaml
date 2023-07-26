@@ -1,5 +1,5 @@
 # Backstops for the automatic watering valves – in case we forget to switch them
-# off, or an automations fails, prevent massive overwatering.
+# off, or an automation or physical failure occurs, prevent overwatering
 - alias: 🌱/💧 | 🤖 Close Balcony water valve (💧 > 90 L)
   id: 4ffa1d40-4a67-4613-8b9e-139964bcd199
   trigger:
@@ -14,6 +14,43 @@
     - service: switch.turn_off
       target:
         entity_id: switch.on_off_output_24
+- alias: 🌱/💧 | 🤖 Close Balcony water valve (💧 > 4 L/min)
+  id: 7ba1ae65-22b3-4870-a2e4-acf79d2985dd
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.flow_balcony_valve
+      above: 4
+      for: "00:00:30"
+  condition:
+    - condition: state
+      entity_id: switch.on_off_output_24
+      state: "on"
+  action:
+    - service: switch.turn_off
+      target:
+        entity_id: switch.on_off_output_24
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: chores
+          channel: Alert
+          criticalNotification: true
+          tag: irrigation
+          targetDevices: home
+          title: 🌱/💧 Balcony irrigation emergency shut off
+          message: >-
+            It appears the Balcony irrigation system sprung a leak; the
+            emergency shut off was triggered...
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          tag: irrigation
+          message: >-
+            Balcony irrigation emergency shut off was triggered
 - alias: 🌱/💧 | 🤖 Close Garden water valve (💧 > 250 L)
   id: e634c0dc-84d6-4be1-b54c-f115c72160cb
   trigger:
