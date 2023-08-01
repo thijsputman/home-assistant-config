@@ -41,10 +41,6 @@
   - Appears to be the result of the UPS power consumption not fluctuating
     enough. It stays at the same level for long periods; if that happens at the
     end of the day, the final hours of the day aren't counted...
-- [ ] ❗ The "auto"-mode for the tado° Attic heating appears to not be restored
-      at the end of the day; this results in the schedule not getting applied
-      the following day (and the heating only turning on when occupancy is
-      detected in the Attic)
 - [ ] Why does `device_attr(device_id(...), 'name')` keep referring to
       `Close-in boiler (Kitchen)` as `Power 151`? The device name is correctly
       set in Home Assistant — perhaps reset the device's name in deCONZ to see
@@ -80,17 +76,11 @@ future reference).
     prefixes of their WiFi and Bluetooth MAC addresses, which in turn _could_ be
     used to pinpoint the exact location of the house (if the combination of the
     three device types is unique enough – which it might).
-- [ ] Experiment with using the amount of rain and the (WeeWX calculated)
-      evapotranspiration to indicate whether the garden should be watered
-- [x] ~~It could be nice to also track water consumption. See for example
-      <https://www.ztatz.nl/p1-monitor-watermeter/>~~
-  - Apart from tracking consumption, it could also serve as an (early) warning
-    in case of water leaks
 - [ ] Use the power consumption sensor for the "multimedia hub" in the Living
       room to detect if the projector is on (in which case certain lighting
       automation should be disabled) – as an addition to the Android TV based
-      automations (which work wonderfully, but only when the Shield TV is active
-      and not, for example, when the Nintendo Switch is being used)
+      automations (which work well, but only when the Shield TV is active and
+      not, for example, when the Nintendo Switch is used)
 - [ ] Enable the `retain`-attribute for all MQTT-topics (either by updating the
       publishing logic, or by manually toggling the attribute on the MQTT server
       itself?)
@@ -98,16 +88,10 @@ future reference).
       tilting windows ("kiepraam") though
   - Use these (in addition to the `openclose` sensors) to detect a potential
     break-in (i.e. windows can be left ajar and still trigger the alarm)
-  - Use these (_instead of_ the `openclose` sensors) to warn when windows are
-    open and it starts to rain (i.e. don't warn if a window ajar; it's probably
-    left open intentionally)
   - Perhaps provide a warning when the Attic window is fully closed (in
     principle it's ventilation hatch should always be open) – same for the
     Bedroom, when we go to bed at least one of the windows should be ajar...
     This could be via TTS when all lights are switched off before going to bed
-  - ~~Once finalised, include tilt sensors in InfluxDB as part of the air
-    quality metrics (these windows are regularly used for ventilation
-    purposes)~~
 - [ ] Explicitly check the (most relevant) arguments for (important) scripts and
       if they're invalid, write an error to the log to aid in debugging?
 
@@ -130,7 +114,6 @@ future reference).
 
 ### General
 
-- [ ] SMS functionality: Show cellular reception
 - [ ] Add an overview of motion/vibration sensors
   - Perhaps create separate Security-dashboard?
 - [ ] Add buttons to toggle the entire house to a specific Hue scene ("Alarm",
@@ -139,7 +122,6 @@ future reference).
       stuff from the "Climate" dashboard~~
   - Add an overview of window ventilation states (based on tilt sensors and a
     grouping of the contact sensors for both bedroom windows)
-  - Add state and control for the Attic exhaust fan
 
 ## Notifications
 
@@ -185,14 +167,14 @@ future reference).
 
 ### Bugs
 
-- [ ] ❗ Living room Sonair template fan speed sensor incorrectly jumps between
-      40% and 60% at night (while it should be stable at 60%); the Wardrobe
-      Sonair template fan speed sensor incorrectly jumps between 20% and 40%
-      when it should be stable at 40%...
-- [x] ~~Not all Airco (Attic) transitions appear properly covered/guarded; the
-      airco-unit occasionally switches on when the window is open...~~
-  - Most likely resolved by
-    [6be625d](https://github.com/thijsputman/home-assistant-config/commit/6be625d38ca3a1906e9bf8e5732eb8c083d1da17)
+- [ ] Living room Sonair template fan speed sensor incorrectly jumps between 40%
+      and 60% at night (while it should be stable at 60%); the Wardrobe Sonair
+      template fan speed sensor incorrectly jumps between 20% and 40% when it
+      should be stable at 40%...
+- [ ] ❗ The "auto"-mode for the tado° Attic heating appears to not be restored
+      at the end of the day; this results in the schedule not getting applied
+      the following day (and the heating only turning on when occupancy is
+      detected in the Attic)
 
 ### Features
 
@@ -230,7 +212,7 @@ future reference).
       calamity); experiment with using this to trigger the alarm – additionally,
       increases in CO₂ levels when no-one is home (i.e. Home Alarm is "Armed
       away") might indicate some-one is in the house...
-  - ❗ This can actually be used for room occupancy detection too...
+  - This can be used for occupancy detection too...
 
 ## Lights
 
@@ -245,20 +227,11 @@ future reference).
 
 ### Features
 
-- [ ] See if the "band-aid (🩹)" Hue automations are still necessary:
-  - `💡 | 🩹 Enforce "off"-state for Gledopto controllers`
-  - `💡 | 🩹 Enforce Ensuite "on"-state to follow Living room`
-  - `💡 | 🩹 Enforce Garden scene change for Innr bulbs`
-  - ~~`💡 | 🩹 Enforce Kitchen scene change for Gledopto controllers`~~ — still
-    required
 - [ ] For Summer: Garden light automatic off should only happen if light state
       has not been modified manually (i.e. we're sitting outside)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
-- [ ] Have the buttons next to the bed control the Bedroom lights
-  - ✔️ Toggle off when on; on when off
-  - ✔️ Toggle off all lights (`script.lights_out`) on double press (under
-    specific circumstances)
-  - Cycle through various other modes (with long press?)
+- [ ] Have the buttons next to the bed cycle through various light modes (with
+      long press)
 - [ ] Containerize the Fireplace Node.js code; create some helpers scripts in
       Home Assistant to facilitate the switching on/off (mainly so that their
       previous state gets automatically restored)
@@ -373,12 +346,9 @@ future reference).
       need for Internet-connectivity. Block their MAC addresses in the router to
       prevent them from "phoning home" (actually, more to prevent people from
       "phoning in" through them).
-- [ ] Replace the upstairs Hallway and Guestroom bulbs with Hue filament bulbs
-      (and remove the Zigbee-units from the power-sockets)
-- [ ] The Heiman Sirens seemingly going offline after around 24-hours appears to
-      be caused by
-      [a deCONZ issue](https://forum.phoscon.de/t/since-migrating-deconz-plugin-from-2-14-1-to-2-15-3-heiman-hs2wd-e-siren-sensors-become-note-reachable-after-a-few-hours/1951)
-      (and not an actual hardware issue). See if deCONZ 2.17 resolves this...
+- [ ] Replace the Living Room "copper lamp", upstairs Hallway, and Guestroom
+      bulbs with Hue filament bulbs (and remove the Zigbee-units from their
+      cabling / power-sockets)
 - [ ] The single Pi-hole instance is a **substantial** single point of failure
       in the network; consider running a backup Pi-hole on another machine
       (configs will need to be synced though)
