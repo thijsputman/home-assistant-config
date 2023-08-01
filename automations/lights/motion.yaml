@@ -391,8 +391,8 @@
                 {{ trigger.entity_id == 'binary_sensor.presence_91' }}
           sequence:
             - service: light.turn_on
-              data:
-                entity_id: light.smart_relay_4
+              target:
+                entity_id: light.attic_hallway_up
         # Downstairs
         - conditions:
             - condition: template
@@ -400,14 +400,12 @@
                 {{ trigger.entity_id == 'binary_sensor.presence_92' }}
           sequence:
             - service: light.turn_on
-              data:
-                entity_id: light.smart_relay_3
+              target:
+                entity_id: light.attic_hallway_down
       default:
         - service: light.turn_on
-          data:
-            entity_id:
-              - light.smart_relay_3
-              - light.smart_relay_4
+          target:
+            entity_id: light.attic_hallway
     # Wait for _all_ motion sensors to clear
     - wait_template: >-
         {{
@@ -440,10 +438,6 @@
       entity_id: timer.attic_hallway_motion_pause
       state: idle
     - service: light.turn_off
-      data:
-        # Using the "light.attic_hallway" light group appears to be not 100%
-        # reliable – addressing the relays individually is...
-        entity_id:
-          - light.smart_relay_3
-          - light.smart_relay_4
+      target:
+        entity_id: light.attic_hallway
   mode: restart

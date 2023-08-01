@@ -53,30 +53,28 @@
         - conditions:
             - condition: state
               entity_id:
-                - light.smart_relay_3
-                - light.smart_relay_4
+                - light.attic_hallway_up
+                - light.attic_hallway_down
               state: "on"
           sequence:
             - service: light.turn_off
               target:
-                entity_id: light.smart_relay_3
+                entity_id: light.attic_hallway_down
         - conditions:
             - condition: state
-              entity_id: light.smart_relay_4
+              entity_id: light.attic_hallway_up
               state: "on"
           sequence:
             - service: light.turn_off
               target:
-                entity_id: light.smart_relay_4
+                entity_id: light.attic_hallway_up
             - service: light.turn_on
               target:
-                entity_id: light.smart_relay_3
+                entity_id: light.attic_hallway_down
       default:
         - service: light.turn_on
           target:
-            entity_id:
-              - light.smart_relay_3
-              - light.smart_relay_4
+            entity_id: light.attic_hallway
 - alias: 💡 | 🕹️ Turn off Attic hallway lights (Dimmer Switches)
   id: d248cca1-d887-40b2-966a-5bbc2ebd84dd
   mode: single

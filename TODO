@@ -355,10 +355,19 @@ future reference).
 
 ### General
 
-- [ ] The Xiaomi two-gang Zigbee relay in the Attic hallway sometimes refuses to
-      switch off one of its gangs (always the same). The Zigbee network thinks
-      the light is off (it's actually still on); turning it off again properly
-      turns off the light.
+- [ ] The Xiaomi two-gang Zigbee relay (`lumi.relay.c2acn01`) in the Attic
+      hallway sometimes refuses to switch off. The Zigbee network thinks the
+      light(s) is/are off (they're actually still on); turning them off again
+      properly turns off the light(s).
+  - In general, this relay appears to be a bit problematic in combination with
+    deCONZ – a similar unit controlling the Bathroom fan turns on by itself from
+    time to time... 😕
+  - Bought some alternative relays to experiment with; might also consider
+    checking (again) if their firmware is up-to-date (all of which requires the
+    units to be physically removed from their ceiling hideouts 😒)
+  - See [`📄 extras/scratch-pad.http`](extras/deconz/scratch-pad.http) for a
+    (potentially) related issue in assigning this relay directly a switch
+    (without needing a controller)
 - [ ] Both the Qingping and Broadlink devices need Internet-connectivity to be
       set up. Once they're up and running they are managed fully locally – no
       need for Internet-connectivity. Block their MAC addresses in the router to

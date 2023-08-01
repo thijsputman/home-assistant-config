@@ -2,8 +2,8 @@
   name: Attic hallway
   unique_id: 2cb6deb0-459e-4837-aef1-e7cead101792
   entities:
-    - light.smart_relay_3
-    - light.smart_relay_4
+    - light.attic_hallway_down
+    - light.attic_hallway_up
 - platform: group
   name: Fireplace
   unique_id: 1d73f495-bba4-4d6c-a5b5-e7494a7c00d5
