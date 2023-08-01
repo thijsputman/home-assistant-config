@@ -1,5 +1,5 @@
+# Energy
 - sensor:
-    # Energy
     - name: Energy consumption
       unique_id: bbf3af84-ac94-4cc6-8d48-243bab149559
       unit_of_measurement: kWh
@@ -167,6 +167,15 @@
               ) | round(2)
             }}
           {% endif %}
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.daily_energy_offpeak
+        - sensor.daily_energy_peak
+        - sensor.monthly_energy_offpeak
+        - sensor.monthly_energy_peak
+      to: ~
+  sensor:
     - name: Monthly costs – daily average (Energy)
       unique_id: 26338d65-cf2e-4853-a4e9-a96b3cadb58f
       unit_of_measurement: €
@@ -241,7 +250,8 @@
               ) | round(2)
             }}
           {% endif %}
-    # Gas
+# Gas
+- sensor:
     - name: Flow – Gas
       unique_id: 09eec916-0c7d-49c8-b5eb-874fdbae5430
       unit_of_measurement: m³/h
@@ -304,6 +314,13 @@
               ) | round(2)
             }}
           {% endif %}
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.daily_gas
+        - sensor.monthly_gas
+      to: ~
+  sensor:
     - name: Monthly costs – daily average (Gas)
       unique_id: b46c162e-b4b9-453b-93da-b9e51b1ac7c5
       unit_of_measurement: €
@@ -350,7 +367,8 @@
             ) | round(2)
           }}
           {% endif %}
-    # Water
+# Water
+- sensor:
     - name: Flow – Watermeter
       unique_id: fda5a74c-137c-4142-a012-7f4cac933848
       unit_of_measurement: L
@@ -433,6 +451,13 @@
               ) | round(2)
             }}
           {% endif %}
+- trigger:
+    - platform: state
+      entity_id:
+        - sensor.daily_water
+        - sensor.monthly_water
+      to: ~
+  sensor:
     - name: Monthly costs – daily average (Water)
       unique_id: 3da97065-77cc-480d-80e1-9fb8564e8bf4
       unit_of_measurement: €

@@ -23,6 +23,10 @@ Custom DDFs in [`📂 devices`](./devices/):
   (originally a different manufacturer, but works fine with this one too)
 - [`📄 _TZE200_a7sghmms.json`](./devices/_TZE200_a7sghmms.json) – see
   [Tuya Smart Watering Timer](#tuya-smart-watering-timer-_tze200_a7sghmms)
+- `📄 _TZE200_myd45weu_temp.json` – identical to the one shipping with deCONZ,
+  but with its status set to `Gold`. Can be removed once
+  [deCONZ **2.23**](https://github.com/dresden-elektronik/deconz-rest-plugin/pull/7078)
+  is installed
 
 Copy these into the `devices`-folder of the deCONZ instance
 (`/opt/deCONZ/devices` for the Docker-container). They're picked up

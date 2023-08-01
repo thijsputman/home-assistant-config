@@ -69,10 +69,15 @@
             {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+') %}
               {#
                 The "recent activity"-sensors appear to initialise "unknown" if
-                Home Assistant is restarted while the cameras are inactive...
+                Home Assistant is restarted while the cameras are inactive; the
+                "last activity"-sensors can go to "unknown" if there's no
+                activity detected for a long period of time.
               #}
-              {% if entity_id is not
-                search('sensor\.aarlo_recent_activity_.+')
+              {%
+                if entity_id is not
+                  search('sensor\.aarlo_recent_activity_.+') and
+                entity_id is not
+                  search('sensor\.aarlo_last_.+')
               %}
                 {% set matched = 'Aarlo' %}
               {% endif %}
