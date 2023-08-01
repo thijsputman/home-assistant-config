@@ -1,0 +1,52 @@
+- sensor:
+    # Thermostat (Living Room) – via HomeKit controller
+    - name: tado Smart Thermostat temperature
+      unique_id: 65ed5451-ccbb-4a7b-bed4-76d5033a03d1
+      unit_of_measurement: °C
+      device_class: temperature
+      availability: >-
+        {{ has_value('climate.tado_smart_thermostat') }}
+      state: >-
+        {{ state_attr('climate.tado_smart_thermostat', 'current_temperature') }}
+    - name: tado Smart Thermostat setpoint
+      unique_id: 411bd8c8-c764-4806-a040-59e5da3b68e8
+      unit_of_measurement: °C
+      device_class: temperature
+      availability: >-
+        {{ has_value('climate.tado_smart_thermostat') }}
+      state: >-
+        {{ state_attr('climate.tado_smart_thermostat', 'temperature') }}
+    # Smart Radiator (Attic) – via HomeKit controller
+    - name: tado Smart Radiator (Attic) temperature
+      unique_id: fa0104f8-0c6f-4322-9fe6-7ed142d435c2
+      unit_of_measurement: °C
+      device_class: temperature
+      availability: >-
+        {{ has_value('climate.tado_smart_radiator_attic') }}
+      state: >-
+        {{ state_attr('climate.tado_smart_radiator_attic', 'current_temperature') }}
+    - name: tado Smart Radiator (Attic) setpoint
+      unique_id: 68e66127-c1c1-44ca-bd11-2bc2466407b1
+      unit_of_measurement: °C
+      device_class: temperature
+      availability: >-
+        {{ has_value('climate.tado_smart_radiator_attic') }}
+      state: >-
+        {{ state_attr('climate.tado_smart_radiator_attic', 'temperature') }}
+    # Smart AC Control (Attic) – via HomeKit controller
+    - name: tado Smart AC Control (Attic) temperature
+      unique_id: 4bb0b2a1-839d-4792-a761-6e8f26692670
+      unit_of_measurement: °C
+      device_class: temperature
+      availability: >-
+        {{ has_value('climate.tado_smart_ac_control_attic') }}
+      state: >-
+        {{ state_attr('climate.tado_smart_ac_control_attic', 'current_temperature') }}
+    - name: tado Smart AC Control (Attic) setpoint
+      unique_id: 51c3e1f5-06b6-47f3-90d6-ccd7d2cc8f27
+      unit_of_measurement: °C
+      device_class: temperature
+      availability: >-
+        {{ has_value('climate.tado_smart_ac_control_attic') }}
+      state: >-
+        {{ state_attr('climate.tado_smart_ac_control_attic', 'temperature') }}

@@ -1,5 +1,6 @@
 - state_topic: dd-wrt/ping/dd-wrt-1
   name: DD-WRT-1 Google DNS roundtrip time
+  unique_id: 7da0d825-c4f0-4877-86ae-e2bd2c31d6ae
   unit_of_measurement: ms
   icon: mdi:server-network
   value_template: >-
@@ -7,6 +8,7 @@
   expire_after: 180
 - state_topic: dd-wrt/ping/dd-wrt-2
   name: DD-WRT-2 Google DNS roundtrip time
+  unique_id: 1844a40b-98f3-4fa8-92d7-e9d88055a4e9
   unit_of_measurement: ms
   icon: mdi:server-network
   value_template: >-

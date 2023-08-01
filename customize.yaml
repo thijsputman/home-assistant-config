@@ -1,37 +1,3 @@
-sensor.dd_wrt_1_1_minute_load:
-  icon: mdi:chip
-sensor.dd_wrt_1_wan_in_mbps:
-  icon: mdi:download-network
-sensor.dd_wrt_1_wan_out_mbps:
-  icon: mdi:upload-network
-sensor.dd_wrt_2_1_minute_load:
-  icon: mdi:chip
-switch.on_off_plug_in_unit_3:
-  icon: mdi:thermometer-plus
-sensor.gas_usage_change:
-  icon: mdi:gas-cylinder
-sensor.daily_energy:
-  icon: mdi:counter
-sensor.monthly_energy:
-  icon: mdi:counter
-sensor.weewx_wind_direction_filtered:
-  icon: mdi:compass
-sensor.weewx_wind_gust_direction_filtered:
-  icon: mdi:compass
-sensor.binary_dishwasher:
-  icon: mdi:dishwasher
-sensor.binary_washing_machine:
-  icon: mdi:washing-machine
-sensor.weewx_wind_speed:
-  icon: mdi:compass
-sensor.weewx_solar_irradiance:
-  icon: mdi:blur-radial
-sensor.weewx_rain_hour:
-  icon: mdi:weather-rainy
-light.attic_hallway:
-  icon: hue:room-stairs
-sensor.binary_airco_attic:
-  icon: mdi:hvac
 sensor.consumption_170:
   device_class: water
   unit_of_measurement: L

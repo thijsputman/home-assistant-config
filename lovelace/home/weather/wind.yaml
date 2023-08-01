@@ -44,7 +44,8 @@ card:
           show_fill: false
           aggregate_func: max
         - color: dimgray
-          entity: sensor.time_of_day_numeric
+          entity: sensor.time_of_day
+          attribute: numeric
           name: Night
           show_line: false
           show_points: false

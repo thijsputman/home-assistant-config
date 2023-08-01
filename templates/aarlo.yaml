@@ -11,3 +11,8 @@
       device_class: motion
       state: >-
         {{ trigger.to_state.state }}
+- sensor:
+    - name: Aarlo alarm state
+      unique_id: 4258311e-603a-4716-8b3e-47fe8b86bd18
+      icon: mdi:security
+      state: !secret aarlo_alarm_state

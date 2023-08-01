@@ -63,26 +63,6 @@ future reference).
 
 ### Features
 
-- [ ] Move all icon customisations for sensors defined in YAML from
-      `📄 customize.yaml` to their respective YAML files; for all other sensors,
-      aim to customise their icons through the UI (add `unique_id` where
-      necessary)
-  - As of HA 2021.12 it appears `📄 customize.yaml` is slowly getting phased out
-- [ ] Clean-up inconsistent entity IDs
-  - Especially those coming from deCONZ (half of them are `light_x`,
-    `openclose_y`, the other half already have descriptive names)
-  - Some other things are also inconsistent (e.g. `power_xxx` versus `xxx_power`
-    and `consumption_xxx` versus `xxx_consumption`)
-  - Part of the inconsistency is caused by the fact that (new format) template
-    sensors don't allow specifying a `friendly_name` anymore, so the `entity_id`
-    is derived from the `name` and a balance needs to be struck between
-    human-readable and structured (otherwise all friendly names should be
-    (re)defined via the UI)
-  - In general, decide how to proceed: Should all entities have descriptive
-    names or is it acceptable to just have them all called `entity_type_001`?
-    Either approach will lead to inconsistencies over time I'm afraid... Giving
-    a new devices and old device's entity ID is easy, so from that perspective
-    it really doesn't matter.
 - [ ] State attributes store history too, so there's no need to create template
       sensors if they're purely used for graphing in dashboards
       (`mini-graph-card` can graph attributes) or in other automations (use a
@@ -92,22 +72,6 @@ future reference).
   - See which of the current template sensors (mainly tado° related) are
     actually useful given the above considerations; remove the ones that are
     not...
-- [ ] Clean up `📄 sensors.yaml` (i.e., move its contents into the `📁 sensors`
-      folder).
-  - Reimplement all template sensors using
-    [the new format](https://www.home-assistant.io/integrations/template) and
-    move them into the `📁 templates` folder
-  - Use
-    [**trigger-based template sensors**](https://www.home-assistant.io/integrations/template/#configuration-for-trigger-based-template-sensors)
-    where appropriate. For example, several sensors in
-    [`📄 sensors/dsmr.yaml`](./sensors/dsmr.yaml) use `now()` in a static manner
-    (i.e. to do date arithmetic) – making these trigger-based stops them from
-    rendering unnecessarily once-per-minute (due to the inclusion of `now()` in
-    their templates)
-  - [Properly self-reference using `this`](https://www.home-assistant.io/integrations/template/#self-referencing)
-    instead of hard-coding `states(...)` with the name of the template sensor in
-    question — do note the findings in
-    [9c03dfb](https://github.com/thijsputman/home-assistant-config/commit/9c03dfbf1611a4def2d4f7e43aa33dabbdfedc3c)
 - [ ] ~~Use generic names for the mobile devices registered through the "Mobile
       App" integration~~ (`pixel_6_pro`, `sm_g990b2` and `p20hd_eea`) — seeing
       as how these devices are only referenced in a few places, easier to

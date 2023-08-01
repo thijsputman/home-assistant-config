@@ -1,5 +1,6 @@
 - state_topic: tc66c/pi4_sandbox/power_W
   name: Pi4 Sandbox Power usage
+  unique_id: 3fcc3dbc-a1d3-4ceb-be47-05e354430918
   unit_of_measurement: W
   device_class: power
   value_template: >-

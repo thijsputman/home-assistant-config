@@ -133,9 +133,7 @@ notify:
 mqtt:
   sensor: !include_dir_merge_list mqtt/
 
-sensor: !include sensors.yaml
-sensor custom: !include_dir_merge_list sensors/
-
+sensor: !include_dir_merge_list sensors/
 binary_sensor: !include_dir_merge_list sensors_binary/
 
 light: !include lights.yaml

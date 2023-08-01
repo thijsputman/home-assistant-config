@@ -26,7 +26,8 @@ entities:
     show_points: false
     show_fill: false
   - color: dimgray
-    entity: sensor.time_of_day_numeric
+    entity: sensor.time_of_day
+    attribute: numeric
     name: Night
     show_line: false
     show_points: false

@@ -5,6 +5,7 @@
 # not at a regular interval).
 - platform: filter
   name: WeeWX wind direction (filtered)
+  unique_id: 1500a6d2-f06f-4441-a099-aa9c5bff1df8
   entity_id: sensor.weewx_wind_direction
   filters:
     - filter: time_simple_moving_average
@@ -13,6 +14,7 @@
       precision: 0
 - platform: filter
   name: WeeWX wind gust direction (filtered)
+  unique_id: 76125c5a-e067-4ea0-8179-26c648e3d0cb
   entity_id: sensor.weewx_wind_gust_direction
   filters:
     - filter: time_simple_moving_average

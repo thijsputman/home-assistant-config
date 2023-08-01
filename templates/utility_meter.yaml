@@ -19,6 +19,7 @@
     - name: Daily energy
       unique_id: 39aa08f9-a48d-40da-b649-9047eebdc6fc
       unit_of_measurement: kWh
+      icon: mdi:counter
       state_class: total_increasing
       availability: >-
         {{
@@ -51,6 +52,7 @@
     - name: Monthly energy
       unique_id: 16585486-2137-46d8-9530-9c5c6af61894
       unit_of_measurement: kWh
+      icon: mdi:counter
       state_class: total_increasing
       availability: >-
         {{

@@ -1,0 +1,12 @@
+# Google DNS
+- sensor:
+    - name: Google DNS (roundtrip time)
+      unique_id: bfe4cbc9-95a3-48af-80eb-af8176ca542e
+      icon: mdi:server-network
+      unit_of_measurement: ms
+      availability: >-
+        {{ has_value('binary_sensor.google_dns_ping') }}
+      state: >-
+        {{
+          state_attr('binary_sensor.google_dns_ping', 'round_trip_time_avg')
+        }}

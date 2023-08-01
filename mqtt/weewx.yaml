@@ -1,5 +1,6 @@
 - state_topic: weewx/outTemp_C
   name: WeeWX outside temperature
+  unique_id: 2293ad28-2ebd-4c80-a21b-2360bbc8a426
   unit_of_measurement: °C
   device_class: temperature
   value_template: >-
@@ -7,6 +8,7 @@
   expire_after: 180
 - state_topic: weewx/extraTemp1_C
   name: WeeWX outside temperature (Balcony)
+  unique_id: cdd81557-caa3-4dae-b9b7-a45c354580fa
   unit_of_measurement: °C
   device_class: temperature
   value_template: >-
@@ -14,6 +16,7 @@
   expire_after: 180
 - state_topic: weewx/extraTemp2_C
   name: WeeWX outside temperature (Garden)
+  unique_id: 9ffc2ac0-5b84-40ef-9c4a-406b2846fbb3
   unit_of_measurement: °C
   device_class: temperature
   value_template: >-
@@ -21,6 +24,7 @@
   expire_after: 180
 - state_topic: weewx/dewpoint_C
   name: WeeWX outside dewpoint
+  unique_id: bd838399-1968-4069-b152-ef1f28146ad4
   unit_of_measurement: °C
   device_class: temperature
   value_template: >-
@@ -28,6 +32,7 @@
   expire_after: 180
 - state_topic: weewx/heatindex_C
   name: WeeWX heat index
+  unique_id: d22332f7-92fa-42fe-84de-8b3eaade8461
   unit_of_measurement: °C
   device_class: temperature
   value_template: >-
@@ -35,6 +40,7 @@
   expire_after: 180
 - state_topic: weewx/windchill_C
   name: WeeWX wind chill
+  unique_id: 1468e2ed-7711-4e9e-969d-1c78aabee9e0
   unit_of_measurement: °C
   device_class: temperature
   value_template: >-
@@ -42,6 +48,7 @@
   expire_after: 180
 - state_topic: weewx/pressure_mbar
   name: WeeWX outside pressure
+  unique_id: 59868080-44f0-49b1-8d91-18174304560b
   unit_of_measurement: mbar
   device_class: pressure
   value_template: >-
@@ -49,6 +56,7 @@
   expire_after: 180
 - state_topic: weewx/outHumidity
   name: WeeWX outside humidity
+  unique_id: 85bd5434-0d40-4e0b-be8a-f4588048feea
   unit_of_measurement: "%"
   device_class: humidity
   value_template: >-
@@ -56,6 +64,7 @@
   expire_after: 180
 - state_topic: weewx/extraHumid1
   name: WeeWX outside humidity (Balcony)
+  unique_id: 8eedacff-57bc-4450-9b6a-0b93b452eaee
   unit_of_measurement: "%"
   device_class: humidity
   value_template: >-
@@ -63,6 +72,7 @@
   expire_after: 180
 - state_topic: weewx/extraHumid2
   name: WeeWX outside humidity (Garden)
+  unique_id: 6a72c78d-7325-4e28-b82f-290b1ca1c171
   unit_of_measurement: "%"
   device_class: humidity
   value_template: >-
@@ -70,24 +80,29 @@
   expire_after: 180
 - state_topic: weewx/windSpeed_kph
   name: WeeWX wind speed
+  unique_id: 6554ed9a-a3b4-4521-82eb-6f35e85fd7fd
+  icon: mdi:windsock
   unit_of_measurement: m/s
   value_template: >-
     {{ (value | float / 3.6) | round(2) }}
   expire_after: 180
 - state_topic: weewx/windGust_kph
   name: WeeWX wind gust
+  unique_id: a8e3634b-23ce-41cb-aa93-88226ce97d85
   unit_of_measurement: m/s
   value_template: >-
     {{ (value | float / 3.6) | round(2) }}
   expire_after: 180
 - state_topic: weewx/beaufort_count
   name: WeeWX wind speed (beaufort)
+  unique_id: de36af8a-5315-4363-9683-c3cdf78faea8
   unit_of_measurement: Bft
   value_template: >-
     {{ value | round(0) }}
   expire_after: 180
 - state_topic: weewx/windDir
   name: WeeWX wind direction
+  unique_id: 94141af0-8317-4fbb-9be6-184eb273b53a
   unit_of_measurement: °
   value_template: >-
     {{ value | round(0) }}
@@ -96,6 +111,7 @@
   expire_after: 1800
 - state_topic: weewx/windGustDir
   name: WeeWX wind gust direction
+  unique_id: 6fd14288-9df4-4a6a-a983-bb2d024ae029
   unit_of_measurement: °
   value_template: >-
     {{ value | round(0) }}
@@ -103,41 +119,50 @@
   expire_after: 1800
 - state_topic: weewx/radiation_Wpm2
   name: WeeWX solar irradiance
+  unique_id: a2e04461-6b6b-4288-b1d7-3178d09af83f
+  icon: mdi:blur-radial
   unit_of_measurement: W/m²
   value_template: >-
     {{ value | round(1) }}
   expire_after: 180
 - state_topic: weewx/UV
   name: WeeWX UV index
+  unique_id: 8ecc56f3-a960-4054-9966-aa2bf9b3679a
   value_template: >-
     {{ value | round(0) }}
   expire_after: 180
 - state_topic: weewx/rain_cm
   name: WeeWX rain
+  unique_id: 91a5edce-34b8-4722-9b2a-4416c360e4cf
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(1) }}
   expire_after: 180
 - state_topic: weewx/hourRain_cm
   name: WeeWX rain (hour)
+  unique_id: 21dbd462-825c-4309-85f1-84f47bf1c60c
+  icon: mdi:weather-rainy
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(1) }}
   expire_after: 180
 - state_topic: weewx/rainRate_cm_per_hour
   name: WeeWX rain rate (hour)
+  unique_id: 89cb289a-12ef-432b-b324-c9861778cf57
   unit_of_measurement: mm/h
   value_template: >-
     {{ (value | float * 10) | round(1) }}
   expire_after: 180
 - state_topic: weewx/dayRain_cm
   name: WeeWX rain (day)
+  unique_id: 002e9bf3-1563-4f59-992f-bfa91d82c533
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(1) }}
   expire_after: 180
 - state_topic: weewx/ET_cm
   name: WeeWX evapotranspiration
+  unique_id: 6bfb2d9b-8f8e-4f81-b3f5-1d5cf350a287
   unit_of_measurement: mm
   value_template: >-
     {{ (value | float * 10) | round(4) }}
