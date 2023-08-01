@@ -10,27 +10,22 @@
     - condition: state
       entity_id: group.family
       state: home
-    # Only act if ETA is in the future — the next condition assumes "future"
-    # entails either today or tomorrow. Currently, no effort is made to guard
-    # against ETA being further in the future; cross that bridge if we ever get
-    # there...
+    # Only act on Albert Heijn ETAs within 15-minutes of today's _or_ tomorrow's
+    # «wakeup» time (mainly to guard against acting on a stale ETA).
+    # Note that we need to explicitly distinguish between today and tomorrow
+    # _before_ comparing against «wakeup» time, as that is date-less...
     - >-
-      {{
-        states('sensor.last_notification_albert_heijn_eta') |
-          as_datetime > now()
-      }}
-    # Prepone «wakeup» time if Albert Heijn's ETA is within a 15-minute interval
-    # of it.
-    # When «wakeup» time is in the past, we assume we're operating on tomorrow's
-    # wakeup time (and simply add 24-hours to the comparison logic; this works
-    # great except when changing to/from DST, alas 😉).
-    - >-
-      {% set eta = states('sensor.last_notification_albert_heijn_eta') |
-          as_datetime - timedelta(minutes=15) %}
+      {%
+        set eta = states('sensor.last_notification_albert_heijn_eta') |
+          as_datetime - timedelta(minutes=15)
+      %}
       {% set wakeup = today_at(states('input_datetime.wakeup')) %}
       {{
-        eta <= wakeup or (
-          now() > wakeup and eta <= (wakeup + timedelta(hours=24))
+        (
+          eta.day == now().day and eta <= wakeup
+        ) or (
+          eta.day == (now() + timedelta(days=1)).day and
+            eta <= (wakeup + timedelta(days=1))
         )
       }}
   action:
