@@ -4,39 +4,57 @@
     - platform: numeric_state
       entity_id: sensor.humidity_change_bathroom
       above: 1.5
-  condition: []
+  condition:
+    - condition: state
+      entity_id: binary_sensor.occupancy_bathroom
+      state: "on"
   action:
-    # Only act if humidity in the Bathroom is too high (and also prevent errant
-    # spikes in the derivative from triggering the automation). Only wait for the
-    # relative humidity to reach 60% if we're starting out below 60% (otherwise
-    # we'll erroneously wait and abort).
-    - choose:
-        - conditions:
-            - condition: numeric_state
+    # The aim is to only act if humidity is _above_ 50% – if it's below that
+    # level, wait for a bit to see if the threshold is reached (as we trigger
+    # based on rising humidity)
+    - if:
+        - condition: numeric_state
+          entity_id: sensor.humidity_25
+          below: 50.0
+      then:
+        - wait_for_trigger:
+            - platform: numeric_state
               entity_id: sensor.humidity_25
-              below: 60.0
-          sequence:
-            - wait_for_trigger:
-                - platform: numeric_state
-                  entity_id: sensor.humidity_25
-                  above: 60.0
-              timeout: "00:05:00"
-              continue_on_timeout: false
+              above: 50.0
+          timeout: "00:10:00"
+          continue_on_timeout: false
     - service: light.turn_on
-      data:
+      target:
         entity_id: light.smart_relay_1
 - alias: 💨 | 🤖 Bathroom fan off (Δ💧 < 0.5%/min; 40 minute rundown)
   id: 150bbec5-df6a-4d4b-9452-262f24ca47a7
   trigger:
+    # We aim to determine when the humidity stops fluctuating (at which point
+    # further running the fan has no benefit)
     - platform: numeric_state
       entity_id: sensor.humidity_change_bathroom
-      # We're not interested in the direction of change – just its reduction
       value_template: >-
-        {{ state.state|float|abs }}
+        {{ state.state | float | abs }}
       below: 0.5
       for: "00:40:00"
+  condition:
+    - condition: state
+      entity_id: light.smart_relay_1
+      state: "on"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: light.smart_relay_1
+# Backstop in case the automated "off" fails
+- alias: 💨 | 🤖 Bathroom fan off (after 4 hours)
+  id: e16ceadd-701f-4c72-9df0-50910099b2fb
+  trigger:
+    - platform: state
+      entity_id: light.smart_relay_1
+      to: "on"
+      for: "04:00:00"
   condition: []
   action:
     - service: light.turn_off
-      data:
+      target:
         entity_id: light.smart_relay_1

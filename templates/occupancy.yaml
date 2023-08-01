@@ -121,3 +121,18 @@
               states('light.attic') == 'on'
           }}
         {% endif %}
+# Bathroom occupancy
+- binary_sensor:
+    - name: Occupancy (Bathroom)
+      unique_id: a35d4bda-a052-47e8-bc49-7fc44842b60e
+      icon: mdi:account-check
+      device_class: occupancy
+      availability: >-
+        {{
+          has_value('group.motion_bathroom')
+        }}
+      state: >-
+        {{
+          states('group.motion_bathroom')
+        }}
+      delay_off: "00:02:30"

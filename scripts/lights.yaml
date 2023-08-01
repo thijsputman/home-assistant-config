@@ -115,8 +115,10 @@ lights_out:
                   data:
                     transition: 10
                     entity_id: light.bedroom
-    # If there's no motion in the Bathroom and Wardrobe, switch them off too
-    # (otherwise they'll naturally go off after their motion timeouts)
+    # If there's no motion in the Bathroom and Wardrobe, switch them off too –
+    # note that we explicitly check the motions sensors (and not the "occupancy"
+    # sensors) here as we intend to more quickly switch the lights off than we
+    # would normally do...
     - if:
         - >-
           {{

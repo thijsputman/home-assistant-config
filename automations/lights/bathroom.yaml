@@ -1,0 +1,64 @@
+- alias: 💡 | 👋 Bathroom light toggle (motion detected)
+  id: 63b00f23-043a-4d8b-9974-03a7e850e897
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.occupancy_bathroom
+      from: "off"
+      to: "on"
+    # Also trigger (ie, restart) the automation when it gets too dark in the
+    # Bathroom. Initially we might not have triggered because it was too bright;
+    # this ensures the lights go one when it gets darker outside...
+    - platform: numeric_state
+      entity_id: sensor.lightlevel_bathroom
+      below: 200
+  condition:
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_bathroom
+      below: 200
+    - condition: state
+      entity_id: binary_sensor.occupancy_bathroom
+      state: "on"
+    # Only switch on the lights under normal circumstances (i.e. the alarm is
+    # either disarmed or "Armed night")
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - disarmed
+        - armed_night
+  action:
+    - if:
+        # Make the light a bit kinder on the eyes late at night
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "on"
+      then:
+        - service: light.turn_on
+          data:
+            brightness: 60
+            kelvin: 2200
+          entity_id: light.bathroom
+      else:
+        - service: light.turn_on
+          data:
+            brightness: 255
+            kelvin: 2900
+          entity_id: light.bathroom
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.occupancy_bathroom
+          from: "on"
+          to: "off"
+      timeout: "02:00:00"
+    - condition: state
+      entity_id: light.bathroom
+      state: "on"
+    - service: light.turn_on
+      data:
+        brightness_step_pct: -30
+      target:
+        entity_id: light.bathroom
+    - delay: "00:00:30"
+    - service: light.turn_off
+      target:
+        entity_id: light.bathroom
+  mode: restart
