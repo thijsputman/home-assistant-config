@@ -5,6 +5,8 @@
 /blueprints/*/homeassistant
 /custom_components/*
 !/custom_components/README.md
+!/custom_components/oralb
+!/custom_components/led_ble
 /deps
 /image
 /tts
