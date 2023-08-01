@@ -127,18 +127,18 @@ tts_queue:
                 id: announce
                 event_type: tts_announce
               - platform: event
+                id: abort
                 event_type: tts_queue_abort
                 event_data:
                   tag: >-
                     {% if tag is defined %}
                       {{ tag }}
                     {% else %}
-                      {#
-                        For manual intervention / debugging purposes
-                      #}
+                      {# For manual intervention / debugging purposes #}
                       ABORT_{{ context.id }}
                     {% endif %}
               - platform: event
+                id: abort
                 event_type: tts_queue_abort_all
             # Ensure we respect the original timeout by updating it with the
             # value of "wait.remaining" after each iteration
@@ -149,20 +149,23 @@ tts_queue:
                 {{ expiry }}
               {% endif %}
             continue_on_timeout: false
-        # Hold announcement in queue until its channel (either "attention" or
-        # "announce") is triggered on its preferred speaker. Additionally, if
-        # the event has a tag set this needs to match the announcement's tag.
+        # Hold announcement in queue until it's aborted, or its channel (either
+        # "attention" or "announce") is triggered on its preferred speaker. In
+        # that case, if the event has a tag set it needs to match the
+        # announcement's tag.
         until: >-
           {{
-            wait.trigger.id == channel and
-            (
-              speaker is not defined or (
-                wait.trigger.event.data.speaker is defined and
-                wait.trigger.event.data.speaker == speaker
+            wait.trigger.id == 'abort' or (
+              wait.trigger.id == channel and
+              (
+                speaker is not defined or (
+                  wait.trigger.event.data.speaker is defined and
+                  wait.trigger.event.data.speaker == speaker
+                )
+              ) and (
+                wait.trigger.event.data.tag is not defined or
+                wait.trigger.event.data.tag == tag
               )
-            ) and (
-              wait.trigger.event.data.tag is not defined or
-              wait.trigger.event.data.tag == tag
             )
           }}
     - condition: >-
@@ -257,13 +260,17 @@ tts_announce:
       {% else %}
         {{ speaker }}
       {% endif %}
+    is_sample: >-
+      {{ message | trim is match('media-source:\/\/', True) }}
+    # Use a different volume for samples versus TTS – generally speaking, TTS
+    # (at least when generated via Piper) is louder than the samples...
     volume: >-
       {% if priority == 'attention' %}
-        0.65
+        {{ 0.65 if is_sample | bool else 0.50 }}
       {% elif priority == 'whisper' %}
-        0.25
+        {{ 0.25 if is_sample | bool else 0.12 }}
       {% else %}
-        0.45
+        {{ 0.45 if is_sample | bool else 0.28 }}
       {% endif %}
   sequence:
     # Only announce when someone's home
@@ -303,7 +310,7 @@ tts_announce:
           {{ speaker }}
     - if:
         - >-
-          {{ message | trim is match('media-source:\/\/', True) }}
+          {{ is_sample }}
       then:
         - service: media_player.play_media
           data:
@@ -317,9 +324,9 @@ tts_announce:
           data:
             message: >-
               {{ speaker.split(',') if ',' in speaker else speaker }}:
-              Played sample "{{ message | trim }}"
+              Played sample "{{ message | trim }}" (🔊 {{ volume }})
         - delay: >-
-            {{ duration | int(1) }}
+            {{ duration if duration is defined else 0 | int(1) }}
       else:
         - variables:
             # Compress all whitespace; remove all HTML-tags (they are
@@ -333,7 +340,8 @@ tts_announce:
                   regex_replace('[ \n]+', ' ') |
                   regex_replace('<.+?>', '') |
                   regex_replace('0([1-9]{1}):([0-9]{2})', '\g<1>:\g<2>') |
-                  regex_replace('([0-9]{1,2}):0([1-9]{1})', '\g<1>:\g<2>') |
+                  regex_replace('([0-9]{1,2}):0([1-9]{1})',
+                    '\g<2> past \g<1>') |
                   regex_replace('([0-9]{1,2}):00', '\g<1> o\'clock') |
                   replace('ij', 'y')
               }}
@@ -350,7 +358,7 @@ tts_announce:
           data:
             message: >-
               {{ speaker.split(',') if ',' in speaker else speaker }}:
-              {{ announcement }}
+              {{ announcement }} (🔊 {{ volume }})
         # For queued execution to work properly, the script needs to block while
         # the announcement is playing...
         - delay: >-
