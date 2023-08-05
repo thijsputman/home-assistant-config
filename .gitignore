@@ -25,3 +25,4 @@
 .env
 NOTES
 node_modules/
+__pycache__/

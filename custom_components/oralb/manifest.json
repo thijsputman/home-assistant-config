@@ -1,5 +1,8 @@
 {
   "domain": "oralb",
   "name": "Oral-B (disabled)",
-  "version": "0.0.0"
+  "version": "0.0.0",
+  "config_flow": false,
+  "integration_type": "device",
+  "bluetooth": []
 }
