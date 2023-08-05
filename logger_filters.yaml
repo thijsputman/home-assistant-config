@@ -62,3 +62,5 @@ homeassistant.components.media_player:
 homeassistant.components.meater:
   - >-
     ^Unexpected error fetching meater_api data: Error connecting to Meater
+  - >-
+    ^Error requesting meater_api data: Cannot connect to host
