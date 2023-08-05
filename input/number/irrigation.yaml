@@ -1,0 +1,16 @@
+irrigation_balcony_manual_volume:
+  name: Irrigation – Balcony (manual volume)
+  icon: mdi:pipe-valve
+  min: 0
+  max: 90
+  step: 5
+  initial: 35
+  unit_of_measurement: L
+irrigation_garden_manual_volume:
+  name: Irrigation – Garden (manual volume)
+  icon: mdi:pipe-valve
+  min: 0
+  max: 250
+  step: 5
+  initial: 90
+  unit_of_measurement: L

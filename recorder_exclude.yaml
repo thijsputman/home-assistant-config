@@ -25,6 +25,7 @@ entity_globs:
   - sensor.ups_battery_run*
   - sensor.*_heartbeat*
   - sensor.*_uptime*
+  - input_number.irrigation_*_manual_volume
   # Utility Meter & Appliances derivates/costs
   - input_number.rate_*
   - sensor.daily_energy_*

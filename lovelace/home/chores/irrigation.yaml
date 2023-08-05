@@ -16,6 +16,120 @@ cards:
     card:
       type: vertical-stack
       cards:
+        - type: entities
+          card_mod:
+            style:
+              .: |
+                ha-card {
+                  border: 0px;
+                  padding-top: 0px !important;
+                  padding-bottom: 0px !important;
+                }
+          entities:
+            - entity: input_number.irrigation_balcony_manual_volume
+              icon: mdi:pipe-valve
+              name: Balcony
+              tap_action:
+                action: call-service
+                service: script.irrigation_manual
+                data:
+                  valve: switch.on_off_output_24
+              hold_action:
+                action: more-info
+              extend_paper_buttons_row:
+                extra_styles: >-
+                  @keyframes rotate{
+                    0% {
+                      transform: rotate(0);
+                    }
+                    100% {
+                      transform: rotate(60deg);
+                    }
+                buttons:
+                  - entity: switch.on_off_output_24
+                    layout: icon|state
+                    icon: mdi:watering-can
+                    state: >-
+                      {% if states('sensor.flow_balcony_valve') | int > 0 %}
+                        {{ states('sensor.flow_balcony_valve') }} L/min
+                      {% else %}
+                        Off
+                      {% endif %}
+                    styles:
+                      icon:
+                        animation: >-
+                          {% if states('switch.on_off_output_24') == 'on' %}
+                            2s alternate ease infinite rotate
+                          {% endif %}
+                      button:
+                        color: >-
+                          {% if states('switch.on_off_output_24') == 'on' %}
+                            var(--state-active-color)
+                          {% endif %}
+                        background-color: >-
+                          {% if states('switch.on_off_output_24') == 'on' %}
+                            color-mix(
+                              in srgb, var(--state-active-color) 20%, white
+                            )
+                          {% endif %}
+                    preset: mushroom
+                    tap_action:
+                      action: call-service
+                      service: script.irrigation_manual
+                      service_data:
+                        valve: switch.on_off_output_24
+            - entity: input_number.irrigation_garden_manual_volume
+              icon: mdi:pipe-valve
+              name: Garden
+              tap_action:
+                action: call-service
+                service: script.irrigation_manual
+                data:
+                  valve: switch.on_off_output_25
+              hold_action:
+                action: more-info
+              extend_paper_buttons_row:
+                extra_styles: >-
+                  @keyframes rotate{
+                    0% {
+                      transform: rotate(0);
+                    }
+                    100% {
+                      transform: rotate(60deg);
+                    }
+                buttons:
+                  - entity: switch.on_off_output_25
+                    layout: icon|state
+                    icon: mdi:watering-can
+                    state: >-
+                      {% if states('sensor.flow_garden_valve') | int > 0 %}
+                        {{ states('sensor.flow_garden_valve') }} L/min
+                      {% else %}
+                        Off
+                      {% endif %}
+                    styles:
+                      icon:
+                        animation: >-
+                          {% if states('switch.on_off_output_25') == 'on' %}
+                            2s alternate ease infinite rotate
+                          {% endif %}
+                      button:
+                        color: >-
+                          {% if states('switch.on_off_output_25') == 'on' %}
+                            var(--state-active-color)
+                          {% endif %}
+                        background-color: >-
+                          {% if states('switch.on_off_output_25') == 'on' %}
+                            color-mix(
+                              in srgb, var(--state-active-color) 20%, white
+                            )
+                          {% endif %}
+                    preset: mushroom
+                    tap_action:
+                      action: call-service
+                      service: script.irrigation_manual
+                      service_data:
+                        valve: switch.on_off_output_25
         - type: custom:mini-graph-card
           card_mod:
             style: |
@@ -24,40 +138,32 @@ cards:
                 border-bottom-right-radius: 0px;
                 border-bottom-left-radius: 0px;
               }
-          name: Irrigation — Balcony
+          hours_to_show: 240
+          points_per_hour: 0.1
+          aggregate_func: diff
+          name: Evapotranspiration — past 10 days
           hour24: true
-          hours_to_show: 1
-          points_per_hour: 120
-          height: 90
-          lower_bound: 0
-          upper_bound: ~5
-          cache: true
-          show:
-            labels: hover
-            labels_secondary: hover
-            fill: fade
           decimals: 0
-          entities:
-            - entity: sensor.flow_balcony_valve
-              show_points: false
+          lower_bound: ~-6
+          upper_bound: ~2
+          cache: true
+          color_thresholds:
+            - value: -1.5
+              color: "#ffc107"
+            - value: -4
               color: "#4291ce"
-              unit: L — current flow
-        - type: button
-          card_mod:
-            style:
-              .: |
-                ha-card {
-                  border: 0px;
-                  border-radius: 0px;
-                  background-color: #F3F9FD;
-                  padding-top: 8px !important;
-                  padding-bottom: 8px !important;
-                }
-          tap_action:
-            action: toggle
-          entity: switch.on_off_output_24
-          icon_height: 65px
-          show_name: false
+          show:
+            name: true
+            icon: false
+            labels: false
+            fill: fade
+            state: false
+            legend: false
+          entities:
+            - entity: sensor.evapotranspiration_net
+              show_points: false
+              name: evapotranspiration (net)
+              unit: mm/day
         - type: custom:mini-graph-card
           card_mod:
             style: |
@@ -65,15 +171,13 @@ cards:
                 padding-top: 0px !important;
                 border: 0px;
                 background-color: #F3F9FD;
-                border-top-right-radius: 0px;
-                border-top-left-radius: 0px;
+                border-radius: 0px;
               }
           hours_to_show: 240
           group_by: date
-          name: Irrigation — Balcony (past 10 days)
           hour24: true
           lower_bound: 0
-          upper_bound: ~50
+          upper_bound: ~160
           lower_bound_secondary: 0
           upper_bound_secondary: ~4
           aggregate_func: diff
@@ -84,123 +188,60 @@ cards:
             icon: false
             graph: bar
             labels: true
+            legend: false
           entities:
             - entity: sensor.daily_consumption_170
               show_graph: false
-              unit: L — volume today
+              unit: L — Balcony (today)
+            - entity: sensor.consumption_173_cumulative
+              unit: L — Garden
+              color: "#316d9b"
             - entity: sensor.consumption_170_cumulative
-              unit: L
-              color: "#4291ce"
-              name: daily volume
-            - entity: sensor.weewx_evapotranspiration_total
-              name: evapotranspiration
-              unit: mm/day
-              color: "#6c757d"
-              y_axis: secondary
-            - entity: sensor.evapotranspiration_net
-              name: (net)
-              unit: mm/day
-              color: "#dce2e6"
-              y_axis: secondary
-  - type: custom:mod-card
-    card_mod:
-      style:
-        .: |
-          ha-card {
-            background: var(--llh-mod-card-background);
-            border: var(--llh-mod-card-border);
-          }
-        hui-vertical-stack-card$: |
-          mini-graph-card, hui-button-card{
-            margin: 0px !important;
-          }
-    report_size: 5
-    card:
-      type: vertical-stack
-      cards:
+              unit: L — Balcony
+              color: "#49a2e7"
         - type: custom:mini-graph-card
           card_mod:
             style: |
               ha-card {
-                border: 0px;
-                border-bottom-right-radius: 0px;
-                border-bottom-left-radius: 0px;
-              }
-          name: Irrigation — Garden
-          hour24: true
-          hours_to_show: 1
-          points_per_hour: 120
-          height: 90
-          lower_bound: 0
-          upper_bound: ~5
-          cache: true
-          show:
-            labels: hover
-            labels_secondary: hover
-            fill: fade
-          decimals: 0
-          entities:
-            - entity: sensor.flow_garden_valve
-              show_points: false
-              color: "#4291ce"
-              unit: L — current flow
-        - type: button
-          card_mod:
-            style:
-              .: |
-                ha-card {
-                  border: 0px;
-                  border-radius: 0px;
-                  background-color: #F3F9FD;
-                  padding-top: 8px !important;
-                  padding-bottom: 8px !important;
-                }
-          tap_action:
-            action: toggle
-          entity: switch.on_off_output_25
-          icon_height: 65px
-          show_name: false
-        - type: custom:mini-graph-card
-          card_mod:
-            style: |
-              ha-card {
-                padding-top: 0px !important;
                 border: 0px;
                 background-color: #F3F9FD;
                 border-top-right-radius: 0px;
                 border-top-left-radius: 0px;
               }
           hours_to_show: 240
-          group_by: date
-          name: Irrigation — Garden (past 10 days)
+          points_per_hour: 0.25
           hour24: true
-          lower_bound: 0
-          upper_bound: ~50
-          lower_bound_secondary: 0
-          upper_bound_secondary: ~4
-          aggregate_func: diff
           decimals: 0
+          lower_bound: ~50
+          upper_bound: ~70
           cache: true
+          color_thresholds:
+            - value: 80
+              color: "#03A9F4"
+            - value: 60
+              color: "#8BC34A"
+            - value: 50
+              color: "#FFC107"
           show:
             name: false
             icon: false
-            graph: bar
+            fill: fade
             labels: true
           entities:
-            - entity: sensor.daily_consumption_173
+            - entity: sensor.moisture_178
               show_graph: false
-              unit: L — volume today
-            - entity: sensor.consumption_173_cumulative
-              unit: L
-              color: "#4291ce"
-              name: daily volume
-            - entity: sensor.weewx_evapotranspiration_total
-              name: evapotranspiration
-              unit: mm/day
-              color: "#6c757d"
-              y_axis: secondary
-            - entity: sensor.evapotranspiration_net
-              name: (net)
-              unit: mm/day
-              color: "#dce2e6"
-              y_axis: secondary
+              unit: "% — Soil moisture (Garden)"
+            - entity: sensor.moisture_176
+              name: Balcony (Yasmin)
+              color: "#AE7FED"
+              show_points: false
+              show_fill: false
+            - entity: sensor.moisture_180
+              name: Balcony (Oleander)
+              color: "#C1342A"
+              show_points: false
+              show_fill: false
+            - entity: sensor.moisture_178
+              name: Garden
+              show_points: false
+              show_fill: true

@@ -1,0 +1,97 @@
+irrigation_manual:
+  alias: Irrigation (manual)
+  icon: mdi:pipe-valve
+  fields:
+    valve:
+      description: The valve to open
+      required: true
+      selector:
+        entity:
+          include_entities:
+            - switch.on_off_output_24
+            - switch.on_off_output_25
+  sequence:
+    - >-
+      {{
+        valve | default('') in [
+          'switch.on_off_output_24',
+          'switch.on_off_output_25'
+        ]
+      }}
+    # Ensure global "mutex" – if either valve is open, opening the second one
+    # will trip the physical flood protection (which requires a physical reset).
+    # Also, the further logic assumes that only one valve is open at a time.
+    - condition: state
+      entity_id:
+        - switch.on_off_output_24
+        - switch.on_off_output_25
+      state: "off"
+    - service: switch.turn_on
+      target:
+        entity_id: >-
+          {{ valve }}
+    - repeat:
+        sequence:
+          - wait_for_trigger:
+              - platform: state
+                entity_id:
+                  - sensor.consumption_170
+                  - sensor.consumption_173
+                to: ~
+            timeout: "00:02:00"
+            continue_on_timeout: true
+          # Abort if no state change occurs within two minutes
+          - if: >-
+              {{ wait.trigger is not defined }}
+            then:
+              - service: switch.turn_off
+                target:
+                  entity_id: >-
+                    {{ valve }}
+              - stop: No sensor update received within two minutes!
+                error: true
+          - variables:
+              input_entity: >-
+                {%
+                  if wait.trigger.to_state.entity_id ==
+                    'sensor.consumption_170'
+                %}
+                  input_number.irrigation_balcony_manual_volume
+                {%
+                  elif wait.trigger.to_state.entity_id ==
+                    'sensor.consumption_173'
+                %}
+                  input_number.irrigation_garden_manual_volume
+                {% endif %}
+              # Decrease by at least one to prevent getting stuck in an infinite
+              # loop
+              delta: >-
+                {{
+                  [1,
+                    wait.trigger.to_state.state | int -
+                    wait.trigger.from_state.state | int
+                  ] | max
+                }}
+          - service: input_number.set_value
+            target:
+              entity_id: >-
+                {{ input_entity }}
+            data:
+              value: >-
+                {{ [0, states(input_entity) | int - delta | int] | max }}
+        until:
+          - condition: or
+            conditions:
+              - condition: numeric_state
+                entity_id: input_number.irrigation_balcony_manual_volume
+                below: 1
+              - condition: numeric_state
+                entity_id: input_number.irrigation_garden_manual_volume
+                below: 1
+    - service: switch.turn_off
+      target:
+        entity_id: >-
+          {{ valve }}
+    # The valve doesn't close instantly; give it a bit of time to do so...
+    - delay: 10
+  mode: single
