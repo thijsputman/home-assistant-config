@@ -20,6 +20,15 @@
     - condition: state
       entity_id: timer.wakeup_snooze_time
       state: idle
+    # Idem when the sirens are sounding or the Home Alarm got triggered
+    - condition: state
+      entity_id: script.sirens
+      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: triggered
   action:
     - service: light.toggle
       target:
