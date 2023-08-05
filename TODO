@@ -277,8 +277,6 @@ future reference).
 - [ ] Create a "Auto-disarm for Housekeeper" toggle (similar to the "Auto-arm at
       night" toggle) that controls whether the alarm is automatically disabled
       next time the housekeeper comes by
-- [ ] Split up `📄 alarm/alert.yaml` into several (more aptly named) files;
-      right now it's an unorganised mess
 - [ ] Occupancy simulation: Randomly trigger the "Active" scenes in the Kitchen
       and Living room around dinner time
 - [ ] Occupancy simulation: Randomly switch on Bedroom lights around bedtime;

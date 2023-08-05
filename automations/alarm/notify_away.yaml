@@ -1,0 +1,180 @@
+- alias: 🚨 | 📱 Notify on doors/windows left open ("Armed away")
+  id: c3684211-bceb-4256-8238-077f21798da1
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_away
+  condition:
+    - condition: state
+      entity_id: group.openclose_all
+      state: "on"
+  action:
+    - variables:
+        doors_windows: >-
+          {{
+            expand('group.openclose_all') |
+            selectattr('state', 'eq', 'on') |
+            map(attribute='name') | list
+          }}
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Alert
+          tag: alarm_away_openclose
+          criticalNotification: true
+          title: 🚪 Doors and/or windows left open!
+          message: >-
+            {% if doors_windows | length == 1 %}
+              {{ doors_windows[0] }} is still open
+            {% else %}
+              The following doors and/or windows are still open:
+              <br><br>◾ {{ doors_windows | join('<br>◾ ') }}
+            {% endif %}
+- alias: 🚨 | 📱 Notify on "Armed away"
+  id: e23e2cf8-502d-4e28-8758-9ab11b5fee14
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_away
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Notification
+          criticalNotification: true
+          title: 🛡️ Home Alarm armed
+          message: >-
+            The Home Alarm just changed into "Armed away"-mode.
+- alias: 🚨 | 📱 Notify on alarm disarmed ("Armed away")
+  id: a78d71df-f5a9-49f1-a584-18d5260e88db
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: armed_away
+      to: disarmed
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Notification
+          criticalNotification: true
+          title: 🔓 Home Alarm disarmed
+          message: >-
+            The Home Alarm just got disarmed
+            {# List everyone currently at home #}
+            {% set result = namespace(people=[]) %}
+            {%
+              for person in expand('group.family') |
+                selectattr('state', '==', 'home')
+            %}
+              {# Firstname only; remove everything after first space #}
+              {%
+                set result.people = result.people +
+                  [person.name | regex_replace(' .*$', '') ]
+              %}
+            {% endfor %}
+            {% if result.people | length > 0 %}
+              – {{ result.people | join(' and ') }}
+              {{ 'are' if result.people | length > 1 else 'is' }} home
+            {#
+              If no-one is home, attempt to identify who manually disarmed the
+              alarm. Most likely that person entered the house before their
+              presence was detected...
+            #}
+            {%
+              elif trigger is defined and
+                trigger.to_state.context.user_id is defined
+            %}
+              {%
+                set persons = states.person | selectattr(
+                  'attributes.user_id', 'eq', trigger.to_state.context.user_id
+                ) | list
+              %}
+              {% if persons | count == 1 %}
+                {# Firstname only; remove everything after first space #}
+                by {{
+                  persons[0].attributes.friendly_name |
+                  regex_replace(' .*$', '')
+                }}
+              {% endif %}
+            {% endif %}.
+    # Dismiss the "doors/windows left open"-notification (potentially) raised
+    # when the alarm got armed
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: alarm_away_openclose
+- alias: 🚨 | 📱 Notify when back gate opened ("Armed away")
+  id: b1825172-d7ab-4114-8c4d-6030c6bae7b6
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.openclose_34
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Alert
+          tag: alert_away_back_gate
+          criticalNotification: true
+          title: 🚨 Back gate opened!
+          message: >-
+            The back gate was just opened!
+            There could be someone in the garden – check the camera feed...
+            {% if states('sensor.time_of_day') != 'day' %}
+              <br><br>As a precaution, the garden and downstairs lights have
+              been automatically switched on – please check their state after
+              resolving the incident...
+            {% endif %}
+    - choose:
+        # Only send an SMS message when in Vacation-mode. This limits the number
+        # of false alarms by only sending SMS messages when we're away from home
+        # longer than during a normal working day.
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.alarm_vacation_mode
+              state: "on"
+          sequence:
+            - service: script.turn_on
+              target:
+                entity_id: script.sms_notification
+              data:
+                variables:
+                  message: >-
+                    🚨 The back gate was just opened!
+                    \nThere could be someone in the garden –
+                    check the camera feed:
+                    \n\n✉️ #secret# status camera
+    # If the alarm is disarmed within 5 minutes, dismiss the notification as it
+    # was a false positive. This is aligned with the false alarm timeout for the
+    # Garden lights as defined in "📄 automations/alarm/alert.yaml".
+    - wait_for_trigger:
+        - platform: state
+          entity_id: alarm_control_panel.home_alarm
+          from: armed_away
+          to: disarmed
+      timeout: "00:05:00"
+      continue_on_timeout: false
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: alert_away_back_gate
+  mode: single
+  max_exceeded: silent

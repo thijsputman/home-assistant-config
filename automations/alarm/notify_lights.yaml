@@ -1,0 +1,290 @@
+- alias: 🚨 | 💡 Flash indoor lights (alarm pending)
+  id: 4416cb36-8291-41ae-8c62-7a246fdc9d2d
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: pending
+  condition: []
+  action:
+    # The below assumes the alarm is always triggered by a single state change.
+    # Technically speaking not necessarily true – though practically speaking
+    # sufficient.
+    - choose:
+        # Front door opened
+        - conditions:
+            - condition: state
+              entity_id: binary_sensor.openclose_16
+              state: "on"
+          sequence:
+            - service: light.turn_on
+              data:
+                flash: long
+                entity_id:
+                  - light.hue_filament_bulb_1_5
+                  - light.hue_filament_bulb_1_4
+        # Kitchen door opened
+        - conditions:
+            - condition: state
+              entity_id: binary_sensor.openclose_12
+              state: "on"
+          sequence:
+            - service: light.turn_on
+              data:
+                flash: long
+                entity_id:
+                  - light.spot_4_kitchen_garden_side
+                  - light.spot_3_kitchen
+        # Hallway/staircase motion detected (when someone home)
+        - conditions:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: group.motion_hallway
+                  state: "on"
+                - condition: state
+                  entity_id: group.motion_attic
+                  state: "on"
+            - condition: state
+              entity_id: group.family
+              state: home
+          sequence:
+            - service: light.turn_on
+              data:
+                flash: long
+                entity_id:
+                  - light.hallway
+                  - light.attic
+            # The Attic staircase relay doesn't support flash – instead of
+            # rapidly toggling the relay (*click*, *click*, *click*, *click*),
+            # switch it off and gently flash the lights in the Attic proper to
+            # reach roughly the same effect...
+            - service: light.turn_off
+              data:
+                entity_id: light.attic_hallway
+  mode: single
+- alias: 🚨 | 💡 Front and Back door to maximum brightness (alarm pending)
+  id: 1aa3f46d-2703-419b-829c-64ee68e461a0
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: pending
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+  action:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.front_back_door_bright
+    # Turn the lights off if the alarm disarms
+    - wait_for_trigger:
+        - platform: state
+          id: disarmed
+          entity_id: alarm_control_panel.home_alarm
+          to: disarmed
+        # Short-circuit if the light is switched off
+        - platform: state
+          id: abort
+          entity_id: light.front_back_door
+          to: "off"
+      timeout: "24:00:00"
+      continue_on_timeout: false
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id != 'abort' }}
+    - service: light.turn_off
+      data:
+        entity_id: light.front_back_door
+  mode: restart
+- alias: 🚨 | 💡 Garden lights to maximum brightness (back gate opened)
+  id: b937fe69-27ce-49dd-b720-4fb34907ba66
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.openclose_34
+      from: "off"
+      to: "on"
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - armed_night
+        - armed_away
+  action:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.garden_active
+    - service: light.turn_on
+      data:
+        brightness: 255
+        entity_id: light.hue_filament_bulb_1 # Light above the Kitchen door
+    # Wait for 5 minutes to ensure this is not a false alarm
+    - wait_for_trigger:
+        - platform: state
+          entity_id: alarm_control_panel.home_alarm
+          to: disarmed
+        # Short-circuit if the alarm gets triggered
+        - platform: state
+          id: abort
+          entity_id: alarm_control_panel.home_alarm
+          to: triggered
+      timeout: "00:05:00"
+      continue_on_timeout: false
+    # In case of false alarm, switch the Garden lights back to a more
+    # agreeable setting
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id != 'abort' }}
+    - service: scene.turn_on
+      target:
+        entity_id: scene.garden_ambiance
+    - service: light.turn_on
+      data:
+        brightness: 77
+        entity_id: light.hue_filament_bulb_1
+  mode: single
+  max_exceeded: silent
+- alias: 🚨 | 💡 All indoor lights to maximum brightness (alarm triggered)
+  id: af18c5c4-4619-485f-8ff0-97ce63c7e42f
+  variables:
+    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: triggered
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+  action:
+    - service: scene.turn_on
+      target:
+        entity_id:
+          - scene.living_room_active
+          - scene.kitchen_bright_custom
+          - scene.hallway_bright
+          - scene.garden_active
+          - scene.bedroom_concentrate
+          - scene.bathroom_concentrate
+          - scene.wardrobe_bright
+          - scene.guestroom_bright
+          - scene.attic_concentrate
+    - service: light.turn_on
+      data:
+        entity_id: light.attic_hallway
+    # Wait for the alarm to disarm or for dawn
+    - wait_for_trigger:
+        - platform: state
+          id: disarmed
+          entity_id: alarm_control_panel.home_alarm
+          to: disarmed
+        - platform: state
+          entity_id: sensor.time_of_day
+          from: night
+          to: dawn
+      timeout: "24:00:00"
+      continue_on_timeout: false
+    - choose:
+        # If the alarm is disarmed from the tablet in the Kitchen, or someone is
+        # home when it gets disarmed, keep all lights on – switch some of them
+        # to a more agreeable setting though.
+        - conditions:
+            - condition: template
+              value_template: >-
+                {{ wait.trigger.id == 'disarmed' }}
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: group.family
+                  state: home
+                - condition: template
+                  value_template: >-
+                    {{
+                      wait.trigger.to_state.context.user_id ==
+                        tablet_kitchen_user_id
+                    }}
+          sequence:
+            - service: scene.turn_on
+              target:
+                entity_id:
+                  - scene.living_room_active
+                  - scene.kitchen_bright_custom
+                  - scene.hallway_bright
+                  - scene.garden_ambiance
+                  - scene.bedroom_bright
+                  - scene.guestroom_bright
+                  - scene.attic_bright
+            - service: light.turn_off
+              data:
+                entity_id:
+                  - light.bathroom
+                  - light.wardrobe
+                  - light.attic_hallway
+      # Otherwise, switch the house back to regular "Ambiance"/Evening-mode.
+      # An automation in "📄 automations/lights/dawn.yaml" switches off all
+      # "Ambiance"/Evening-mode lights just after sunrise. By switching the
+      # house back to this mode when the alarm is disarmed _or_ at dawn (which
+      # is well _before_ sunrise), we ensure all lights are properly switched
+      # off after sunrise (without duplicating any logic).
+      default:
+        - service: scene.turn_on
+          target:
+            entity_id:
+              - scene.living_room_ambiance
+              - scene.kitchen_ambiance
+              - scene.hallway_evening
+              - scene.garden_ambiance
+              - scene.guestroom_evening
+        - service: light.turn_off
+          data:
+            entity_id:
+              - light.bedroom
+              - light.bathroom
+              - light.wardrobe
+              - light.attic
+              - light.attic_hallway
+  mode: single
+- alias: >-
+    🚨 | 💡 Downstairs lights maximum brightness (back gate opened;
+    "Armed away")
+  id: 9684f5d2-8d26-429f-bb08-aa5deeb23c50
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.openclose_34
+      from: "off"
+      to: "on"
+  condition:
+    # This automation (intentionally) doesn't have a lot of guard conditions
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+  action:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.kitchen_bright_custom
+    - service: scene.turn_on
+      target:
+        entity_id: scene.living_room_active
+    - service: scene.turn_on
+      target:
+        entity_id: scene.hallway_bright
+    # The delay below is to prevent DoS-ing the system by rapidly opening and
+    # closing the back gate...
+    - delay: 60
+    # A regular automation switches the inside lights off at dawn, so there's no
+    # need to account for that here.
+  mode: single
+  max_exceeded: silent

@@ -1,0 +1,86 @@
+- alias: 🚨 Trigger alarm (door / window opened)
+  id: cb55dcf5-9182-482c-9d3a-ce14387709b5
+  trigger:
+    - platform: state
+      # Not using a group of sensors – this will trigger "off" → "on" if one of
+      # their members transitions from "unavailable" → "on", which leads to
+      # false alarms...
+      # Furthermore, listing the individual entities is relevant as some
+      # doors/windows might intentionally be left open – using a group would
+      # obscure all further transitions to the "on"-state.
+      entity_id:
+        - binary_sensor.openclose_12 # Kitchen
+        - binary_sensor.openclose_16 # Front door
+        - binary_sensor.openclose_17 # Bathroom
+        - binary_sensor.openclose_33 # Attic
+        - binary_sensor.openclose_36 # Kitchen
+        - binary_sensor.openclose_18 # Bedroom
+        - binary_sensor.openclose_19 # Bedroom
+        - binary_sensor.openclose_20 # Bedroom
+        - binary_sensor.openclose_8 # Living room
+        - binary_sensor.openclose_14 # Living room
+        - binary_sensor.openclose_15 # Living room
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - armed_away
+        - armed_night
+  action:
+    - service: alarm_control_panel.alarm_trigger
+      entity_id: alarm_control_panel.home_alarm
+  mode: single
+- alias: 🚨 | 👋 Trigger alarm (vibration detected)
+  id: b5f4a4ba-dc7b-49e3-afe6-6f6762a3031f
+  trigger:
+    # Vibration sensors could be made more sensitive by triggering on changes to
+    # their "tiltangle" and "orientation" attributes. In that case the alarm
+    # would also trigger when the sensor transitions to/from "unavailable" which
+    # is undesirable (and complex to guard against).
+    # As such the sensor's baseline vibration detection is used (which means you
+    # need to somewhat more forcefully bump into an office chair to trigger the
+    # alarm 😉).
+    - platform: state
+      entity_id:
+        - binary_sensor.vibration_106 # Office chair
+        - binary_sensor.vibration_102 # Office chair
+        - binary_sensor.vibration_122 # Drawer with wallets and (car) keys
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - armed_away
+        - armed_night
+  action:
+    - service: alarm_control_panel.alarm_trigger
+      entity_id: alarm_control_panel.home_alarm
+  mode: single
+- alias: 🚨 | 🔊 Sound the alarm (alarm triggered)
+  id: 714cfa44-bce7-41f8-be78-9891769fef74
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: triggered
+  condition: []
+  action:
+    - service: script.sirens
+      data:
+        mode: lselect
+        ontime: 180
+  mode: restart
+- alias: 🚨 | 🔊 Stop sounding the alarm (alarm trigger ended)
+  id: 06b3864d-3f70-45d7-96fa-6c30fa2576c2
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: triggered
+  condition: []
+  action:
+    - service: script.sirens
+      data:
+        mode: none
+  mode: single

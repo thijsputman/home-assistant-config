@@ -1,0 +1,103 @@
+- alias: 🚨 | 👋 Trigger alarm (motion detected; "Armed away")
+  id: 358bd339-33e4-4c0a-a92e-0682346e48a1
+  trigger:
+    # Not all motion sensors are optimally positioned for intruder detection
+    # (e.g. the one triggering the light in the toilet probably won't catch a
+    # burglar). Still, if no-one is home, there's no harm in having all of them
+    # trigger the alarm...
+    - platform: state
+      # N.B. This list of entities is duplicated further down
+      entity_id:
+        - binary_sensor.presence_50 # Basement
+        - binary_sensor.presence_53 # Kitchen counter
+        - binary_sensor.presence_60 # Toilet
+        - binary_sensor.presence_63 # Wardrobe
+        - binary_sensor.presence_68 # Bathroom
+        - binary_sensor.presence_71 # Bathroom
+        - binary_sensor.presence_91 # Attic stairs/hallway
+        - binary_sensor.presence_92 # Attic stairs/hallway
+        - binary_sensor.presence_155 # Kitchen counter
+        - binary_sensor.presence_121 # Stairs
+        - binary_sensor.presence_123 # Downstairs hallway
+        - binary_sensor.presence_125 # Downstairs hallway
+        - binary_sensor.presence_127 # Upstairs hallway
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+    # Ignore motion sensors upstairs while Neato is active – Neato's LIDAR uses
+    # infrared and thus triggers (PIR) motion sensors...
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id:
+            - binary_sensor.presence_63
+            - binary_sensor.presence_127
+          state: "off"
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: vacuum.d7_upstairs
+              state: cleaning
+  action:
+    # Wait up to five minutes for either the same or another motion sensor to
+    # trigger. This prevents false positives (e.g. due to Sunlight or heat) – if
+    # someone is really moving around the house it's highly likely they'll
+    # trigger another sensor within this timeframe...
+    # There remains a slight possibility for a false positive when the initial
+    # trigger occurs while one of the Neato units is active. The below triggers
+    # don't account for that – would make things overly complex.
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.presence_50
+            - binary_sensor.presence_53
+            - binary_sensor.presence_60
+            - binary_sensor.presence_63
+            - binary_sensor.presence_68
+            - binary_sensor.presence_71
+            - binary_sensor.presence_91
+            - binary_sensor.presence_92
+            - binary_sensor.presence_155
+            - binary_sensor.presence_121
+            - binary_sensor.presence_123
+            - binary_sensor.presence_125
+            - binary_sensor.presence_127
+          from: "off"
+          to: "on"
+      timeout: 300
+      continue_on_timeout: false
+    - service: alarm_control_panel.alarm_trigger
+      entity_id: alarm_control_panel.home_alarm
+  mode: single
+  max_exceeded: silent
+- alias: 🚨 | ⚡ Trigger alarm (power outage; "Armed away")
+  id: c9c16198-8524-440f-99ea-0b447c68b798
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.power_outage
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_away
+  action:
+    - service: alarm_control_panel.alarm_trigger
+      entity_id: alarm_control_panel.home_alarm
+    # A generic "alarm pending" persistent notification is also raised. Since
+    # the power is out, that notification probably won't be received in time /
+    # at all. As such, that notification does not factor in the possibility of
+    # a power outage – this information is conveyed exclusively via the below
+    # SMS.
+    - service: script.sms_notification
+      data:
+        message: >-
+          ⚡ Power outage at home!
+          \nNo-one is home so the Home Alarm has been triggered as a precaution
+          – it will start sounding in 30 seconds. To silence the alarm:
+          \n\n✉️ #secret# alarm silence
+          \n\nTo inspect the status of the house:
+          \n\n✉️ #secret# status
+  mode: single

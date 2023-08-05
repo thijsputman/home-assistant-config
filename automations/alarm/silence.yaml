@@ -1,0 +1,80 @@
+- alias: 🚨 | 🕹️ Silence the alarm (Bedroom Smart Switches)
+  id: 830121ea-907f-4234-be81-b4acce05c1bc
+  trigger:
+    # Regular press
+    - device_id: da1237666189a9a364fa383795ba532d
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+    # Double-press
+    - device_id: da1237666189a9a364fa383795ba532d
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
+      subtype: turn_on
+  condition:
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: triggered
+    - condition: state
+      entity_id: script.sirens
+      state: "on"
+    - condition: state
+      entity_id: group.family
+      state: home
+  action:
+    # Wait 10 seconds before listening for a _second_ press. This is to prevent
+    # us from simply switching of the noise and going back to sleep...
+    - delay: "00:00:10"
+    - wait_for_trigger:
+        # Regular press
+        - device_id: da1237666189a9a364fa383795ba532d
+          domain: deconz
+          platform: device
+          type: remote_button_short_press
+          subtype: turn_on
+        - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+          domain: deconz
+          platform: device
+          type: remote_button_short_press
+          subtype: turn_on
+        # Double-press
+        - device_id: da1237666189a9a364fa383795ba532d
+          domain: deconz
+          platform: device
+          type: remote_button_double_press
+          subtype: turn_on
+        - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+          domain: deconz
+          platform: device
+          type: remote_button_double_press
+          subtype: turn_on
+      # The alarm state clears after 3 minutes; safe to abort at that time
+      timeout: 180
+      continue_on_timeout: false
+    - parallel:
+        - event: tts_announce
+          event_data:
+            speaker: media_player.pi0_w2_speaker_bedroom
+            tag: home_alarm
+        # Silence the sirens; continue blinking until the alarm state clears
+        # (which is after at most 3 minutes).
+        # This also serves to block this automation from restarting while the
+        # Home Alarm is in its triggered state.
+        - service: script.sirens
+          data:
+            mode: blink
+            ontime: 180
+  mode: single
+  max_exceeded: silent

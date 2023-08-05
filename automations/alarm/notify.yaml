@@ -1,0 +1,214 @@
+- alias: 🚨 | 📱 Notify on alarm pending
+  id: 601cb512-c43b-4155-b58f-122441d49d22
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: pending
+  condition: []
+  action:
+    - variables:
+        # List all possible trigger sensors that are "on" _and_ changed in the
+        # last five minutes. This prevents listing sensors that were "on" to
+        # begin with (e.g. a window left open). Has the potential to include
+        # irrelevant sensors (as not all sensors trigger the alarm under all
+        # circumstances) but offers a good balance between accuracy and
+        # complexity.
+        tripped_sensors: >-
+          {{
+            (
+              expand('group.openclose_all') + expand('group.motion_all') +
+                expand('group.vibration_all')
+            ) |
+            selectattr('state', 'eq', 'on') |
+            selectattr(
+              'last_changed', 'gt', now() - timedelta(minutes=5)
+            ) |
+            sort(reverse=true, attribute='last_changed') |
+            map(attribute='name') | list
+          }}
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Alert
+          criticalNotification: true
+          title: 🚨 Home Alarm pending!
+          message: >-
+            The Home Alarm just got triggered!
+            If not promptly disarmed, the alarm will sound...
+            {% if tripped_sensors | length > 0 %}
+              <br><br>
+              {% if tripped_sensors | length == 1 -%}
+                The alarm was triggered by
+                <strong>{{ tripped_sensors[0] }}</strong>.
+              {% else %}
+                The following <strong>{{ tripped_sensors | length }} sensors
+                </strong> triggered the alarm:<br>◾ {{
+                  tripped_sensors | join('<br>◾ ')
+                }}
+              {% endif %}
+            {% endif %}
+  mode: single
+- alias: 🚨 | 📱/🔊 Notify on alarm sounding
+  id: 05a2188b-8940-4311-adfb-bea75a792000
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: triggered
+  condition: []
+  action:
+    - variables:
+        # Largely identical to the previous automation _except_ this lists *all*
+        # sensors changed in the last five minutes (and not only those that are
+        # "on"). It is possible for sensors to transition to "off" in between
+        # triggering and sounding the alarm. This list is thus less accurate
+        # than the one provided in the trigger notification...
+        tripped_sensors: >-
+          {{
+            (
+              expand('group.openclose_all') + expand('group.motion_all') +
+                expand('group.vibration_all')
+            ) |
+            selectattr('last_changed', 'gt', now() - timedelta(minutes=5)) |
+            sort(reverse=true, attribute='last_changed') |
+            map(attribute='name') | list
+          }}
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            🚨 Home Alarm sounding!
+            {% if tripped_sensors | length > 0%}
+              \nThere's someone in the house!
+              \n\n
+              {% if tripped_sensors | length == 1 %}
+                The alarm was triggered by {{ tripped_sensors[0] }}.
+              {% else %}
+                The following {{ tripped_sensors | length }} sensors triggered
+                the alarm:\n◾ {{ tripped_sensors | join('\\n◾ ') }}
+              {% endif %}
+            {% endif %}
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Critical
+          importance: high
+          lovelaceDismiss: false
+          criticalNotification: true
+          title: 🚨 Home Alarm sounding!
+          message: >-
+            The Home Alarm is sounding
+            {% if tripped_sensors | length > 0 %}
+              – there's someone in the house!
+              <br><br>
+              {% if tripped_sensors | length == 1 %}
+                The alarm was triggered by:
+                <strong>{{ tripped_sensors[0] }}</strong>.
+              {% else %}
+                The following <strong>{{ tripped_sensors | length }} sensors
+                </strong> triggered the alarm:
+                <br>◾ {{ tripped_sensors | join('<br>◾ ') }}
+              {% endif %}
+            {% else %}
+              .
+            {% endif %}
+    # Queue TTS announcement (released when silencing the alarm)
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: home_alarm
+          priority: attention
+          expiry: "00:10:00"
+          message: >-
+            {% if tripped_sensors | length == 1 %}
+              The alarm was triggered by {{ tripped_sensors[0] }}.
+            {% elif tripped_sensors | length > 1 %}
+              The following {{ tripped_sensors | length }} sensors triggered
+              the alarm:
+            {% endif %}
+    - if:
+        - >-
+          {{ tripped_sensors | length > 1 }}
+      then:
+        - service: script.turn_on
+          target:
+            entity_id: script.tts_queue
+          data:
+            variables:
+              channel: announce
+              tag: home_alarm
+              priority: attention
+              chime: false
+              expiry: "00:10:00"
+              message: >-
+                {{ tripped_sensors | join(', ') }}
+  mode: single
+- alias: 🚨 | 📱 Notify on alarm disarmed
+  id: d06c2a3e-f1a7-41c2-9bf3-d29c6c352c93
+  variables:
+    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from:
+        - pending
+        - triggered
+      to:
+        - disarmed
+  condition: []
+  action:
+    - variables:
+        actor: >-
+          {%
+            if trigger is defined and
+              trigger.to_state.context.user_id is defined
+          %}
+            {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
+              from the tablet in the Kitchen
+            {% else %}
+              {%
+                set persons = states.person | selectattr(
+                  'attributes.user_id', 'eq', trigger.to_state.context.user_id
+                ) | list
+              %}
+              {% if persons | count == 1 %}
+                {# Firstname only; remove everything after first space #}
+                by {{
+                  persons[0].attributes.friendly_name |
+                  regex_replace(' .*$', '')
+                }}
+              {% endif %}
+            {% endif %}
+          {% endif %}
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            🔓 Home Alarm disarmed
+            \nThe Home Alarm just got disarmed
+            {% if actor != '' %} {{ actor }} {% endif %}.
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Alert
+          lovelaceDismiss: false
+          criticalNotification: true
+          title: 🔓 Home Alarm disarmed
+          message: >-
+            The Home Alarm just got disarmed
+            {% if actor != '' %} {{ actor }} {% endif %}.
