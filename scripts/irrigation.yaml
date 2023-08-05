@@ -11,13 +11,14 @@ irrigation_manual:
             - switch.on_off_output_24
             - switch.on_off_output_25
   sequence:
-    - >-
-      {{
-        valve | default('') in [
-          'switch.on_off_output_24',
-          'switch.on_off_output_25'
-        ]
-      }}
+    - condition: template
+      value_template: >-
+        {{
+          valve | default('') in [
+            'switch.on_off_output_24',
+            'switch.on_off_output_25'
+          ]
+        }}
     # Ensure global "mutex" – if either valve is open, opening the second one
     # will trip the physical flood protection (which requires a physical reset).
     # Also, the further logic assumes that only one valve is open at a time.
