@@ -26,7 +26,7 @@ custom CSS.
 - [`paper-buttons-row.js?v=2.1.3`](https://github.com/jcwillox/lovelace-paper-buttons-row/releases/tag/2.1.3)
 - `simple-thermostat.js?v=2.5.0`
 - `slider-entity-row.js?v=17.2.1`
-- [`vacuum-card.js?v=2.7.3`](https://github.com/denysdovhan/vacuum-card/releases/tag/v2.7.3)
+- [`vacuum-card.js?v=2.7.4`](https://github.com/denysdovhan/vacuum-card/releases/tag/v2.7.4)
 
 ## Custom CSS
 
