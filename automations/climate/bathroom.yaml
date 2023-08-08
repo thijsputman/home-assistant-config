@@ -1,9 +1,9 @@
-- alias: 💨 | 🤖 Bathroom fan on (Δ💧 > 1.5%/min)
+- alias: 💨 | 🤖 Bathroom fan on (Δ💧 > 0.8%/min)
   id: 80c4a53f-223b-4dd9-95f5-b29c51ed6ffa
   trigger:
     - platform: numeric_state
       entity_id: sensor.humidity_change_bathroom
-      above: 1.5
+      above: 0.8
   condition:
     - condition: state
       entity_id: binary_sensor.occupancy_bathroom
@@ -26,7 +26,7 @@
     - service: light.turn_on
       target:
         entity_id: light.smart_relay_1
-- alias: 💨 | 🤖 Bathroom fan off (Δ💧 < 0.5%/min; 40 minute rundown)
+- alias: 💨 | 🤖 Bathroom fan off (Δ💧 < 0.4%/min; 40 minute rundown)
   id: 150bbec5-df6a-4d4b-9452-262f24ca47a7
   trigger:
     # We aim to determine when the humidity stops fluctuating (at which point
@@ -35,7 +35,7 @@
       entity_id: sensor.humidity_change_bathroom
       value_template: >-
         {{ state.state | float | abs }}
-      below: 0.5
+      below: 0.4
       for: "00:40:00"
   condition:
     - condition: state
