@@ -11,7 +11,7 @@
     - service: input_boolean.toggle
       entity_id: input_boolean.fireplace
   mode: single
-- alias: ✨ | 🕹️ Fireplace toggle (input boolean)
+- alias: ✨ | 🕹️ Fireplace toggle REST-command (input boolean)
   id: e885702e-c8fb-4720-84f7-07aa9f13855b
   trigger:
     - entity_id: input_boolean.fireplace
@@ -24,13 +24,17 @@
               entity_id: input_boolean.fireplace
               state: "on"
           sequence:
-            - service: rest_command.fireplace_start
+            - service: rest_command.fireplace
+              data:
+                action: start
         - conditions:
             - condition: state
               entity_id: input_boolean.fireplace
               state: "off"
           sequence:
-            - service: rest_command.fireplace_stop
+            - service: rest_command.fireplace
+              data:
+                action: stop
   mode: single
 - alias: ✨ | 💡/⏰ Fireplace off (Living room lights off / daily at 02:00)
   id: 84653754-190c-4571-85e8-e5eca37e81a9

@@ -1,0 +1,156 @@
+- alias: >-
+    🏅/💨 | 🕹️ Start WaterRower exercise session / Sonair (Smart Switch)
+  id: 1b11d81d-2aad-4095-97c7-83e79967010e
+  trigger:
+    - device_id: 9cc578b2f62edb745139e97e695b5bb1
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+  condition:
+    - condition: state
+      entity_id: input_boolean.waterrower
+      state: "off"
+  action:
+    # Flash lights as confirmation
+    - repeat:
+        count: 2
+        sequence:
+          - service: light.turn_on
+            data:
+              flash: short
+            entity_id: light.guestroom
+          - delay: "00:00:01"
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.waterrower
+    - variables:
+        fan_speed: >-
+          {{ state_attr('fan.sonair_guestroom', 'percentage') }}
+        fan_co2: >-
+          {{ states('switch.co2_sensor_sonair_guestroom') }}
+    - service: fan.set_percentage
+      data:
+        percentage: 100
+      target:
+        entity_id: fan.sonair_guestroom
+    # Restore previous fan settings after exercise session
+    - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.waterrower
+          from: "on"
+          to: "off"
+      timeout: "02:00:00"
+      continue_on_timeout: true
+    # Sonair rundown (only for manually triggered stop)
+    - delay: >-
+        {% if wait.trigger is not none %}
+          {{ "00:40:00" }}
+        {% else %}
+          {{ 0 | int }}
+        {% endif %}
+    - if:
+        - >-
+          {{ fan_co2 }}
+      then:
+        - service: switch.turn_on
+          target:
+            entity_id: switch.co2_sensor_sonair_guestroom
+      else:
+        - service: fan.set_percentage
+          data:
+            percentage: >-
+              {{ fan_speed }}
+          target:
+            entity_id: fan.sonair_guestroom
+    # Doubles as backstop for the exercise session
+    - condition: state
+      entity_id: input_boolean.waterrower
+      state: "on"
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.waterrower
+  mode: single
+  max_exceeded: silent
+- alias: 🏅 | 🕹️ End WaterRower exercise session (Smart Switch)
+  id: aa9df41c-ab7b-41a3-b471-5d52f333f1d6
+  trigger:
+    - device_id: 9cc578b2f62edb745139e97e695b5bb1
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+  condition:
+    - condition: state
+      entity_id: input_boolean.waterrower
+      state: "on"
+  action:
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.waterrower
+    # Flash lights as confirmation
+    - repeat:
+        count: 2
+        sequence:
+          - service: light.turn_on
+            data:
+              flash: short
+            entity_id: light.guestroom
+          - delay: "00:00:01"
+  mode: single
+  max_exceeded: silent
+# The WaterRower software (pirowflo) is a bit finicky – issues are mostely
+# resolved by restarting it...
+- alias: 🏅 | 🕹️ Restart WaterRower (Smart Switch)
+  id: bb9d5f6c-44ee-42ae-afb4-db00a9c3620a
+  trigger:
+    - device_id: 9cc578b2f62edb745139e97e695b5bb1
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
+      subtype: turn_on
+  condition:
+    - condition: state
+      entity_id: input_boolean.waterrower
+      state: "on"
+  action:
+    - service: rest_command.waterrower
+      data:
+        action: restart
+    # Flash lights as confirmation
+    - repeat:
+        count: 4
+        sequence:
+          - service: light.turn_on
+            data:
+              flash: short
+            entity_id: light.guestroom
+          - delay: "00:00:01"
+  mode: single
+  max_exceeded: silent
+- alias: 🏅 | 🕹️ WaterRower toggle REST-command (input boolean)
+  id: 2696e0a5-f2dc-4c8a-94d4-98a25b850ed4
+  trigger:
+    - entity_id: input_boolean.waterrower
+      platform: state
+      to: ~
+  condition: []
+  action:
+    - choose:
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.waterrower
+              state: "on"
+          sequence:
+            - service: rest_command.waterrower
+              data:
+                action: start
+            - delay: "00:00:05"
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.waterrower
+              state: "off"
+          sequence:
+            - service: rest_command.waterrower
+              data:
+                action: stop
+            - delay: "00:00:05"
+  mode: single
+  max_exceeded: silent

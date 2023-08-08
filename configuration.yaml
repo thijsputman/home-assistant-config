@@ -100,12 +100,19 @@ media_player:
     name: MPi-MQ1 speaker (Attic)
     host: mpi-mq1.sgraastra
 
-# Fireplace
+# RESTful commands
 rest_command:
-  fireplace_start:
-    url: http://pi4.sgraastra:9000/hooks/fireplace-start
-  fireplace_stop:
-    url: http://pi4.sgraastra:9000/hooks/fireplace-stop
+  fireplace:
+    url: >-
+      http://pi4.sgraastra:9000/hooks/fireplace-{{-
+        action if action in ['start', 'stop'] else 'stop' }}
+  waterrower:
+    url: >-
+      {{
+        'http://pi0-ant.sgraastra:9001/index.html?' ~
+        'processname=pirowflo_SR_Smartrow_AntPlus_only&action=' ~
+        action if action in ['start', 'stop', 'restart'] else 'stop'
+      }}
 
 notify:
   - name: All devices
