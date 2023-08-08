@@ -29,13 +29,6 @@ cards:
             - entity: input_number.irrigation_balcony_manual_volume
               icon: mdi:pipe-valve
               name: Balcony
-              tap_action:
-                action: call-service
-                service: script.irrigation_manual
-                data:
-                  valve: switch.on_off_output_24
-              hold_action:
-                action: more-info
               extend_paper_buttons_row:
                 extra_styles: >-
                   @keyframes rotate{
@@ -50,7 +43,7 @@ cards:
                     layout: icon|state
                     icon: mdi:watering-can
                     state: >-
-                      {% if states('sensor.flow_balcony_valve') | int > 0 %}
+                      {% if states('switch.on_off_output_24') == 'on' %}
                         {{ states('sensor.flow_balcony_valve') }} L/min
                       {% else %}
                         Off
@@ -81,13 +74,6 @@ cards:
             - entity: input_number.irrigation_garden_manual_volume
               icon: mdi:pipe-valve
               name: Garden
-              tap_action:
-                action: call-service
-                service: script.irrigation_manual
-                data:
-                  valve: switch.on_off_output_25
-              hold_action:
-                action: more-info
               extend_paper_buttons_row:
                 extra_styles: >-
                   @keyframes rotate{
@@ -102,7 +88,7 @@ cards:
                     layout: icon|state
                     icon: mdi:watering-can
                     state: >-
-                      {% if states('sensor.flow_garden_valve') | int > 0 %}
+                      {% if states('switch.on_off_output_25') == 'on' %}
                         {{ states('sensor.flow_garden_valve') }} L/min
                       {% else %}
                         Off
