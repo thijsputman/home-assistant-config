@@ -25,7 +25,7 @@ while true; do
       snr=$((snr + BASH_REMATCH[1]))
     fi
 
-  done <<< "$(femon -H -c "$samples")"
+  done < <(femon -H -c "$samples")
 
   # Integer arithmetic suffices...
   signal=$((signal / samples))
