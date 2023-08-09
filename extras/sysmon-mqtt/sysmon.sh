@@ -240,7 +240,7 @@ fi
 while true ; do
 
   # Uptime
-  uptime=$(cat /proc/uptime | cut -d ' ' -f1)
+  uptime=$(cut -d ' ' -f1 < /proc/uptime)
 
   # CPU temperature
   cpu_temp=$(awk '{printf "%3.2f", $0/1000 }' < \
@@ -260,7 +260,7 @@ while true ; do
   # kernel in Linux. Approach taken from btop: If current ARC size is greater
   # than its minimum size (lower than which it'll never go), assume the surplus
   # to be available memory.
-  if [ -z zfs_arc_min ] && [ -n "$zfs_arc_min" ] ; then
+  if [ -v zfs_arc_min ] && [ -n "$zfs_arc_min" ] ; then
     zfs_arc_size=$(awk '/^size/ {printf "%.0f", $3/1024}' < \
       /proc/spl/kstat/zfs/arcstats)
     if [ "$zfs_arc_size" -gt "$zfs_arc_min" ] ; then
@@ -290,12 +290,12 @@ while true ; do
       payload_bw+=("$(tr -s ' ' <<- EOF
         "$adapter": {
           "rx": "$(
-            echo $(((rx-rx_prev[i])/10#$SYSMON_INTERVAL)) |
-              awk '{printf "%.2f", $1*8/1000}'
-            )",
+            awk '{printf "%3.2f", ($1-$2)/$3*8/1000}' \
+              <<< "$rx ${rx_prev[i]} $((10#$SYSMON_INTERVAL))"
+          )",
           "tx": "$(
-            echo $(((tx-tx_prev[i])/10#$SYSMON_INTERVAL)) |
-              awk '{printf "%.2f", $1*8/1000}'
+            awk '{printf "%3.2f", ($1-$2)/$3*8/1000}' \
+              <<< "$tx ${tx_prev[i]} $((10#$SYSMON_INTERVAL))"
           )"
         }
 				EOF
@@ -331,8 +331,6 @@ while true ; do
     # Run apt-check and its processing once per hour
 
     if [ "$hourly" = true ] ; then
-
-      > $apt_check
 
       # Fork it off so we don't block on waiting for this to complete
       (
