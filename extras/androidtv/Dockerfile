@@ -5,8 +5,10 @@ SHELL ["/bin/bash", "-euo", "pipefail", "-c"]
 
 # Install dependencies
 
-RUN apt update && apt install -y \
+# hadolint ignore=DL3008
+RUN apt-get update && apt-get install -y --no-install-recommends \
   'adb=1:10.0.*' \
+  ca-certificates \
   sudo \
   wget \
   xz-utils && \
