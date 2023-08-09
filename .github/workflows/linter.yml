@@ -9,8 +9,19 @@ on:
 jobs:
   lint:
     name: Lint codebase
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-22.04
     steps:
+      - name: Install dependencies
+        env:
+          HADOLINT_VERSION: ${{ vars.HADOLINT_VERSION }}
+        run: |
+          # YAMLlint
+          pip3 install yamllint
+          # hadolint
+          hadolint_base=https://github.com/hadolint/hadolint/releases/download
+          wget -nv -O "${HOME}/hadolint" \
+            "${hadolint_base}/${HADOLINT_VERSION}/hadolint-Linux-x86_64"
+          chmod +x "${HOME}/hadolint"
       - name: Checkout code
         uses: actions/checkout@v3
       - name: Lint with Prettier
@@ -18,10 +29,15 @@ jobs:
           npx --yes prettier --check .
       - name: Lint with MarkdownLint
         run: |
-          npx --yes markdownlint-cli "**/*.md" TODO
-      - name: Install yamllint
-        run: |
-          pip3 install yamllint
-      - name: Lint with yamllint
+          npx --yes markdownlint-cli "**/*.md" TODO NOTES README
+      - name: Lint with YAMLlint
         run: |
           yamllint --format github .
+      - name: Lint with ShellCheck
+        run: |
+          readarray -t files < <(find . -name "*.sh")
+          shellcheck --wiki-link-count=0 "${files[@]}"
+      - name: Lint with hadolint
+        run: |
+          readarray -t files < <(find . -name "Dockerfile*")
+          "${HOME}/hadolint" "${files[@]}"
