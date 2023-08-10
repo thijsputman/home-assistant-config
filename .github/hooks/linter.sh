@@ -17,8 +17,8 @@ if [ ${#files[@]} -gt 0 ] ; then
     then status_code=1 ; fi
 
   # MarkdownLint
-  read -ra md_files < \
-    <(echo "${files[@]}" | grep -e '\.md' -e '\(TODO\|NOTES\|README\)')
+  readarray -t md_files < <(printf "%s\n" "${files[@]}" | \
+    grep -e '\.md' -e '\(TODO\|NOTES\|README\)')
   if
     [ ${#md_files[@]} -gt 0 ] && \
     ! npx --yes markdownlint-cli "${md_files[@]}"
@@ -27,8 +27,8 @@ if [ ${#files[@]} -gt 0 ] ; then
   fi
 
   # YAMLlint
-  read -ra yaml_files < \
-    <(echo "${files[@]}" | grep '\.ya\?ml')
+  readarray -t yaml_files < \
+    <(printf "%s\n" "${files[@]}" | grep '\.ya\?ml')
   if
     [ ${#yaml_files[@]} -gt 0 ] && \
     ! yamllint "${yaml_files[@]}"
@@ -37,8 +37,8 @@ if [ ${#files[@]} -gt 0 ] ; then
   fi
 
   # ShellCheck
-  read -ra sh_files < \
-    <(echo "${files[@]}" | grep '\.sh')
+  readarray -t sh_files < \
+    <(printf "%s\n" "${files[@]}" | grep '\.sh')
   if
     [ ${#sh_files[@]} -gt 0 ] && \
     ! shellcheck --wiki-link-count=0 "${sh_files[@]}"
@@ -47,8 +47,8 @@ if [ ${#files[@]} -gt 0 ] ; then
   fi
 
   # Haskell Dockerfile Linter (hadolint)
-  read -ra dockerfiles < \
-    <(echo "${files[@]}" | grep 'Dockerfile')
+  readarray -t dockerfiles < \
+    <(printf "%s\n" "${files[@]}" | grep 'Dockerfile')
   if
     [ ${#dockerfiles[@]} -gt 0 ] && \
     ! hadolint "${dockerfiles[@]}"
@@ -57,8 +57,8 @@ if [ ${#files[@]} -gt 0 ] ; then
   fi
 
   # Notebooks – remind to clear cell outputs
-  for f in $(echo "${files[@]}" | grep '\.\(ipy\|n\)nb') ; do
-    if (( "$(< "$f" jq '[.cells[].outputs | length] | add' )" > 0 )) ; then
+  for f in $(printf "%s\n" "${files[@]}" | grep '\.\(ipy\|n\)nb') ; do
+    if (( "10#$(< "$f" jq '[.cells[].outputs | length] | add' )" > 0 )) ; then
       echo "❌ Notebook \"${f##*/}\" contains cell output(s) – \
         clear them before committing..." | tr -s " "
       status_code=1
