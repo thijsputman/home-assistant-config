@@ -1,33 +1,16 @@
-- alias: 📱 Sensor low battery notification (🔋 < 10%)
+- alias: 📱 | 🔋  Notify on devices with low battery (🔋 < 20%)
   id: bf5935e5-b716-4bfd-8949-71b01b4f484f
   variables:
-    # Exclude some (mobile) devices
-    exclude:
-      - sensor.p20hd_eea_battery
-      - sensor.sm_g990b2_battery_level
-      - sensor.pixel_6_pro_battery_level
-      - sensor.battery_166_battery # Phoscon Hive
-    sensors: >-
-      {% set result = namespace(sensors=[]) %}
-      {% for state in states.sensor |
-          selectattr('attributes.device_class', 'defined') |
-          selectattr('attributes.device_class', '==', 'battery') |
-          rejectattr('entity_id', 'in', exclude) %}
-        {# Cannot use "selectattr" as a numeric comparison is needed #}
-        {% if state.state | int(100) < 10 %}
-            {% set result.sensors = result.sensors +
-              [state.name ~ ': ' ~ state.state ~ '%'] %}
-        {% endif %}
-      {% endfor %}
-      {{ result.sensors }}
+    devices: >-
+      {{ states('sensor.low_battery_devices') | from_json }}
   trigger:
+    # There's no need for realtime notifications; once daily suffices
     - platform: time
-      at: "10:00:00"
+      at: "19:00:00"
   condition:
-    # Only on Saturday if there are battery-levels below 10%
     - condition: template
       value_template: >-
-        {{ now().isoweekday() == 6 and sensors | length > 0 }}
+        {{ devices | length > 0 }}
   action:
     - service: script.turn_on
       target:
@@ -37,11 +20,11 @@
           group: general
           channel: Notification
           targetDevices: my
-          title: 🔋 Low sensor battery
+          title: 🔋 Device(s) with low battery
           message: >-
-            The following sensors have a battery level below 10%:
+            The following devices have a battery level below 20%:
             <br><br>◾ {{
-              sensors | join('<br>◾ ')
+              devices | join('<br>◾ ')
             -}}
     - service: script.turn_on
       target:
@@ -50,11 +33,12 @@
         variables:
           expiry: "06:00:00"
           message: >-
-            There {% if sensors | length > 1 %}
-              are {{ sensors | length }} sensors
+            {% if devices | length > 1 %}
+              There are {{ devices | length }} devices with a battery level
+              below 20% in the house...
             {% else %}
-              is 1 sensor
-            {% endif %} with a battery level below 10%
+              {{ devices | first }} has a battery level below 20%...
+            {% endif %}
   mode: single
 - alias: 📱 | 💥 Notify on device failure (unavailable/unknown-state)
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12

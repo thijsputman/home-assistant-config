@@ -113,3 +113,39 @@
             truncate(245, true, '..."]') |
             regex_replace('",? ?"?\.\.\."]$', '..."]')
         }}
+- trigger:
+    - platform: time_pattern
+      hours: "*"
+      minutes: /5
+      seconds: 5 # Slightly offset from the "Failed devices"-sensor
+  sensor:
+    - name: Low battery devices
+      unique_id: e916b841-5ade-4b71-9c54-5934565c4a3f
+      icon: mdi:battery-alert-variant-outline
+      state: >-
+        {% set result = namespace(devices=[]) %}
+        {%
+          set entity_ids = states |
+          selectattr('attributes.device_class', 'defined') |
+          selectattr('attributes.device_class', 'eq', 'battery') |
+          map(attribute='entity_id') |
+          reject('is_hidden_entity') |
+          list
+        %}
+        {% for entity_id in entity_ids %}
+          {# Cannot use "selectattr" to do a numeric comparison on state #}
+          {% if states(entity_id) | int(100) < 20 %}
+            {% if device_id(entity_id) == None %}
+              {% set matched = state_attr(entity_id, 'friendly_name') %}
+            {% else %}
+              {% set matched = device_attr(device_id(entity_id), 'name') %}
+            {% endif %}
+            {% set result.devices = result.devices + [matched] %}
+          {% endif %}
+
+        {% endfor %}
+        {{
+          result.devices | unique | list | sort | to_json |
+            truncate(245, true, '..."]') |
+            regex_replace('",? ?"?\.\.\."]$', '..."]')
+        }}
