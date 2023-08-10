@@ -237,13 +237,13 @@
         targetDevices: my
         message: >-
           {%- if trigger.entity_id == 'binary_sensor.remote_ui' -%}
-            📡 Home Assistant lost connectivity!
-            \nHome Assistant appears to have lost connection with Nabu Casa.
+            📡 Home Assistant lost connectivity!\n
+            Home Assistant appears to have lost connection with Nabu Casa.
           {%-
             elif trigger.entity_id == 'binary_sensor.google_dns_ping'
           -%}
-            📡 Home Assistant lost Internet-connectivity!
-            \nHome Assistant is unable to ping Google's Public DNS.
+            📡 Home Assistant lost Internet-connectivity!\n
+            Home Assistant is unable to ping Google's Public DNS.
           {%- endif %} To inspect the state of the house:
           \n\n✉️ #secret# status [camera]
           \n\nTo check and control the Home Alarm:
@@ -266,12 +266,12 @@
   max_exceeded: silent
 # Stop Home Assistant (mainly to prevent database corruption) if a power failure
 # appears imminent
-- alias: 🚧 | 🔋 Stop Home Assistant (UPS 🔋 < 10%)
+- alias: 🚧 | 🔋 Stop Home Assistant (UPS 🔋 < 15%)
   id: e7dcf99d-a13d-43ed-a828-d19335c94787
   trigger:
     - platform: numeric_state
       entity_id: sensor.ups_battery_charge
-      below: 10
+      below: 15
   condition:
     # This intentionally does _not_ use "binary_sensor.power_outage" as the
     # below truly relies on the UPS and acts independent from the generalised
@@ -280,20 +280,24 @@
       entity_id: sensor.ups_status
       state: On Battery Battery Discharging
   action:
-    # Block on sending the SMS notification (to prevent shutting down Home
-    # Assistant before the message is send)
-    - service: script.sms_notification
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
       data:
-        targetDevices: my
-        message: >-
-          🔋 UPS low power!
-          \nUPS battery level below 10%; power failure appears imminent –
-          stopping Home Assistant...
+        variables:
+          targetDevices: my
+          message: >-
+            🔋 UPS low power!\n
+            UPS battery level below 10%; power failure appears imminent –
+            stopping Home Assistant...
     - service: system_log.write
       data:
         level: critical
         message: >-
-          UPS battery level below 10%; power failure appears imminent –
-          stopping Home Assistant...
+          UPS battery level below 10%; power failure appears imminent – stopping
+          Home Assistant...
+    # Delay for 30 seconds – give the SMS a bit of time to get out, but don't
+    # block as we not want to prevent a shutdown altogether...
+    - delay: "00:00:30"
     - service: homeassistant.stop
   mode: single
