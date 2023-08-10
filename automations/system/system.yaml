@@ -56,7 +56,7 @@
               is 1 sensor
             {% endif %} with a battery level below 10%
   mode: single
-- alias: 📱 Notify on device failure (unavailable/unknown/none-state)
+- alias: 📱 | 💥 Notify on device failure (unavailable/unknown-state)
   id: 4c3d9da3-51c8-4881-9df0-8dec257d6d12
   trigger:
     # The sensor updates every 5-minutes — holding the state for 6-minutes
@@ -66,10 +66,7 @@
     # noise...
     - platform: state
       entity_id: sensor.failed_devices
-      not_to:
-        - unknown
-        - unavailable
-        - none
+      to: ~
       for: "00:06:00"
   condition:
     # If the active set of failed devices (i.e., the set currently up in the

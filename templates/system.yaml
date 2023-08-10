@@ -23,8 +23,7 @@
 # JSON-encoded list of failed devices – renders every 5 minutes. The list is
 # sorted and deduplicated so this sensor's state only changes if a device
 # becomes (un)available. Device can be either "native" Home Assistant devices
-# or manual groups of related sensors (either template-entities or sensors added
-# by integrations that don't provide devices).
+# or manually grouped sets of related sensors.
 - trigger:
     - platform: time_pattern
       hours: "*"
@@ -34,10 +33,14 @@
     - name: Failed devices
       unique_id: b35c9d1a-715b-4216-a620-6308c47e0e8f
       icon: mdi:toy-brick-remove-outline
-      # Find all "devices" that have one or more entities in the "unavailable"-,
-      # "unknown"- or "none"-state. If an actual device is not available, we
-      # attempt to manually group the sensor(s). Only if we're unable to group
-      # are the individual sensors included in the list.
+      # Find all "devices" that have one or more entities in the "unavailable"-
+      # or "unknown"-state. If an actual device is not available, attempt to
+      # manually group the sensor(s). Only if we're unable to group, are the
+      # individual sensors included in the list.
+      # Hidden entities (as per the GUI) are excluded. This is the primary means
+      # of filtering out false-positives (ie, entities that are unavailable as
+      # part of their normal operation). Only under special circumstances should
+      # the below template be used for filtering...
       state: >-
         {% set result = namespace(devices=[]) %}
         {%
@@ -45,12 +48,13 @@
           selectattr('state', 'in',
             [
               'unavailable',
-              'unknown',
-              'none'
+              'unknown'
             ]
           ) |
-          rejectattr('entity_id', 'match', '^(scene|button|event)\.') |
-          map(attribute='entity_id') | list
+          map(attribute='entity_id') |
+          reject('is_hidden_entity') |
+          reject('match', '^(scene|button|event)\.') |
+          list
         %}
         {% for entity_id in entity_ids %}
           {% set matched = 'unknown' %}
@@ -58,101 +62,39 @@
           {% if device_id(entity_id) == None %}
             {# WeeWX #}
             {% if entity_id is search('^sensor\.weewx_.+') %}
-              {#
-                Ignore wind direction sensors; they become unavailable if wind
-                speed equals zero
-              #}
-              {% if entity_id is not search('_wind_.*direction') %}
-                {% set matched = 'WeeWX' %}
-              {% endif %}
+              {% set matched = 'WeeWX' %}
             {# Aarlo #}
             {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+') %}
-              {#
-                The "recent activity"-sensors appear to initialise "unknown" if
-                Home Assistant is restarted while the cameras are inactive; the
-                "last activity"-sensors can go to "unknown" if there's no
-                activity detected for a long period of time.
-              #}
-              {%
-                if entity_id is not
-                  search('sensor\.aarlo_recent_activity_.+') and
-                entity_id is not
-                  search('sensor\.aarlo_last_.+')
-              %}
-                {% set matched = 'Aarlo' %}
-              {% endif %}
-            {# tadoº #}
-            {% elif entity_id is search('^sensor\.tado_smart_.+') %}
-              {# Ignored; derived from HomeKit Controller #}
+              {% set matched = 'Aarlo' %}
             {# Gammu #}
             {% elif entity_id is search('^sensor\.gammu_.+') %}
-              {# Only signal-strength is always available #}
-              {% if entity_id == 'sensor.gammu_signal_strength' %}
-                {% set matched = 'Gammu' %}
-              {% endif %}
+              {% set matched = 'Gammu' %}
             {# Afvalwijzer #}
             {% elif entity_id is search('^sensor\.afvalwijzer_.+') %}
               {#
-                Turns out Afvalwijzer only adds next year's data towards the end
-                of the current calendar year – as a result, over the course of
-                December some sensors run out of data and become "none"/
-                "unavailable"... Solution for now is to ignore Afvalwijzer
-                failures in December.
+                Afvalwijzer only adds next year's dates towards the end of the
+                current calendar year – as a result, over the course of December
+                some sensors (specifically _not_ those for today and tomorrow)
+                run out of data and become "unavailable"...
               #}
-              {%
-                if entity_id is not search('(today|tomorrow)') and
-                  now().month != 12
-              %}
+              {% if entity_id is search('today|tomorrow') %}
+                {% set matched = 'Afvalwijzer' %}
+              {% elif now().month != 12 %}
                 {% set matched = 'Afvalwijzer' %}
               {% endif %}
             {# Hue scene heuristic #}
             {% elif entity_id is search('^sensor\.hue_scene_.+') %}
               {% set matched = 'Hue scene heuristic' %}
-            {# Last notification #}
-            {% elif entity_id is search('^sensor\.last_notification_.+') %}
-              {# Ignored; unavailable as part of normal operation #}
-            {# Prusa MINI+ (template sensor) #}
-            {% elif entity_id == 'sensor.prusa_mini_job_name' %}
-              {# Ignored; only available when in-use #}
-            {# Water consumption #}
-            {% elif entity_id is search('^sensor\.flow_.+_statistics') %}
-              {#
-                Ignored; statistics sensors report unknown when no data is
-                available to compute the requested statistic
-              #}
-            {# Failed devices (this sensor) #}
+            {# Failed devices (this sensor itself) #}
             {% elif entity_id == 'sensor.failed_devices' %}
-              {# Ignored #}
+              {# Ignored – to prevent unintentional recursion #}
             {# Others; ungrouped #}
             {% else %}
               {% set matched = state_attr(entity_id, 'friendly_name') %}
             {% endif %}
           {# Devices #}
           {% else %}
-            {# Mobile App #}
-            {%
-              if entity_id is search(
-                '^sensor\..+_(charger_type|next_alarm|do_not_disturb_sensor)$'
-              )
-            %}
-              {# Ignored; unavailable/unknown under normal circumstances #}
-            {# Meater #}
-            {% elif entity_id is search('^sensor\.meater_probe_.+') %}
-              {# Ignored; only available when in-use #}
-            {# Prusa MINI+ #}
-            {% elif entity_id is search('.+\.prusa_mini_.+') %}
-              {# Ignored; only available when in-use #}
-            {# Fully Kiosk Browser #}
-            {%
-              elif entity_id is search('^number\..+_screen(|saver)_brightness')
-            %}
-              {# Ignored; unavailable/unknown when screen switched off #}
-            {# Phoscon Hive #}
-            {% elif entity_id == 'light.extended_color_light_23' %}
-              {# Ignored; only available when switched on #}
-            {% else %}
-              {% set matched = device_attr(device_id(entity_id), 'name') %}
-            {% endif %}
+            {% set matched = device_attr(device_id(entity_id), 'name') %}
           {% endif %}
           {% set result.devices = result.devices + [matched] %}
         {% endfor %}
