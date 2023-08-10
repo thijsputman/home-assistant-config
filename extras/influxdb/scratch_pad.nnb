@@ -73,56 +73,70 @@
         {
             "language": "markdown",
             "source": [
-                "## Arlo battery level\n"
+                "## Arlo battery level\n\nThe following `entity_id`s are available:\n\n- `aarlo_battery_level_front`\n- `aarlo_battery_level_back`\n- `aarlo_battery_level_balcony`\n"
             ],
             "outputs": []
         },
         {
             "language": "javascript",
             "source": [
-                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"aarlo_battery_level_front\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"aarlo_battery_level_front\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
             ],
             "outputs": []
         },
         {
             "language": "markdown",
             "source": [
-                "# Outside temperature\n"
+                "## Pi-hole unique clients\n"
             ],
             "outputs": []
         },
         {
             "language": "javascript",
             "source": [
-                "import { op, table } from \"arquero\";\n\nconst query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(fn:\n    (r) => r[\"entity_id\"] == \"weewx_outside_temperature\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: mean)\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n\nconst dt = table({\n  time: result.map((obj) => obj[\"_time\"]),\n  value: result.map((obj) => obj[\"_value\"]),\n});\n\ndt.derive({ month: (d) => op.month(d.time), year: (d) => op.year(d.time) })\n  .groupby(\"year\", \"month\")\n  .rollup({ mean: (d) => op.mean(d.value) })\n  .print();\n"
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"pi_hole_dns_unique_clients\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
             ],
             "outputs": []
         },
         {
             "language": "markdown",
             "source": [
-                "# Pi-hole unique clients\n"
+                "## Watermeter total\n"
             ],
             "outputs": []
         },
         {
             "language": "javascript",
             "source": [
-                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"pi_hole_dns_unique_clients\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"watermeter_total\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
             ],
             "outputs": []
         },
         {
             "language": "markdown",
             "source": [
-                "# Watermeter total\n"
+                "## PM<sup>2.5</sup> density\n\nMaximum hourly value; intended to figure out at what point the PM level might\nconstitute a \"calamity\".\n\nThe following `entity_id`s are available:\n\n- `qingping_air_monitor_lite_bedroom_environment_pm2_5_density`\n- `qingping_air_monitor_lite_living_room_environment_pm2_5_density`\n- `xiaomi_miot_environment_pm2_5_density` – Attic\n"
             ],
             "outputs": []
         },
         {
             "language": "javascript",
             "source": [
-                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -1y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"watermeter_total\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: min)\n  |> group(columns: [\"_time\"],  mode:\"by\")\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -2y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"xiaomi_miot_environment_pm2_5_density\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1h, fn: max)\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "markdown",
+            "source": [
+                "## Ping (daily mean – router to Google DNS)\n"
+            ],
+            "outputs": []
+        },
+        {
+            "language": "javascript",
+            "source": [
+                "const query = `\nfrom(bucket: \"home-assistant\")\n  |> range(start: -2y, stop: today())\n  |> filter(\n    fn: (r) => r[\"entity_id\"] == \"dd_wrt_1_google_dns_roundtrip_time\"\n      and r[\"_field\"] == \"value\"\n  )\n  |> aggregateWindow(every: 1d, fn: mean)\n  |> timeShift(duration: -1d)\n`;\n\nconst result = await queryApi.collectRows(query);\n"
             ],
             "outputs": []
         },
