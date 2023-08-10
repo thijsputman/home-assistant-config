@@ -5,7 +5,7 @@
       id: motion
       entity_id:
         - binary_sensor.aarlo_motion_front
-        - binary_sensor.aarlo_motion_back
+        - binary_sensor.aarlo_motion_back_combined
       from: "off"
       to: "on"
     - platform: state
@@ -20,64 +20,29 @@
   action:
     - service: media_player.media_play_pause
       entity_id: media_player.nvidia_shield_tv
-    - variables:
-        message: >-
-          {% if trigger.id == "motion" %}
-            Motion detected at the {{
-              trigger.to_state.attributes.camera_name | lower }}
-          {% elif trigger.id == "doorbell" %}
-            Someone rang the doorbell
-          {% endif %}
-    - service: notify.shield_tv
-      data:
-        message: >-
-          {{ message }}...
-        data:
-          duration: 10
-          position: center
-          fontsize: large
-          transparency: 25%
-          color: black
-          interrupt: 0
-    # Wait 10 seconds for the capture to update (note the explicit use of the
-    # "image" event versus "snapshot"/"capture"). If no update comes in, assume
-    # it was already up-to-date and replace the notification regardless. There
-    # is a slight chance we're showing an outdated capture...
-    - wait_for_trigger:
-        - platform: event
-          event_type: aarlo_image_updated
-      timeout: 10
-      continue_on_timeout: true
-    - service: notify.shield_tv
-      data:
-        message: >-
-          {{ message }}:
-        data:
-          duration: 20
-          position: center
-          fontsize: large
-          transparency: 25%
-          color: black
-          interrupt: 0
-          image:
-            url: >-
-              {%
-                if trigger.entity_id == 'binary_sensor.aarlo_motion_front' or
-                  trigger.id == 'doorbell'
-              %}
-                {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
-              {% elif trigger.id == 'motion' %}
-                {{ state_attr('camera.aarlo_back', 'last_thumbnail') }}
-              {% endif %}
-    # Block while the notification is up
-    - delay: "00:00:20"
+    - if:
+        - condition: trigger
+          id: motion
+      then:
+        - service: script.turn_on
+          target:
+            entity_id: script.tts_announce
+          data:
+            variables:
+              speaker: media_player.bpi_m2_zero_speaker_living_room
+              priority: regular
+              message: >-
+                Motion detected at the {{
+                  trigger.to_state.attributes.camera_name | lower }}.
   mode: single
   max_exceeded: silent
 - alias: 📺 | 📱 Pause Shield TV (phone ringing)
   id: c1c84bf2-f550-4aca-b525-b03bc9b09a12
   trigger:
     - platform: state
-      entity_id: sensor.pixel_6_pro_phone_state
+      entity_id:
+        - sensor.pixel_6_pro_phone_state
+        - sensor.sm_g990b2_phone_state
       to: ringing
   condition:
     - condition: state
@@ -86,4 +51,3 @@
   action:
     - service: media_player.media_play_pause
       entity_id: media_player.nvidia_shield_tv
-  mode: single
