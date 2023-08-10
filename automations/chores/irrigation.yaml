@@ -65,3 +65,20 @@
     - service: switch.turn_off
       target:
         entity_id: switch.on_off_output_25
+- alias: 🌱/💧 | ⏰ Reset manual irrigation volumes (daily at 01:00)
+  id: 96f19721-c7ad-450e-8b93-7e4c4e64dcc4
+  trigger:
+    - platform: time
+      at: "01:00:00"
+  condition: []
+  action:
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.irrigation_balcony_manual_volume
+      data:
+        value: 35 # Hardcoded; aligned with input_number default
+    - service: input_number.set_value
+      target:
+        entity_id: input_number.irrigation_garden_manual_volume
+      data:
+        value: 90 # Idem
