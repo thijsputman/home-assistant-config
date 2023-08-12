@@ -10,24 +10,33 @@ The _live_ configuration of my personal Home Assistant instance.
 ### Linter / Pre-commit hook
 
 A combination of [Prettier](https://prettier.io/),
-[`markdownlint-cli`](https://github.com/igorshubovych/markdownlint-cli) and
-[`yamllint`](https://github.com/adrienverge/yamllint) is used via a pre-commit
-hook to ensure consistent formatting and – for YAML and Markdown – more
-elaborate sanity-checking.
+[`markdownlint-cli`](https://github.com/igorshubovych/markdownlint-cli),
+[`yamllint`](https://github.com/adrienverge/yamllint),
+[ShellCheck](https://www.shellcheck.net/), and
+[`hadolint`](https://github.com/hadolint/hadolint) is used via a pre-commit hook
+to ensure consistent formatting and – where possible – more elaborate
+sanity-checking.
 
-To set up this pre-commit hook, follow the below instructions. This assumes NPM,
-Python3/`pip` and [jq](https://stedolan.github.io/jq/) are installed on your
-system:
+To set up the pre-commit hook, follow the below instructions. This assumes a
+system running Ubuntu with NPM, and Python3/`pip` already installed:
 
 ```shell
-pip install --user yamllint
+sudo apt install jq
+sudo apt install shellcheck
 
+pip install --user yamllint
 # or, even better
 pip install --user pipx
 pipx install yamllint
 
+# Assumes ~/.local/bin is on your $PATH
+arch=$(dpkg --print-architecture)
+wget -O ~/.local/bin/hadolint \
+  "https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-${arch}"
+chmod +x ~/.local/bin/hadolint
+
 {
-  echo '#!/bin/sh'
+  echo "#!/bin/sh"
   echo "exec .github/hooks/linter.sh"
 } > .git/hooks/pre-commit
 chmod +x .git/hooks/pre-commit

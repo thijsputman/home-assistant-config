@@ -22,6 +22,7 @@
 /known_devices.yaml
 /extras/androidtv/keys/
 
+/.nb-allow
 .env
 NOTES
 node_modules/

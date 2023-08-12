@@ -58,10 +58,16 @@ if [ ${#files[@]} -gt 0 ] ; then
 
   # Notebooks – remind to clear cell outputs
   for f in $(printf "%s\n" "${files[@]}" | grep '\.\(ipy\|n\)nb') ; do
-    if (( "10#$(< "$f" jq '[.cells[].outputs | length] | add' )" > 0 )) ; then
-      echo "❌ Notebook \"${f##*/}\" contains cell output(s) – \
-        clear them before committing..." | tr -s " "
-      status_code=1
+    cell_outputs="$(< "$f" jq '[.cells[].outputs | length] | add' )"
+    if (( 10#$cell_outputs > 0 )) ; then
+      # Only for notebooks not explicitly allowed in ".nb-allow"
+      if ! grep -qs -f .nb-allow <<< "$f" ; then
+        echo "❌ Notebook \"${f##*/}\" contains $cell_outputs cell output(s) – \
+          clear them before committing..." | tr -s " "
+        status_code=1
+      else
+        echo "🆗 Notebook \"${f##*/}\" contains $cell_outputs cell output(s)"
+      fi
     fi
   done
 
