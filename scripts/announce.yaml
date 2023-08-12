@@ -352,6 +352,8 @@ tts_announce:
               {{ speaker }}
             message: >-
               {{ announcement }}
+            options:
+              voice: en_US-amy-low
           target:
             entity_id: tts.piper
         - service: notify.log_tts_announce
