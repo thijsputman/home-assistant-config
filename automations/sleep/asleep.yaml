@@ -7,9 +7,9 @@
   id: cdec9ae5-d391-4826-a957-36fb823a73a7
   trigger:
     - platform: state
+      entity_id: group.light_inside_rooms
       from: "on"
       to: "off"
-      entity_id: group.light_inside_rooms
   condition:
     - condition: state
       entity_id: input_boolean.everyone_asleep
@@ -28,8 +28,22 @@
           event_type: timer.finished
           event_data:
             entity_id: timer.everyone_asleep_delay
+        # Restart the automation (ie, cancel the timer and wait for the lights
+        # to switch off again) in case the lights are switched back on
+        - platform: state
+          id: lights_on
+          entity_id: group.light_inside_rooms
+          from: "off"
+          to: "on"
       timeout: "01:00:00"
       continue_on_timeout: true
+    - if:
+        - condition: trigger
+          id: lights_on
+      then:
+        - service: timer.cancel
+          target:
+            entity_id: timer.everyone_asleep_delay
     - condition: and
       conditions:
         - condition: state
