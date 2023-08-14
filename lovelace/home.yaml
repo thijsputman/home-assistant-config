@@ -254,7 +254,10 @@ views:
           - !include home/chores/neato_downstairs.yaml
           - !include home/chores/neato_upstairs.yaml
       - !include home/chores/irrigation.yaml
-      - !include home/chores/afvalwijzer.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/chores/afvalwijzer.yaml
+          - !include home/chores/devices.yaml
   # Hobby
   - title: Hobby
     path: hobby

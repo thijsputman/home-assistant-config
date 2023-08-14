@@ -1,0 +1,40 @@
+type: markdown
+title: Device status
+card_mod:
+  style:
+    ha-markdown$: |
+      h2{
+        font-size: 1.2em !important;
+      }
+      em{
+        color: var(--secondary-text-color)
+      }
+      ul{
+        padding-left: 0.5em;
+        list-style-type: none;
+      }
+content: >-
+  {% set failed = states('sensor.failed_devices') | from_json %}
+  {% set low_battery = states('sensor.low_battery_devices') | from_json %}
+
+  {% if failed | length == 0 and low_battery | length == 0  %}
+    _<ha-icon icon="mdi:check-all"></ha-icon> Nothing to report..._
+  {% endif %}
+
+  {% if failed | length > 0 %}
+    ## Failed devices
+    - <ha-icon icon="mdi:toy-brick-remove-outline"></ha-icon> {{
+      failed | join(
+        '\n- <ha-icon icon="mdi:toy-brick-remove-outline"></ha-icon> '
+      )
+    -}}
+  {% endif %}
+
+  {% if low_battery | length > 0 %}
+    ## Devices with low battery
+    - <ha-icon icon="mdi:battery-alert-variant-outline"></ha-icon> {{
+      low_battery | join(
+        '\n- <ha-icon icon="mdi:battery-alert-variant-outline"></ha-icon> '
+      )
+    -}}
+  {% endif %}
