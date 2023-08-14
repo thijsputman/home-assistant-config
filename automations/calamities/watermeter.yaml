@@ -1,0 +1,93 @@
+- alias: 🤯/💧 | 📱/🔊/🚨 Abnormal Watermeter flow detected
+  id: e81ae53b-1097-48a4-8d7c-3c87df3be305
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.flow_watermeter
+      above: 0
+      for: "01:00:00"
+    # Based on historical data anything above 15 L/min is out of the ordinary...
+    - platform: numeric_state
+      id: flow_high
+      entity_id: sensor.flow_watermeter
+      above: 15
+      for: "00:00:30"
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            💧 Abnormal Watermeter flow!\n
+            {% if trigger.id == 'flow_high' %}
+              Watermeter flow is above 15 L/min!
+            {% else %}
+              Water has been flowing continuously for over an hour!
+            {% endif %}
+    # Queue TTS announcement (released when silencing the sirens)
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: calamity
+          priority: attention
+          expiry: "00:10:00"
+          message: >-
+            {% if trigger.id == 'flow_high' %}
+              Watermeter flow is above 15 litres per minute!
+            {% else %}
+              Water has been flowing continuously for over an hour!
+            {% endif %}
+    # If we're asleep, step up the urgency as the situation might need immediate
+    # attention (and it's unlikely to be caused by something we've done...)
+    - if:
+        - condition: state
+          entity_id: group.family
+          state: home
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: script.lights_out
+              state: "on"
+            - condition: state
+              entity_id: timer.everyone_asleep_delay
+              state: active
+            - condition: state
+              entity_id: input_boolean.everyone_asleep
+              state: "on"
+      then:
+        # Short alarm siren pulses for 2 minutes
+        - service: script.turn_on
+          target:
+            entity_id: script.sirens
+          data:
+            variables:
+              mode: pulse
+              ontime: 120
+      # Otherwise, directly release the queued up TTS announcement
+      else:
+        - delay: 2 # Slight delay to ensure the queue properly "registered"
+        - event: tts_announce
+          event_data:
+            tag: calamity
+    # Finally, send a notification – this also serves to block the automation
+    # from running again while the notification is up
+    - service: script.persistent_notification
+      data:
+        group: calamity
+        channel: Alert
+        criticalNotification: true
+        title: 💧 Abnormal Watermeter flow!
+        message: >-
+          {% if trigger.id == 'flow_high' %}
+            Watermeter flow is above 15 litres per minute!
+          {% else %}
+            Water has been flowing continuously for over an hour!
+          {% endif %}
+          <br><br>
+          There might be a water leak somewhere in/around the house...
+  mode: single
+  max_exceeded: silent
