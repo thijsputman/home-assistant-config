@@ -14,13 +14,13 @@
   action:
     # Flash lights as confirmation
     - repeat:
-        count: 2
+        count: 3
         sequence:
           - service: light.turn_on
             data:
               flash: short
             entity_id: light.guestroom
-          - delay: "00:00:01"
+          - delay: "00:00:02"
     - service: input_boolean.turn_on
       entity_id: input_boolean.waterrower
     - variables:
@@ -87,13 +87,13 @@
       entity_id: input_boolean.waterrower
     # Flash lights as confirmation
     - repeat:
-        count: 2
+        count: 3
         sequence:
           - service: light.turn_on
             data:
               flash: short
             entity_id: light.guestroom
-          - delay: "00:00:01"
+          - delay: "00:00:02"
   mode: single
   max_exceeded: silent
 # The WaterRower software (pirowflo) is a bit finicky – issues are mostely
@@ -115,14 +115,10 @@
       data:
         action: restart
     # Flash lights as confirmation
-    - repeat:
-        count: 4
-        sequence:
-          - service: light.turn_on
-            data:
-              flash: short
-            entity_id: light.guestroom
-          - delay: "00:00:01"
+    - service: light.turn_on
+      data:
+        flash: long
+      entity_id: light.guestroom
   mode: single
   max_exceeded: silent
 - alias: 🏅 | 🕹️ WaterRower toggle REST-command (input boolean)

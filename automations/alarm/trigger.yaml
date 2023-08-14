@@ -59,7 +59,7 @@
     - service: alarm_control_panel.alarm_trigger
       entity_id: alarm_control_panel.home_alarm
   mode: single
-- alias: 🚨 | 🔊 Sound the alarm (alarm triggered)
+- alias: 🚨 | 🔊 Sound the sirens (alarm triggered)
   id: 714cfa44-bce7-41f8-be78-9891769fef74
   trigger:
     - platform: state
@@ -72,7 +72,7 @@
         mode: lselect
         ontime: 180
   mode: restart
-- alias: 🚨 | 🔊 Stop sounding the alarm (alarm trigger ended)
+- alias: 🚨 | 🔊 Stop sounding the sirens (alarm trigger ended)
   id: 06b3864d-3f70-45d7-96fa-6c30fa2576c2
   trigger:
     - platform: state
