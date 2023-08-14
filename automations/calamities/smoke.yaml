@@ -1,0 +1,99 @@
+- alias: 🤯/🔥 | 📱/🔊 Smoke detected
+  id: 1166dfdf-0375-4834-aa52-188c78d3bbdd
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.fire_81
+      from: "off"
+      to: "on"
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            🔥 Smoke detected!\n
+            {{ state_attr(trigger.entity_id, 'friendly_name') }} detected smoke!
+    # Queue TTS announcement (released when silencing the sirens)
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: calamity
+          priority: attention
+          expiry: "00:10:00"
+          message: >-
+            {{ state_attr(trigger.entity_id, 'friendly_name') }} detected smoke!
+    - parallel:
+        # During the day, release the queued up TTS announcement right away
+        - if:
+            - condition: state
+              entity_id: script.lights_out
+              state: "off"
+            - condition: state
+              entity_id: timer.everyone_asleep_delay
+              state: idle
+            - condition: state
+              entity_id: input_boolean.everyone_asleep
+              state: "off"
+          then:
+            # Slight delay the announcement so that the initial "shock" of the
+            # sirens sounding has passed...
+            - delay: 10
+            - event: tts_announce
+              event_data:
+                tag: calamity
+        # Explicitly block any further runs of this automation while the
+        # notification is up
+        - service: script.persistent_notification
+          data:
+            group: calamity
+            channel: Critical
+            importance: high
+            criticalNotification: true
+            title: 🔥 Smoke detected!
+            message: >-
+              {{ state_attr(trigger.entity_id, 'friendly_name') }} detected smoke!
+  mode: single
+  max_exceeded: silent
+- alias: 🤯/🔥 | 🚨 Smoke detected (active the sirens unconditionally)
+  id: 3e33958b-6f90-4612-afd0-d0078e054e92
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.fire_81
+      from: "off"
+      to: "on"
+      # Hold state for 1 minute so we don't raise hell on a false alarm...
+      for: "00:01:00"
+  condition: []
+  # Sound the alarm for 5 minutes (the maximum duration) or until the smoke
+  # detector clears. The goal is to draw as much attention as possible
+  # regardless of whether someone is home – the neighbours might notice and call
+  # the Fire department. If after 5 minutes the alarm is still sounding, it has
+  # probably outlived its purpose...
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.sirens
+      data:
+        variables:
+          mode: lselect
+          ontime: 300
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.fire_81
+          from: "on"
+          to: "off"
+      # No need to bother beyond the 5-minute maximum duration
+      timeout: 300
+      continue_on_timeout: false
+    - condition: state
+      entity_id: script.sirens
+      state: "on"
+    - service: script.sirens
+      data:
+        mode: none
+  mode: single

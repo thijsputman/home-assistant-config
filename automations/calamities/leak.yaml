@@ -1,0 +1,78 @@
+- alias: 🤯/💧 | 📱/🔊/🚨 Water leak detected
+  id: c3673e8d-364b-473c-aa49-6573ef7d074a
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.water_59
+        - binary_sensor.water_82
+      from: "off"
+      to: "on"
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            💧 Leak detected!\n
+            {{ state_attr(trigger.entity_id, 'friendly_name') }} detected a
+            potential water leak!
+    # Queue TTS announcement (released when silencing the sirens)
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: calamity
+          priority: attention
+          expiry: "00:10:00"
+          message: >-
+            {{ state_attr(trigger.entity_id, 'friendly_name') }} detected a
+            potential water leak!
+    # If we're asleep, step up the urgency as the situation might need immediate
+    # attention...
+    - if:
+        - condition: state
+          entity_id: group.family
+          state: home
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: script.lights_out
+              state: "on"
+            - condition: state
+              entity_id: timer.everyone_asleep_delay
+              state: active
+            - condition: state
+              entity_id: input_boolean.everyone_asleep
+              state: "on"
+      then:
+        # Short alarm siren pulses for 2 minutes
+        - service: script.turn_on
+          target:
+            entity_id: script.sirens
+          data:
+            variables:
+              mode: pulse
+              ontime: 120
+      # Otherwise, directly release the queued up TTS announcement
+      else:
+        - delay: 2 # Slight delay to ensure the queue properly "registered"
+        - event: tts_announce
+          event_data:
+            tag: calamity
+    # Finally, send a notification – this also serves to block the automation
+    # from running again while the notification is up
+    - service: script.persistent_notification
+      data:
+        group: calamity
+        channel: Alert
+        criticalNotification: true
+        title: 💧 Leak detected!
+        message: >-
+          {{ state_attr(trigger.entity_id, 'friendly_name') }} detected a
+          potential water leak!
+  mode: single
+  max_exceeded: silent

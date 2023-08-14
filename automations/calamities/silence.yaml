@@ -1,0 +1,80 @@
+- alias: 🤯 | 🕹️ Silence the sirens (Bedroom Smart Switches)
+  id: 3ee7611d-1a32-46ee-83ca-a8506f771fa2
+  trigger:
+    # Regular press
+    - device_id: da1237666189a9a364fa383795ba532d
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      domain: deconz
+      platform: device
+      type: remote_button_short_press
+      subtype: turn_on
+    # Double-press
+    - device_id: da1237666189a9a364fa383795ba532d
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
+      subtype: turn_on
+    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+      domain: deconz
+      platform: device
+      type: remote_button_double_press
+      subtype: turn_on
+  condition:
+    # Stay out of Home Alarm's territory (see "📄 alarm/silence.yaml")
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: triggered
+    - condition: state
+      entity_id: script.sirens
+      state: "on"
+    - condition: state
+      entity_id: group.family
+      state: home
+  action:
+    - service: scene.turn_on
+      target:
+        entity_id: scene.bedroom_concentrate
+    # Wait 10 seconds before listening for a _second_ press. This is to prevent
+    # us from simply switching of the noise and going back to sleep...
+    - delay: "00:00:10"
+    - wait_for_trigger:
+        # Regular press
+        - device_id: da1237666189a9a364fa383795ba532d
+          domain: deconz
+          platform: device
+          type: remote_button_short_press
+          subtype: turn_on
+        - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+          domain: deconz
+          platform: device
+          type: remote_button_short_press
+          subtype: turn_on
+        # Double-press
+        - device_id: da1237666189a9a364fa383795ba532d
+          domain: deconz
+          platform: device
+          type: remote_button_double_press
+          subtype: turn_on
+        - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
+          domain: deconz
+          platform: device
+          type: remote_button_double_press
+          subtype: turn_on
+      # The sirens stop after (at most) 5 minutes; safe to abort at that time
+      timeout: 300
+      continue_on_timeout: false
+    - service: script.sirens
+      data:
+        mode: none
+    - event: tts_announce
+      event_data:
+        speaker: media_player.pi0_w2_speaker_bedroom
+        tag: calamity
+  mode: single
+  max_exceeded: silent

@@ -1,7 +1,4 @@
-# In case of high particulate matter (PM) only issue a warning. These readings
-# might indicate a fire or related incident in/around the house, automatically
-# fanning in fresh air (or smoke respectively) would be counterproductive...
-- alias: 🚬 | 📱/🔊/🚨 High PM levels warning
+- alias: 🤯/🚬 | 📱/🔊/🚨 High PM levels detected
   id: 0685ba4b-5229-4404-a481-a07475c4908f
   trigger:
     # Empirically determined thresholds (after tracking data for a year) for
@@ -20,6 +17,15 @@
       above: 150
   condition: []
   action:
+    - service: script.turn_on
+      target:
+        entity_id: script.sms_notification
+      data:
+        variables:
+          message: >-
+            🚬 High PM level detected!\n
+            PM2.5 in the {{ area_name(trigger.entity_id) }} is above
+            {{ trigger.above }} µg/m³!
     # Queue TTS announcement (released when silencing the sirens)
     - service: script.turn_on
       target:
@@ -33,15 +39,23 @@
           message: >-
             PM 2.5 in the {{ area_name(trigger.entity_id) }} is above
             {{ trigger.above }} microgram per cubic meter!
-    # At night (someone's home and everyone's asleep) step up the urgency as the
-    # situation could be life threatening...
+    # If we're asleep, step up the urgency as the situation could be life
+    # threatening...
     - if:
         - condition: state
           entity_id: group.family
           state: home
-        - condition: state
-          entity_id: input_boolean.everyone_asleep
-          state: "on"
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: script.lights_out
+              state: "on"
+            - condition: state
+              entity_id: timer.everyone_asleep_delay
+              state: active
+            - condition: state
+              entity_id: input_boolean.everyone_asleep
+              state: "on"
       then:
         # Short alarm siren pulses for 2 minutes
         - service: script.turn_on
@@ -51,18 +65,12 @@
             variables:
               mode: pulse
               ontime: 120
-      # Otherwise, directly release the queued up TTS announcement (ie, don't
-      # wait for the sirens to be silenced)
+      # Otherwise, directly release the queued up TTS announcement
       else:
-        - delay: 5 # Release after the first siren "pulse"
-        - if:
-            - condition: state
-              entity_id: input_boolean.everyone_asleep
-              state: "off"
-          then:
-            - event: tts_announce
-              event_data:
-                tag: calamity
+        - delay: 2 # Slight delay to ensure the queue properly "registered"
+        - event: tts_announce
+          event_data:
+            tag: calamity
     # Finally, send a notification – this also serves to block the automation
     # from running again while the notification is up
     - service: script.persistent_notification
@@ -73,7 +81,7 @@
         title: 🚬 High PM level detected!
         message: >-
           PM2.5 in the <strong>{{ area_name(trigger.entity_id) }}</strong> is
-          above {{ trigger.above }} µg/m³!
+          above <strong>{{ trigger.above }} µg/m³</strong>!
           <br><br>
           There might be a fire somewhere inside or nearby the house!
   mode: single
