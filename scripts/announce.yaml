@@ -175,12 +175,18 @@ tts_queue:
     #
     # - %TIME_AGO%: Amount of time passed (using "relative_time") since the
     #               announcement was queued
+    # - %WAIT_REMAINING%: The amount of time left (using "relative_time") on
+    #                     the announcement's queue
     - variables:
         message: >-
           {{
             message |
               replace('%TIME_AGO%',
                 queued_at | as_datetime | relative_time
+              ) |
+              replace('%WAIT_REMAINING%',
+                (now() - timedelta( seconds = wait.remaining | int(0) ))
+                  | relative_time
               )
           }}
     - service: script.turn_on

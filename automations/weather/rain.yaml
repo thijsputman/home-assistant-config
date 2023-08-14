@@ -69,3 +69,64 @@
       data:
         notification_id: rain-attic
   mode: single
+- alias: 🌦️ | 🔊 Announce expected rain (Buienradar forecast)
+  id: 47715bbc-60bf-4417-9932-73e59a9edbf8
+  trigger:
+    - platform: numeric_state
+      entity_id: sensor.buienradar_precipitation_forecast_total
+      above: 0.25
+  condition:
+    # Don't bother if it's already raining...
+    - condition: not
+      conditions:
+        - condition: numeric_state
+          entity_id: sensor.weewx_rain_hour
+          above: 0
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          tag: forecast_rain
+          # Buienradar forecasts 2-hours into the future – also, the expiry
+          # allows %WAIT_REMAINING% to be used as an indication when rain is
+          # expected (e.g. "in 30 minutes")
+          expiry: "02:00:00"
+          message: >-
+            Rain is expected in %WAIT_REMAINING%...
+    # Wait for up to 4 hours for it to start raining
+    - wait_for_trigger:
+        - platform: numeric_state
+          # Note the use of the rain-rate (as opposed to "weewx_rain_hour", its
+          # integral) – the former is more responsive, so better suited as a
+          # trigger; the latter is better suited as the "it is raining"-
+          # condition...
+          entity_id: sensor.weewx_rain_rate_hour
+          above: 1.0
+      timeout: "04:00:00"
+      continue_on_timeout: true
+    - if:
+        - >-
+          {{ wait.trigger is defined }}
+      # It started raining
+      then:
+        # Abort the announcement (for good measure – might have already expired)
+        - event: tts_queue_abort
+          event_data:
+            tag: forecast_rain
+        # Now wait for it to stop raining...
+        - wait_for_trigger:
+            - platform: numeric_state
+              entity_id: sensor.weewx_rain_hour
+              below: 0.1
+              for: "04:00:00"
+          timeout: "24:00:00"
+          continue_on_timeout: false
+      # It didn't rain
+      else:
+        # Block – unconditionally – for 8 hours to prevent getting too "chatty"
+        # with the rain announcements...
+        - delay: "08:00:00"
+  mode: single
+  max_exceeded: silent
