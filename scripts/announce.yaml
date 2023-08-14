@@ -97,6 +97,12 @@ tts_queue:
             - media_player.bpi_m2_zero_speaker_living_room
             - media_player.mpi_mq1_speaker_attic
   variables:
+    channel: >-
+      {% if channel not in ['attention', 'announce'] %}
+        attention
+      {% else %}
+        {{ channel }}
+      {% endif %}
     expiry: >-
       {% if expiry is not defined %}
         {% if channel == 'attention' %}
@@ -106,12 +112,6 @@ tts_queue:
         {% endif %}
       {% else %}
         {{ expiry }}
-      {% endif %}
-    channel: >-
-      {% if channel not in ['attention', 'announce'] %}
-        attention
-      {% else %}
-        {{ channel }}
       {% endif %}
   sequence:
     - variables:
@@ -359,7 +359,7 @@ tts_announce:
             message: >-
               {{ announcement }}
             options:
-              voice: en_US-amy-low
+              voice: en_US-danny-low
           target:
             entity_id: tts.piper
         - service: notify.log_tts_announce

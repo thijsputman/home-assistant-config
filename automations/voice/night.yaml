@@ -34,6 +34,16 @@
     - condition: state
       entity_id: script.lights_out
       state: "on"
+    # Release all (if any) regular TTS announcements first
+    - if:
+        - condition: state
+          entity_id: script.tts_queue
+          state: "on"
+      then:
+        - event: tts_attention
+          event_data:
+            speaker: media_player.pi0_w2_speaker_bedroom
+        - delay: 2 # Slight delay for good measure
     - event: tts_announce
       event_data:
         speaker: media_player.pi0_w2_speaker_bedroom
@@ -50,13 +60,23 @@
       from: "off"
       to: "on"
       # Slight delay to allow for the TTS queue to fill
-      for: 2
+      for: "00:00:02"
   variables:
     tablet_kitchen_user_id: !secret tablet_kitchen_user_id
   condition:
     - >-
       {{ trigger.to_state.context.user_id == tablet_kitchen_user_id }}
   action:
+    # Release all (if any) regular TTS announcements first
+    - if:
+        - condition: state
+          entity_id: script.tts_queue
+          state: "on"
+      then:
+        - event: tts_attention
+          event_data:
+            speaker: media_player.bpi_m2_zero_speaker_living_room
+        - delay: 2 # Slight delay for good measure
     - event: tts_announce
       event_data:
         speaker: media_player.bpi_m2_zero_speaker_living_room

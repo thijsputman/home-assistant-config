@@ -126,13 +126,19 @@
       entity_id: input_boolean.housekeeper_present
       state: "off"
     # In the Bedroom we're a bit more strict: Don't trigger when everyone's
-    # asleep, nor during the hard-coded "quiet hours".
+    # asleep, nor during the hard-coded "quiet hours"
+    - condition: state
+      entity_id: script.lights_out
+      state: "off"
+    - condition: state
+      entity_id: timer.everyone_asleep_delay
+      state: idle
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
     - condition: time
       after: "06:00:00"
-      before: "22:00:00"
+      before: "23:00:00"
   action:
     - event: tts_attention
       event_data:
