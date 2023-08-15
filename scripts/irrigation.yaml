@@ -19,9 +19,15 @@ irrigation_manual:
             'switch.on_off_output_25'
           ]
         }}
+    - variables:
+        input_entity: >-
+          {% if valve == 'switch.on_off_output_24' %}
+            input_number.irrigation_balcony_manual_volume
+          {% elif valve == 'switch.on_off_output_25' %}
+            input_number.irrigation_garden_manual_volume
+          {% endif %}
     # Ensure global "mutex" – if either valve is open, opening the second one
-    # will trip the physical flood protection (which requires a physical reset).
-    # Also, the further logic assumes that only one valve is open at a time.
+    # will trip the physical flood protection (which requires a physical reset)
     - condition: state
       entity_id:
         - switch.on_off_output_24
@@ -52,20 +58,18 @@ irrigation_manual:
               - stop: No sensor update received within two minutes!
                 error: true
           - variables:
+              # Override global "input_entity" so it corresponds with the actual
+              # consumption sensor triggered. This way, our bookkeeping remains
+              # consistent – even in unexpected situations – while the control
+              # loop keeps observing the global (ie, acted upon) valve.
               input_entity: >-
-                {%
-                  if wait.trigger.to_state.entity_id ==
-                    'sensor.consumption_170'
-                %}
+                {% if wait.trigger.entity_id =='sensor.consumption_170' %}
                   input_number.irrigation_balcony_manual_volume
-                {%
-                  elif wait.trigger.to_state.entity_id ==
-                    'sensor.consumption_173'
-                %}
+                {% elif wait.trigger.entity_id == 'sensor.consumption_173' %}
                   input_number.irrigation_garden_manual_volume
                 {% endif %}
-              # Decrease by at least one to prevent getting stuck in an infinite
-              # loop
+              # Decrease by at least one to prevent getting stuck in an
+              # infinite loop
               delta: >-
                 {{
                   [1,
@@ -80,15 +84,11 @@ irrigation_manual:
             data:
               value: >-
                 {{ [0, states(input_entity) | int - delta | int] | max }}
-        until:
-          - condition: or
-            conditions:
-              - condition: numeric_state
-                entity_id: input_number.irrigation_balcony_manual_volume
-                below: 1
-              - condition: numeric_state
-                entity_id: input_number.irrigation_garden_manual_volume
-                below: 1
+        until: >-
+          {{
+            input_entity is not defined or
+            states(input_entity) | int <= 0
+          }}
     - service: switch.turn_off
       target:
         entity_id: >-
