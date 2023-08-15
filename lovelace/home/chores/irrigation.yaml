@@ -135,9 +135,9 @@ cards:
           cache: true
           color_thresholds:
             - value: -1.5
-              color: "#ffc107"
+              color: "#FFC107"
             - value: -4
-              color: "#4291ce"
+              color: "#4291CE"
           show:
             name: true
             icon: false

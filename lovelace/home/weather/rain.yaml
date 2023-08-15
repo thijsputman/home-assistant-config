@@ -35,13 +35,25 @@ card:
       decimals: 1
       entities:
         - entity: sensor.weewx_rain_hour
+          show_graph: false
+          unit: mm/h
+        # Not an identical unit (total mm instead of mm/h), but close enough to
+        # provide some sensible insights in the graph...
+        - entity: sensor.buienradar_precipitation_forecast_total
+          name: forecast (2 hours ahead)
+          unit: mm – total
+          show_points: false
+          show_fill: false
+          color: darkgrey
+        - entity: sensor.weewx_rain_hour
+          name: actual
+          unit: mm/h
           show_points: false
           show_fill: false
           color: "#3498DB"
         - color: dimgray
           entity: sensor.time_of_day
           attribute: numeric
-          name: Night
           show_line: false
           show_points: false
           show_legend: false
@@ -85,4 +97,4 @@ card:
         - entity: sensor.weewx_evapotranspiration_total
           name: evapotranspiration
           unit: mm/day
-          color: mediumpurple
+          color: "#B3C177"

@@ -36,6 +36,7 @@ card:
         - entity: sensor.weewx_solar_irradiance
           show_points: false
           show_fill: false
+          color: "#FFC107"
         - color: dimgray
           entity: sensor.time_of_day
           attribute: numeric
@@ -73,3 +74,4 @@ card:
       entities:
         - entity: sensor.weewx_solar_irradiance
           unit: W/m²
+          color: "#FFC107"
