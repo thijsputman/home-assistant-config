@@ -1,0 +1,75 @@
+- alias: 💨 | 🚬 Increase Sonair – Living room airflow (CO₂ > 1.000 ppm)
+  id: 253698d1-02e6-4b00-a8f7-a7dac7d6935f
+  trigger:
+    - platform: numeric_state
+      entity_id: >-
+        sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+      above: 1000
+      for: "00:05:00"
+  condition:
+    # Respect the Sonair's (manual) off-state
+    - condition: state
+      entity_id: fan.sonair_living_room
+      state: "on"
+  action:
+    # For the first 40-minutes we run at 80% to prevent going all out for a
+    # minor and/or temporary increase in CO₂ levels
+    - service: fan.set_percentage
+      data:
+        percentage: 80
+      target:
+        entity_id: fan.sonair_living_room
+    - wait_for_trigger:
+        - platform: numeric_state
+          entity_id: >-
+            sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+          below: 800
+          for: "00:05:00"
+        # Short-circuit in case the Sonair was manually lowered or switched off
+        # (the other automations acting on the Sonair are guarded against
+        # overriding the 100%-speed setting)
+        - platform: numeric_state
+          entity_id: fan.sonair_living_room
+          attribute: percentage
+          below: 100
+      timeout: "00:40:00"
+      continue_on_timeout: true
+    - if: >-
+        {{ wait.trigger is defined }}
+      then:
+        - stop: >-
+            Living Room CO₂ ppm dropped below 800, or the Sonair was manually
+            stopped/lowered...
+    # We're still above 800 ppm – increase to 100%
+    - service: fan.set_percentage
+      data:
+        percentage: 100
+      target:
+        entity_id: fan.sonair_living_room
+    - wait_for_trigger:
+        - platform: numeric_state
+          entity_id: >-
+            sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+          below: 800
+          for: "00:10:00"
+        - platform: numeric_state
+          entity_id: fan.sonair_living_room
+          attribute: percentage
+          below: 100
+      timeout: "08:00:00"
+      continue_on_timeout: true
+    - if: >-
+        {{ wait.trigger is defined }}
+      then:
+        - stop: >-
+            Living Room CO₂ ppm dropped below 800, or the Sonair was manually
+            stopped/lowered...
+    # Restore to 40% (which is a safe middleground) – the regular Sonair
+    # automations will now start kicking in again...
+    - service: fan.set_percentage
+      data:
+        percentage: 40
+      target:
+        entity_id: fan.sonair_living_room
+  mode: single
+  max_exceeded: silent

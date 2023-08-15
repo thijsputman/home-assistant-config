@@ -64,7 +64,7 @@
       target:
         entity_id: fan.sonair_living_room
   mode: single
-- alias: 💨 | 🤖 Sonair – Living room restore airflow (6ºC < 🌡️ < 28ºC)
+- alias: 💨 | 🤖 Sonair – Living room restore airflow (🌡️ > 6ºC; 🌡️ < 28ºC)
   id: d7e3c910-09f3-405d-855d-58e9c5564a1b
   trigger:
     - platform: numeric_state
@@ -93,7 +93,9 @@
       target:
         entity_id: fan.sonair_living_room
   mode: single
-- alias: 💨 | ⏰/🤖 Sonair – Living room CO₂-controlled (daily at 20:00 / 6ºC > 🌡️ > 28ºC)
+- alias: >-
+    💨 | ⏰/🤖 Sonair – Living room CO₂-controlled
+    (daily at 20:00 / 🌡️ < 6ºC; 🌡️ > 28ºC)
   id: 1fe024b6-8f8b-4d34-b19b-62c4052fadf2
   trigger:
     # The Sonair is relatively silent but as it gets quiet outside, the 40%
@@ -151,7 +153,9 @@
       target:
         entity_id: switch.co2_sensor_sonair_living_room
   mode: single
-- alias: 💨 | ⏰/🤖 Sonair – Guestroom restore airflow (everyone awake / 6ºC < 🌡️ < 28ºC)
+- alias: >-
+    💨 | ⏰/🤖 Sonair – Guestroom restore airflow
+    (everyone awake / 🌡️ > 6ºC; 🌡️ < 28ºC)
   id: fc5a63a2-f71d-4320-8f98-d61341cba37e
   trigger:
     - platform: state
@@ -186,7 +190,9 @@
       target:
         entity_id: fan.sonair_guestroom
   mode: single
-- alias: 💨 | 💤/⏰/🤖 Sonair – Guestroom CO₂-controlled (everyone asleep / daily at 23:00 / 6ºC > 🌡️ > 28ºC)
+- alias: >-
+    💨 | 💤/⏰/🤖 Sonair – Guestroom CO₂-controlled
+    (everyone asleep / daily at 23:00 / 🌡️ < 6ºC; 🌡️ > 28ºC)
   id: cefa0b39-73b1-47cc-b781-0604d5f23fd6
   trigger:
     - platform: time
@@ -233,7 +239,7 @@
     - service: switch.turn_on
       target:
         entity_id: switch.co2_sensor_sonair_guestroom
-- alias: 💨 | 🤖 Sonair – Wardrobe limit airflow (6ºC > 🌡️ > 28ºC)
+- alias: 💨 | 🤖 Sonair – Wardrobe limit airflow (🌡️ < 6ºC; 🌡️ > 28ºC)
   id: f7bbe56e-fef4-4a79-9e94-5ec3d861fc3b
   trigger:
     - platform: numeric_state
@@ -270,7 +276,7 @@
         percentage: 20
       target:
         entity_id: fan.sonair_wardrobe
-- alias: 💨 | 🤖 Sonair – Wardrobe restore airflow (6ºC < 🌡️ < 28ºC)
+- alias: 💨 | 🤖 Sonair – Wardrobe restore airflow (🌡️ > 6ºC; 🌡️ < 28ºC)
   id: e97b3037-3e1e-4933-9257-3c1fe74c1295
   trigger:
     - platform: numeric_state
