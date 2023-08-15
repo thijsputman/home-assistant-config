@@ -29,6 +29,11 @@
       not_to:
         - unavailabe
         - unknown
+    # Motion in the Attic hallway
+    - platform: state
+      entity_id: binary_sensor.presence_91
+      from: "off"
+      to: "on"
   condition:
     # It seems using a combination of not_from/not_to to filter out transitions
     # that go "through" unavailable/unknown (happens, for example, when template
@@ -96,6 +101,11 @@
         - paused
         - idle
       to: "off"
+    # Opening the Kitchen door
+    - platform: state
+      entity_id: binary_sensor.openclose_12
+      from: "off"
+      to: "on"
   condition:
     - condition: state
       entity_id: script.tts_queue
@@ -118,6 +128,22 @@
       event_data:
         id: bedroom_switch_button
         type: initial_press
+    # Opening the Balcony door
+    - platform: state
+      entity_id: binary_sensor.openclose_18
+      from: "off"
+      to: "on"
+    # Opening or closing the Bedroom windows
+    - platform: state
+      entity_id:
+        - binary_sensor.openclose_19
+        - binary_sensor.openclose_20
+      to: ~
+    # Motion in the Upstairs hallway
+    - platform: state
+      entity_id: binary_sensor.presence_127
+      from: "off"
+      to: "on"
   condition:
     - condition: state
       entity_id: script.tts_queue
