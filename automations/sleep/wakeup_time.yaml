@@ -60,3 +60,50 @@
           }}
       entity_id: input_datetime.wakeup_light_start
   mode: single
+- alias: 💤 | 📅 Prepone «wakeup» time (calendar-event)
+  id: 2a7fa567-68f3-4327-9818-1bfe8a7c3e70
+  trigger:
+    - platform: calendar
+      event: start
+      entity_id: calendar.home
+      # Update the «wakeup» time well before we go to sleep (so it's visible on
+      # the dashboard when we do), and (hopefully) well _after_ today's wakeup
+      # alarm...
+      offset: "-12:00:00"
+  condition:
+    # Ignore all-day appointments
+    - >-
+      {{ trigger.calendar_event.all_day is false }}
+    # As an extra backstop, ensure we're running _after_ the current «wakeup»
+    # time (to prevent unintentionally changing today's wakeup alarm)
+    - >-
+      {{ today_at(states('input_datetime.wakeup')) < now()}}
+  action:
+    # Act if the appointment starts _within_ 30 minutes of the current «wakeup»
+    # time; accounting for the fact «wakeup» time is dateless and we thus have
+    # to explicitly do a comparison for today and tomorrow
+    - if: >-
+        {% set appointment = trigger.calendar_event.start | as_datetime %}
+        {% set wakeup = today_at(states('input_datetime.wakeup')) %}
+        {{
+          (
+            appointment.day == now().day and
+              wakeup - appointment > timedelta(minutes = -30)
+          ) or (
+            appointment.day == (now() + timedelta(days=1)).day and
+              (wakeup + timedelta(days=1)) - appointment >
+                timedelta(minutes = -30)
+          )
+        }}
+      then:
+        - service: input_datetime.set_datetime
+          data:
+            # Set «wakeup» time to 30-minutes _before_ the appointment
+            datetime: >-
+              {{
+                trigger.calendar_event.start |
+                  as_datetime - timedelta(minutes = 30)
+              }}
+          target:
+            entity_id: input_datetime.wakeup
+  mode: queued
