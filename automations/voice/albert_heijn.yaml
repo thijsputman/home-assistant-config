@@ -1,17 +1,10 @@
-# The other "Good morning"-announcements are queued up at the "everyone awake"
-# trigger (a more straightforward trigger). Depending on how quickly we snooze
-# the wakeup alarm, the announcements could play a couple minutes later.
-# As the contents of the Albert Heijn ETA are highly time-sensitive, it's queued
-# up just before (ie, rendered) the announcements are played.
-- alias: 🛒 | 🔊 Announce Albert Heijn ETA (wakeup alarm snoozed or silenced)
+- alias: 🛒/💤 |🔊 Queue Albert Heijn ETA announcement (everyone awake)
   id: 381fa915-60ea-4d01-ab6c-51d245da3b8d
   trigger:
-    - platform: event
-      event_type: timer.started
-      event_data:
-        entity_id: timer.wakeup_snooze_time
-    - platform: event
-      event_type: wakeup_alarm_silenced
+    - platform: state
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
   condition:
     - condition: not
       conditions:
@@ -28,29 +21,25 @@
             >= today_at('00:00:00')
         }}
   action:
-    - variables:
-        eta_start: >-
-          {{-
-            states('sensor.last_notification_albert_heijn_eta') |
-              as_timestamp | timestamp_custom('%H:%M')
-          -}}
-        eta_end: >-
-          {{-
-            (states('sensor.last_notification_albert_heijn_eta') |
-              as_datetime + timedelta(seconds=state_attr(
-                  'sensor.last_notification_albert_heijn_eta', 'interval'))
-            ) | as_timestamp | timestamp_custom('%H:%M')
-          -}}
-        eta_minutes: >-
-          {{-
-            ((states('sensor.last_notification_albert_heijn_eta') |
-              as_timestamp - now() | as_timestamp) / 60) | int
-          -}}
     # Abort any previously queued announcements — they're superseded by this
     # "Good morning"-announcement...
     - event: tts_queue_abort
       event_data:
         tag: albert_heijn_eta
+    - variables:
+        eta_start: >-
+          {{
+            states('sensor.last_notification_albert_heijn_eta') |
+              as_timestamp | timestamp_custom('%H:%M')
+          }}
+        eta_end: >-
+          {{
+            (states('sensor.last_notification_albert_heijn_eta') |
+              as_datetime + timedelta(seconds=state_attr(
+                  'sensor.last_notification_albert_heijn_eta', 'interval'))
+            ) | as_timestamp | timestamp_custom('%H:%M')
+          }}
+    - delay: 1 # Ensure "Good morning!" comes first
     - service: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -59,18 +48,19 @@
           channel: announce
           tag: good_morning
           chime: false
+          # Set to expire when at Albert Heijn's ETA. As an added benefit, this
+          # allows %WAIT_REMAINING% to be used as a _dynamic_ indication as of
+          # when Albert Heijn is expected to arrive (e.g. "in 30 minutes").
+          expiry: >-
+            {{
+              [0,
+                states('sensor.last_notification_albert_heijn_eta') |
+                  as_timestamp - now() | as_timestamp
+              ] | max
+            }}
           message: >-
             Albert Heijn expects to arrive between {{ eta_start }} and
-            {{ eta_end }}. That is
-            {% if eta_minutes < 5 %}
-              about now!
-            {% elif eta_minutes < 55 %}
-              in about {{ ((eta_minutes / 5) | round * 5) }} minutes...
-            {% elif eta_minutes < 65 %}
-              in about an hour...
-            {% else %}
-              in more than an hour...
-            {% endif %}
+            {{ eta_end }}. That is %WAIT_REMAINING%
   mode: single
 - alias: 🛒 | 🔊 Queue Albert Heijn ETA announcement
   id: 4bc40f3a-f99c-4a8e-a76d-69bbe6992366
