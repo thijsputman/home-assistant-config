@@ -1,0 +1,33 @@
+# Buienradar's sensor doesn't include a forecast for today (just the current
+# conditions) – thus, we capture tomorrow's forecast at the last minute and
+# store it in this template sensor.
+# Buienradar updates once every 15-minutes, so chances are slim it'll already
+# be updated (and the forecast gone) at three seconds past midnight...
+- trigger:
+    - platform: time
+      at: "00:00:03"
+  sensor:
+    - name: Buienradar forecast (today)
+      unique_id: 70c56ee1-3039-4a9a-b168-51044a62a1fa
+      icon: mdi:cloud-outline
+      # Available if the forecast is actually for today
+      availability: >-
+        {{
+          has_value('weather.buienradar') and
+          (
+            state_attr('weather.buienradar', 'forecast') | first
+          ).datetime | as_datetime == today_at('00:00:00')
+        }}
+      state: >-
+        {{ (state_attr('weather.buienradar', 'forecast') | first).condition }}
+      attributes:
+        temp_low: >-
+          {{ (state_attr('weather.buienradar', 'forecast') | first).templow }}
+        temp_high: >-
+          {{
+            (state_attr('weather.buienradar', 'forecast') | first).temperature
+          }}
+        precipitation: >-
+          {{
+            (state_attr('weather.buienradar', 'forecast') | first).precipitation
+          }}
