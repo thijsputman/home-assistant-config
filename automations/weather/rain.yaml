@@ -94,7 +94,7 @@
           # expected (e.g. "in 30 minutes")
           expiry: "02:00:00"
           message: >-
-            Rain is expected in %WAIT_REMAINING%...
+            Rain is expected %WAIT_REMAINING%...
     # Wait for up to 4 hours for it to start raining
     - wait_for_trigger:
         - platform: numeric_state

@@ -114,8 +114,7 @@
                   tag: doorbell
                   expiry: "01:00:00"
                   message: >-
-                    The doorbell rang %TIME_AGO% ago, but no-one opened the
-                    door...
+                    The doorbell rang %TIME_AGO%, but no-one opened the door...
       # Otherwise (i.e. the door was opened/closed), dismiss the notification
       # and the pending announcement
       default:

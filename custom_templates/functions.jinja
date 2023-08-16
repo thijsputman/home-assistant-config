@@ -1,0 +1,33 @@
+{# TTS friendly variants of "relative_time()" #}
+
+{% macro relative_time_tts(seconds) %}
+
+  {% set minutes = (seconds | int(0) / 60) | round %}
+
+  {% if minutes < 5 %}
+    just now!
+  {% elif minutes < 55 %}
+    about {{ ((minutes / 5) | round * 5) }} minutes ago...
+  {% elif minutes < 65 %}
+    about an hour ago...
+  {% else %}
+    more than an hour ago...
+  {% endif %}
+
+{% endmacro %}
+
+{% macro future_time_tts(seconds) %}
+
+  {% set minutes = (seconds | int(0) / 60) | round %}
+
+  {% if minutes < 5 %}
+    about now!
+  {% elif minutes < 55 %}
+    in about {{ ((minutes / 5) | round * 5) }} minutes...
+  {% elif minutes < 65 %}
+    in about an hour...
+  {% else %}
+    in more than an hour...
+  {% endif %}
+
+{% endmacro %}

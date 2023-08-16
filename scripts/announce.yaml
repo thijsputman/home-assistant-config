@@ -173,20 +173,22 @@ tts_queue:
     # Message preprocessing — replace a handful of "magic markers" with their
     # actual content. Currently, the following markers are supported:
     #
-    # - %TIME_AGO%: Amount of time passed (using "relative_time") since the
-    #               announcement was queued
-    # - %WAIT_REMAINING%: The amount of time left (using "relative_time") on
-    #                     the announcement's queue
+    # - %TIME_AGO%: Amount of time passed since the announcement was queued (in
+    #               the form of "about XX minutes ago...")
+    # - %WAIT_REMAINING%: The amount of time left on the announcement's queue
+    #                     (in the form of "in XX minutes...")
     - variables:
         message: >-
+          {%
+            from 'functions.jinja' import relative_time_tts, future_time_tts
+          %}
           {{
             message |
-              replace('%TIME_AGO%',
-                queued_at | as_datetime | relative_time
+              replace('%TIME_AGO%', relative_time_tts(
+                now() | as_timestamp - queued_at | as_timestamp)
               ) |
               replace('%WAIT_REMAINING%',
-                (now() - timedelta( seconds = wait.remaining | int(0) ))
-                  | relative_time
+                future_time_tts(wait.remaining | int(0))
               )
           }}
     - service: script.turn_on
