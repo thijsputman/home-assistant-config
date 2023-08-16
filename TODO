@@ -59,15 +59,6 @@ future reference).
 
 ### Features
 
-- [ ] State attributes store history too, so there's no need to create template
-      sensors if they're purely used for graphing in dashboards
-      (`mini-graph-card` can graph attributes) or in other automations (use a
-      template to retrieve the attribute's value if everything else fails)
-  - Main value of template sensors is to easily retrieve an attribute's history
-    without having it structural on a dashboard (i.e. incidental usage)
-  - See which of the current template sensors (mainly tado° related) are
-    actually useful given the above considerations; remove the ones that are
-    not...
 - [ ] ~~Use generic names for the mobile devices registered through the "Mobile
       App" integration~~ (`pixel_6_pro`, `sm_g990b2` and `p20hd_eea`) — seeing
       as how these devices are only referenced in a few places, easier to
@@ -118,10 +109,6 @@ future reference).
   - Perhaps create separate Security-dashboard?
 - [ ] Add buttons to toggle the entire house to a specific Hue scene ("Alarm",
       "Active" and "Ambiance")
-- [x] ~~Create an "Air Quality" dashboard. Move ventilation- and CO₂-related
-      stuff from the "Climate" dashboard~~
-  - Add an overview of window ventilation states (based on tilt sensors and a
-    grouping of the contact sensors for both bedroom windows)
 
 ## Notifications
 
@@ -197,8 +184,6 @@ future reference).
       delayed till next Summer, there wasn't any need for it this year 🌦️😢)
   - Use Broadlink IR-blaster to control fan direction and some other advanced
     options not available in tado° (in response to tado° actions)
-- [ ] Switch on Sonair ventilator in Living Room when CO₂ level gets too high
-      (speed 8 at 900 PPM; speed 10 at 1100 PPM)
 - [ ] Switch on the Attic (exhaust) ventilator when the CO₂ gets above 1,000 PPM
       in the Attic (and the Attic is occupied). Probably good to also switch it
       on during the night regardless...
@@ -208,10 +193,10 @@ future reference).
       abstract this away.
 - [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
       other Qingping senors
-- [ ] A sudden substantial increase in PM indicates a fire (or some kind of
-      calamity); experiment with using this to trigger the alarm – additionally,
-      increases in CO₂ levels when no-one is home (i.e. Home Alarm is "Armed
-      away") might indicate some-one is in the house...
+- [ ] ~~A sudden substantial increase in PM indicates a fire (or some kind of
+      calamity); experiment with using this to trigger the alarm~~
+  - Additionally, increases in CO₂ levels when no-one is home (i.e. Home Alarm
+    is "Armed away") might indicate some-one is in the house...
   - This can be used for occupancy detection too...
 
 ## Lights
@@ -364,7 +349,6 @@ future reference).
 ### HA Yellow
 
 - [ ] Switch Home Assistant container over to the HA Yellow device
-  - Start experimenting with Thread/Matter
 - [ ] Run ESPHome and the Matter server as part of the `docker-compose` for Home
       Assistant
   - Move `deconz` and `mosquitto` out of it into their own "stacks"

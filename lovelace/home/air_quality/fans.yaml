@@ -26,8 +26,8 @@ card:
       icon: mdi:fan
       hour24: true
       hours_to_show: 48
-      points_per_hour: 0.5
-      aggregate_func: avg
+      points_per_hour: 2
+      aggregate_func: max
       smoothing: false
       cache: true
       decimals: 0

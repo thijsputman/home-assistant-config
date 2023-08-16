@@ -40,7 +40,7 @@
     {% if activity_arlo > 0 %}
       {% if activity_doorbell > 0 %}
         and
-      {% endif%}
+      {% endif %}
       {%
         set motion_front = state_attr(
           'sensor.activity_while_armed_arlo', 'front') | int(0)
@@ -90,7 +90,7 @@
       This implicitly assumes Albert Heijn never sends notifications
       more than a day in advance...
     #}
-    {% if tomorrow is true%} tomorrow {% endif %}
+    {% if tomorrow is true %} tomorrow {% endif %}
     around {{ eta | as_timestamp | timestamp_custom('%H:%M') }}.
   {% endif %}
 
