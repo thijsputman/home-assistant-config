@@ -7,10 +7,28 @@
   condition:
     - >-
       {{
+        trigger.calendar_event.all_day is true and
         trigger.calendar_event.summary | trim
           is match('(?:🎂 ?)?Birthday', True)
       }}
   action:
+    # The other "Good morning!"-announcements are queued up earlier (ie, at the
+    # moment the wakeup alarm starts sounding) and released 5-seconds after the
+    # below trigger; triggering here gives us the opportunity to impact
+    # (ie, cancel) the other notifications...
+    - wait_for_trigger:
+        - platform: event
+          event_type: timer.started
+          event_data:
+            entity_id: timer.wakeup_snooze_time
+        - platform: event
+          event_type: wakeup_alarm_silenced
+      timeout: "12:00:00"
+      continue_on_timeout: false
+    # Abort all other "Good morning!"-announcements
+    - event: tts_queue_abort
+      event_data:
+        tag: good_morning
     - service: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -20,7 +38,7 @@
           tag: good_morning
           priority: attention
           duration: 42
-          expiry: "12:00:00"
+          expiry: "01:00:00"
           chime: false
           message: >-
             media-source://media_source/sd/audio/happy_birthday.ogg
