@@ -90,3 +90,4 @@ npm install
 - **19-7-2023** — Removed `sensor.hourly_gas_consumption`; a new approach to the
   derivate is used on the Home Assistant dashboards, in Influx
   `sensor.gas_consumption` should've already been used in instead...
+- **19-8-2023** — renamed `light.smart_relay_1` into `fan.bathroom`

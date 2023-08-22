@@ -44,6 +44,13 @@ card:
       entities:
         - entity: sensor.humidity_25
           show_graph: false
+        - entity: sensor.weewx_outside_humidity
+          name: humidity – outside (%)
+          color: lightgrey
+          show_fill: false
+          show_legend: false
+          show_points: false
+          y_axis: secondary
         - entity: sensor.humidity_change_bathroom
           name: Δ-humidity (%/min)
           unit: "%/min"
@@ -51,7 +58,7 @@ card:
           show_points: false
           show_fill: false
         - entity: sensor.humidity_25
-          name: Humidity (%)
+          name: humidity (%)
           show_points: false
           y_axis: secondary
     - type: button
@@ -83,6 +90,6 @@ card:
             }
       tap_action:
         action: toggle
-      entity: light.smart_relay_1
+      entity: fan.bathroom
       icon_height: 65px
       show_name: false

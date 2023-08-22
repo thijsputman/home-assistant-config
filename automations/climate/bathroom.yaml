@@ -23,9 +23,9 @@
               above: 50.0
           timeout: "00:10:00"
           continue_on_timeout: false
-    - service: light.turn_on
+    - service: fan.turn_on
       target:
-        entity_id: light.smart_relay_1
+        entity_id: fan.bathroom
 - alias: 💨 | 🤖 Bathroom fan off (Δ💧 < 0.4%/min; 40 minute rundown)
   id: 150bbec5-df6a-4d4b-9452-262f24ca47a7
   trigger:
@@ -39,22 +39,22 @@
       for: "00:40:00"
   condition:
     - condition: state
-      entity_id: light.smart_relay_1
+      entity_id: fan.bathroom
       state: "on"
   action:
-    - service: light.turn_off
+    - service: fan.turn_off
       target:
-        entity_id: light.smart_relay_1
+        entity_id: fan.bathroom
 # Backstop in case the automated "off" fails
 - alias: 💨 | 🤖 Bathroom fan off (after 4 hours)
   id: e16ceadd-701f-4c72-9df0-50910099b2fb
   trigger:
     - platform: state
-      entity_id: light.smart_relay_1
+      entity_id: fan.bathroom
       to: "on"
       for: "04:00:00"
   condition: []
   action:
-    - service: light.turn_off
+    - service: fan.turn_off
       target:
-        entity_id: light.smart_relay_1
+        entity_id: fan.bathroom

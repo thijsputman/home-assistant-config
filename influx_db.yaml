@@ -59,7 +59,7 @@ include:
     - fan.sonair_guestroom
     - fan.sonair_living_room
     - fan.sonair_wardrobe
-    - light.smart_relay_1 # Bathroom exhaust fan
+    - fan.bathroom
     - switch.smart_plug_6 # Attic exhaust fan
     - group.openclose_bedroom
     - binary_sensor.openclose_33 # Attic window
