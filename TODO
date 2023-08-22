@@ -203,12 +203,7 @@ future reference).
 
 ### Bugs
 
-- [ ] It appears I'm **grossly** overestimating power consumption of the Hue
-      lamps...
-  - Kept an eye on power consumption during a recent holiday and based on the
-    data reported by the energy meter it their combined power consumption can't
-    be more than around 60 to 70 Watt (as opposed to the currently guestimated ±
-    270 Watt)
+🎉
 
 ### Features
 
