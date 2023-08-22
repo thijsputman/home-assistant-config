@@ -207,8 +207,6 @@ future reference).
 
 ### Features
 
-- [ ] For Summer: Garden light automatic off should only happen if light state
-      has not been modified manually (i.e. we're sitting outside)
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
 - [ ] Have the buttons next to the bed cycle through various light modes (with
       long press)

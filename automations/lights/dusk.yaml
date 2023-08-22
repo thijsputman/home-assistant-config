@@ -1,4 +1,3 @@
-# N.B. This automation's name is used later in the file!
 - alias: 💡 | ⏰ Garden lights on (daily at civil dusk)
   id: 8fa0a6d4-f80a-4312-8669-9f5525bbf3d5
   trigger:
@@ -97,35 +96,60 @@
 - alias: 💡 | ⏰ Garden lights off (daily after 23:00)
   id: 99711cfd-e1c7-47d8-83af-94876e126b6c
   trigger:
-    - platform: time
-      at: "23:00:00"
+    - platform: state
+      entity_id: sensor.time_of_day
+      from: dusk
+      to: night
+      for: "00:00:30" # Give the "lights on"-automation time to complete
   condition:
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: light.garden
-          state: "on"
-        - condition: state
-          entity_id: light.hue_filament_bulb_1 # Back door
-          state: "on"
+    - condition: state
+      entity_id: light.garden
+      state: "on"
   action:
-    # Garden lights should be on for at least 90 minutes – delay execution to
-    # achieve this based on when their "switch on"-automation ran...
+    # Garden lights normally go off at 23:00, _but_ should be on for at least
+    # 90 minutes. If they've been on for less than that, delay execution beyond
+    # 23:00...
+    # Note the logic compensates for both the 30-second trigger delay _and_ the
+    # 5-minute timeout on the wait-for-trigger that follows.
     - delay: >-
-        {% set ref = state_attr(
-            'automation.outside_lights_on_daily_at_civil_dusk', 'last_triggered'
-          ) | as_local
-        %}
-        {% set delta=1380-(ref.hour * 60 + ref.minute) %}
-        {% if delta >= 0 and delta < 90 %}
-          {{ (90 - delta) * 60 }}
+        {% set delay = (today_at("22:55") - now()).seconds %}
+        {#
+          Timedelta's seconds-property doesn't go negative; wraps around at
+          24-hours instead – the additional guard is required to prevent an
+          overly long delay in the (unlikely) case we trigger after 22:55...
+        #}
+        {% if delay < 5070 or today_at("22:55") <= now() %}
+          {{ 5070 }}
         {% else %}
-          0
+          {{ delay }}
         {% endif %}
+    # The Kitchen door and Back gate have separate automations that trigger the
+    # lights when they're opened. To prevent interfering with those, wait for
+    # their triggers at the end of our run and add an additional delay if they
+    # occur.
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.openclose_12 # Kitchen door
+            - binary_sensor.openclose_34 # Back gate
+          from: "off"
+          to: "on"
+      timeout: "00:05:00"
+      continue_on_timeout: true
+    - if: >-
+        {{ wait.trigger is defined }}
+      then:
+        # Unconditional 10-minute delay – should be enough to not override the
+        # other automations' behaviour
+        delay: "00:10:00"
+    # Only continue if the Garden lights are still on their original scene
+    - condition: state
+      entity_id: sensor.hue_scene_garden
+      state: Ambiance
     - service: light.turn_off
       entity_id:
         - light.garden
-        - light.hue_filament_bulb_1 # Back door
+        - light.hue_filament_bulb_1 # Back door light
   mode: single
 - alias: 💡 | ⏰ Front door light off (daily at 22:30)
   id: dc5c6595-78d3-43c9-94ab-24ddd2a4073d

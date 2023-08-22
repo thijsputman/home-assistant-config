@@ -1,4 +1,5 @@
-- alias: 💡 | 🚪 Front door light to maximum brightness (door open / doorbell rang)
+- alias: >-
+    💡 | 🚪 Front door light to maximum brightness (door open / doorbell rang)
   id: 78c89018-504b-4ff1-8aa1-fbebc14206e9
   trigger:
     - platform: state
