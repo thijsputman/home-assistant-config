@@ -10,6 +10,14 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      - name: Retrieve sysmon-mqtt version
+        id: sysmon
+        run: |
+          semver=$(
+            ./extras/sysmon-mqtt/sysmon.sh --version | \
+            grep -oE '[[:digit:]]+\.[[:digit:]]+\.[[:digit:]]+'
+          )
+          echo semver="v$semver" >> "$GITHUB_OUTPUT"
       - name: Generate Docker metadata
         id: meta
         uses: docker/metadata-action@v4
@@ -19,6 +27,9 @@ jobs:
             ghcr.io/thijsputman/sysmon-mqtt
           tags: |
             type=sha
+            type=semver,pattern={{version}},value=${{ steps.sysmon.outputs.semver }}
+            type=semver,pattern={{major}}.{{minor}},value=${{ steps.sysmon.outputs.semver }}
+            type=semver,pattern={{major}},value=${{ steps.sysmon.outputs.semver }}
           flavor: |
             latest=true
       - name: Setup QEMU

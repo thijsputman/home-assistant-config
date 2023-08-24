@@ -2,6 +2,13 @@
 
 set -euo pipefail
 
+SYSMON_MQTT_VERSION='1.1.0'
+
+if [ "$*" == "--version" ] ; then
+  echo "sysmon-mqtt $SYSMON_MQTT_VERSION"
+  exit 0
+fi
+
 # Defaults for optional settings (from global environment)
 
 : "${SYSMON_HA_DISCOVER:=true}"
@@ -62,6 +69,8 @@ mosquitto_sub -C 1 -h "$mqtt_host" -t \$SYS/broker/version
 
 mosquitto_pub -r -q 1 -h "$mqtt_host" \
   -t "sysmon/$device/connected" -m '-1' || true
+mosquitto_pub -r -q 1 -h "$mqtt_host" \
+  -t "sysmon/$device/version" -m "$SYSMON_MQTT_VERSION" || true
 
 ha_discover(){
 
