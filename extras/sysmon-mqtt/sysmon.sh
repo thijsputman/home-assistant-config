@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SYSMON_MQTT_VERSION='1.1.1'
+SYSMON_MQTT_VERSION='1.2.0'
 
 if [ "$*" == "--version" ] ; then
   echo "sysmon-mqtt $SYSMON_MQTT_VERSION"
@@ -18,6 +18,7 @@ fi
 : "${SYSMON_IN_DOCKER:=false}"
 : "${SYSMON_APT:=true}"
 : "${SYSMON_APT_CHECK:=}"
+: "${SYSMON_RTT_COUNT:=4}"
 
 # Compute number of ticks per hour; additionally, forces $SYSMON_INTERVAL to
 # base10 — exits in case of an invalid value for the interval
@@ -35,6 +36,7 @@ mqtt_host="${1:?"Missing MQTT-broker hostname!"}"
 device_name="${2:?"Missing device name!"}"
 # Optional
 read -r -a eth_adapters <<< "${3:-}"
+read -r -a rtt_hosts <<< "${4:-}"
 
 # Exit-trap handler
 
@@ -47,13 +49,28 @@ goodbye(){
   exit "$rc"
 }
 
-# Clean parameters to be used in MQTT-topic names — reduce them to lowercase
-# alphanumeric and underscores; exit if nothing remains
+# Clean parameters to be used in MQTT-topics and JSON-keys — reduce them to
+# lowercase alphanumeric and underscores; exit if nothing remains
 
-mqtt_clean(){
+mqtt_json_clean(){
 
-  param=$(echo "${1//[^A-Za-z0-9_ -]/}" |
-    tr -s ' -' _ | tr '[:upper:]' '[:lower:]')
+  param="${1:?"Missing parameter to clean!"}"
+
+  # It appears Home Assistant doesn't like JSON-keys made up of only numbers and
+  # underscores (e.g. the IP-address "8.8.8.8" translated into "8_8_8_8"); I'm
+  # guessing the same applies to purely numeric keys...
+  # So, prepend "IP " or "N " respectively to the unprocessed input to get more
+  # agreeable output (assuming anything which remotely resembles an IP-address
+  # is actually one).
+
+  if [[ "$param" =~ ^[0-9.]+$ ]] ; then
+    param="IP $param"
+  elif [[ "$param" =~ ^[0-9]+$ ]] ; then
+    param="N $param"
+  fi
+
+  param=$(echo "${param//[^A-Za-z0-9_ -.]/}" |
+    tr -s ' -.' _ | tr '[:upper:]' '[:lower:]')
 
   if [ -z "$param" ] ; then
     echo "Invalid parameter '$1' supplied!" ; exit 1
@@ -62,8 +79,8 @@ mqtt_clean(){
   echo "$param"
 }
 
-device=$(mqtt_clean "$device_name")
-ha_topic=$(mqtt_clean "$SYSMON_HA_TOPIC")
+device=$(mqtt_json_clean "$device_name")
+ha_topic=$(mqtt_json_clean "$SYSMON_HA_TOPIC")
 
 # Test the broker (assumes Mosquitto) — exits on failure
 mosquitto_sub -C 1 -h "$mqtt_host" -t \$SYS/broker/version
@@ -83,6 +100,7 @@ ha_discover(){
   # Optional
   local unit=${4:-}
   local entity=${5:-sensor}
+  local precision=${6:-2}
 
   # Attempt to retrieve existing UUID; otherwise generate a new one
 
@@ -120,7 +138,11 @@ ha_discover(){
   # simple ("payload > 0") template would suffice — the provided template
   # handles edge cases (MQTT component/HA reload) more gracefully though...
 
-  local value_template="value_json.${attribute//\//.} | float(0) | round(2)"
+  local value_template
+  value_template=$(tr -d '\n' <<- EOF
+    value_json.${attribute//\//.} | float(0) | round($((10#$precision)))
+		EOF
+  ) # N.B., EOF-line should be indented with tabs!
   local state_topic="sysmon/$device/state"
   local expire_after=$((10#$SYSMON_INTERVAL*3))
   local entity_picture=""
@@ -224,12 +246,19 @@ if [ "$SYSMON_HA_DISCOVER" = true ] ; then
   ha_discover 'CPU load' cpu_load mdi:chip %
   ha_discover 'Memory usage' mem_used mdi:memory %
 
-  for adapter in "${eth_adapters[@]}" ; do
+  for eth_adapter in "${eth_adapters[@]}" ; do
 
-    ha_discover "Bandwidth in (${adapter})" "bandwidth/${adapter}/rx" \
+    ha_discover "Bandwidth in (${eth_adapter})" "bandwidth/${eth_adapter}/rx" \
       'data_rate mdi:download-network' kbit/s
-    ha_discover "Bandwidth out (${adapter})" "bandwidth/${adapter}/tx" \
+    ha_discover "Bandwidth out (${eth_adapter})" "bandwidth/${eth_adapter}/tx" \
       'data_rate mdi:upload-network' kbit/s
+
+  done
+
+  for rtt_host in "${rtt_hosts[@]}" ; do
+
+    ha_discover "Round-trip time (${rtt_host})" \
+      "rtt/$(mqtt_json_clean "$rtt_host")" mdi:server-network ms '' 3
 
   done
 
@@ -257,6 +286,13 @@ if [ "$SYSMON_APT" = true ] ; then
     apt_check=$(mktemp -t sysmon.apt-check.XXXXXXXX)
   fi
 fi
+
+# Round-trip times output file (temporary file)
+if [ ${#rtt_hosts[@]} -gt 0 ]; then
+  rtt_result=$(mktemp -t sysmon.rtt.XXXXXXXX)
+fi
+
+payload_rtt=""
 
 # ZFS ARC — minimum size
 if [ -f /proc/spl/kstat/zfs/arcstats ] ; then
@@ -304,18 +340,18 @@ while true ; do
 
   for i in "${!eth_adapters[@]}" ; do
 
-    adapter="${eth_adapters[i]}"
+    eth_adapter="${eth_adapters[i]}"
 
     # Attempt to strip $adapter down to a single path-component; exits if the
     # adapter doesn't exist
-    rx=$(< "/sys/class/net/${adapter%%/*}/statistics/rx_bytes")
-    tx=$(< "/sys/class/net/${adapter%%/*}/statistics/tx_bytes")
+    rx=$(< "/sys/class/net/${eth_adapter%%/*}/statistics/rx_bytes")
+    tx=$(< "/sys/class/net/${eth_adapter%%/*}/statistics/tx_bytes")
 
     # Only run when "prev" is initialised
     if [ "${#rx_prev[@]}" -eq "${#eth_adapters[@]}" ] ; then
 
       payload_bw+=("$(tr -s ' ' <<- EOF
-        "$adapter": {
+        "$eth_adapter": {
           "rx": "$(
             awk '{printf "%3.2f", ($1-$2)/$3*8/1000}' \
               <<< "$rx ${rx_prev[i]} $((10#$SYSMON_INTERVAL))"
@@ -328,15 +364,48 @@ while true ; do
 				EOF
       )") # N.B., EOF-line should be indented with tabs!
 
-    # Otherwise add an empty payload
-    else
-      payload_bw+=("$(printf '"%s": {"rx": "0", "tx": "0"}' "$adapter")")
     fi
 
     rx_prev[i]=$rx
     tx_prev[i]=$tx
 
   done
+
+  # Round-trip times
+
+  if [ -v rtt_result ] && [ -f "$rtt_result" ] ; then
+
+    # Read previous iteration's round-trip times into the payload
+    payload_rtt=$(<"$rtt_result")
+    : > "$rtt_result"
+
+    (
+      rtt_times=()
+
+      for i in "${!rtt_hosts[@]}" ; do
+
+        rtt_host="${rtt_hosts[i]}"
+
+        readarray -t result < <(ping -c "$((10#$SYSMON_RTT_COUNT))" \
+            "$rtt_host" | \
+          grep 'rtt\|round-trip' | grep -oE '[[:digit:]]+\.[[:digit:]]{3}')
+
+        if [ -n "${result[1]}" ] ; then
+
+          rtt_times+=("$(tr -s ' ' <<- EOF
+            "$(mqtt_json_clean "$rtt_host")":
+              "$(printf '%4.3f' "${result[1]}")"
+						EOF
+          )") # N.B., EOF-line should be indented with tabs!
+
+        fi
+
+      done
+
+      _join , "${rtt_times[@]}" > "$rtt_result"
+    ) &
+
+  fi
 
   # APT & reboot-required
 
@@ -406,6 +475,9 @@ while true ; do
       "mem_used": "$mem_used",
       "bandwidth": {
         $(_join , "${payload_bw[@]}")
+      },
+      "rtt": {
+        $payload_rtt
       },
       "reboot_required": "$reboot_required",
       "apt": {
