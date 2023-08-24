@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SYSMON_MQTT_VERSION='1.1.0'
+SYSMON_MQTT_VERSION='1.1.1'
 
 if [ "$*" == "--version" ] ; then
   echo "sysmon-mqtt $SYSMON_MQTT_VERSION"
@@ -13,6 +13,7 @@ fi
 
 : "${SYSMON_HA_DISCOVER:=true}"
 : "${SYSMON_HA_TOPIC:=homeassistant}"
+: "${SYSMON_HA_VERSION:=202308}"
 : "${SYSMON_INTERVAL:=30}"
 : "${SYSMON_IN_DOCKER:=false}"
 : "${SYSMON_APT:=true}"
@@ -72,6 +73,8 @@ mosquitto_pub -r -q 1 -h "$mqtt_host" \
 mosquitto_pub -r -q 1 -h "$mqtt_host" \
   -t "sysmon/$device/version" -m "$SYSMON_MQTT_VERSION" || true
 
+# Construct Home Assistant discovery-payload
+
 ha_discover(){
 
   local name=${1}
@@ -112,8 +115,6 @@ ha_discover(){
     fi
   fi
 
-  # Construct Home Assistant discovery-payload
-  #
   # A combination of "expire_after" and "availability/value_template" is used
   # to determine the sensor's availability. In principle, "expire_after" and a
   # simple ("payload > 0") template would suffice — the provided template
@@ -123,6 +124,7 @@ ha_discover(){
   local state_topic="sysmon/$device/state"
   local expire_after=$((10#$SYSMON_INTERVAL*3))
   local entity_picture=""
+  local state_class=""
   local availability_template
   availability_template=$(tr -d '\n' <<- EOF
     'online' if (value | int(0) | as_datetime) + timedelta(
@@ -151,6 +153,15 @@ ha_discover(){
     ) # N.B., EOF-line should be indented with tabs!
   fi
 
+  # Set state_class to "measurement" if unit_of_measurement is defined; in case
+  # of the Uptime-sensor set it to "total_increasing".
+  if [ -n "$unit" ] ; then
+    state_class="measurement"
+    if [ "$attribute" == uptime ] ; then
+      state_class="total_increasing"
+    fi
+  fi
+
   # For expiry of 0, the "simple" behaviour is actually what we want...
   if [ "$expire_after" -eq 0 ] ; then
     availability_template="'online' if value | int(0) > 0 else 'offline'"
@@ -163,7 +174,13 @@ ha_discover(){
   # shellcheck disable=SC2002
   payload=$(tr -s ' ' <<- EOF
     {
-      "name": $(echo -n "$device_name $name" | jq -R -s '.'),
+      "name": $(
+        {
+          [ "$((10#$SYSMON_HA_VERSION))" -lt 202308 ] && \
+            printf "%s " "$device_name"
+          printf "%s" "$name" ;
+        } | jq -R -s '.'
+      ),
       "object_id": "${device}_${attribute//\//_}",
       "unique_id": "$unique_id",
       "device": {
@@ -180,6 +197,7 @@ ha_discover(){
         echo "\"entity_picture\": \"$entity_picture\",")
       "state_topic": "$state_topic",
       $([ -n "$unit" ] && echo "\"unit_of_measurement\": \"$unit\",")
+      $([ -n "$state_class" ] && echo "\"state_class\": \"$state_class\",")
       $([ -n "$value_template" ] && \
         echo "\"value_template\": \"{{ $value_template }}\",")
       "expire_after": "$expire_after",
@@ -202,22 +220,22 @@ if [ "$SYSMON_HA_DISCOVER" = true ] ; then
 
   ha_discover Heartbeat heartbeat 'timestamp mdi:heart-pulse'
   ha_discover Uptime uptime 'duration mdi:timer-outline' s
-  ha_discover 'CPU temperature' cpu_temp temperature '°C'
-  ha_discover 'CPU load' cpu_load 'mdi:chip' '%'
-  ha_discover 'Memory usage' mem_used 'mdi:memory' '%'
+  ha_discover 'CPU temperature' cpu_temp temperature °C
+  ha_discover 'CPU load' cpu_load mdi:chip %
+  ha_discover 'Memory usage' mem_used mdi:memory %
 
   for adapter in "${eth_adapters[@]}" ; do
 
     ha_discover "Bandwidth in (${adapter})" "bandwidth/${adapter}/rx" \
-      'data_rate mdi:download-network' 'kbit/s'
+      'data_rate mdi:download-network' kbit/s
     ha_discover "Bandwidth out (${adapter})" "bandwidth/${adapter}/tx" \
-      'data_rate mdi:upload-network' 'kbit/s'
+      'data_rate mdi:upload-network' kbit/s
 
   done
 
   if [ "$SYSMON_APT" = true ] ; then
-    ha_discover 'APT upgrades' apt 'mdi:package-up' '' update
-    ha_discover 'Reboot required' reboot_required 'mdi:restart' '' \
+    ha_discover 'APT upgrades' apt mdi:package-up '' update
+    ha_discover 'Reboot required' reboot_required mdi:restart '' \
       binary_sensor
   fi
 
@@ -231,7 +249,7 @@ first_loop=true
 hourly=true
 ticks=0
 
-# Set APT-check output file (defaults to temporary file)
+# APT-check output file (defaults to temporary file)
 if [ "$SYSMON_APT" = true ] ; then
   if [ -n "$SYSMON_APT_CHECK" ] ; then
     touch "$SYSMON_APT_CHECK" && apt_check="$SYSMON_APT_CHECK"
@@ -310,8 +328,10 @@ while true ; do
 				EOF
       )") # N.B., EOF-line should be indented with tabs!
 
-    # Otherwise send an empty payload
-    else printf -v payload_bw '"%s": {"rx": "0", "tx": "0"}' "$adapter" ; fi
+    # Otherwise add an empty payload
+    else
+      payload_bw+=("$(printf '"%s": {"rx": "0", "tx": "0"}' "$adapter")")
+    fi
 
     rx_prev[i]=$rx
     tx_prev[i]=$tx
@@ -340,6 +360,8 @@ while true ; do
     # Run apt-check and its processing once per hour
 
     if [ "$hourly" = true ] ; then
+
+      : > "$apt_check"
 
       # Fork it off so we don't block on waiting for this to complete
       (
