@@ -3,9 +3,9 @@
 set -euo pipefail
 
 SYSMON_MQTT_VERSION='1.2.0'
+echo "sysmon-mqtt $SYSMON_MQTT_VERSION"
 
-if [ "$*" == "--version" ] ; then
-  echo "sysmon-mqtt $SYSMON_MQTT_VERSION"
+if [ "$*" == "--version" ]; then
   exit 0
 fi
 
@@ -40,11 +40,24 @@ read -r -a rtt_hosts <<< "${4:-}"
 
 # Exit-trap handler
 
-goodbye(){
+goodbye() {
+
   rc="$?"
-  mosquitto_pub -r -q 1 -h "$mqtt_host" \
-    -t "sysmon/$device/connected" -m 0 || true
+
+  mosquitto_pub -r -q 1 -h "$mqtt_host" -t "sysmon/$device/connected" -m 0 ||
+    true
+
+  # Clean-up temporary files and fds/pipes
+
+  if [ -v apt_check ] && [ -f "$apt_check" ]; then
+    rm -f "$apt_check"
+  fi
+  if { : >&3; } 2> /dev/null; then
+    exec 3>&-
+  fi
+
   # Reset EXIT-trap to prevent running twice (due to "set -e")
+
   trap - EXIT
   exit "$rc"
 }
@@ -270,7 +283,22 @@ if [ "$SYSMON_HA_DISCOVER" = true ] ; then
 
 fi
 
-_join() { local IFS="$1" ; shift ; echo "$*" ; }
+# Helper functions ("private")
+
+_join() {
+  local IFS="$1"
+  shift
+  echo "$*"
+}
+
+_readfd() {
+  local IFS=$'\n'
+  local lines
+  if read -r -u "$1" -t 0 || false; then
+    read -r -u "$1" -d '' -a lines
+    echo "${lines[@]}"
+  fi
+}
 
 cpu_cores=$(nproc --all)
 rx_prev=() ; tx_prev=()
@@ -287,9 +315,12 @@ if [ "$SYSMON_APT" = true ] ; then
   fi
 fi
 
-# Round-trip times output file (temporary file)
+# Round-trip times output ("anonymous" pipe; fd 3)
 if [ ${#rtt_hosts[@]} -gt 0 ]; then
-  rtt_result=$(mktemp -t sysmon.rtt.XXXXXXXX)
+  rtt_result=$(mktemp -u -t sysmon.rtt.XXXXXXXX)
+  mkfifo "$rtt_result" && exec 3<> "$rtt_result"
+  rm -f "$rtt_result"
+  unset -v rtt_result
 fi
 
 payload_rtt=""
@@ -373,26 +404,28 @@ while true ; do
 
   # Round-trip times
 
-  if [ -v rtt_result ] && [ -f "$rtt_result" ] ; then
+  if { : >&3; } 2> /dev/null; then
 
     # Read previous iteration's round-trip times into the payload
-    payload_rtt=$(<"$rtt_result")
-    : > "$rtt_result"
+    payload_rtt=$(_readfd 3)
 
     (
       rtt_times=()
 
-      for i in "${!rtt_hosts[@]}" ; do
+      for i in "${!rtt_hosts[@]}"; do
 
         rtt_host="${rtt_hosts[i]}"
 
-        readarray -t result < <(ping -c "$((10#$SYSMON_RTT_COUNT))" \
-            "$rtt_host" | \
-          grep 'rtt\|round-trip' | grep -oE '[[:digit:]]+\.[[:digit:]]{3}')
+        readarray -t result < <(
+          ping -c "$((10#$SYSMON_RTT_COUNT))" \
+            "$rtt_host" |
+            grep 'rtt\|round-trip' | grep -oE '[[:digit:]]+\.[[:digit:]]{3}'
+        )
 
-        if [ -n "${result[1]}" ] ; then
+        if [ -v result ] && [ -n "${result[1]}" ]; then
 
-          rtt_times+=("$(tr -s ' ' <<- EOF
+          rtt_times+=("$(
+            tr -s ' ' <<- EOF
             "$(mqtt_json_clean "$rtt_host")":
               "$(printf '%4.3f' "${result[1]}")"
 						EOF
@@ -402,7 +435,8 @@ while true ; do
 
       done
 
-      _join , "${rtt_times[@]}" > "$rtt_result"
+      _join , "${rtt_times[@]}" >&3
+      printf '\0' >&3
     ) &
 
   fi
