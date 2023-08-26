@@ -11,14 +11,14 @@ network_adapters="${3:-}"
 # Ensure list of network adapters remains quoted in the heredoc. There appears
 # no way to achieve this using something like ${var:+\""$var"\"} — whatever I
 # try, I either get no quotes or a literal \" in the output...
-if [ -n "$network_adapters" ] ; then
+if [ -n "$network_adapters" ]; then
   network_adapters=\""$network_adapters"\"
 fi
 
 sysmon_url="https://github.com/thijsputman/home-assistant-config/raw/main/ \
   extras/sysmon-mqtt/sysmon.sh"
 
-if [ -e /etc/systemd/system/sysmon-mqtt.service ] ; then
+if [ -e /etc/systemd/system/sysmon-mqtt.service ]; then
   systemctl stop sysmon-mqtt
   systemctl disable sysmon-mqtt
   rm /etc/systemd/system/sysmon-mqtt.service
@@ -55,7 +55,7 @@ tee /etc/systemd/system/sysmon-mqtt.service <<- EOF > /dev/null
   [Install]
   WantedBy=multi-user.target
 	EOF
-  # N.B., EOF-line should be indented with tabs!
+# N.B., EOF-line should be indented with tabs!
 
 systemctl daemon-reload
 systemctl enable sysmon-mqtt

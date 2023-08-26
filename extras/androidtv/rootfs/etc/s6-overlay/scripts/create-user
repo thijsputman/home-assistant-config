@@ -2,9 +2,9 @@
 
 set -eo pipefail
 
-if ! id -u androidtv &>/dev/null ; then
+if ! id -u androidtv &> /dev/null; then
 
-  if [ -n "$PUID" ] && [ -n "$PGID" ] ; then
+  if [ -n "$PUID" ] && [ -n "$PGID" ]; then
 
     addgroup --gid "$PGID" androidtv
     adduser --system --uid "$PUID" --gid "$PGID" androidtv
@@ -24,7 +24,7 @@ fi
 mkdir -p /home/androidtv/.android
 chown -R androidtv:androidtv /home/androidtv/.android
 
-if [ -f /androidtv/keys/adbkey ] && [ -f /androidtv/keys/adbkey.pub ] ; then
+if [ -f /androidtv/keys/adbkey ] && [ -f /androidtv/keys/adbkey.pub ]; then
 
   ln -sf /androidtv/keys/adbkey /home/androidtv/.android/adbkey
   ln -sf /androidtv/keys/adbkey.pub /home/androidtv/.android/adbkey.pub

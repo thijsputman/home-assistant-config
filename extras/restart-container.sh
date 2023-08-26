@@ -7,8 +7,8 @@ container=home-assistant
 container_path=~/home-assistant
 nvme_path=/path-to-nvme/home-assistant
 
-if [ ! -f $container_path/config/restart-container ] ; then
- exit 0
+if [ ! -f $container_path/config/restart-container ]; then
+  exit 0
 fi
 
 docker-compose -f $container_path/docker-compose.yml stop $container

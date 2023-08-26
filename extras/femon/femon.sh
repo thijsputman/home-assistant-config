@@ -12,16 +12,16 @@ while true; do
 
   while IFS= read -r line; do
 
-    if [[ ! $line =~ ^('FE:'|'status')\  ]] ; then
+    if [[ ! $line =~ ^('FE:'|'status')\  ]]; then
       echo 'Invalid femon output!'
       exit 1
     fi
 
-    if [[ $line =~ 'signal'\ +([0-9]{1,3})'%' ]] ; then
+    if [[ $line =~ 'signal'\ +([0-9]{1,3})'%' ]]; then
       signal=$((signal + BASH_REMATCH[1]))
     fi
 
-    if [[ $line =~ 'snr'\ +([0-9]{1,3})'%' ]] ; then
+    if [[ $line =~ 'snr'\ +([0-9]{1,3})'%' ]]; then
       snr=$((snr + BASH_REMATCH[1]))
     fi
 
