@@ -1,0 +1,4 @@
+[rootfs/etc/s6-overlay/**]
+indent_style = space
+indent_size = 2
+space_redirects = true

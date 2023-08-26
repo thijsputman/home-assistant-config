@@ -2,11 +2,15 @@ proseWrap: always
 overrides:
   - files:
       - "*.yaml"
+      - "*.yml"
     options:
-      # Ensure Prettier doesn't mess with Jinja2 (i.e. multiline strings in the
-      # Home Assistant YAML files)
+      # I have prose wrap set to "always" in VS Code's settings (mainly with an
+      # eye on Markdown) – prefer to have it disabled for YAML-files.
+      # Especially relevant in this repository as there's a lot of Jinja2 in the
+      # Home Assistant configuration I'd like Prettier to leave alone.
       proseWrap: preserve
   - files:
-      - "TODO"
+      - TODO
+      - NOTES
     options:
       parser: markdown

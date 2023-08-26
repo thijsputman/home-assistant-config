@@ -16,6 +16,8 @@ ignore: |
   /custom_components
   /known_devices.yaml
 
+extends: default
+
 rules:
   braces:
     forbid: non-empty

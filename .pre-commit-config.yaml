@@ -1,0 +1,83 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+      - id: check-added-large-files
+      - id: check-case-conflict
+      - id: check-executables-have-shebangs
+      - id: check-shebang-scripts-are-executable
+        # s6-overlay's scripts shouldn't be executable
+        exclude: |
+          (?x)(
+            rootfs/etc/(
+              cont-init\.d|
+              services\.d|
+              s6-overlay/s6-rc\.d
+            )
+          )
+      - id: check-symlinks
+      - id: destroyed-symlinks
+      - id: detect-private-key
+      - id: end-of-file-fixer
+        exclude: (\.nnb|^\.HA_VERSION)$
+      - id: forbid-submodules
+      - id: mixed-line-ending
+        args: [--fix=no]
+      - id: trailing-whitespace
+  - repo: local
+    hooks:
+      - id: prettier
+        name: Prettier
+        entry: npx --yes prettier --check --ignore-unknown
+        language: system
+        types: [text]
+      - id: markdownlint
+        name: markdownlint
+        entry: npx --yes markdownlint-cli
+        language: system
+        types: [file]
+        files: (?i)(\.md|(^|/)(TODO|NOTES))$
+      # Home Assistant YAML-files (using ".yamllint.yaml")
+      - id: yamllint
+        name: yamllint (Home Assistant)
+        entry: yamllint
+        language: system
+        types: [yaml]
+      # Other YAML-files (hardcoded "default"-configuration)
+      - id: yamllint-other
+        name: yamllint (other)
+        # prettier-ignore
+        entry:
+          "yamllint -d \"{extends: default, \
+            rules: {\
+              document-start: disable,\
+              quoted-strings: {\
+                required: only-when-needed\
+              }\
+            }\
+          }\""
+        language: system
+        types: [yaml]
+        # Matches "dotfiles" and "dotfolders" (ie, generic configuration files)
+        files: (?i)^\..*ya?ml$
+      - id: shellcheck
+        name: ShellCheck
+        entry: shellcheck --wiki-link-count=0
+        language: system
+        types: [shell]
+      - id: shfmt
+        name: shfmt
+        entry: shfmt -l -d
+        language: system
+        types: [shell]
+      - id: hadolint
+        name: hadolint
+        entry: hadolint
+        language: system
+        types: [dockerfile]
+      - id: notebook-cells
+        name: check notebooks for cell-data
+        entry: .github/scripts/check-notebook-cells.sh
+        language: script
+        types: [file]
+        files: (?i)\.(ipynb|nnb)$
