@@ -5,6 +5,9 @@ set -euo pipefail
 pip3 install pre-commit
 pip3 install yamllint
 
+npm install prettier
+npm install markdownlint-cli
+
 # hadolint
 
 if [ ! -x "${HOME}/.local/bin/hadolint" ]; then

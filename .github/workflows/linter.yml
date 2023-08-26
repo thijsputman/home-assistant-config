@@ -11,11 +11,18 @@ jobs:
     name: Lint codebase (with pre-commit)
     runs-on: ubuntu-22.04
     steps:
-      - name: Setup Python3
-        uses: actions/setup-python@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
+      - name: Cache pip
+        uses: actions/cache@v3
         with:
-          python-version: ${{ vars.PYTHON_VERSION }}
-          cache: pip
+          path: ~/.cache/pip
+          key: ${{ runner.os }}-pip
+      - name: Cache npm
+        uses: actions/cache@v3
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-npm
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
@@ -31,17 +38,15 @@ jobs:
           SHFMT_VERSION: ${{ vars.SHFMT_VERSION }}
         run: ./.github/scripts/setup-pre-commit.sh
         shell: bash
-      - name: Checkout code
-        uses: actions/checkout@v3
       - name: Cache pre-commit
         uses: actions/cache@v3
         with:
           path: ~/.cache/pre-commit
           # yamllint disable-line rule:quoted-strings
-          key: "${{ runner.os }}-python-${{ vars.PYTHON_VERSION }}-pre-commit-\
+          key: "${{ runner.os }}-pre-commit-\
             ${{ hashFiles('.pre-commit-config.yaml') }}"
           restore-keys: |
-            ${{ runner.os }}-python-${{ vars.PYTHON_VERSION }}-pre-commit-
+            ${{ runner.os }}-pre-commit-
       - name: Run pre-commit
         env:
           SKIP: notebooks-cells
