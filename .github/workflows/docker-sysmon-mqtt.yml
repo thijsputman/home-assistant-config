@@ -1,6 +1,6 @@
 name: Docker — sysmon-mqtt
 
-on: workflow_dispatch
+"on": workflow_dispatch
 
 jobs:
   build_push:
@@ -25,11 +25,13 @@ jobs:
           images: |
             thijsputman/sysmon-mqtt
             ghcr.io/thijsputman/sysmon-mqtt
+          # yamllint disable rule:line-length
           tags: |
             type=sha
             type=semver,pattern={{version}},value=${{ steps.sysmon.outputs.semver }}
             type=semver,pattern={{major}}.{{minor}},value=${{ steps.sysmon.outputs.semver }}
             type=semver,pattern={{major}},value=${{ steps.sysmon.outputs.semver }}
+          # yamllint enable rule:line-length
           flavor: |
             latest=true
       - name: Setup QEMU

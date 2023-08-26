@@ -1,6 +1,6 @@
 name: Lint codebase
 
-on:
+"on":
   push:
     branches: ["**"]
     tags-ignore: ["**"]
@@ -8,36 +8,42 @@ on:
     branches: [main]
 jobs:
   lint:
-    name: Lint codebase
+    name: Lint codebase (with pre-commit)
     runs-on: ubuntu-22.04
     steps:
+      - name: Setup Python3
+        uses: actions/setup-python@v3
+        with:
+          python-version: ${{ vars.PYTHON_VERSION }}
+          cache: pip
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.local/bin/hadolint
+            ~/.local/bin/shfmt
+          # yamllint disable-line rule:quoted-strings
+          key: "hadolint-${{ vars.HADOLINT_VERSION }}-\
+            shfmt-${{ vars.SHFMT_VERSION }}"
       - name: Install dependencies
         env:
           HADOLINT_VERSION: ${{ vars.HADOLINT_VERSION }}
-        run: |
-          # YAMLlint
-          pip3 install yamllint
-          # hadolint
-          hadolint_base=https://github.com/hadolint/hadolint/releases/download
-          wget -nv -O "${HOME}/hadolint" \
-            "${hadolint_base}/${HADOLINT_VERSION}/hadolint-Linux-x86_64"
-          chmod +x "${HOME}/hadolint"
+          SHFMT_VERSION: ${{ vars.SHFMT_VERSION }}
+        run: ./.github/scripts/setup-pre-commit.sh
+        shell: bash
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Lint with Prettier
-        run: |
-          npx --yes prettier --check .
-      - name: Lint with MarkdownLint
-        run: |
-          npx --yes markdownlint-cli "**/*.md" TODO NOTES README
-      - name: Lint with YAMLlint
-        run: |
-          yamllint --format github .
-      - name: Lint with ShellCheck
-        run: |
-          readarray -t files < <(find . -name "*.sh")
-          shellcheck --wiki-link-count=0 "${files[@]}"
-      - name: Lint with hadolint
-        run: |
-          readarray -t files < <(find . -name "Dockerfile*")
-          "${HOME}/hadolint" "${files[@]}"
+      - name: Cache pre-commit
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/pre-commit
+          # yamllint disable-line rule:quoted-strings
+          key: "${{ runner.os }}-python-${{ vars.PYTHON_VERSION }}-pre-commit-\
+            ${{ hashFiles('.pre-commit-config.yaml') }}"
+          restore-keys: |
+            ${{ runner.os }}-python-${{ vars.PYTHON_VERSION }}-pre-commit-
+      - name: Run pre-commit
+        env:
+          SKIP: notebooks-cells
+        run: pre-commit run --color=always --all-files
+        shell: bash
