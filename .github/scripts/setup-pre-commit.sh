@@ -2,30 +2,43 @@
 
 set -euo pipefail
 
-pip3 install pre-commit
-pip3 install yamllint
+pip3 install 'pre-commit==3.3.3'
+pip3 install 'yamllint==1.32.0'
 
-npm install prettier
-npm install markdownlint-cli
+# ShellCheck
+if [ ! -x ~/.local/bin/shellcheck ]; then
+
+  shellcheck_base=https://github.com/koalaman/shellcheck/releases/download
+  shellcheck_version=v0.9.0
+
+  wget -qO- \
+    "${shellcheck_base}/${shellcheck_version}/shellcheck-${shellcheck_version}.linux.x86_64.tar.xz" |
+    tar -xJv
+  mv "shellcheck-${shellcheck_version}/shellcheck" ~/.local/bin
+  rm -rf "shellcheck-${shellcheck_version}"
+
+fi
 
 # hadolint
-
-if [ ! -x "${HOME}/.local/bin/hadolint" ]; then
+if [ ! -x ~/.local/bin/hadolint ]; then
 
   hadolint_base=https://github.com/hadolint/hadolint/releases/download
-  wget -nv -O "${HOME}/.local/bin/hadolint" \
-    "${hadolint_base}/${HADOLINT_VERSION}/hadolint-Linux-x86_64"
-  chmod +x "${HOME}/.local/bin/hadolint"
+  hadolint_version=v2.12.0
+
+  wget -nv -O ~/.local/bin/hadolint \
+    "${hadolint_base}/${hadolint_version}/hadolint-Linux-x86_64"
+  chmod +x ~/.local/bin/hadolint
 
 fi
 
 # shfmt
-
-if [ ! -x "${HOME}/.local/bin/shfmt" ]; then
+if [ ! -x ~/.local/bin/shfmt ]; then
 
   shfmt_base=https://github.com/mvdan/sh/releases/download
-  wget -nv -O "${HOME}/.local/bin/shfmt" \
-    "${shfmt_base}/${SHFMT_VERSION}/shfmt_${SHFMT_VERSION}_linux_amd64"
-  chmod +x "${HOME}/.local/bin/shfmt"
+  shfmt_version=v3.7.0
+
+  wget -nv -O ~/.local/bin/shfmt \
+    "${shfmt_base}/${shfmt_version}/shfmt_${shfmt_version}_linux_amd64"
+  chmod +x ~/.local/bin/shfmt
 
 fi

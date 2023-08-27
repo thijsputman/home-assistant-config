@@ -28,12 +28,12 @@ repos:
     hooks:
       - id: prettier
         name: Prettier
-        entry: npx --yes prettier --check --ignore-unknown
+        entry: npx --yes prettier@3.0.2 --check --ignore-unknown
         language: system
         types: [text]
       - id: markdownlint
         name: markdownlint
-        entry: npx --yes markdownlint-cli
+        entry: npx --yes markdownlint-cli@0.35.0
         language: system
         types: [file]
         files: (?i)(\.md|(^|/)(TODO|NOTES))$

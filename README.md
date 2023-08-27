@@ -27,17 +27,29 @@ running Debian/Ubuntu with Node/`npm`, and Python3/`pip` available:
 
 ```shell
 sudo apt install jq
-sudo apt install shellcheck
 
 pip install --user pipx
-pipx install pre-commmit
-pipx install yamllint
+pipx install 'pre-commit==3.3.3'
+pipx install 'yamllint==1.32.0'
 
-# Assumes ~/.local/bin is on your $PATH
-arch=$(dpkg --print-architecture)
+# The following assumes ~/.local/bin is on your $PATH
+
+# ShellCheck
+arch=$(uname -m)
+wget -qO- \
+  "https://github.com/koalaman/shellcheck/releases/download/v0.9.0/shellcheck-v0.9.0.linux.${arch}.tar.xz" |
+  tar -xJv
+mv shellcheck-v0.9.0/shellcheck ~/.local/bin
+rm -rf shellcheck-v0.9.0
+
+# hadolint
+arch=$(uname -m)
 wget -O ~/.local/bin/hadolint \
   "https://github.com/hadolint/hadolint/releases/download/v2.12.0/hadolint-Linux-${arch}"
 chmod +x ~/.local/bin/hadolint
+
+# shfmt
+arch=$(dpkg --print-architecture)
 wget -O ~/.local/bin/shfmt \
   "https://github.com/mvdan/sh/releases/download/v3.7.0/shfmt_v3.7.0_linux_${arch}"
 chmod +x ~/.local/bin/shfmt

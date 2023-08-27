@@ -13,42 +13,31 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      - name: Cache pip
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pip
-          key: ${{ runner.os }}-pip
-      - name: Cache npm
-        uses: actions/cache@v3
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-npm
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
           path: |
+            ~/.cache/pre-commit
+            ~/.cache/pip
+            ~/.npm
             ~/.local/bin/hadolint
             ~/.local/bin/shfmt
+          # Verions are pinned in both the pre-commit configuration and the
+          # setup-script; invalidate cache on change of either.
+          # Only restore on exact match – the manually pulled in binaries are
+          # not version checked prior to execution. Restoring a stale cache
+          # would result in using outdated versions...
+          # yamllint disable rule:line-length
           # yamllint disable-line rule:quoted-strings
-          key: "hadolint-${{ vars.HADOLINT_VERSION }}-\
-            shfmt-${{ vars.SHFMT_VERSION }}"
+          key: "pre-commit-cache-\
+            ${{ hashFiles('.pre-commit-config.yaml', '.github/scripts/setup-pre-commit.sh') }}"
+          # The hashFiles-expression cannot be split over multiple lines 😟🤐
+          # yamllint enable rule:line-length
       - name: Install dependencies
-        env:
-          HADOLINT_VERSION: ${{ vars.HADOLINT_VERSION }}
-          SHFMT_VERSION: ${{ vars.SHFMT_VERSION }}
-        run: ./.github/scripts/setup-pre-commit.sh
+        run: .github/scripts/setup-pre-commit.sh
         shell: bash
-      - name: Cache pre-commit
-        uses: actions/cache@v3
-        with:
-          path: ~/.cache/pre-commit
-          # yamllint disable-line rule:quoted-strings
-          key: "${{ runner.os }}-pre-commit-\
-            ${{ hashFiles('.pre-commit-config.yaml') }}"
-          restore-keys: |
-            ${{ runner.os }}-pre-commit-
       - name: Run pre-commit
         env:
-          SKIP: notebooks-cells
+          SKIP: notebook-cells
         run: pre-commit run --color=always --all-files
         shell: bash
