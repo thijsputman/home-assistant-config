@@ -24,8 +24,7 @@ jobs:
             ~/.cache/pre-commit
             ~/.cache/pip
             ~/.npm
-            ~/.local/bin/hadolint
-            ~/.local/bin/shfmt
+            ~/.local/bin
           # Verions are pinned in both the pre-commit configuration and the
           # setup-script; invalidate cache on change of either.
           # Only restore on exact match – the manually pulled in binaries are

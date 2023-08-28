@@ -21,7 +21,7 @@ content: >-
     _<ha-icon icon="mdi:check-all"></ha-icon> Nothing to report..._
   {% endif %}
 
-  {% if failed | length > 0 %}
+  {% if failed | length > 0 -%}
     ## Failed devices
     - <ha-icon icon="mdi:toy-brick-remove-outline"></ha-icon> {{
       failed | join(
@@ -30,7 +30,7 @@ content: >-
     -}}
   {% endif %}
 
-  {% if low_battery | length > 0 %}
+  {% if low_battery | length > 0 -%}
     ## Devices with low battery
     - <ha-icon icon="mdi:battery-alert-variant-outline"></ha-icon> {{
       low_battery | join(
