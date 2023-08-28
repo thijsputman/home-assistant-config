@@ -22,10 +22,12 @@ fi
 
 # Compute number of ticks per hour; additionally, forces $SYSMON_INTERVAL to
 # base10 — exits in case of an invalid value for the interval
+
 hourly_ticks=$((3600 / 10#$SYSMON_INTERVAL))
 
 # APT-related metrics make no sense when running inside a Docker-container or
 # when APT is not present on the system
+
 if [ "$SYSMON_IN_DOCKER" = true ] || ! command -v apt &> /dev/null; then
   SYSMON_APT=false
 fi
@@ -139,43 +141,39 @@ ha_discover() {
   local icon=""
 
   if [ -n "${class_icon[0]}" ]; then
-    if [ "${#class_icon[@]}" -gt 1 ]; then
-      device_class="${class_icon[0]}"
-      icon="${class_icon[1]}"
-    elif [[ "${class_icon[0]}" =~ ^mdi: ]]; then
-      icon="${class_icon[0]}"
+    if [ ${#class_icon[@]} -gt 1 ]; then
+      device_class=${class_icon[0]}
+      icon=${class_icon[1]}
+    elif [[ ${class_icon[0]} =~ ^mdi: ]]; then
+      icon=${class_icon[0]}
     else
-      device_class="${class_icon[0]}"
+      device_class=${class_icon[0]}
     fi
   fi
 
-  # A combination of "expire_after" and "availability/value_template" is used
-  # to determine the sensor's availability. In principle, "expire_after" and a
-  # simple ("payload > 0") template would suffice — the provided template
-  # handles edge cases (MQTT component/HA reload) more gracefully though...
-
-  local value_template
-  value_template=$(
-    tr -d '\n' <<- EOF
-    value_json.${attribute//\//.} | float(0) | round($((10#$precision)))
-		EOF
-  ) # N.B., EOF-line should be indented with tabs!
+  local value_json="value_json.${attribute//\//.}"
+  local value_template="$value_json | float(0) | round($((10#$precision)))"
   local state_topic="sysmon/$device/state"
   local expire_after=$((10#$SYSMON_INTERVAL * 3))
   local entity_picture=""
   local state_class=""
-  local availability_template
-  availability_template=$(
-    tr -d '\n' <<- EOF
-    'online' if (value | int(0) | as_datetime) + timedelta(
-      seconds = ${expire_after}) >= now() else 'offline'
-		EOF
-  ) # N.B., EOF-line should be indented with tabs!
+
+  # The "defined"-test in Jinja works on missing _direct_ descendants only; any
+  # deeper and it'll throw an error. This is not an issue in most cases, except
+  # for bandwidth monitoring (where, if for example "bandwidth/eth0/rx" goes
+  # missing, a test can only be performed against "bandwidth/eth0") – in those
+  # cases, pop of the last component of the attribute-path.
+
+  local availability_test=$value_json
+  if [[ $availability_test == *.bandwidth.* ]]; then
+    availability_test=${availability_test%.*}
+  fi
 
   # Heartbeat and APT have somewhat different setups
 
   if [ "$attribute" = "heartbeat" ]; then
     expire_after=0
+    availability_test=value
     state_topic="sysmon/$device/connected"
     value_template="(value | int(0) | as_datetime)"
   elif [ "$attribute" = "apt" ]; then
@@ -184,28 +182,52 @@ ha_discover() {
       entity_picture="/local/sysmon-mqtt/$(lsb_release -ds | cut -d ' ' -f1 |
         tr '[:upper:]' '[:lower:]').png"
     fi
-    value_template="value_json.${attribute//\//.} | to_json"
+    value_template="$value_json | to_json"
   elif [ "$attribute" = "reboot_required" ]; then
     expire_after=0
-    value_template=$(
+    value_template="'ON' if ($value_json | int(0)) == 1 else 'OFF'"
+  fi
+
+  # If the measurement isn't present (anymore) in the JSON-payload, report
+  # "Unknown" instead of retaining the last reported value (which happens if
+  # not explicitly set to "None").
+
+  value_template=$(
+    tr -d '\n' <<- EOF
+      {% if $availability_test is defined %}
+        {{ $value_template }}
+      {% else %}
+        {{ none }}
+      {% endif%}
+		EOF
+  ) # N.B., EOF-line should be indented with tabs!
+
+  # Report sensor as available if a hearbeat is received within the expiry-
+  # interval – if no expiry-interval is defined, a simple check (connected > 0)
+  # suffices...
+
+  local availability_template
+
+  if [ "$expire_after" -gt 0 ]; then
+    availability_template=$(
       tr -d '\n' <<- EOF
-      'ON' if (value_json.${attribute//\//.} | int(0)) == 1 else 'OFF'
+      'online' if (value | int(0) | as_datetime) + timedelta(
+        seconds = ${expire_after}) >= now()
+      else 'offline'
 			EOF
     ) # N.B., EOF-line should be indented with tabs!
+  else
+    availability_template="'online' if value | int(0) > 0 else 'offline'"
   fi
 
   # Set state_class to "measurement" if unit_of_measurement is defined; in case
   # of the Uptime-sensor set it to "total_increasing".
+
   if [ -n "$unit" ]; then
     state_class="measurement"
     if [ "$attribute" == uptime ]; then
       state_class="total_increasing"
     fi
-  fi
-
-  # For expiry of 0, the "simple" behaviour is actually what we want...
-  if [ "$expire_after" -eq 0 ]; then
-    availability_template="'online' if value | int(0) > 0 else 'offline'"
   fi
 
   local payload_name payload_model
@@ -220,6 +242,7 @@ ha_discover() {
   # /dev/null). Furthermore, no model is reported in (non-privileged) Docker-
   # containers while <https://github.com/moby/moby/issues/43419> remains open...
   # shellcheck disable=SC2002
+
   payload_model=$(
     cat /sys/firmware/devicetree/base/model 2> /dev/null | tr -d '\0' || true
   )
@@ -244,7 +267,7 @@ ha_discover() {
       "state_topic": "$state_topic",
       $([ -n "$unit" ] && echo "\"unit_of_measurement\": \"$unit\",")
       $([ -n "$state_class" ] && echo "\"state_class\": \"$state_class\",")
-      $([ -n "$value_template" ] && echo "\"value_template\": \"{{ $value_template }}\",")
+      "value_template": "$value_template",
       "expire_after": "$expire_after",
       "availability": {
         "topic": "sysmon/$device/connected",
@@ -357,7 +380,6 @@ while true; do
       result){printf \"%3.2f\", result[1]*100/$cpu_cores}")
 
   # Memory usage (1 - total / available)
-
   mem_total=$(free | awk 'NR==2{print $2}')
   mem_avail=$(free | awk 'NR==2{print $7}')
 
@@ -556,6 +578,7 @@ while true; do
   first_loop=false
 
   # Track ticks and hourly-trigger
+
   ticks=$((ticks + 1))
   hourly=false
   if [ "$ticks" -gt "$hourly_ticks" ]; then
