@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SYSMON_MQTT_VERSION='1.2.0'
+SYSMON_MQTT_VERSION='1.2.1'
 echo "sysmon-mqtt $SYSMON_MQTT_VERSION"
 
 if [ "$*" == "--version" ]; then
@@ -230,7 +230,9 @@ ha_discover() {
     fi
   fi
 
-  local payload_name payload_model
+  local payload_name
+  local payload_model
+
   payload_name=$(
     {
       [ "$((10#$SYSMON_HA_VERSION))" -lt 202308 ] &&
@@ -238,6 +240,7 @@ ha_discover() {
       printf "%s" "$name"
     } | jq -R -s '.'
   )
+
   # The use of cat is intentional here (it redirects "not found"-errors to
   # /dev/null). Furthermore, no model is reported in (non-privileged) Docker-
   # containers while <https://github.com/moby/moby/issues/43419> remains open...
@@ -288,9 +291,12 @@ if [ "$SYSMON_HA_DISCOVER" = true ]; then
 
   ha_discover Heartbeat heartbeat 'timestamp mdi:heart-pulse'
   ha_discover Uptime uptime 'duration mdi:timer-outline' s
-  ha_discover 'CPU temperature' cpu_temp temperature °C
   ha_discover 'CPU load' cpu_load mdi:chip %
   ha_discover 'Memory usage' mem_used mdi:memory %
+
+  if [ -r /sys/class/thermal/thermal_zone0/temp ]; then
+    ha_discover 'CPU temperature' cpu_temp temperature °C
+  fi
 
   for eth_adapter in "${eth_adapters[@]}"; do
 
@@ -371,8 +377,10 @@ while true; do
   uptime=$(cut -d ' ' -f1 < /proc/uptime)
 
   # CPU temperature
-  cpu_temp=$(awk '{printf "%3.2f", $0/1000 }' < \
-    /sys/class/thermal/thermal_zone0/temp)
+  if [ -r /sys/class/thermal/thermal_zone0/temp ]; then
+    cpu_temp=$(awk '{printf "%3.2f", $0/1000 }' < \
+      /sys/class/thermal/thermal_zone0/temp)
+  fi
 
   # Load (1-minute load / # of cores)
   cpu_load=$(uptime |
@@ -543,9 +551,9 @@ while true; do
     tr -s ' ' <<- EOF
     {
       "uptime": "$uptime",
-      "cpu_temp": "$cpu_temp",
       "cpu_load": "$cpu_load",
       "mem_used": "$mem_used",
+      $([ -v cpu_temp ] && echo "\"cpu_temp\": \"$cpu_temp\",")
       "bandwidth": {
         $(_join , "${payload_bw[@]}")
       },
