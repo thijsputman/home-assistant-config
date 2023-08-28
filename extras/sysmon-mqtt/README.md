@@ -13,6 +13,11 @@ required further processing in Home Assistant to be usable.
 Hence, `sysmon-mqtt`: A simple shell-script to capture a handful of common
 metrics and push them over MQTT to Home Assistant.
 
+- [Version history](#version-history)
+  - [1.2.1](#121)
+  - [1.2.0](#120)
+  - [1.1.0](#110)
+  - [1.0.0](#100)
 - [Metrics](#metrics)
   - [Heartbeat](#heartbeat)
   - [Home Assistant discovery](#home-assistant-discovery)
@@ -23,6 +28,33 @@ metrics and push them over MQTT to Home Assistant.
   - [Docker](#docker)
   - [`systemd`](#systemd)
 
+## Version history
+
+### 1.2.1
+
+- If `/sys/class/thermal/thermal_zone0/temp` cannot be read, `cpu_temp` is
+  omitted (instead of brining down the script)
+
+### 1.2.0
+
+- Respect Home Assistant 2023.8
+  [MQTT entity-naming guidelines](https://github.com/home-assistant/core/pull/95159)
+  (can be toggled via `SYSMON_HA_VERSION`)
+- Report round-trip (ie, ping) times to user-defined host(s)
+- Set `state_class` to "measurement" for all sensors that have
+  `unit_of_measurement` defined
+- If sensor data is missing from the JSON-payload, ensure its state is set to
+  `Unknown` in Home Assistant
+
+### 1.1.0
+
+- Add monitoring of APT status ("updates available" and "reboot required")
+- Count ZFS ARC as "free" memory
+
+### 1.0.0
+
+- Initial release
+
 ## Metrics
 
 Currently, the following metrics are provided:
@@ -30,13 +62,14 @@ Currently, the following metrics are provided:
 - `cpu_load` — the 1-minute load as a percentage of maximum nominal load (e.g.
   for a quad-core system, 100% represents a 1-minute load of 4.0)
 - `cpu_temp` — CPU temperature in degrees Celsius (read from
-  `/sys/class/thermal/thermal_zone0/temp`)
-- `mem_used` — Memory in use (_excluding_ buffers and caches) as a percentage of
+  `/sys/class/thermal/thermal_zone0/temp` – omitted if not available)
+- `mem_used` — memory in use (_excluding_ buffers and caches) as a percentage of
   total available memory
-- `uptime` — Uptime in seconds
-- `bandwidth` — Average bandwidth (receive and transmit) for individual network
+- `uptime` — uptime in seconds
+- `bandwidth` — average bandwidth (receive and transmit) for individual network
   adapters in kbps during the monitoring interval
-- `apt` — Number of APT packages that can upgraded
+- `rtt` – average round-trip (ie, ping) times in ms to one or more hosts
+- `apt` — number of APT packages that can upgraded
   - This assumes a Debian(-derived) distribution; the APT-related metrics are
     automatically disabled when no `apt`-binary is present
 - `reboot_required` — Reports `1` if a system reboot is required as a result of
@@ -58,9 +91,12 @@ defined as three times the reporting interval. For the default configuration
 that would amount to 90 seconds.
 
 When the script starts, a heartbeat of `-1` is reported until the script's
-_second_ iteration. This is done to allow the metrics to stabilise (e.g.,
-bandwidth is averaged over the reporting interval; during the first interval it
-always reports `0`).
+_second_ iteration; this is done because some of the metrics (`bandwidth`, `rtt`
+and `apt`) are – due to various technical reasons – only reported from the
+second iteration onwards...
+
+Additionally, the version of the running `sysmon-mqtt`-script is provided in
+`sysmon/[device-name]/version`.
 
 ### Home Assistant discovery
 
@@ -142,7 +178,7 @@ restart)...
 From the shell:
 
 ```shell
-./sysmon.sh mqtt-broker device-name [network-adapters]
+./sysmon.sh mqtt-broker device-name [network-adapters] [rtt-hosts]
 ```
 
 - `mqtt-broker` — hostname or IP address of the MQTT-broker
@@ -153,6 +189,9 @@ From the shell:
 - `network-adapters` (optional) — one or more network adapters to monitor as a
   space-delimited list (e.g., `'eth0 wlan0'`; mind the quotes when specifying
   more than one adapter)
+- `rtt-hosts` (optional) — one or more hosts to which to monitor the round-trip
+  time as a space-delimited list (e.g., `'8.8.8.8 google.com'`; mind the quotes
+  when specifying more than one hostname)
 
 The following _optional_ environment variables can be used to further influence
 the script's behaviour:
@@ -167,8 +206,20 @@ the script's behaviour:
   APT-related metrics (`apt` and `reboot_required`)
   - Automatically disabled when no `apt`-binary is present, _or_ when running
     inside a Docker-container (see below)
-- `SYSMON_APT_CHECK` (default: `<temporary file>`) — override the location of
+- `SYSMON_APT_CHECK` (default: `«temporary file»`) — override the location of
   the file used to store APT-check's status
+- `SYSMON_RTT_COUNT` (default `4`) — number of ping-requests to send per
+  iteration over which to average the round-trip time
+- `SYSMON_HA_VERSION` (default: `202308`) — specify Home Assistant version
+  compatibility (as `YYYYMM`); based on this some behaviours are modified:
+  - `>= 202308` do _not_ prepend device name to sensor name
+    ([home-assistant/core#95159](https://github.com/home-assistant/core/pull/95159))
+
+Echo the `sysmon-mqtt` version and exit:
+
+```shell
+./sysmon.sh --version
+```
 
 ### Docker
 
@@ -218,8 +269,10 @@ services:
     environment:
       - MQTT_BROKER=
       - DEVICE_NAME=
-      # Optional: Specify network adapters for bandwidth monitoring
+      # Optional: Specify network adapters for bandwidth monitoring and/or
+      # hostnames for round-trip times
       - NETWORK_ADAPTERS=
+      - RTT_HOSTS=
       # Optional: Drop permissions to the provided UID/GID-combination
       - PUID=
       - PGID=
@@ -250,7 +303,7 @@ RestartSec=30
 # Update the below match your environment
 User=[user]
 ExecStart=/usr/bin/env bash /home/<user>/sysmon.sh \
-  mqtt-broker "Device Name" [network-adapters]
+  mqtt-broker "Device Name" [network-adapters] [rtt-hosts]
 # Optional: Provide additional environment variables
 Environment=""
 
@@ -292,5 +345,5 @@ For the very brave, the script can be run from GitHub directly:
 ```shell
 curl -fsSL https://github.com/thijsputman/home-assistant-config/raw/main/\
 extras/sysmon-mqtt/install.sh | sudo -E bash -s - \
-mqtt-broker "Device Name" "eth0 wlan0"
+mqtt-broker "Device Name" "eth0 wlan0" "8.8.8.8 google.com"
 ```

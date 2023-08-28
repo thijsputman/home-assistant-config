@@ -7,12 +7,16 @@ export DEBIAN_FRONTEND=noninteractive
 mqtt_host="${1:?"Missing MQTT-broker hostname!"}"
 device_name="${2:?"Missing device name!"}"
 network_adapters="${3:-}"
+rtt_hosts="${4:-}"
 
-# Ensure list of network adapters remains quoted in the heredoc. There appears
-# no way to achieve this using something like ${var:+\""$var"\"} — whatever I
-# try, I either get no quotes or a literal \" in the output...
+# Ensure list of network adapters and RTT hosts remain quoted in the heredoc.
+# There appears no way to achieve this using something like ${var:+\""$var"\"} —
+# whatever I try, I either get no quotes or a literal '\"' in the output...
 if [ -n "$network_adapters" ]; then
   network_adapters=\""$network_adapters"\"
+fi
+if [ -n "$rtt_hosts" ]; then
+  rtt_hosts=\""$rtt_hosts"\"
 fi
 
 sysmon_url="https://github.com/thijsputman/home-assistant-config/raw/main/ \
@@ -50,7 +54,7 @@ tee /etc/systemd/system/sysmon-mqtt.service <<- EOF > /dev/null
   RestartSec=30
   User=${SUDO_USER:-$(whoami)}
   ExecStart=/usr/bin/env bash $(pwd)/.sysmon-mqtt \
-    $mqtt_host "$device_name" $network_adapters
+    $mqtt_host "$device_name" $network_adapters $rtt_hosts
 
   [Install]
   WantedBy=multi-user.target
