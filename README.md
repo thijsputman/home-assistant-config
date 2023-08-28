@@ -36,7 +36,7 @@ pipx install 'yamllint==1.32.0'
 
 # ShellCheck
 arch=$(uname -m)
-wget -qO- \
+wget -O- \
   "https://github.com/koalaman/shellcheck/releases/download/v0.9.0/shellcheck-v0.9.0.linux.${arch}.tar.xz" |
   tar -xJv
 mv shellcheck-v0.9.0/shellcheck ~/.local/bin

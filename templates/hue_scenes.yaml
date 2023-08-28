@@ -336,6 +336,7 @@
             elif num_lights == 14 and (
               brightness == 75 or
               brightness == 76 or
+              brightness == 77 or
               brightness == 78
             ) and (
                 (xy_color[0] == 0.38 and xy_color[1] == 0.37) or

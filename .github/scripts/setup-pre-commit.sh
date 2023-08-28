@@ -11,7 +11,7 @@ if [ ! -x ~/.local/bin/shellcheck ]; then
   shellcheck_base=https://github.com/koalaman/shellcheck/releases/download
   shellcheck_version=v0.9.0
 
-  wget -qO- \
+  wget -nv -O- \
     "${shellcheck_base}/${shellcheck_version}/shellcheck-${shellcheck_version}.linux.x86_64.tar.xz" |
     tar -xJv
   mv "shellcheck-${shellcheck_version}/shellcheck" ~/.local/bin
