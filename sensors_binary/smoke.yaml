@@ -1,0 +1,8 @@
+- platform: group
+  name: Smoke detectors
+  unique_id: 0c626d2e-9f53-4dc5-a62a-ee05b532d533
+  device_class: smoke
+  entities:
+    - binary_sensor.fire_81 # Upstairs
+    - binary_sensor.fire_187 # Attic
+    - binary_sensor.fire_188 # Hallway

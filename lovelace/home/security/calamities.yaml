@@ -18,7 +18,7 @@ card:
   cards:
     - type: glance
       entities:
-        - entity: binary_sensor.fire_81
+        - entity: binary_sensor.smoke_detectors
           name: Smoke
         - entity: binary_sensor.water_82
           name: Kitchen

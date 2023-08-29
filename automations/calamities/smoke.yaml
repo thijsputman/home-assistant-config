@@ -2,7 +2,12 @@
   id: 1166dfdf-0375-4834-aa52-188c78d3bbdd
   trigger:
     - platform: state
-      entity_id: binary_sensor.fire_81
+      # Explicitly trigger on individual sensors so it's (easier) to reference
+      # the one that triggered in the announcement...
+      entity_id:
+        - binary_sensor.fire_81 # Upstairs
+        - binary_sensor.fire_187 # Attic
+        - binary_sensor.fire_188 # Hallway
       from: "off"
       to: "on"
   condition: []
@@ -14,7 +19,8 @@
         variables:
           message: >-
             🔥 Smoke detected!\n
-            {{ state_attr(trigger.entity_id, 'friendly_name') }} detected smoke!
+            {{ state_attr(trigger.entity_id, 'friendly_name') }} detected
+            smoke!
     # Queue TTS announcement (released when silencing the sirens)
     - service: script.turn_on
       target:
@@ -26,7 +32,8 @@
           priority: attention
           expiry: "00:10:00"
           message: >-
-            {{ state_attr(trigger.entity_id, 'friendly_name') }} detected smoke!
+            {{ state_attr(trigger.entity_id, 'friendly_name') }} detected
+            smoke!
     - parallel:
         # During the day, release the queued up TTS announcement right away
         - if:
@@ -56,14 +63,15 @@
             criticalNotification: true
             title: 🔥 Smoke detected!
             message: >-
-              {{ state_attr(trigger.entity_id, 'friendly_name') }} detected smoke!
+              {{ state_attr(trigger.entity_id, 'friendly_name') }} detected
+              smoke!
   mode: single
   max_exceeded: silent
 - alias: 🤯/🔥 | 🚨 Smoke detected (active the sirens unconditionally)
   id: 3e33958b-6f90-4612-afd0-d0078e054e92
   trigger:
     - platform: state
-      entity_id: binary_sensor.fire_81
+      entity_id: binary_sensor.smoke_detectors
       from: "off"
       to: "on"
       # Hold state for 1 minute so we don't raise hell on a false alarm...
