@@ -112,7 +112,7 @@
                 The following device(s) appear to have (partially) failed:
                 <br><br>◾ {{
                   devices | join('<br>◾ ')
-                -}}
+                }}
   mode: restart
 - alias: >-
     📱 | 💧 Notify on potential Watermeter failure (no flow ⏰ > 24-hours)
@@ -225,7 +225,7 @@
                 }} and has {{
                   states('sensor.ups_battery_runtime_minutes')
                 }} minutes of runtime remaining...
-            {%- endif -%}
+            {% endif %}
     # If someone is home, also sound the alarm. The ZigBee controller is
     # connected to the UPS; the sirens have backup batteries so most likely
     # this'll work... 🤞
@@ -263,15 +263,15 @@
       data:
         targetDevices: my
         message: >-
-          {%- if trigger.entity_id == 'binary_sensor.remote_ui' -%}
+          {% if trigger.entity_id == 'binary_sensor.remote_ui' %}
             📡 Home Assistant lost connectivity!\n
             Home Assistant appears to have lost connection with Nabu Casa.
-          {%-
+          {%
             elif trigger.entity_id == 'binary_sensor.google_dns_ping'
-          -%}
+          %}
             📡 Home Assistant lost Internet-connectivity!\n
             Home Assistant is unable to ping Google's Public DNS.
-          {%- endif %} To inspect the state of the house:
+          {% endif %} To inspect the state of the house:
           \n\n✉️ #secret# status [camera]
           \n\nTo check and control the Home Alarm:
           \n\n✉️ #secret# alarm [arm|disarm|silence]

@@ -142,7 +142,6 @@
             {% endif %}
             {% set result.devices = result.devices + [matched] %}
           {% endif %}
-
         {% endfor %}
         {{
           result.devices | unique | list | sort | to_json |
