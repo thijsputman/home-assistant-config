@@ -87,6 +87,7 @@
                 brightness == 127 or
                 brightness == 128 or
                 brightness == 130 or
+                brightness == 131 or
                 brightness == 132
               ) and (
                 (xy_color[0] == 0.50 and xy_color[1] == 0.35) or
@@ -360,8 +361,10 @@
           %}
             Movie
           {%
-            elif num_lights == 14 and brightness == 187 and
-              (
+            elif num_lights == 14 and (
+              brightness == 186 or
+              brightness == 187
+            ) and (
                 (xy_color[0] == 0.46 and xy_color[1] == 0.4) or
                 (xy_color[0] == 0.49 and xy_color[1] == 0.38)
               )
@@ -549,9 +552,11 @@
           %}
             Active
           {%
-            elif num_lights == 6 and
-              (brightness == 113 or brightness == 114 or brightness == 115)
-            and (
+            elif num_lights == 6 and (
+              brightness == 113 or
+              brightness == 114 or
+              brightness == 115
+            ) and (
               (xy_color[0] == 0.43 and xy_color[1] == 0.34) or
               (xy_color[0] == 0.46 and xy_color[1] == 0.37)
             )

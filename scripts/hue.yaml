@@ -10,7 +10,11 @@ hue_activate_scene:
       required: true
       selector:
         entity:
-          integration: template
+          include_entities:
+            - sensor.hue_scene_living_room
+            - sensor.hue_scene_kitchen
+            - sensor.hue_scene_kitchen_counter_cupboards
+            - sensor.hue_scene_garden
   sequence:
     - if:
         - >-
@@ -46,7 +50,8 @@ hue_activate_scene_kitchen:
       description: Scene entity for the Kitchen
       selector:
         entity:
-          integration: scenes
+          filter:
+            - domain: scene
     turn_off:
       description: Turn off the Kitchen lights
       selector:
