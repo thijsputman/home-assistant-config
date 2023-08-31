@@ -121,8 +121,7 @@
         - sensor.hue_scene_kitchen
         - sensor.hue_scene_kitchen_counter_cupboards
         - sensor.hue_scene_garden
-      to:
-        - <Unknown>
+      to: <Unknown>
   condition: []
   action:
     - variables:
@@ -157,8 +156,7 @@
             - sensor.hue_scene_kitchen
             - sensor.hue_scene_kitchen_counter_cupboards
             - sensor.hue_scene_garden
-          from:
-            - <Unknown>
+          from: <Unknown>
       timeout: "00:00:20"
       continue_on_timeout: true
     - variables:
@@ -181,6 +179,55 @@
             from {{ trigger.from_state.state }} to {{
             trigger.to_state.state }} {%
           endif -%}
+          { num_lights: {{ num_lights}}, brightness: {{ brightness }}, xy_color:
+          {{ xy_color }} }
+  mode: parallel
+  max: 3
+# When Kitchen counter & cupboards is activated (ie, switches to "Activity"),
+# Kitchen should either switch to "Bright (custom)" (the containing scene) or
+# to <Unknown> – any other scene indicates a heuristic failure.
+- alias: 💡 | 🩹 Log Hue scene heuristic failures – Kitchen <Unknown>
+  id: 5f35f110-bb6d-4240-9a06-89b6e5a6c92f
+  trigger:
+    - platform: state
+      entity_id: sensor.hue_scene_kitchen_counter_cupboards_raw
+      to: Activity
+      # Give Kitchen time to catch up (but not too much...)
+      for: "00:00:02"
+  condition:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_kitchen_raw
+          state:
+            - Bright (custom)
+            - <Unknown>
+  action:
+    - variables:
+        num_lights: >-
+          {{
+            expand(
+              state_attr('light.hue_group_kitchen', 'entity_id')
+            ) | selectattr('state', '==', 'on') | list | length
+          }}
+        brightness: >-
+          {{ state_attr('light.hue_group_kitchen', 'brightness') | int(-1) }}
+        xy_color: >-
+          {%
+            if state_attr('light.hue_group_kitchen', 'xy_color') == none
+          %}
+            {{ [-1.0, -1.0] }}
+          {% else %}
+            {%
+              set xy_color = state_attr('light.hue_group_kitchen', 'xy_color')
+            %}
+            {{ [xy_color[0] | round(2), xy_color[1] | round (2)] }}
+          {% endif %}
+    - service: notify.log_hue_scene_heuristic
+      data:
+        message: >-
+          Hue scene heuristic failure: Kitchen transitioned to {{
+            states('sensor.hue_scene_kitchen_raw') }} instead of <Unknown>
           { num_lights: {{ num_lights}}, brightness: {{ brightness }}, xy_color:
           {{ xy_color }} }
   mode: parallel

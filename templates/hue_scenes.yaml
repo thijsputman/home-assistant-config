@@ -242,14 +242,19 @@
       icon: mdi:movie-filter
       state: >-
         {#
-          In case Kitchen counter & cupboards is <Unknown> and Kitchen itself is
-          not, switch to <Kitchen> to indicate it's following the main Kitchen
-          scene (and distinguish the situation from an actual <Unknown>)
+          In case Kitchen counter & cupboards is <Unknown>, and Kitchen itself
+          is not, switch to <Kitchen> to indicate we're following the main
+          Kitchen scene.
+          In case the Kitchen's scene is "Bright(custom)" – which from the
+          cupboard's perspective is identical to "Activity", also switch to
+          <Kitchen> such that the Kitchen's main scene takes priority.
         #}
         {%
-          if states('sensor.hue_scene_kitchen_counter_cupboards_raw')
-            == '<Unknown>' and
-          states('sensor.hue_scene_kitchen_raw') != '<Unknown>'
+          if (
+            states('sensor.hue_scene_kitchen_counter_cupboards_raw')
+              == '<Unknown>' and
+            states('sensor.hue_scene_kitchen_raw') != '<Unknown>')
+          or states('sensor.hue_scene_kitchen_raw') == 'Bright (custom)'
         %}
           <Kitchen>
         {% else %}
@@ -342,8 +347,7 @@
             ) and (
                 (xy_color[0] == 0.38 and xy_color[1] == 0.37) or
                 (xy_color[0] == 0.39 and xy_color[1] == 0.37) or
-                (xy_color[0] == 0.4 and xy_color[1] == 0.36) or
-                (xy_color[0] == 0.46 and xy_color[1] == 0.35)
+                (xy_color[0] == 0.4 and xy_color[1] == 0.36)
               )
           %}
             Daytime
@@ -366,7 +370,8 @@
               brightness == 187
             ) and (
                 (xy_color[0] == 0.46 and xy_color[1] == 0.4) or
-                (xy_color[0] == 0.49 and xy_color[1] == 0.38)
+                (xy_color[0] == 0.49 and xy_color[1] == 0.38) or
+                (xy_color[0] == 0.50 and xy_color[1] == 0.38)
               )
           %}
             Bright (custom)
@@ -448,13 +453,15 @@
           <Off>
         {#
           If Kitchen counter & cupboards is "Activity", prevent Kitchen from
-          changing state to <Unknown> – instead, keep reporting its previous
-          scene as the active scene
+          changing scene _unless_ it's to "Bright (custom)". From the cupboard's
+          perspective that scene is identical to "Activity" – we thus let the
+          Kitchen's overall scene take over again and force the cupboards back
+          to <Kitchen>...
         #}
         {%
           elif states('sensor.hue_scene_kitchen_counter_cupboards_raw')
               == 'Activity'
-          and states('sensor.hue_scene_kitchen_raw') == '<Unknown>'
+          and states('sensor.hue_scene_kitchen_raw') != 'Bright (custom)'
         %}
           {{ this.state }}
         {% else %}

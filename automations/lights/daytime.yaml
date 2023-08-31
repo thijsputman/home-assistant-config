@@ -41,6 +41,8 @@
         - condition: state
           entity_id: light.kitchen
           state: "off"
+        # If only the Cupboards are in "Activity", we consider the Kitchen
+        # lights to be off too...
         - condition: and
           conditions:
             - condition: state
