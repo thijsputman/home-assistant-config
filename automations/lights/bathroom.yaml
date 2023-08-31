@@ -26,23 +26,31 @@
         - disarmed
         - armed_night
   action:
-    - if:
-        # Make the light a bit kinder on the eyes late at night
-        - condition: state
-          entity_id: input_boolean.everyone_asleep
-          state: "on"
-      then:
-        - service: light.turn_on
-          data:
-            brightness: 60
-            kelvin: 2200
-          entity_id: light.bathroom
-      else:
-        - service: light.turn_on
-          data:
-            brightness: 255
-            kelvin: 2900
-          entity_id: light.bathroom
+    - choose:
+        # Evenings
+        - conditions:
+            - condition: state
+              entity_id: sensor.time_of_day
+              state:
+                - dusk
+                - night
+          sequence:
+            - service: scene.turn_on
+              target:
+                entity_id: scene.bathroom_bright
+        # Nighttime
+        - conditions:
+            - condition: state
+              entity_id: input_boolean.everyone_asleep
+              state: "on"
+          sequence:
+            - service: scene.turn_on
+              target:
+                entity_id: scene.bathroom_nighttime
+      default:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.bathroom_concentrate
     - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.occupancy_bathroom

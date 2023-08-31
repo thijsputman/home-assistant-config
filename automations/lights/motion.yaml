@@ -83,23 +83,30 @@
         - armed_night
   action:
     - choose:
-        # Make the light a bit kinder on the eyes late at night
+        # Evenings
+        - conditions:
+            - condition: state
+              entity_id: sensor.time_of_day
+              state:
+                - dusk
+                - night
+          sequence:
+            - service: scene.turn_on
+              target:
+                entity_id: scene.wardrobe_bright
+        # Nighttime
         - conditions:
             - condition: state
               entity_id: input_boolean.everyone_asleep
               state: "on"
           sequence:
-            - service: light.turn_on
-              data:
-                brightness: 40
-                kelvin: 2200
-              entity_id: light.wardrobe
+            - service: scene.turn_on
+              target:
+                entity_id: scene.wardrobe_nighttime
       default:
-        - service: light.turn_on
-          data:
-            brightness: 255
-            kelvin: 2900
-          entity_id: light.wardrobe
+        - service: scene.turn_on
+          target:
+            entity_id: scene.wardrobe_concentrate
     - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.presence_63
