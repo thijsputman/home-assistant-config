@@ -118,6 +118,7 @@
     - platform: state
       entity_id:
         - sensor.hue_scene_living_room
+        - sensor.hue_scene_ensuite
         - sensor.hue_scene_kitchen
         - sensor.hue_scene_kitchen_counter_cupboards
         - sensor.hue_scene_garden
@@ -153,6 +154,7 @@
         - platform: state
           entity_id:
             - sensor.hue_scene_living_room
+            - sensor.hue_scene_ensuite
             - sensor.hue_scene_kitchen
             - sensor.hue_scene_kitchen_counter_cupboards
             - sensor.hue_scene_garden

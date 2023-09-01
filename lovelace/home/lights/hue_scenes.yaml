@@ -10,6 +10,42 @@ card_mod:
         :host{
           color: var(--secondary-text-color) !important;
         }
+    div.entity:nth-child(2):
+      $: |
+        :host{
+          color: var(--secondary-text-color) !important;
+        }
+        div::before{
+          content: "<";
+          position: relative;
+          right: -0.2em;
+        }
+        div::after{
+          content: ">";
+          position: relative;
+          right: 0.2em;
+        }
+      $ state-badge$: |
+        @keyframes flicker{
+          0% {
+            color: #FF9800;
+          }
+          15% {
+            color: #FFC107;
+          }
+          55% {
+            color: #FF9800;
+          }
+          85% {
+            color: #FFC107;
+          }
+          100% {
+            color: #FF9800;
+          }
+        }
+        ha-state-icon[data-state=on]{
+          animation: 1.5s alternate ease-in-out infinite flicker;
+        }
 title: Rooms — active scene
 columns: 3
 show_name: false
@@ -17,6 +53,11 @@ show_state: true
 entities:
   - entity: sensor.hue_scene_living_room
     icon: hue:room-living
+  - entity: input_boolean.fireplace
+    tap_action:
+      action: more-info
+  - entity: sensor.hue_scene_ensuite
+    icon: hue:room-lounge
   - entity: sensor.hue_scene_kitchen
     icon: hue:room-kitchen
   - entity: sensor.hue_scene_kitchen_counter_cupboards

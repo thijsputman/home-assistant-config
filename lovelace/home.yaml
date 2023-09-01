@@ -81,34 +81,23 @@ views:
       - type: vertical-stack
         cards:
           - !include home/lights/wakeup.yaml
-          - type: button
-            tap_action:
-              action: call-service
-              service: script.turn_on
-              target:
-                entity_id: script.lights_out
-              data:
-                variables:
-                  activatedFrom: kitchen
-              confirmation:
-                text: Turn off all lights?
-            show_state: false
-            show_icon: true
-            show_name: false
-            icon_height: 48px
-            icon: mdi:lightbulb-group-off
           - type: grid
             cards:
               - type: button
                 tap_action:
-                  action: toggle
-                entity: input_boolean.fireplace
-              - type: button
-                tap_action:
-                  action: toggle
-                entity: light.hue_white_light_1
-                icon: mdi:vanity-light
-                name: Ensuite
+                  action: call-service
+                  service: script.turn_on
+                  target:
+                    entity_id: script.lights_out
+                  data:
+                    variables:
+                      activatedFrom: kitchen
+                  confirmation:
+                    text: Turn off all lights?
+                name: Lights out
+                show_state: false
+                show_icon: true
+                icon: mdi:lightbulb-group-off
               - type: button
                 tap_action:
                   action: call-service

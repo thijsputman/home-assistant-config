@@ -19,7 +19,8 @@
   name: Hue Group – Living room
   unique_id: 860e51a5-b068-4829-9434-ba13a8771fe3
   entities:
-    - light.hue_filament_bulb_1_3
+    - light.hue_filament_bulb_1_3 # Ceiling filament
+    - light.hue_filament_bulb_1_6 # Copper lamp
     - light.fireplace_1_living_room
     - light.fireplace_2_living_room
     - light.hue_aura_living_room
@@ -28,6 +29,11 @@
     - light.screen_right_living_room
     - light.wall_garden_left_living_room
     - light.wall_garden_right_living_room
+- platform: group
+  name: Hue Group – Ensuite
+  unique_id: ae3ca5a3-169a-46a8-aa5b-235924d10957
+  entities:
+    - light.signe_gradient_table_1
 - platform: group
   name: Hue Group – Kitchen
   unique_id: 5ae531ba-03e7-4b45-b06b-4538d78cdf4d

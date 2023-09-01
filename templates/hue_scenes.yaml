@@ -71,57 +71,38 @@
           {% if num_lights == 0 %}
             <Off>
           {%
-            elif num_lights == 6 and
-              (brightness == 100 or brightness == 105) and
-              (
-                (xy_color[0] == 0.37 and xy_color[1] == 0.36) or
-                (xy_color[0] == 0.4 and xy_color[1] == 0.36)
-              )
+            elif num_lights == 7 and (
+              (brightness == 103 and
+                xy_color[0] == 0.4 and xy_color[1] == 0.36)
+            )
           %}
             Daytime
           {%
-            elif num_lights == 9 and
-              (
-                brightness == 122 or
-                brightness == 123 or
-                brightness == 127 or
-                brightness == 128 or
-                brightness == 130 or
-                brightness == 131 or
-                brightness == 132
-              ) and (
-                (xy_color[0] == 0.50 and xy_color[1] == 0.35) or
-                (xy_color[0] == 0.51 and xy_color[1] == 0.35)
-              )
+            elif num_lights == 10 and (
+              (brightness == 127 and
+                xy_color[0] == 0.52 and xy_color[1] == 0.35)
+            )
           %}
             Ambiance
           {%
-            elif num_lights == 7 and
-              (
-                brightness == 15 or
-                brightness == 20 or
-                brightness == 22 or
-                brightness == 23 or
-                brightness == 26
-              ) and (
-                (xy_color[0] == 0.50 and xy_color[1] == 0.36) or
-                (xy_color[0] == 0.51 and xy_color[1] == 0.35) or
-                (xy_color[0] == 0.51 and xy_color[1] == 0.36)
-              )
+            elif num_lights == 8 and (
+              (brightness == 13 and
+                xy_color[0] == 0.52 and xy_color[1] == 0.36)
+            )
           %}
             Movie
           {%
-            elif num_lights == 7 and brightness == 58 and
-              (xy_color[0] == 0.51 and xy_color[1] == 0.36)
+            elif num_lights == 8 and (
+              (brightness == 52 and
+                xy_color[0] == 0.52 and xy_color[1] == 0.36)
+            )
           %}
             Movie (ambiance)
           {%
-            elif num_lights == 9 and
-              (brightness == 141 or brightness == 148 or brightness == 159) and
-              (
-                (xy_color[0] == 0.49 and xy_color[1] == 0.36) or
-                (xy_color[0] == 0.5 and xy_color[1] == 0.36)
-              )
+            elif num_lights == 10 and (
+              (brightness == 159 and
+                xy_color[0] == 0.5 and xy_color[1] == 0.37)
+            )
           %}
             Active
           {% else %}
@@ -149,6 +130,108 @@
       availability: >-
         {{
           states('light.hue_group_living_room') not in
+            ['unknown', 'unavailable']
+        }}
+# Ensuite [Hue room]
+- trigger:
+    - platform: state
+      entity_id: light.hue_group_ensuite
+      attribute: brightness
+      to: ~
+      for: "00:00:02"
+    - platform: state
+      entity_id: light.hue_group_ensuite
+      attribute: xy_color
+      to: ~
+      for: "00:00:02"
+    - platform: state
+      entity_id: light.hue_group_ensuite
+      to: "off"
+  sensor:
+    - name: Hue scene (Ensuite)
+      unique_id: a24579fe-866e-4a5a-8a35-2bf696f2e03b
+      icon: mdi:movie-filter
+      state: >-
+        {% if states('light.ensuite') == 'off' %}
+          <Off>
+        {% else %}
+          {%
+            set num_lights = expand(
+              state_attr('light.hue_group_ensuite', 'entity_id')
+            ) | selectattr('state', '==', 'on') | list | length
+          %}
+          {%
+            set brightness =
+              state_attr('light.hue_group_ensuite', 'brightness') | int(-1)
+          %}
+          {%
+            if state_attr('light.hue_group_ensuite', 'xy_color') == none
+          %}
+            {% set xy_color = [-1.0, -1.0] %}
+          {% else %}
+            {%
+              set xy_color =
+                state_attr('light.hue_group_ensuite', 'xy_color')
+            %}
+            {%
+              set xy_color = [xy_color[0] | round(2), xy_color[1] | round (2)]
+            %}
+          {% endif %}
+          {% if num_lights == 0 %}
+            <Off>
+          {%
+            elif num_lights == 1 and (
+              (brightness == 153 and
+                xy_color[0] == 0.41 and xy_color[1] == 0.36)
+            )
+          %}
+            Daytime
+          {%
+            elif num_lights == 1 and (
+              (brightness == 99 and
+                xy_color[0] == 0.35 and xy_color[1] == 0.42)
+            )
+          %}
+            Ambiance
+          {%
+            elif num_lights == 1 and (
+              (brightness == 38 and
+                xy_color[0] == 0.35 and xy_color[1] == 0.42)
+            )
+          %}
+            Movie
+          {%
+            elif num_lights == 1 and (
+              (brightness == 255 and
+                xy_color[0] == 0.39 and xy_color[1] == 0.44)
+            )
+          %}
+            Bright
+          {% else %}
+            <Unknown>
+          {% endif %}
+        {% endif %}
+      attributes:
+        light_id: light.ensuite
+        scene_id: >-
+          {%
+            if this.state not in
+              ['unknown', 'unavailable', '<Unknown>', '<Off>']
+          %}
+            {{
+              (
+                this.attributes.light_id | replace('light.', 'scene.')
+              ) ~ '_' ~ (
+                this.state | lower | regex_replace('([^a-z ])+', '') |
+                  replace(' ', '_')
+              )
+            }}
+          {% else %}
+            <None>
+          {% endif %}
+      availability: >-
+        {{
+          states('light.hue_group_ensuite') not in
             ['unknown', 'unavailable']
         }}
 # Kitchen counter & cupboards [Hue zone]
