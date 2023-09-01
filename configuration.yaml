@@ -53,9 +53,11 @@ utility_meter: !include utility_meter.yaml
 aarlo:
   username: !secret arlo_username
   password: !secret arlo_password
-  backend: mqtt
-  # As per <https://github.com/twrecked/hass-aarlo/releases/tag/v0.7.4b19>
-  mqtt_host: mqtt-cluster-z1.arloxcld.com
+  backend: sse
+  # As per <https://github.com/twrecked/hass-aarlo/releases/tag/v0.7.4b19> –
+  # caveat: seems to prevent the library from updating with new recordings...
+  # backend: mqtt
+  # mqtt_host: mqtt-cluster-z1.arloxcld.com
   refresh_devices_every: 2
   stream_timeout: 120
   user_agent: linux

@@ -18,7 +18,7 @@ custom CSS.
 - [`auto-entities.js?v=1.12.1`](https://github.com/thomasloven/lovelace-auto-entities)
 - [`card-mod.js?v=3.2.2`](https://github.com/thomasloven/lovelace-card-mod/releases/tag/3.2.2)
 - [`compass-card.js?v=2.0.0`](https://github.com/tomvanswam/compass-card/releases/tag/v2.0.0)
-- `hass-hue-icons.js?v=1.2.20`
+- [`hass-hue-icons.js?v=1.2.51`](https://github.com/arallsopp/hass-hue-icons/releases/tag/v1.2.51)
 - `home-assistant-sun-card.js?v=0.1.4`
 - `layout-card.js?v=2.4.4`
 - [`logbook-card.js?v=1.11.2`](https://github.com/royto/logbook-card/releases/tag/1.11.2)
