@@ -27,4 +27,5 @@ openclose_all:
     - binary_sensor.openclose_8 # Living room
     - binary_sensor.openclose_14 # Living room
     - binary_sensor.openclose_15 # Living room
+    - binary_sensor.openclose_189 # Shed
     - binary_sensor.openclose_34 # Back gate

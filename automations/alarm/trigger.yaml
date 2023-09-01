@@ -11,6 +11,7 @@
       entity_id:
         - binary_sensor.openclose_12 # Kitchen
         - binary_sensor.openclose_16 # Front door
+        - binary_sensor.openclose_189 # Shed
         - binary_sensor.openclose_17 # Bathroom
         - binary_sensor.openclose_33 # Attic
         - binary_sensor.openclose_36 # Kitchen

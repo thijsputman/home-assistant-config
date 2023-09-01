@@ -1,103 +1,33 @@
-type: custom:mod-card
-card_mod:
-  style: |
-    ha-card {
-      background: var(--llh-mod-card-background);
-      border: var(--llh-mod-card-border);
-    }
-report_size: 3
-card:
-  type: vertical-stack
-  cards:
-    - type: glance
-      card_mod:
-        style: |
-          :host{
-            margin-bottom: 0px !important;
-          }
-          ha-card {
-            border: 0px;
-            padding-bottom: 0px !important;
-            margin-bottom: 0px !important;
-          }
-      title: Entryways
-      entities:
-        - entity: binary_sensor.openclose_16
-          icon: mdi:door-closed
-          show_last_changed: true
-        - entity: binary_sensor.openclose_34
-          name: Back gate
-          icon: mdi:door-closed
-          show_last_changed: true
-      show_state: false
-      state_color: true
-      show_icon: true
-      show_name: true
-    - type: glance
-      card_mod:
-        style: |
-          :host{
-            margin-top: 0px !important;
-          }
-          ha-card {
-            border: 0px;
-            padding-top: 0px !important;
-            margin-top: 0px !important;
-            padding-bottom: 0px !important;
-            margin-bottom: 0px !important;
-          }
-          ha-card h1{
-            padding-top: 0px;
-          }
-          ha-card div.entity{
-            margin-bottom: 0px;
-          }
-      title: Doors & windows
-      entities:
-        - entity: binary_sensor.openclose_12
-          name: Kitchen
-          icon: mdi:door-closed
-          show_last_changed: true
-        - entity: binary_sensor.openclose_36
-          name: Kitchen
-          icon: mdi:window-closed
-          show_last_changed: true
-        - entity: group.openclose_living_room
-          name: Living room
-          show_last_changed: true
-      show_state: false
-      state_color: true
-      show_icon: true
-      show_name: true
-    - type: glance
-      card_mod:
-        style: |
-          ha-card {
-            border: 0px;
-            padding-top: 0px !important;
-            margin-top: 0px !important;
-          }
-      entities:
-        - entity: group.openclose_bedroom
-          name: Bedroom
-          show_last_changed: true
-        - entity: binary_sensor.openclose_17
-          name: Bathroom
-          icon: mdi:window-closed
-          show_last_changed: true
-        - entity: binary_sensor.openclose_33
-          name: Attic
-          icon: mdi:window-closed
-          show_last_changed: true
-          card_mod:
-            style:
-              state-badge$ ha-state-icon$: |
-                {%- if states('sensor.attic_window_position') == 'open' -%}
-                  :host{
-                    color: var(--error-color) !important;
-                  }
-                {%- endif -%}
-      show_state: false
-      state_color: true
-      show_icon: true
-      show_name: true
+type: glance
+title: Doors & windows
+entities:
+  - entity: binary_sensor.openclose_16
+  - entity: binary_sensor.openclose_34
+  - entity: binary_sensor.openclose_189
+    name: Shed
+  - entity: binary_sensor.openclose_12
+    name: Kitchen
+  - entity: binary_sensor.openclose_36
+    name: Kitchen
+  - entity: group.openclose_living_room
+    name: Living room
+  - entity: group.openclose_bedroom
+    name: Bedroom
+  - entity: binary_sensor.openclose_17
+    name: Bathroom
+  - entity: binary_sensor.openclose_33
+    name: Attic
+    icon: mdi:window-open
+    card_mod:
+      style:
+        state-badge$ ha-state-icon$: |
+          {%- if states('sensor.attic_window_position') == 'open' -%}
+            :host{
+              color: var(--error-color) !important;
+            }
+          {%- endif -%}
+columns: 3
+show_state: false
+state_color: true
+show_icon: true
+show_name: true
