@@ -17,6 +17,11 @@ if [ -n "$network_adapters" ]; then
 fi
 if [ -n "$rtt_hosts" ]; then
   rtt_hosts=\""$rtt_hosts"\"
+  # If network_adapters is not specified, set it to a literal "" to prevent
+  # rtt_hosts from being interpreted as network_adapters.
+  if [ -z "$network_adapters" ]; then
+    network_adapters=\"\"
+  fi
 fi
 
 sysmon_url="https://github.com/thijsputman/home-assistant-config/raw/main/ \
