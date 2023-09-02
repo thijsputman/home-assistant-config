@@ -112,16 +112,34 @@
           id:
             - dawn
             - wakeup
-        - condition: state
-          entity_id: light.living_room
-          state: "off"
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: light.living_room
+              state: "off"
+            - condition: state
+              entity_id: light.ensuite
+              state: "off"
     - condition: state
       entity_id: media_player.nvidia_shield_tv
       state: "off"
   action:
-    - service: scene.turn_on
-      target:
-        entity_id: scene.living_room_daytime
+    - if:
+        - condition: state
+          entity_id: light.living_room
+          state: "off"
+      then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.living_room_daytime
+    - if:
+        - condition: state
+          entity_id: light.ensuite
+          state: "off"
+      then:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.ensuite_daytime
   mode: single
 - alias: 💡 | ⛅ Living room lights off during daytime (☀️ > 30 lux)
   id: 21a8d2ce-746d-460a-9c65-b9ddf4f1b3b1
@@ -134,12 +152,21 @@
     - condition: state
       entity_id: sensor.time_of_day
       state: day
-    - condition: state
-      entity_id: sensor.hue_scene_living_room
-      state: Daytime
   action:
-    - service: light.turn_off
-      entity_id: light.living_room
+    - if:
+        - condition: state
+          entity_id: sensor.hue_scene_living_room
+          state: Daytime
+      then:
+        - service: light.turn_off
+          entity_id: light.living_room
+    - if:
+        - condition: state
+          entity_id: sensor.hue_scene_ensuite
+          state: Daytime
+      then:
+        - service: light.turn_off
+          entity_id: light.ensuite
   mode: single
 - alias: 💡 | ⛅ Hallway (downstairs) lights on during daytime (☀️ < 40 lux)
   id: 1815106e-2684-4397-8fe8-73711ca6e7b5

@@ -34,7 +34,7 @@
       then:
         - service: scene.turn_on
           target:
-            entity_id: scene.ensuite_orchid
+            entity_id: scene.ensuite_ambiance
     # Kitchen
     - if:
         - condition: state

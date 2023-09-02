@@ -4,12 +4,7 @@
     - platform: state
       entity_id: media_player.nvidia_shield_tv
       from:
-        # Temporarily disabled: After upgrading my Shield TV to Android 11, it
-        # started having short (10-second) "standby-hiccups" wherein its state
-        # transitions to "standby" for no apparent/good reason. Luckily, the
-        # "standby"-state is irrelevant for the purpose of these automations, so
-        # it can safely be ignored...
-        # - standby
+        - standby
         - paused
         - idle
       to: playing
@@ -28,9 +23,9 @@
           entity_id: light.ensuite
           state: "on"
       then:
-        - service: light.turn_off
+        - service: scene.turn_on
           target:
-            entity_id: light.ensuite
+            entity_id: scene.ensuite_movie
     # Kitchen
     - if:
         - condition: state
@@ -104,7 +99,7 @@
       then:
         - service: scene.turn_on
           target:
-            entity_id: scene.ensuite_orchid
+            entity_id: scene.ensuite_ambiance
     # Kitchen
     - if:
         - condition: state
@@ -157,7 +152,7 @@
       then:
         - service: scene.turn_on
           target:
-            entity_id: scene.ensuite_orchid
+            entity_id: scene.ensuite_ambiance
     # Kitchen
     - if:
         - condition: state

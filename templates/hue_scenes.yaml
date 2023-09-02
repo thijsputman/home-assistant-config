@@ -182,7 +182,7 @@
           {%
             elif num_lights == 1 and (
               (brightness == 153 and
-                xy_color[0] == 0.41 and xy_color[1] == 0.36)
+                xy_color[0] in [0.4, 0.41] and xy_color[1] == 0.36)
             )
           %}
             Daytime
