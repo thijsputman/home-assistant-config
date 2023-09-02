@@ -319,7 +319,7 @@ future reference).
       need for Internet-connectivity. Block their MAC addresses in the router to
       prevent them from "phoning home" (actually, more to prevent people from
       "phoning in" through them).
-- [ ] Replace the Living Room "copper lamp", upstairs Hallway, and Guestroom
+- [ ] Replace the ~~Living Room "copper lamp"~~, upstairs Hallway, and Guestroom
       bulbs with Hue filament bulbs (and remove the Zigbee-units from their
       cabling / power-sockets)
 - [ ] The single Pi-hole instance is a **substantial** single point of failure
