@@ -113,7 +113,10 @@
             }}
           message: >-
             {{ (trigger.calendar_event.description | from_json).tts_actor }}
-            to arrive at {{ time }}. That is %WAIT_REMAINING%
+            to arrive at {{
+              trigger.calendar_event.start | as_timestamp |
+                timestamp_custom('%H:%M')
+            }}. That is %WAIT_REMAINING%
   mode: queued
 - alias: 🔊 | ⛅ Queue today's weather forecast
   id: c74b7fa1-eb7d-46d7-ba62-7186e2c5cc32
