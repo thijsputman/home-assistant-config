@@ -141,6 +141,33 @@
             Watermeter recorded zero water flow over the past 24-hours; its
             sensor has most likely been unseated...
   mode: single
+- alias: 📱 | 🔊 Notify if "TTS announce"-script appears stuck
+  id: 51400b7c-20e9-49bf-91d1-51e465189e68
+  trigger:
+    - platform: state
+      entity_id: script.tts_announce
+      from: "off"
+      to: "on"
+      # Highly unlikely for any (set of) announcement(s) to run for more than
+      # 5-minutes...
+      for: "00:05:00"
+  condition: []
+  action:
+    # Explicitly block any further runs of this automation while the
+    # notification is up
+    - service: script.persistent_notification
+      data:
+        group: general
+        channel: Alert
+        importance: high
+        targetDevices: my
+        title: 💥 The "TTS announce"-script appears stuck
+        message: >-
+          It has been in the "on"-state for {{
+            (trigger.for.seconds / 60) | round
+          }}-minutes; probably one of the MPD-instances has hung...
+  mode: single
+  max_exceeded: silent
 # Occasionally, a race-condition occurs at startup where the deCONZ-integration
 # isn't yet up and running when the automations (that depend on devices provided
 # by deCONZ) are loaded. This causes all automations that depend on deCONZ
