@@ -26,13 +26,19 @@ irrigation_manual:
           {% elif valve == 'switch.on_off_output_25' %}
             input_number.irrigation_garden_manual_volume
           {% endif %}
-    # Ensure global "mutex" – if either valve is open, opening the second one
+    # Ensure a global mutex – if either valve is open, opening the second one
     # will trip the physical flood protection (which requires a physical reset)
     - condition: state
       entity_id:
         - switch.on_off_output_24
         - switch.on_off_output_25
-      state: "off"
+      state:
+        - "off"
+        # Slight relaxation of the mutex: In case one of the valves has an empty
+        # battery (and is thus unavailable), still allow the other one to be
+        # opened (at the risk of tripping the physical protection in unexpected
+        # situations).
+        - unavailable
     - service: switch.turn_on
       target:
         entity_id: >-
