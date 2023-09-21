@@ -64,3 +64,12 @@ homeassistant.components.meater:
     ^Unexpected error fetching meater_api data: Error connecting to Meater
   - >-
     ^Error requesting meater_api data: Cannot connect to host
+  - >-
+    ^Timeout fetching meater_api data
+# "Disabling" the OralB and LEB BLE integrations seems to have not removed their
+# "config_flow" registrations (see 070743) – not sure what's going on here (the
+# old settings probably got stuck somewhere); for now simply prevent the errors
+# this generates from getting logged...
+homeassistant.config_entries:
+  - >-
+    ^Error occurred loading flow for integration (oralb|led_ble):

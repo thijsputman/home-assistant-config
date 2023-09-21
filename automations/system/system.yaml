@@ -120,7 +120,7 @@
   trigger:
     - platform: numeric_state
       entity_id: sensor.flow_watermeter
-      below: 0
+      below: 0.1
       for: "24:00:00"
   condition:
     # Unlikely to happen, unless we're on vacation
