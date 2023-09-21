@@ -66,9 +66,11 @@
     - condition: state
       entity_id: group.family
       state: not_home
-    # It never makes sense to run after 20:00
+    # Ensure the range for the (final) random duration is at least half an hour
+    # (to reduce the likelihood of the lights only being switched on
+    # momentarily)
     - condition: time
-      before: "20:00:00"
+      before: "19:30:00"
   action:
     # ± 85% Chance of switching the lights on
     - condition: template
@@ -88,9 +90,7 @@
           # Should never timeout; if it does, best to continue...
           timeout: "04:00:00"
           continue_on_timeout: true
-    # Then delay for a random interval between "now" and 20:00 — can probably
-    # fold the preceding "if" into the below template, but this way (with as
-    # little time arithmetic as possible) it's much easier to understand.
+    # Then delay for a random interval between "now" and 20:00
     - delay: >-
         {{ range(0, (today_at("20:00") - now()).seconds) | random }}
     - condition: state

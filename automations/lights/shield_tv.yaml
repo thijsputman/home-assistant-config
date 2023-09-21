@@ -95,7 +95,7 @@
     - if:
         - condition: state
           entity_id: light.ensuite
-          state: "off"
+          state: "on"
       then:
         - service: scene.turn_on
           target:
@@ -148,7 +148,7 @@
     - if:
         - condition: state
           entity_id: light.ensuite
-          state: "off"
+          state: "on"
       then:
         - service: scene.turn_on
           target:
