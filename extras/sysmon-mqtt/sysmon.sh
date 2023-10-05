@@ -2,7 +2,7 @@
 
 set -euo pipefail
 
-SYSMON_MQTT_VERSION='1.2.1'
+SYSMON_MQTT_VERSION='1.2.2'
 echo "sysmon-mqtt $SYSMON_MQTT_VERSION"
 
 if [ "$*" == "--version" ]; then
@@ -297,7 +297,10 @@ if [ "$SYSMON_HA_DISCOVER" = true ]; then
 
   if [ -r /sys/class/thermal/thermal_zone0/temp ]; then
     ha_discover 'CPU temperature' cpu_temp '' temperature °C
-    ha_discover 'CPU temperature' cpu_temp temperature °C
+  fi
+
+  if [ -d /run/systemd/system ]; then
+    ha_discover 'Status (systemd)' status mdi:list-status enum
   fi
 
   for eth_adapter in "${eth_adapters[@]}"; do
@@ -306,6 +309,12 @@ if [ "$SYSMON_HA_DISCOVER" = true ]; then
       mdi:download-network data_rate kbit/s
     ha_discover "Bandwidth out (${eth_adapter})" "bandwidth/${eth_adapter}/tx" \
       mdi:upload-network data_rate kbit/s
+
+    if [[ $eth_adapter =~ ^wl ]]; then
+      ha_discover "Signal strength (${eth_adapter})" \
+        "bandwidth/${eth_adapter}/signal" \
+        mdi:wifi-strength-3 signal_strength dBm 0
+    fi
 
   done
 
@@ -383,6 +392,11 @@ while true; do
       /sys/class/thermal/thermal_zone0/temp)
   fi
 
+  # Status (systemd)
+  if [ -d /run/systemd/system ]; then
+    status=$(systemctl is-system-running || :)
+  fi
+
   # Load (1-minute load / # of cores)
   cpu_load=$(uptime |
     awk "match(\$0, /load average: ([0-9\.]*),/, \
@@ -432,9 +446,18 @@ while true; do
           <<< "$tx ${tx_prev[i]} $((10#$SYSMON_INTERVAL))"
       )
 
+      signal=''
+      if [[ $eth_adapter =~ ^wl ]]; then
+        signal=$(
+          iw "$eth_adapter" link | grep -E 'signal: \-[[:digit:]]+ dBm' |
+            grep -oE '\-[[:digit:]]+' || :
+        )
+      fi
+
       payload_bw+=("$(
         tr -s ' ' <<- EOF
         "$eth_adapter": {
+          $([ -n "$signal" ] && echo "\"signal\": \"$signal\",")
           "rx": "$payload_rx",
           "tx": "$payload_tx"
         }
@@ -555,6 +578,7 @@ while true; do
       "cpu_load": "$cpu_load",
       "mem_used": "$mem_used",
       $([ -v cpu_temp ] && echo "\"cpu_temp\": \"$cpu_temp\",")
+      $([ -v status ] && echo "\"status\": \"$status\",")
       "bandwidth": {
         $(_join , "${payload_bw[@]}")
       },

@@ -14,6 +14,7 @@ Hence, `sysmon-mqtt`: A simple shell-script to capture a handful of common
 metrics and push them over MQTT to Home Assistant.
 
 - [Version history](#version-history)
+  - [1.2.2](#122)
   - [1.2.1](#121)
   - [1.2.0](#120)
   - [1.1.0](#110)
@@ -30,10 +31,18 @@ metrics and push them over MQTT to Home Assistant.
 
 ## Version history
 
+### 1.2.2
+
+- Report the overall system status (systemd-only; based on the output of
+  `systemctl is-system-running`)
+- When the bandwidth of a wireless adapater (ie, its name matches `wl*`) is
+  monitored, its signal-strength is also reported
+- `sysmon-mqtt` Version is reported as a diagnostic sensor in Home Assistant
+
 ### 1.2.1
 
 - If `/sys/class/thermal/thermal_zone0/temp` cannot be read, `cpu_temp` is
-  omitted (instead of brining down the script)
+  omitted (instead of bringing down the script)
 
 ### 1.2.0
 
@@ -66,8 +75,12 @@ Currently, the following metrics are provided:
 - `mem_used` — memory in use (_excluding_ buffers and caches) as a percentage of
   total available memory
 - `uptime` — uptime in seconds
+- `status` – overall status of the system (systemd-only;
+  [as reported by `systemctl is-system-running`](https://www.freedesktop.org/software/systemd/man/systemctl.html#is-system-running))
 - `bandwidth` — average bandwidth (receive and transmit) for individual network
   adapters in kbps during the monitoring interval
+  - For wireless adapaters, signal-strength is also reported (detection based on
+    adapter name matching the `wl*`-pattern; requires `iw`-binary)
 - `rtt` – average round-trip (ie, ping) times in ms to one or more hosts
 - `apt` — number of APT packages that can upgraded
   - This assumes a Debian(-derived) distribution; the APT-related metrics are
@@ -148,9 +161,9 @@ before continuing...
 
 ## Setup
 
-The script depends on `bash`,
-**[`gawk`](https://www.gnu.org/software/gawk/manual/gawk.html)**, `jq` and
-`mosquitto-clients`.
+The script depends on `apt`, `bash`,
+**[`gawk`](https://www.gnu.org/software/gawk/manual/gawk.html)**, `iw`, `jq`,
+and `mosquitto-clients`.
 
 **N.B.**, alternative versions of `awk` are _not_ supported; you need
 [GNU `awk`](https://www.gnu.org/software/gawk/manual/gawk.html).
@@ -189,6 +202,7 @@ From the shell:
 - `network-adapters` (optional) — one or more network adapters to monitor as a
   space-delimited list (e.g., `'eth0 wlan0'`; mind the quotes when specifying
   more than one adapter)
+  - If the adapter's name matches `wl*`, signal-strength is also reported
 - `rtt-hosts` (optional) — one or more hosts to which to monitor the round-trip
   time as a space-delimited list (e.g., `'8.8.8.8 google.com'`; mind the quotes
   when specifying more than one hostname)
