@@ -112,51 +112,21 @@ ha_discover() {
 
   local name=${1}
   local attribute=${2}
-  read -r -a class_icon <<< "$3"
   # Optional
-  local unit=${4:-}
-  local entity=${5:-sensor}
+  local icon=${3:-}
+  local device_class=${4:-}
+  local unit=${5:-}
   local precision=${6:-2}
-
-  # Attempt to retrieve existing UUID; otherwise generate a new one
-
-  if config=$(
-    mosquitto_sub -h "$mqtt_host" -C 1 -W 3 \
-      -t "${ha_topic}/$entity/sysmon/${device}_${attribute//\//_}/config" \
-      2> /dev/null
-  ); then
-    unique_id=$(jq -r -c '.unique_id' <<< "$config" 2> /dev/null) ||
-      true # This ensures invalid JSON-payloads are ignored
-  else
-    unique_id=""
-  fi
-
-  if ! [[ "$unique_id" =~ ^[0-9a-z-]{36}$ ]]; then
-    unique_id=$(< /proc/sys/kernel/random/uuid)
-  fi
-
-  # Construct "device_class"- and/or "icon"-properties
-
-  local device_class=""
-  local icon=""
-
-  if [ -n "${class_icon[0]}" ]; then
-    if [ ${#class_icon[@]} -gt 1 ]; then
-      device_class=${class_icon[0]}
-      icon=${class_icon[1]}
-    elif [[ ${class_icon[0]} =~ ^mdi: ]]; then
-      icon=${class_icon[0]}
-    else
-      device_class=${class_icon[0]}
-    fi
-  fi
 
   local value_json="value_json.${attribute//\//.}"
   local value_template="$value_json | float(0) | round($((10#$precision)))"
   local state_topic="sysmon/$device/state"
   local expire_after=$((10#$SYSMON_INTERVAL * 3))
-  local entity_picture=""
-  local state_class=""
+
+  local entity=sensor
+  local entity_picture=''
+  local state_class=''
+  local category=''
 
   # The "defined"-test in Jinja works on missing _direct_ descendants only; any
   # deeper and it'll throw an error. This is not an issue in most cases, except
@@ -169,15 +139,25 @@ ha_discover() {
     availability_test=${availability_test%.*}
   fi
 
-  # Heartbeat and APT have somewhat different setups
+  # Non-standard discovery-payloads
 
   if [ "$attribute" = "heartbeat" ]; then
     expire_after=0
     availability_test=value
     state_topic="sysmon/$device/connected"
     value_template="(value | int(0) | as_datetime)"
+  elif [ "$attribute" = "version" ]; then
+    expire_after=0
+    category=diagnostic
+    availability_test=value
+    state_topic="sysmon/$device/version"
+    value_template=value
+  elif [ "$attribute" = "status" ]; then
+    expire_after=0
+    value_template="$value_json"
   elif [ "$attribute" = "apt" ]; then
     expire_after=0
+    entity=update
     if command -v lsb_release &> /dev/null; then
       entity_picture="/local/sysmon-mqtt/$(lsb_release -ds | cut -d ' ' -f1 |
         tr '[:upper:]' '[:lower:]').png"
@@ -185,6 +165,7 @@ ha_discover() {
     value_template="$value_json | to_json"
   elif [ "$attribute" = "reboot_required" ]; then
     expire_after=0
+    entity=binary_sensor
     value_template="'ON' if ($value_json | int(0)) == 1 else 'OFF'"
   fi
 
@@ -250,6 +231,23 @@ ha_discover() {
     cat /sys/firmware/devicetree/base/model 2> /dev/null | tr -d '\0' || true
   )
 
+  # Attempt to retrieve existing UUID; otherwise generate a new one
+
+  if config=$(
+    mosquitto_sub -h "$mqtt_host" -C 1 -W 3 \
+      -t "${ha_topic}/$entity/sysmon/${device}_${attribute//\//_}/config" \
+      2> /dev/null
+  ); then
+    unique_id=$(jq -r -c '.unique_id' <<< "$config" 2> /dev/null) ||
+      true # This ensures invalid JSON-payloads are ignored
+  else
+    unique_id=""
+  fi
+
+  if ! [[ "$unique_id" =~ ^[0-9a-z-]{36}$ ]]; then
+    unique_id=$(< /proc/sys/kernel/random/uuid)
+  fi
+
   local payload
   payload=$(
     tr -s ' ' <<- EOF
@@ -270,6 +268,7 @@ ha_discover() {
       "state_topic": "$state_topic",
       $([ -n "$unit" ] && echo "\"unit_of_measurement\": \"$unit\",")
       $([ -n "$state_class" ] && echo "\"state_class\": \"$state_class\",")
+      $([ -n "$category" ] && echo "\"entity_category\": \"$category\",")
       "value_template": "$value_template",
       "expire_after": "$expire_after",
       "availability": {
@@ -289,35 +288,37 @@ ha_discover() {
 
 if [ "$SYSMON_HA_DISCOVER" = true ]; then
 
-  ha_discover Heartbeat heartbeat 'timestamp mdi:heart-pulse'
-  ha_discover Uptime uptime 'duration mdi:timer-outline' s
-  ha_discover 'CPU load' cpu_load mdi:chip %
-  ha_discover 'Memory usage' mem_used mdi:memory %
+  ha_discover 'Version (sysmon-mqtt)' version mdi:new-box
+
+  ha_discover Heartbeat heartbeat mdi:heart-pulse timestamp
+  ha_discover Uptime uptime mdi:timer-outline duration s
+  ha_discover 'CPU load' cpu_load mdi:chip '' %
+  ha_discover 'Memory usage' mem_used mdi:memory '' %
 
   if [ -r /sys/class/thermal/thermal_zone0/temp ]; then
+    ha_discover 'CPU temperature' cpu_temp '' temperature °C
     ha_discover 'CPU temperature' cpu_temp temperature °C
   fi
 
   for eth_adapter in "${eth_adapters[@]}"; do
 
     ha_discover "Bandwidth in (${eth_adapter})" "bandwidth/${eth_adapter}/rx" \
-      'data_rate mdi:download-network' kbit/s
+      mdi:download-network data_rate kbit/s
     ha_discover "Bandwidth out (${eth_adapter})" "bandwidth/${eth_adapter}/tx" \
-      'data_rate mdi:upload-network' kbit/s
+      mdi:upload-network data_rate kbit/s
 
   done
 
   for rtt_host in "${rtt_hosts[@]}"; do
 
     ha_discover "Round-trip time (${rtt_host})" \
-      "rtt/$(mqtt_json_clean "$rtt_host")" mdi:server-network ms '' 3
+      "rtt/$(mqtt_json_clean "$rtt_host")" mdi:server-network '' ms 3
 
   done
 
   if [ "$SYSMON_APT" = true ]; then
-    ha_discover 'APT upgrades' apt mdi:package-up '' update
-    ha_discover 'Reboot required' reboot_required mdi:restart '' \
-      binary_sensor
+    ha_discover 'APT upgrades' apt mdi:package-up
+    ha_discover 'Reboot required' reboot_required mdi:restart
   fi
 
 fi
@@ -463,8 +464,8 @@ while true; do
 
         readarray -t result < <(
           ping -c "$((10#$SYSMON_RTT_COUNT))" \
-            "$rtt_host" |
-            grep 'rtt\|round-trip' | grep -oE '[[:digit:]]+\.[[:digit:]]{3}'
+            "$rtt_host" | grep 'rtt\|round-trip' |
+            grep -oE '[[:digit:]]+\.[[:digit:]]{3}' || :
         )
 
         if [ -v result ] && [ -n "${result[1]}" ]; then
@@ -572,9 +573,9 @@ while true; do
     -t "sysmon/$device/state" -m "$payload" || true
 
   # Start publishing a "heartbeat" from the second iteration onward; during the
-  # _first_ iteration, setup the exit-trap: This ensures errors during init (and
-  # those while gathering the first set of metrics) are not trapped and will
-  # leave the connected-state as "-1".
+  # _first_ iteration, set up the exit-trap: This ensures errors during init
+  # (and those while gathering the first set of metrics) are not trapped and
+  # will leave the connected-state as "-1".
 
   if [ "$first_loop" = false ]; then
 
