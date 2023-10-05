@@ -246,7 +246,9 @@ Container images are available for `amd64`, `arm64` and `armhf`.
 For bandwidth monitoring to work, you'll need to mount the host's `/sys`-sysfs
 into the container (as is done in the below
 [`📄 docker-compose.yml`](#docker-composeyml)). Alternatively, you can use
-`network_mode: host`.
+`network_mode: host` – if you need WiFi signal-strength measurements, use the
+_latter_ approach (`iw` relies on the physical network adapter being accessible;
+mounting `/sys` doesn't suffice).
 
 The `/sys`-approach is preferred as it's more flexible (i.e., it can be used to
 gather additional information such as the device model) and offers better

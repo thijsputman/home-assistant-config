@@ -30,9 +30,10 @@ RUN case "$TARGETPLATFORM" in \
 RUN apk add --no-cache \
   bash~=5.2 \
   gawk~=5.1 \
-  mosquitto-clients~=2.0 \
+  iputils~=20211215 \
   iw~=5.19 \
-  jq~=1.6
+  jq~=1.6 \
+  mosquitto-clients~=2.0
 
 COPY rootfs/ /
 
