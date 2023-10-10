@@ -5,9 +5,9 @@
 - [📁 `aarlo`](https://github.com/twrecked/hass-aarlo) **@**
   [`v0.7.4b19`](https://github.com/twrecked/hass-aarlo/releases/tag/v0.7.4b19)
 - [📁 `afvalwijzer`](https://github.com/xirixiz/homeassistant-afvalwijzer) **@**
-  [`2023.06.01`](https://github.com/xirixiz/homeassistant-afvalwijzer/releases/tag/2023.06.01)
+  [`2023.09.01`](https://github.com/xirixiz/homeassistant-afvalwijzer/releases/tag/2023.09.01)
 - [📁 `xiaomi_miot`](https://github.com/al-one/hass-xiaomi-miot) **@**
-  [`v0.7.11`](https://github.com/al-one/hass-xiaomi-miot/releases/tag/v0.7.11)
+  [`v0.7.13`](https://github.com/al-one/hass-xiaomi-miot/releases/tag/v0.7.13)
 
 ## "Disabled" components
 
