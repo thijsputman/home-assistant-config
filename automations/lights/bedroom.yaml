@@ -62,11 +62,13 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
     # Prevent interfering with the "Silence wakeup alarm"-automation (which also
-    # triggers on double press) — the wakeup "grace time" timer is started when
-    # the wakeup alarm sounds; at which point we don't want "Lights out" to
-    # trigger anymore...
+    # triggers on double press) – the alarm should not be actively sounding, nor
+    # currently snoozed...
     - condition: state
-      entity_id: timer.wakeup_grace_time
+      entity_id: script.wakeup_alarm
+      state: "off"
+    - condition: state
+      entity_id: timer.wakeup_snooze_time
       state: idle
   action:
     - service: script.turn_on
