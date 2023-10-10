@@ -7,4 +7,4 @@ card_mod:
     ha-card div.forecast {
       padding-top: 0px !important;
     }
-entity: weather.buienradar
+entity: weather.tomorrow_io

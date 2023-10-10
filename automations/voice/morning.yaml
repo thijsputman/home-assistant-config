@@ -125,16 +125,18 @@
       entity_id: input_boolean.everyone_asleep
       from: "on"
       to: "off"
-  condition:
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: sensor.buienradar_forecast_today
-          state:
-            - unavailable
-            - unknown
+  condition: []
   action:
     - delay: 3 # Queue this one up last
+    - service: weather.get_forecast
+      data:
+        type: daily
+      target:
+        entity_id: weather.tomorrow_io
+      response_variable: weather
+    - condition: template
+      value_template: >-
+        {{ weather.forecast | length > 0 }}
     - service: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -146,38 +148,25 @@
           chime: false
           message: >-
             The forecast for today is {{
-              states('sensor.buienradar_forecast_today') |
+              weather.forecast[0].condition |
                 replace('partlycloudy', 'partly cloudy') |
                 replace('cloudy-', 'cloudy with ') |
                 replace('snowy-rainy', 'wet snow') |
-                replace('-', ' ') }};
-    - service: script.turn_on
-      target:
-        entity_id: script.tts_queue
-      data:
-        variables:
-          channel: announce
-          tag: good_morning
-          expiry: "01:00:00"
-          chime: false
-          message: >-
+                replace('-', ' ') }}
             with a high of {{
-              state_attr('sensor.buienradar_forecast_today',
-                'temp_high') | int(0)
+              weather.forecast[0].temperature | int(0)
             }} degrees and a low of {{
-              state_attr('sensor.buienradar_forecast_today',
-                'temp_low') | int(0)
+              weather.forecast[0].templow | int(0)
             }} degrees.
     - if:
-        - condition: numeric_state
-          entity_id: sensor.buienradar_forecast_today
-          attribute: precipitation
-          above: 0
+        - >-
+          {{
+            weather.forecast[0].precipitation | float(0) > 0
+          }}
         # No sense in reporting rain if the main forecast mentions it...
         - >-
           {{
-            states('sensor.buienradar_forecast_today')
-              is not search('snow|rain')
+            weather.forecast[0].condition is not search('snow|rain')
           }}
       then:
         - service: script.turn_on
@@ -192,8 +181,7 @@
               message: >-
                 {%
                   set precipitation =
-                    state_attr('sensor.buienradar_forecast_today',
-                      'precipitation') | float(0)
+                    weather.forecast[0].precipitation | float(0)
                 %}
                 {% if precipitation <= 0.5 %}
                   There is a slight chance of rain.
