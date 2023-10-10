@@ -8,6 +8,7 @@
         - binary_sensor.fire_81 # Upstairs
         - binary_sensor.fire_187 # Attic
         - binary_sensor.fire_188 # Hallway
+        - binary_sensor.fire_190 # Shed
       from: "off"
       to: "on"
   condition: []
@@ -47,7 +48,7 @@
               entity_id: input_boolean.everyone_asleep
               state: "off"
           then:
-            # Slight delay the announcement so that the initial "shock" of the
+            # Slightly delay the announcement so the initial "shock" of the
             # sirens sounding has passed...
             - delay: 10
             - event: tts_announce
@@ -67,21 +68,22 @@
               smoke!
   mode: single
   max_exceeded: silent
-- alias: 🤯/🔥 | 🚨 Smoke detected (active the sirens unconditionally)
+- alias: >-
+    🤯/🔥 | 🚨 Smoke detected inside the house
+    (activate sirens unconditionally)
   id: 3e33958b-6f90-4612-afd0-d0078e054e92
   trigger:
     - platform: state
-      entity_id: binary_sensor.smoke_detectors
+      entity_id: binary_sensor.smoke_detectors_inside
       from: "off"
       to: "on"
       # Hold state for 1 minute so we don't raise hell on a false alarm...
       for: "00:01:00"
   condition: []
   # Sound the alarm for 5 minutes (the maximum duration) or until the smoke
-  # detector clears. The goal is to draw as much attention as possible
+  # detector(s) clear(s). The goal is to draw as much attention as possible
   # regardless of whether someone is home – the neighbours might notice and call
-  # the Fire department. If after 5 minutes the alarm is still sounding, it has
-  # probably outlived its purpose...
+  # the Fire department.
   action:
     - service: script.turn_on
       target:
@@ -92,10 +94,57 @@
           ontime: 300
     - wait_for_trigger:
         - platform: state
-          entity_id: binary_sensor.fire_81
+          entity_id: binary_sensor.smoke_detectors_inside
           from: "on"
           to: "off"
       # No need to bother beyond the 5-minute maximum duration
+      timeout: 300
+      continue_on_timeout: false
+    - condition: state
+      entity_id: script.sirens
+      state: "on"
+    - service: script.sirens
+      data:
+        mode: none
+  mode: single
+- alias: >-
+    🤯/🔥 | 🚨 Smoke detected in the Shed
+    (activate sirens when «Everyone [at home] asleep»)
+  id: b8053440-9701-4109-bc47-fdf6d37dc498
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.fire_190
+      from: "off"
+      to: "on"
+      for: "00:01:00"
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: home
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: script.lights_out
+          state: "on"
+        - condition: state
+          entity_id: timer.everyone_asleep_delay
+          state: active
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "on"
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.sirens
+      data:
+        variables:
+          mode: lselect
+          ontime: 300
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.fire_190
+          from: "on"
+          to: "off"
       timeout: 300
       continue_on_timeout: false
     - condition: state

@@ -6,3 +6,12 @@
     - binary_sensor.fire_81 # Upstairs
     - binary_sensor.fire_187 # Attic
     - binary_sensor.fire_188 # Hallway
+    - binary_sensor.fire_190 # Shed
+- platform: group
+  name: Smoke detectors (inside)
+  unique_id: c3ed960f-f14b-4f53-869d-c0ffe455de7b
+  device_class: smoke
+  entities:
+    - binary_sensor.fire_81 # Upstairs
+    - binary_sensor.fire_187 # Attic
+    - binary_sensor.fire_188 # Hallway

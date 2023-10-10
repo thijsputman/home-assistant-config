@@ -95,7 +95,7 @@
 # If the alarm gets disarmed when "everyone['s] asleep" and someone is/gets
 # home, it's safe to assume not everyone's asleep anymore... 😉
 - alias: >-
-    🚨 | 💤 Everyone awake (alarm disarmed when «everyone [at home] asleep»)
+    🚨 | 💤 Everyone awake (alarm disarmed when «Everyone [at home] asleep»)
   id: daec5087-59f1-4307-9b8c-5739d579a97b
   trigger:
     - platform: state

@@ -48,8 +48,10 @@
       type: remote_button_double_press
       subtype: turn_on
   condition:
-    # Only act around bedtime, if the "Lights out"-script isn't running, and not
-    # everyone is asleep yet
+    # Only act at night, if the "Lights out"-script isn't running, and not
+    # everyone is asleep yet. As our bedtime is quite flexible, this trigger is
+    # rather broad – which explains the large number of exceptions that
+    # follow...
     - condition: state
       entity_id: sensor.time_of_day
       state:
@@ -62,14 +64,23 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
     # Prevent interfering with the "Silence wakeup alarm"-automation (which also
-    # triggers on double press) – the alarm should not be actively sounding, nor
-    # currently snoozed...
+    # triggers on double press)
     - condition: state
       entity_id: script.wakeup_alarm
       state: "off"
     - condition: state
       entity_id: timer.wakeup_snooze_time
       state: idle
+    # Idem for the sirens and the Home Alarm (which are silenced through the
+    # same buttons)
+    - condition: state
+      entity_id: script.sirens
+      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: triggered
   action:
     - service: script.turn_on
       target:
