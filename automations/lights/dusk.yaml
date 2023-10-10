@@ -135,15 +135,16 @@
         {% else %}
           {{ delay }}
         {% endif %}
-    # The Kitchen door and Back gate have separate automations that trigger the
-    # lights when they're opened. To prevent interfering with those, wait for
-    # their triggers at the end of our run and add an additional delay if they
-    # occur.
+    # The Kitchen/Shed door and Back gate have separate automations that trigger
+    # the lights when they're opened. To prevent interfering with those, wait
+    # for their triggers at the end of our run and add an additional delay if
+    # they occur.
     - wait_for_trigger:
         - platform: state
           entity_id:
             - binary_sensor.openclose_12 # Kitchen door
             - binary_sensor.openclose_34 # Back gate
+            - binary_sensor.openclose_189 # Shed
           from: "off"
           to: "on"
       timeout: "00:05:00"

@@ -160,13 +160,14 @@
             entity_id: light.hue_filament_bulb_1
   mode: single
   max_exceeded: silent
-- alias: 💡 | 🚪 Garden lights on (Kitchen door / Back gate open)
+- alias: 💡 | 🚪 Garden lights on (Kitchen/Shed door or Back gate open)
   id: cd0a0eac-d482-4add-ba9f-28e63fae0d26
   trigger:
     - platform: state
       entity_id:
         - binary_sensor.openclose_12
         - binary_sensor.openclose_34
+        - binary_sensor.openclose_189
       from: "off"
       to: "on"
   condition:
