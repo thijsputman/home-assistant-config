@@ -42,21 +42,27 @@ card:
               padding-top: 8px !important;
               padding-bottom: 8px !important;
             }
-          ha-markdown$ha-alert$: |
-            div.info{
-              margin-bottom: 6px;
-            }
+          ha-markdown$ha-alert:
+            $: |
+              div.issue-type{
+                margin-bottom: 6px;
+              }
       content: >-
         {% set update_id = 'update.pi4_apt' %}
         {% if states(update_id) == 'on' -%}
-          <ha-alert alert-type="info">**{{-device_attr(update_id,
-            'name')-}}** has {{ state_attr(update_id,
+          <ha-alert alert-type="info">**{{ device_attr(update_id,
+            'name') }}** has {{ state_attr(update_id,
             'latest_version') }} package upgrade(s) available.
           </ha-alert>
         {%- endif %}
         {% if states('binary_sensor.pi4_reboot_required') == 'on' -%}
-          <ha-alert alert-type="warning">**{{-device_attr(update_id,
-            'name')-}}** requires a restart.</ha-alert>
+          <ha-alert alert-type="warning">**{{ device_attr(update_id,
+            'name') }}** requires a restart.</ha-alert>
+        {%- endif %}
+        {% if states('sensor.pi4_status') != 'running' -%}
+          <ha-alert alert-type="error">systemd reports **{{-
+            device_attr(update_id, 'name') }}** is _{{-
+            states('sensor.pi4_status')}}_!</ha-alert>
         {%- endif %}
     - type: custom:mini-graph-card
       card_mod:

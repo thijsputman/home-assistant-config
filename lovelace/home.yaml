@@ -197,7 +197,7 @@ views:
           - !include home/network/sbc/pi_hole.yaml
       - type: vertical-stack
         cards:
-          - !include home/network/sbc/updates.yaml
+          - !include home/network/sbc/status.yaml
       - type: vertical-stack
         cards:
           - !include home/network/sbc/mpi_mq1.yaml

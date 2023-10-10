@@ -30,6 +30,22 @@ sbc_reboot:
     - binary_sensor.pi4_sandbox_reboot_required
     - binary_sensor.pi4_sandcastle_reboot_required
     - binary_sensor.pi_hole_reboot_required
+sbc_status:
+  name: Single-board computers (status)
+  icon: mdi:list-status
+  entities:
+    - sensor.bpi_m2_zero_status
+    - sensor.bpi_m2_zero_2_status
+    - sensor.ha_yellow_status
+    - sensor.mpi_mq1_2_status
+    - sensor.mpi_mq1_status
+    - sensor.pi0_ant_status
+    - sensor.pi0_dsmr_status
+    - sensor.pi0_w2_status
+    - sensor.pi4_status
+    - sensor.pi4_sandbox_status
+    - sensor.pi4_sandcastle_status
+    - sensor.pi_hole_status
 pihole_update:
   name: Pi-hole (updates available)
   icon: mdi:package-variant-closed-plus
@@ -37,3 +53,4 @@ pihole_update:
     - update.pi_hole_core_update_available
     - update.pi_hole_ftl_update_available
     - update.pi_hole_web_update_available
+    - update.pi_hole_apt

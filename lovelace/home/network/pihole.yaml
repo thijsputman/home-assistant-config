@@ -33,23 +33,38 @@ card:
       title: Pi-hole – Network-wide protection
     - type: markdown
       card_mod:
-        style: |
-          ha-card {
-            border: 0px;
-            margin: 0px !important;
-            padding: 0px !important;
-          }
-          ha-markdown {
-            padding-top: 8px !important;
-            padding-bottom: 8px !important;
-          }
+        style:
+          .: |
+            ha-card {
+              border: 0px;
+              margin: 0px !important;
+              padding: 0px !important;
+            }
+            ha-markdown {
+              padding-top: 8px !important;
+              padding-bottom: 8px !important;
+            }
+          ha-markdown$ha-alert:
+            $: |
+              div.issue-type{
+                margin-bottom: 6px;
+              }
       content: >-
         {% set entity_id = 'group.pihole_update' %}
-        {% if states(entity_id) == 'on' %}
-            <ha-alert alert-type="info">
-              Updates are available for Pi-hole.
-            </ha-alert>
-        {% endif %}
+        {% if states(entity_id) == 'on' -%}
+          <ha-alert alert-type="info">Updates are available for **Pi-hole**.
+          </ha-alert>
+        {%- endif %}
+        {% if states('binary_sensor.pi_hole_reboot_required') == 'on' -%}
+          <ha-alert alert-type="warning">**{{-
+            device_attr('sensor.pi_hole_status', 'name')
+            -}}** requires a restart.</ha-alert>
+        {%- endif %}
+        {% if states('sensor.pi_hole_status') != 'running' -%}
+          <ha-alert alert-type="error">systemd reports **{{-
+            device_attr('sensor.pi_hole_status', 'name') }}** is _{{-
+            states('sensor.pi4_status')}}_!</ha-alert>
+        {%- endif %}
     - type: custom:mini-graph-card
       card_mod:
         style: |

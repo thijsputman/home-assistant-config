@@ -1,7 +1,7 @@
 type: vertical-stack
 cards:
   - type: markdown
-    title: APT upgrades
+    title: Systems' status
     card_mod:
       style:
         ha-markdown$: |
@@ -9,10 +9,11 @@ cards:
             font-weight: normal !important;
             font-size: 1.2em !important;
           }
-        ha-markdown$ha-alert$: |
-          div.warning{
-            margin-bottom: 6px;
-          }
+        ha-markdown$ha-alert:
+          $: |
+            div.warning{
+              margin-bottom: 6px;
+            }
     content: >-
       {%
         set updates=expand('group.sbc_apt') |
@@ -22,11 +23,22 @@ cards:
         set reboots=expand('group.sbc_reboot') |
           selectattr('state', 'eq', 'on') | map(attribute='entity_id') | list
       %}
-
-      {% if reboots | length > 0 %}
+      {%
+        set status=expand('group.sbc_status') |
+          selectattr('state', 'ne', 'running') | map(attribute='entity_id') |
+          list
+      %}
+      {%- if reboots | length > 0 -%}
         {%- for entity_id in reboots -%}
           <ha-alert alert-type="warning">**{{-device_attr(entity_id,
             'name')-}}** requires a restart.</ha-alert>
+        {%- endfor -%}
+        <br/>
+      {%- endif -%}
+      {%- if status | length > 0 -%}
+        {%- for entity_id in status -%}
+          <ha-alert alert-type="error">systemd reports **{{-device_attr(entity_id,
+            'name')-}}** is _{{ states(entity_id) }}_!</ha-alert>
         {%- endfor -%}
         <br/>
       {% endif %}
