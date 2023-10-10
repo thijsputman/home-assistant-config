@@ -21,6 +21,7 @@
         entity_id: fan.sonair_living_room
     - wait_for_trigger:
         - platform: numeric_state
+          id: co2
           entity_id: >-
             sensor.qingping_air_monitor_lite_living_room_environment_co2_density
           below: 800
@@ -29,6 +30,7 @@
         # (the other automations acting on the Sonair are guarded against
         # overriding the 100%-speed setting)
         - platform: numeric_state
+          id: manual
           entity_id: fan.sonair_living_room
           attribute: percentage
           below: 100
@@ -37,6 +39,16 @@
     - if: >-
         {{ wait.trigger is defined }}
       then:
+        - if: >-
+            {{ wait.trigger.id == 'co2' }}
+          then:
+            # Restore to 40% (which is a safe middleground) – the regular Sonair
+            # automations will now start kicking in again...
+            - service: fan.set_percentage
+              data:
+                percentage: 40
+              target:
+                entity_id: fan.sonair_living_room
         - stop: >-
             Living Room CO₂ ppm dropped below 800, or the Sonair was manually
             stopped/lowered...
@@ -48,24 +60,22 @@
         entity_id: fan.sonair_living_room
     - wait_for_trigger:
         - platform: numeric_state
+          id: co2
           entity_id: >-
             sensor.qingping_air_monitor_lite_living_room_environment_co2_density
           below: 800
           for: "00:10:00"
         - platform: numeric_state
+          id: manual
           entity_id: fan.sonair_living_room
           attribute: percentage
           below: 100
       timeout: "08:00:00"
       continue_on_timeout: true
     - if: >-
-        {{ wait.trigger is defined }}
+        {{ wait.trigger is defined and wait.trigger.id == 'manual' }}
       then:
-        - stop: >-
-            Living Room CO₂ ppm dropped below 800, or the Sonair was manually
-            stopped/lowered...
-    # Restore to 40% (which is a safe middleground) – the regular Sonair
-    # automations will now start kicking in again...
+        - stop: The Sonair was manually stopped/lowered...
     - service: fan.set_percentage
       data:
         percentage: 40
