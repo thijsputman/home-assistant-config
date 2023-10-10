@@ -107,9 +107,14 @@
               channel: Notification
               tag: device_failure
               targetDevices: my
-              title: 💥 Device failure(s)
+              title: >-
+                💥 {{ devices | length }} Device {{-
+                  'failures' if devices | length > 1 else 'failure'
+                -}}
               message: >-
-                The following device(s) appear to have (partially) failed:
+                The following {{
+                  'devices appear' if devices | length > 1 else 'device appears'
+                }} to have (partially) failed:
                 <br><br>◾ {{
                   devices | join('<br>◾ ')
                 }}

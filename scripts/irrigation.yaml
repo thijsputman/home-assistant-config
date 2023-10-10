@@ -55,7 +55,7 @@ irrigation_manual:
             continue_on_timeout: true
           # Abort if no state change occurs within two minutes
           - if: >-
-              {{ wait.trigger is not defined }}
+              {{ wait.trigger is none }}
             then:
               - service: switch.turn_off
                 target:

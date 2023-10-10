@@ -52,15 +52,9 @@
       entity_id: media_player.nvidia_shield_tv
       from: playing
       to:
+        - standby
         - paused
         - idle
-    # Again, a temporary addition: Prevent a transition when there's a short
-    # "standby-hiccup"...
-    - platform: state
-      entity_id: media_player.nvidia_shield_tv
-      from: playing
-      to: standby
-      for: "00:00:30"
     - platform: state
       entity_id: media_player.nvidia_shield_tv
       from: "off"
