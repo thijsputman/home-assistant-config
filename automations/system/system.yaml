@@ -108,7 +108,7 @@
               tag: device_failure
               targetDevices: my
               title: >-
-                💥 {{ devices | length }} Device {{-
+                💥 {{ devices | length }} Device {{
                   'failures' if devices | length > 1 else 'failure'
                 -}}
               message: >-

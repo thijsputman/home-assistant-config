@@ -40,7 +40,7 @@ card:
         # Not an identical unit (total mm instead of mm/h), but close enough to
         # provide some sensible insights in the graph...
         - entity: sensor.buienradar_precipitation_forecast_total
-          name: forecast (2 hours ahead)
+          name: forecast (next 2-hours)
           unit: mm – total
           show_points: false
           show_fill: false

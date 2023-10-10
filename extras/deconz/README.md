@@ -23,10 +23,6 @@ Custom DDFs in [`📂 devices`](./devices/):
   (originally a different manufacturer, but works fine with this one too)
 - [`📄 _TZE200_a7sghmms.json`](./devices/_TZE200_a7sghmms.json) – see
   [Tuya Smart Watering Timer](#tuya-smart-watering-timer-_tze200_a7sghmms)
-- `📄 _TZE200_myd45weu_temp.json` – identical to the one shipping with deCONZ,
-  but with its status set to `Gold`. Can be removed once
-  [deCONZ **2.23**](https://github.com/dresden-elektronik/deconz-rest-plugin/pull/7078)
-  is installed
 
 Copy these into the `devices`-folder of the deCONZ instance
 (`/opt/deCONZ/devices` for the Docker-container). They're picked up
@@ -41,7 +37,7 @@ the same physical appearance and "manufacturer" string though). I have
 
 The DDF is based on
 [deconz-rest-plugin#6143](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/6143);
-using the below `INFO_L2`-output. It's identical to
+using the below `INFO`-/`INFO_L2`-output. It's identical to
 [deconz-rest-plugin#6944](https://github.com/dresden-elektronik/deconz-rest-plugin/issues/6944)
 (which I only came across later 🤐). Once
 [deconz-rest-plugin#6947](https://github.com/dresden-elektronik/deconz-rest-plugin/pull/6947)
@@ -54,7 +50,7 @@ don't appear have much use/benefit. Proper support for these features in the
 deCONZ API (and Home Assistant for that matter) appears to be quite some way
 off...
 
-#### `INFO_L2`
+#### `INFO` / `INFO_L2`
 
 ```conf
 # Open/close the valve
