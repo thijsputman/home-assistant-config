@@ -84,7 +84,7 @@ mqtt_json_clean() {
     param="N $param"
   fi
 
-  param=$(echo "${param//[^A-Za-z0-9_ -.]/}" |
+  param=$(echo "${param//[^A-Za-z0-9_ .-]/}" |
     tr -s ' -.' _ | tr '[:upper:]' '[:lower:]')
 
   if [ -z "$param" ]; then
