@@ -5,6 +5,7 @@
       entity_id:
         - binary_sensor.water_59
         - binary_sensor.water_82
+        - binary_sensor.water_191
       from: "off"
       to: "on"
   condition: []

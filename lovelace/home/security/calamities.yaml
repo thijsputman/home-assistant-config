@@ -7,10 +7,10 @@ card_mod:
       }
     hui-horizontal-stack-card$: |
       :host div#root > *{
-        flex: 1 0 auto;
+        flex: 5;
       }
       :host div#root > :last-child{
-        flex: 0 0 auto !important;
+        flex: 2 !important;
       }
 report_size: 1
 card:
@@ -20,10 +20,8 @@ card:
       entities:
         - entity: binary_sensor.smoke_detectors
           name: Smoke
-        - entity: binary_sensor.water_82
-          name: Kitchen
-        - entity: binary_sensor.water_59
-          name: Attic
+        - entity: binary_sensor.water_sensors
+          name: Leaks
       show_state: false
     - type: conditional
       conditions:
@@ -36,7 +34,7 @@ card:
         card_mod:
           style: |
             ha-card {
-              width: 90px;
+              width: 100%;
             }
             {%- if states('script.sirens') == 'on' -%}
               ha-card ha-state-icon{
