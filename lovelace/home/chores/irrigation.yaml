@@ -56,11 +56,15 @@ cards:
                           {% endif %}
                       button:
                         color: >-
-                          {% if states('switch.on_off_output_24') == 'on' %}
+                          {% if not has_value('switch.on_off_output_24') %}
+                            var(--clear-background-color)
+                          {% elif states('switch.on_off_output_24') == 'on' %}
                             var(--state-active-color)
                           {% endif %}
                         background-color: >-
-                          {% if states('switch.on_off_output_24') == 'on' %}
+                          {% if not has_value('switch.on_off_output_24') %}
+                            var(--clear-background-color)
+                          {% elif states('switch.on_off_output_24') == 'on' %}
                             color-mix(
                               in srgb, var(--state-active-color) 20%, white
                             )
@@ -101,11 +105,15 @@ cards:
                           {% endif %}
                       button:
                         color: >-
-                          {% if states('switch.on_off_output_25') == 'on' %}
+                          {% if not has_value('switch.on_off_output_25') %}
+                            var(--clear-background-color)
+                          {% elif states('switch.on_off_output_25') == 'on' %}
                             var(--state-active-color)
                           {% endif %}
                         background-color: >-
-                          {% if states('switch.on_off_output_25') == 'on' %}
+                          {% if not has_value('switch.on_off_output_25') %}
+                            var(--clear-background-color)
+                          {% elif states('switch.on_off_output_25') == 'on' %}
                             color-mix(
                               in srgb, var(--state-active-color) 20%, white
                             )
@@ -150,41 +158,48 @@ cards:
               show_points: false
               name: evapotranspiration (net)
               unit: mm/day
-        - type: custom:mini-graph-card
-          card_mod:
-            style: |
-              ha-card {
-                padding-top: 0px !important;
-                border: 0px;
-                background-color: #F3F9FD;
-                border-radius: 0px;
-              }
-          hours_to_show: 240
-          group_by: date
-          hour24: true
-          lower_bound: 0
-          upper_bound: ~160
-          lower_bound_secondary: 0
-          upper_bound_secondary: ~4
-          aggregate_func: diff
-          decimals: 0
-          cache: true
-          show:
-            name: false
-            icon: false
-            graph: bar
-            labels: true
-            legend: false
-          entities:
-            - entity: sensor.daily_consumption_170
-              show_graph: false
-              unit: L — Balcony (today)
-            - entity: sensor.consumption_173_cumulative
-              unit: L — Garden
-              color: "#316d9b"
-            - entity: sensor.consumption_170_cumulative
-              unit: L — Balcony
-              color: "#49a2e7"
+        - type: conditional
+          conditions:
+            - entity: switch.on_off_output_24
+              state_not: unavailable
+            - entity: switch.on_off_output_25
+              state_not: unavailable
+          card:
+            type: custom:mini-graph-card
+            card_mod:
+              style: |
+                ha-card {
+                  padding-top: 0px !important;
+                  border: 0px;
+                  background-color: #F3F9FD;
+                  border-radius: 0px;
+                }
+            hours_to_show: 240
+            group_by: date
+            hour24: true
+            lower_bound: 0
+            upper_bound: ~160
+            lower_bound_secondary: 0
+            upper_bound_secondary: ~4
+            aggregate_func: diff
+            decimals: 0
+            cache: true
+            show:
+              name: false
+              icon: false
+              graph: bar
+              labels: true
+              legend: false
+            entities:
+              - entity: sensor.daily_consumption_170
+                show_graph: false
+                unit: L — Balcony (today)
+              - entity: sensor.consumption_173_cumulative
+                unit: L — Garden
+                color: "#316d9b"
+              - entity: sensor.consumption_170_cumulative
+                unit: L — Balcony
+                color: "#49a2e7"
         - type: custom:mini-graph-card
           card_mod:
             style: |

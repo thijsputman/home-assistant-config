@@ -17,7 +17,7 @@ irrigation_manual:
           valve | default('') in [
             'switch.on_off_output_24',
             'switch.on_off_output_25'
-          ]
+          ] and has_value(valve)
         }}
     - variables:
         input_entity: >-
