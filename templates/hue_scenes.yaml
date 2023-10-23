@@ -79,10 +79,8 @@
             Daytime
           {%
             elif num_lights == 10 and (
-              (brightness == 127 and
-                xy_color[0] == 0.52 and xy_color[1] == 0.35) or
-              (brightness in [119, 122, 123] and
-                xy_color[0] in [0.51, 0.52] and xy_color[1] == 0.36)
+              (brightness in [119, 122, 123, 127, 130] and
+                xy_color[0] in [0.51, 0.52] and xy_color[1] in [0.35, 0.36])
             )
           %}
             Ambiance

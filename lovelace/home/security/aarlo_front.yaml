@@ -95,6 +95,9 @@ card:
               font-style: normal;
               color: var(--secondary-text-color);
             }
+            ha-card state-badge{
+              height: unset !important;
+            }
         entity: binary_sensor.aarlo_motion_front
         no_event: No motion detected in the past 24 hours.
         history: 1
