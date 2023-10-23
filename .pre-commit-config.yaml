@@ -33,7 +33,7 @@ repos:
         types: [text]
       - id: markdownlint
         name: markdownlint
-        entry: npx --yes markdownlint-cli@0.35.0
+        entry: npx --yes markdownlint-cli@0.37.0
         language: system
         types: [file]
         files: (?i)(\.md|(^|/)(TODO|NOTES))$
