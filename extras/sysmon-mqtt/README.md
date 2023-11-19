@@ -348,12 +348,18 @@ distributions) is provided: [`📄 install.sh`](./install.sh). Once installed,
 running the script again will pull the latest version of `📄 sysmon.sh` from
 GitHub.
 
-The script requires `mqtt-broker` and `"Device Name"` to be provided. As an
-optional third argument, a list of network adapters to monitor can also be
-passed in:
+The script requires `mqtt-broker` and `"Device Name"` to be provided.
+Optionally, `network-adapters` and `rtt-hosts` can also be passed in:
 
 ```shell
-./install.sh mqtt-broker "Device Name" "eth0 wlan0"
+./install.sh mqtt-broker "Device Name" "eth0 wlan0" "router.local 8.8.8.8"
+```
+
+Alternatively, if the service is already installed, the installer can be called
+without arguments to pull the latest version of the script:
+
+```shell
+./install.sh
 ```
 
 For the very brave, the script can be run from GitHub directly:
