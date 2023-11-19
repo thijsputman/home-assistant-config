@@ -16,7 +16,8 @@
     # _before_ comparing against «wakeup» time, as that is date-less...
     - >-
       {%
-        set eta = states('sensor.last_notification_albert_heijn_eta') |
+        set eta = states('sensor.last_notification_albert_heijn_eta') if
+            has_value('sensor.last_notification_albert_heijn_eta') else 0 |
           as_datetime - timedelta(minutes=15)
       %}
       {% set wakeup = today_at(states('input_datetime.wakeup')) %}

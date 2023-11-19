@@ -74,6 +74,7 @@ card:
       hour24: true
       aggregate_func: max
       decimals: 1
+      lower_bound: ~0
       height: 90
       show:
         graph: bar
