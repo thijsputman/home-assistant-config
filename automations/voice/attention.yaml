@@ -55,7 +55,7 @@
   action:
     - event: tts_attention
       event_data:
-        speaker: media_player.mpi_mq1_speaker_attic
+        speaker: media_player.mpi_mq1
   mode: single
   max_exceeded: silent
 - alias: 🔊 | 👀 TTS attention — Living Room
@@ -116,7 +116,7 @@
   action:
     - event: tts_attention
       event_data:
-        speaker: media_player.bpi_m2_zero_speaker_living_room
+        speaker: media_player.bpi_m2z
   mode: single
   max_exceeded: silent
 - alias: 🔊 | 👀 TTS attention — Bedroom
@@ -168,6 +168,6 @@
   action:
     - event: tts_attention
       event_data:
-        speaker: media_player.pi0_w2_speaker_bedroom
+        speaker: media_player.pi0_w2
   mode: single
   max_exceeded: silent

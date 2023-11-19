@@ -10,7 +10,7 @@ wakeup_alarm:
               priority: attention
               duration: 20
               chime: false
-              speaker: media_player.pi0_w2_speaker_bedroom
+              speaker: media_player.pi0_w2
               message: >- # cspell: disable-next-line
                 media-source://media_source/sd/audio/4nsekecn.mp3
   mode: single

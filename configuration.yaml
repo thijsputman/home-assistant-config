@@ -93,16 +93,6 @@ camera:
 media_player:
   # Arlo
   - platform: aarlo
-  # Speakers
-  - platform: mpd
-    name: Pi0-W2 speaker (Bedroom)
-    host: pi0-w2.sgraastra
-  - platform: mpd
-    name: BPI-M2 Zero speaker (Living Room)
-    host: bpi-m2z.sgraastra
-  - platform: mpd
-    name: MPi-MQ1 speaker (Attic)
-    host: mpi-mq1.sgraastra
 
 # RESTful commands
 rest_command:

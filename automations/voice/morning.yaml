@@ -15,7 +15,7 @@
     - delay: 5
     - event: tts_announce
       event_data:
-        speaker: media_player.pi0_w2_speaker_bedroom
+        speaker: media_player.pi0_w2
         tag: good_morning
 - alias: 🔊 | 💤 Queue "Good morning!" (everyone awake)
   id: f1a0a203-6d0e-4c91-99a8-ced118c4c478

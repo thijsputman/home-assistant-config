@@ -93,9 +93,9 @@ tts_queue:
       selector:
         entity:
           include_entities:
-            - media_player.pi0_w2_speaker_bedroom
-            - media_player.bpi_m2_zero_speaker_living_room
-            - media_player.mpi_mq1_speaker_attic
+            - media_player.bpi_m2z
+            - media_player.mpi_mq1
+            - media_player.pi0_w2
   variables:
     channel: >-
       {% if channel not in ['attention', 'announce'] %}
@@ -231,9 +231,9 @@ tts_announce:
         entity:
           multiple: true
           include_entities:
-            - media_player.pi0_w2_speaker_bedroom
-            - media_player.bpi_m2_zero_speaker_living_room
-            - media_player.mpi_mq1_speaker_attic
+            - media_player.bpi_m2z
+            - media_player.mpi_mq1
+            - media_player.pi0_w2
     message:
       description: The message to announce
       required: true
@@ -270,15 +270,13 @@ tts_announce:
       {% endif %}
     is_sample: >-
       {{ message | trim is match('media-source:\/\/', True) }}
-    # Use a different volume for samples versus TTS – generally speaking, TTS
-    # (at least when generated via Piper) is louder than the samples...
     volume: >-
       {% if priority == 'attention' %}
-        {{ 0.65 if is_sample | bool else 0.50 }}
+        0.65
       {% elif priority == 'whisper' %}
-        {{ 0.25 if is_sample | bool else 0.12 }}
+        0.25
       {% else %}
-        {{ 0.45 if is_sample | bool else 0.28 }}
+        0.45
       {% endif %}
   sequence:
     # Only announce when someone's home
@@ -376,7 +374,7 @@ tts_announce:
               Crude heuristic to determine the duration of a spoken out string
             #}
             {% if duration is not number %}
-              {{ [1, (announcement | length / 14) | round(0)] | max }}
+              {{ [1, (announcement | length / 10) | round(0)] | max }}
             {% else %}
               {{ duration | int(5) }}
             {% endif %}
@@ -395,9 +393,9 @@ tts_chime:
         entity:
           include_entities:
             - group.speakers_all
-            - media_player.pi0_w2_speaker_bedroom
-            - media_player.bpi_m2_zero_speaker_living_room
-            - media_player.mpi_mq1_speaker_attic
+            - media_player.bpi_m2z
+            - media_player.mpi_mq1
+            - media_player.pi0_w2
     type:
       description: Type of chime (default "announce")
       required: false

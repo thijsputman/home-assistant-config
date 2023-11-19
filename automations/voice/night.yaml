@@ -35,12 +35,12 @@
     # Release all (if any) regular TTS announcements first
     - event: tts_attention
       event_data:
-        speaker: media_player.pi0_w2_speaker_bedroom
+        speaker: media_player.pi0_w2
     # Slight delay to allow for the ("announce") TTS queue to fill
     - delay: 2
     - event: tts_announce
       event_data:
-        speaker: media_player.pi0_w2_speaker_bedroom
+        speaker: media_player.pi0_w2
         tag: goodnight
   mode: single
   max_exceeded: silent
@@ -62,12 +62,12 @@
     # Release all (if any) regular TTS announcements first
     - event: tts_attention
       event_data:
-        speaker: media_player.bpi_m2_zero_speaker_living_room
+        speaker: media_player.bpi_m2z
     # Slight delay to allow for the ("announce") TTS queue to fill
     - delay: 2
     - event: tts_announce
       event_data:
-        speaker: media_player.bpi_m2_zero_speaker_living_room
+        speaker: media_player.bpi_m2z
         tag: goodnight
   mode: single
   max_exceeded: silent

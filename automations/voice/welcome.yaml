@@ -64,7 +64,7 @@
         - platform: event
           event_type: tts_attention
           event_data:
-            speaker: media_player.bpi_m2_zero_speaker_living_room
+            speaker: media_player.bpi_m2z
       timeout: "00:10:00"
       continue_on_timeout: false
     - service: script.turn_on
@@ -72,7 +72,7 @@
         entity_id: script.tts_announce
       data:
         variables:
-          speaker: media_player.bpi_m2_zero_speaker_living_room
+          speaker: media_player.bpi_m2z
           message: >-
             {#
               This is only works because there's two occupants with a single
