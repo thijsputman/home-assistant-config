@@ -12,15 +12,17 @@
       entity_id: input_boolean.waterrower
       state: "off"
   action:
-    # Flash lights as confirmation
-    - repeat:
-        count: 3
-        sequence:
-          - service: light.turn_on
-            data:
-              flash: short
-            entity_id: light.guestroom
-          - delay: "00:00:02"
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          speaker: media_player.pi0_w2
+          priority: attention
+          duration: 2
+          chime: false
+          message: >-
+            media-source://media_source/sd/audio/Magic_Trick.ogg
     - service: input_boolean.turn_on
       entity_id: input_boolean.waterrower
     - variables:
@@ -85,15 +87,17 @@
   action:
     - service: input_boolean.turn_off
       entity_id: input_boolean.waterrower
-    # Flash lights as confirmation
-    - repeat:
-        count: 3
-        sequence:
-          - service: light.turn_on
-            data:
-              flash: short
-            entity_id: light.guestroom
-          - delay: "00:00:02"
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          speaker: media_player.pi0_w2
+          priority: attention
+          duration: 2
+          chime: false
+          message: >-
+            media-source://media_source/sd/audio/Magic_Trick.ogg
   mode: single
   max_exceeded: silent
 # The WaterRower software (pirowflo) is a bit finicky – issues are mostely
@@ -114,11 +118,17 @@
     - service: rest_command.waterrower
       data:
         action: restart
-    # Flash lights as confirmation
-    - service: light.turn_on
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
       data:
-        flash: long
-      entity_id: light.guestroom
+        variables:
+          speaker: media_player.pi0_w2
+          priority: attention
+          duration: 2
+          chime: false
+          message: >-
+            media-source://media_source/sd/audio/Magic_Trick.ogg
   mode: single
   max_exceeded: silent
 - alias: 🏅 | 🕹️ WaterRower toggle REST-command (input boolean)
