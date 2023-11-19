@@ -25,17 +25,12 @@ jobs:
             ~/.cache/pip
             ~/.npm
             ~/.local/bin
-          # Verions are pinned in both the pre-commit configuration and the
-          # setup-script; invalidate cache on change of either.
           # Only restore on exact match – the manually pulled in binaries are
           # not version checked prior to execution. Restoring a stale cache
           # would result in using outdated versions...
-          # yamllint disable rule:line-length
           # yamllint disable-line rule:quoted-strings
           key: "pre-commit-cache-\
-            ${{ hashFiles('.pre-commit-config.yaml', '.github/scripts/setup-pre-commit.sh') }}"
-          # The hashFiles-expression cannot be split over multiple lines 😟🤐
-          # yamllint enable rule:line-length
+            ${{ hashFiles('.github/scripts/setup-pre-commit.sh') }}"
       - name: Install dependencies
         env:
           USE_PIPX: "false"

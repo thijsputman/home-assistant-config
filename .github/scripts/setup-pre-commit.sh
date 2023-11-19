@@ -10,6 +10,9 @@ if ! [[ $PATH =~ (^|:)"${HOME}/.local/bin"(:|$) ]]; then
   exit 1
 fi
 
+npm install -g markdownlint-cli@0.37.0
+npm install -g prettier@3.0.2
+
 pip_cmd=pip3
 if [ "$USE_PIPX" == true ]; then
   pip3 install --user pipx
