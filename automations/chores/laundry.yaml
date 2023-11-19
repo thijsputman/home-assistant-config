@@ -12,7 +12,7 @@
           id: cycle_completed
           entity_id: sensor.power_86_actual
           below: 5
-          for: "00:10:00"
+          for: "00:15:00"
         # Short-circuit on door open
         - platform: state
           entity_id: binary_sensor.openclose_158 # Contact sensor on door

@@ -11,7 +11,7 @@ cards:
           }
         ha-markdown$ha-alert:
           $: |
-            div.warning{
+            div.warning, div.error{
               margin-bottom: 6px;
             }
     content: >-
@@ -25,6 +25,7 @@ cards:
       %}
       {%
         set status=expand('group.sbc_status') |
+          rejectattr('state', 'in', ['unavailable', 'unknown']) |
           selectattr('state', 'ne', 'running') | map(attribute='entity_id') |
           list
       %}

@@ -94,7 +94,10 @@
           # expected (e.g. "in 30 minutes")
           expiry: "02:00:00"
           message: >-
-            Rain is expected %WAIT_REMAINING%
+            Rain is expected at {{
+              (now() + timedelta(hours=2)) | as_timestamp |
+                timestamp_custom('%H:%M')
+            }}; that is in %WAIT_REMAINING%
     # Wait for up to 4 hours for it to start raining
     - wait_for_trigger:
         - platform: numeric_state
