@@ -46,11 +46,10 @@ goodbye() {
 
   rc="$?"
 
-  mosquitto_pub -r -q 1 -h "$mqtt_host" -t "sysmon/$device/connected" -m 0 ||
-    true
+  # Reset EXIT-trap to prevent getting stuck in "goodbye" (due to "set -e")
+  trap - EXIT
 
   # Clean-up temporary files and fds/pipes
-
   if [ -v apt_check ] && [ -f "$apt_check" ]; then
     rm -f "$apt_check"
   fi
@@ -58,9 +57,10 @@ goodbye() {
     exec 3>&-
   fi
 
-  # Reset EXIT-trap to prevent running twice (due to "set -e")
+  # Sign-off from MQTT
+  mosquitto_pub -r -q 1 -h "$mqtt_host" -t "sysmon/$device/connected" -m 0 ||
+    true
 
-  trap - EXIT
   exit "$rc"
 }
 
@@ -153,7 +153,6 @@ ha_discover() {
     state_topic="sysmon/$device/version"
     value_template=value
   elif [ "$attribute" = "status" ]; then
-    expire_after=0
     value_template="$value_json"
   elif [ "$attribute" = "apt" ]; then
     expire_after=0
@@ -164,7 +163,6 @@ ha_discover() {
     fi
     value_template="$value_json | to_json"
   elif [ "$attribute" = "reboot_required" ]; then
-    expire_after=0
     entity=binary_sensor
     value_template="'ON' if ($value_json | int(0)) == 1 else 'OFF'"
   fi
