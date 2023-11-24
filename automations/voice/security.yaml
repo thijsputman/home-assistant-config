@@ -1,0 +1,131 @@
+- alias: 🔊 | 🚪 Announce Front/Kitchen door open (home alone)
+  id: 9c93625b-a42a-4f6b-a06f-863814c1ce6d
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.openclose_16
+        - binary_sensor.openclose_12
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: binary_sensor.home_alone
+      state: "on"
+    # Don't announce when asleep
+    - condition: state
+      entity_id: timer.everyone_asleep_delay
+      state: idle
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          rooms:
+            - attic
+            - bedroom
+          priority: attention
+          message: >-
+            The {{
+              state_attr(trigger.entity_id, 'friendly_name') | lower
+            }} just opened!
+- alias: 🔊 | 🚗 Announce someone came home (home alone)
+  id: 379cc525-afd4-489c-a8fd-b4e81b2932b0
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.home_alone
+      to: "off"
+  condition:
+    - condition: state
+      entity_id: timer.everyone_asleep_delay
+      state: idle
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          rooms:
+            - attic
+            - bedroom
+          priority: attention
+          message: >-
+            {{ state_attr(trigger.entity_id, 'actor') }} is close to home...
+- alias: 🔊 | 🚪 Announce Back gate open
+  id: cc4ab718-0f26-49c0-b3c6-837b5f38adb1
+  trigger:
+    - platform: state
+      entity_id: binary_sensor.openclose_34
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: timer.everyone_asleep_delay
+      state: idle
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    # Only act if the _neither_ the front _nor_ the kitchen door saw a state
+    # change in the last 10-minutes (indicating they were opened – most likely
+    # the back gate opened as a result of someone leaving the house)
+    - condition: template
+      value_template: >-
+        {{
+          (
+            states.binary_sensor.openclose_12 is defined and
+            states.binary_sensor.openclose_12.last_changed >=
+              now() - timedelta(minutes=10)
+          ) or (
+            states.binary_sensor.openclose_16 is defined and
+            states.binary_sensor.openclose_16.last_changed >=
+              now() - timedelta(minutes=10)
+          )
+        }}
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          priority: attention
+          message: >-
+            The {{
+              state_attr(trigger.entity_id, 'friendly_name') | lower
+            }} just opened!
+- alias: 🔊 | 👋 Announce motion detected outside
+  id: 1e350831-70d3-42f7-a01a-238c91782fe4
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.aarlo_motion_front
+        - binary_sensor.aarlo_motion_back
+        - binary_sensor.aarlo_motion_balcony
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: timer.everyone_asleep_delay
+      state: idle
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+  action:
+    # Slightly delay the announcement to allow for other automations (e.g. the
+    # Shield TV will stop playing) to complete – this way the announcement plays
+    # at a more opportune moment...
+    - delay: "00:00:05"
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          priority: attention
+          message: >-
+            Motion detected at the {{
+              trigger.to_state.attributes.camera_name | lower }}.

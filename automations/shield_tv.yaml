@@ -1,11 +1,12 @@
-- alias: 📺 | 👋/🚪 Pause Shield TV (motion detected / doorbell rang)
+- alias: 📺/🔊 | 👋/🚪 Pause Shield TV (motion detected / doorbell rang)
   id: 87c17fff-a8e1-4c5a-8e31-e8ede68d7899
   trigger:
     - platform: state
       id: motion
       entity_id:
         - binary_sensor.aarlo_motion_front
-        - binary_sensor.aarlo_motion_back_combined
+        - binary_sensor.aarlo_motion_back
+        - binary_sensor.aarlo_motion_balcony
       from: "off"
       to: "on"
     - platform: state
@@ -20,20 +21,6 @@
   action:
     - service: media_player.media_play_pause
       entity_id: media_player.nvidia_shield_tv
-    - if:
-        - condition: trigger
-          id: motion
-      then:
-        - service: script.turn_on
-          target:
-            entity_id: script.tts_announce
-          data:
-            variables:
-              rooms: living_room
-              priority: regular
-              message: >-
-                Motion detected at the {{
-                  trigger.to_state.attributes.camera_name | lower }}.
   mode: single
   max_exceeded: silent
 - alias: 📺 | 📱 Pause Shield TV (phone ringing)

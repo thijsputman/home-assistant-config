@@ -83,3 +83,28 @@
         {% else %}
           0
         {% endif %}
+- trigger:
+    - platform: state
+      entity_id:
+        - !secret person_1
+        - !secret person_2
+      to: ~
+  binary_sensor:
+    - name: Home alone
+      unique_id: 9dfabd42-e968-4740-8692-a742fabf39e4
+      icon: mdi:home-account
+      state: >-
+        {% if
+          expand('group.family') |
+            selectattr('state', 'eq', 'home') | list | length == 1
+        %}
+          on
+        {% else %}
+          off
+        {% endif %}
+      attributes:
+        actor: >-
+          {{
+            state_attr(trigger.entity_id, 'friendly_name') |
+              regex_replace(' .*$', '')
+          }}
