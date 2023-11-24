@@ -17,7 +17,7 @@
         entity_id: script.tts_announce
       data:
         variables:
-          speaker: media_player.pi0_w2
+          rooms: bedroom
           priority: attention
           duration: 2
           chime: false
@@ -92,7 +92,7 @@
         entity_id: script.tts_announce
       data:
         variables:
-          speaker: media_player.pi0_w2
+          rooms: bedroom
           priority: attention
           duration: 2
           chime: false
@@ -123,7 +123,7 @@
         entity_id: script.tts_announce
       data:
         variables:
-          speaker: media_player.pi0_w2
+          rooms: bedroom
           priority: attention
           duration: 2
           chime: false

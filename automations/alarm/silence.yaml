@@ -66,7 +66,7 @@
     - parallel:
         - event: tts_announce
           event_data:
-            speaker: media_player.pi0_w2
+            room: bedroom
             tag: home_alarm
         # Silence the sirens; continue blinking until the alarm state clears
         # (which is after at most 3 minutes).

@@ -3,19 +3,14 @@ tts_queue:
   # The "tts_attention" and "tts_announce" events can contain the following
   # event data:
   #
-  # - speaker: The entity-id of the speaker on which to play the TTS queue. When
-  #   _not_ defined, queued notifications that _don't_ specify a speaker
-  #   preference are played on _all_ speakers (and all others are not released
-  #   from the queue).
-  #   By convention, all "tts_attention" events specify a speaker. Namely, the
-  #   speaker which has attention. For "tts_announce" events it depends on the
-  #   further context of the event (e.g. "Hourly Dong!" wants to be played on
-  #   all speakers and thus doesn't specify one).
+  # - room: The room in which to play the TTS queue. By convention, all
+  #   "tts_attention" events specify a room. Namely, room which has attention.
+  #   For "tts_announce" events it depends on the context of the event (ie, some
+  #   announcements might target as specific room, while others want to be
+  #   announced everywhere).
   # - tag: If defined on an event, only announcements with that specific tag
-  #   set are released from the queue. Mainly used to ensure "tts_announce"
-  #   events don't get mixed (e.g. "Hourly Dong!" wants to be played on all
-  #   speakers, but shouldn't interfer with a potential simultaneous set of
-  #   announcements that only wants to be played on a single speaker).
+  #   set are released from the queue. Mainly used to ensure multiple
+  #   "tts_announce" event-streams don't get mixed.
   description: >-
     Queue a message for announcement. There are two "channels": attention and
     announce. The queue is released whenever the matching channel's event
@@ -84,18 +79,6 @@ tts_queue:
       required: false
       selector:
         text: # yamllint disable-line rule:empty-values
-    speaker:
-      description: >-
-        Preferred speaker-entity – first eligible speaker if not provided _or_
-        all speakers in case of "tts_announce" events that don't specify a
-        specific speaker
-      required: false
-      selector:
-        entity:
-          include_entities:
-            - media_player.bpi_m2z
-            - media_player.mpi_mq1
-            - media_player.pi0_w2
   variables:
     channel: >-
       {% if channel not in ['attention', 'announce'] %}
@@ -158,11 +141,6 @@ tts_queue:
             wait.trigger.id == 'abort' or (
               wait.trigger.id == channel and
               (
-                speaker is not defined or (
-                  wait.trigger.event.data.speaker is defined and
-                  wait.trigger.event.data.speaker == speaker
-                )
-              ) and (
                 wait.trigger.event.data.tag is not defined or
                 wait.trigger.event.data.tag == tag
               )
@@ -196,12 +174,18 @@ tts_queue:
         entity_id: script.tts_announce
       data:
         variables:
-          speaker: >-
-            {{
-              wait.trigger.event.data.speaker if
-                wait.trigger.event.data.speaker is defined
-                else 'group.speakers_all'
-             }}
+          speakers: >-
+            {% set room = wait.trigger.event.data.room if
+              wait.trigger.event.data.room is defined else '_undefined_' %}
+            {% if room == 'living_room' %}
+              media_player.bpi_m2z
+            {% elif room == 'bedroom' %}
+              media_player.pi0_w2
+            {% elif room == 'attic' %}
+              media_player.mpi_mq1
+            {% else %}
+              group.speakers_all
+            {% endif %}
           message: >-
             {{ message }}
           duration: >-
@@ -222,18 +206,18 @@ tts_announce:
     See "TTS queue" for more details.
   icon: mdi:speaker-message
   fields:
-    speaker:
+    rooms:
       description: >-
-        Speaker-entity to announce on – when omitted uses _all_ speakers;
-        multiple selection possible
+        Rooms to announce in – when omitted announces in _all_ rooms; multiple
+        selection possible
       required: true
       selector:
-        entity:
+        select:
           multiple: true
-          include_entities:
-            - media_player.bpi_m2z
-            - media_player.mpi_mq1
-            - media_player.pi0_w2
+          options:
+            - attic
+            - bedroom
+            - living_room
     message:
       description: The message to announce
       required: true
@@ -262,11 +246,25 @@ tts_announce:
             - regular
             - whisper
   variables:
-    speaker: >-
-      {% if speaker is not defined %}
-        group.speakers_all
+    speakers: >-
+      {% set result = namespace(speakers=[]) %}
+      {% set rooms = rooms if rooms is defined else [] %}
+      {% for room in rooms %}
+        {% if room == 'living_room' %}
+          {% set result.speakers =
+            result.speakers + ['media_player.bpi_m2z'] %}
+        {% elif room == 'bedroom' %}
+          {% set result.speakers =
+            result.speakers + ['media_player.pi0_w2'] %}
+        {% elif room == 'attic' %}
+          {% set result.speakers =
+            result.speakers + ['media_player.mpi_mq1'] %}
+        {% endif %}
+      {% endfor %}
+      {% if result.speakers | length > 0 %}
+        {{ result.speakers | join(',') }}
       {% else %}
-        {{ speaker }}
+        group.speakers_all
       {% endif %}
     is_sample: >-
       {{ message | trim is match('media-source:\/\/', True) }}
@@ -286,7 +284,7 @@ tts_announce:
     # Optional chime before the announcement. If multiple announcements are
     # queued, use a different chime to "bridge" the messages.
     - if: >-
-        {{ chime | bool(true) if chime is defined else false }}
+        {{ chime | bool(true) if chime is defined else true }}
       then:
         - if: >-
             {{ this.attributes.current == 0 }}
@@ -299,21 +297,21 @@ tts_announce:
                   {% else %}
                     announce
                   {% endif %}
-                speaker: >-
-                  {{ speaker }}
+                speakers: >-
+                  {{ speakers }}
           else:
             - service: script.tts_chime
               data:
                 type: bridge
-                speaker: >-
-                  {{ speaker }}
+                speakers: >-
+                  {{ speakers }}
     - service: media_player.volume_set
       data:
         volume_level: >-
           {{ volume }}
       target:
         entity_id: >-
-          {{ speaker }}
+          {{ speakers }}
     - if:
         - >-
           {{ is_sample }}
@@ -325,11 +323,11 @@ tts_announce:
               {{ message | trim }}
           target:
             entity_id: >-
-              {{ speaker }}
+              {{ speakers }}
         - service: notify.log_tts_announce
           data:
             message: >-
-              {{ speaker.split(',') if ',' in speaker else speaker }}:
+              {{ speakers.split(',') if ',' in speakers else speakers }}:
               Played sample "{{ message | trim }}" (🔊 {{ volume }})
         - delay: >-
             {{ duration if duration is defined else 0 | int(1) }}
@@ -355,7 +353,7 @@ tts_announce:
           data:
             cache: true
             media_player_entity_id: >-
-              {{ speaker }}
+              {{ speakers }}
             message: >-
               {{ announcement }}
             options:
@@ -365,7 +363,7 @@ tts_announce:
         - service: notify.log_tts_announce
           data:
             message: >-
-              {{ speaker.split(',') if ',' in speaker else speaker }}:
+              {{ speakers.split(',') if ',' in speakers else speakers }}:
               {{ announcement }} (🔊 {{ volume }})
         # For queued execution to work properly, the script needs to block while
         # the announcement is playing...
@@ -386,18 +384,21 @@ tts_chime:
   alias: TTS chime [internal]
   icon: mdi:instrument-triangle
   fields:
-    speaker:
-      description: Speaker-entity to chime
+    speakers:
+      description: >-
+        Speaker-entities to chime – when omitted uses _all_ speakers; multiple
+        selection possible
       required: true
       selector:
         entity:
+          multiple: true
           include_entities:
-            - group.speakers_all
             - media_player.bpi_m2z
             - media_player.mpi_mq1
             - media_player.pi0_w2
     type:
-      description: Type of chime (default "announce")
+      description: Type of chime
+      default: announce
       required: false
       selector:
         select:
@@ -408,6 +409,25 @@ tts_chime:
             - bridge
   sequence:
     - variables:
+        speakers: >-
+          {% set result = namespace(speakers=[]) %}
+          {% set speakers = speakers if speakers is defined else [] %}
+          {% for speaker in speakers %}
+            {% if speaker in
+              [
+                'media_player.bpi_m2z',
+                'media_player.mpi_mq1',
+                'media_player.pi0_w2'
+              ]
+            %}
+              {% set result.speakers = result.speakers + [speaker] %}
+            {% endif %}
+          {% endfor %}
+          {% if result.speakers | length > 0 %}
+            {{ result.speakers }}
+          {% else %}
+            group.speakers_all
+          {% endif %}
         sample: >-
           {% if type == 'bridge' %}
             Pollen.ogg
@@ -434,7 +454,7 @@ tts_chime:
           {{ volume }}
       target:
         entity_id: >-
-          {{ speaker }}
+          {{ speakers }}
     - service: media_player.play_media
       data:
         media_content_type: music
@@ -442,7 +462,7 @@ tts_chime:
           media-source://media_source/sd/audio/{{- sample -}}
       target:
         entity_id: >-
-          {{ speaker }}
+          {{ speakers }}
     # Block during the chime
     - delay: "00:00:01"
   mode: single

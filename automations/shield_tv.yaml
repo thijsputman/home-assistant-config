@@ -29,7 +29,7 @@
             entity_id: script.tts_announce
           data:
             variables:
-              speaker: media_player.bpi_m2_zero_speaker_living_room
+              rooms: living_room
               priority: regular
               message: >-
                 Motion detected at the {{

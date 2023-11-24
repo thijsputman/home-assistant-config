@@ -43,7 +43,7 @@
             entity_id: script.tts_announce
           data:
             variables:
-              speaker: media_player.mpi_mq1
+              rooms: attic
               priority: attention
               duration: 4
               chime: false
