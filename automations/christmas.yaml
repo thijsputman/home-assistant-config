@@ -1,4 +1,4 @@
-- alias: 🎄 | 💡/✈️ Christmas tree on (Living room Hue scene / someone home)
+- alias: 🎄 | 💡/🚗 Christmas tree on (Living room Hue scene / someone home)
   id: 1f000056-9ced-4832-a6a0-4cbb93fb381e
   trigger:
     - platform: state
@@ -32,7 +32,7 @@
     - service: switch.turn_on
       entity_id: switch.on_off_plug_in_unit_8
   mode: single
-- alias: 🎄 | 💡/✈️ Christmas tree off (Living room Hue scene / everyone away)
+- alias: 🎄 | 💡/🚗 Christmas tree off (Living room Hue scene / everyone away)
   id: 7d791dff-0c3d-4774-91e6-648ff3348e53
   trigger:
     - platform: state

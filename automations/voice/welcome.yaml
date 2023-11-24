@@ -1,4 +1,4 @@
-- alias: 🔊 | ✈️ "Welcome home!" announcement (someone home)
+- alias: 🔊 | 🚗 "Welcome home!" announcement (someone home)
   id: 4cfd2c21-b014-4b43-b8ad-99db4dc9cb6d
   trigger:
     # Should be away for more than 90-minutes to receive a "Welcome home"

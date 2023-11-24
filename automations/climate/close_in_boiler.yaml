@@ -76,7 +76,7 @@
     - service: switch.turn_on
       entity_id: switch.smart_plug_9
   mode: single
-- alias: 🌡️ | ✈️ Close-in boiler off (everyone away)
+- alias: 🌡️ | 🚗 Close-in boiler off (everyone away)
   id: ca6fb857-6ff7-4ac7-b960-4e527d9897a2
   trigger:
     - platform: state
@@ -92,7 +92,7 @@
     - service: switch.turn_off
       entity_id: switch.smart_plug_9
   mode: single
-- alias: 🌡️ | ✈️ Close-in boiler on (someone home before 21:00)
+- alias: 🌡️ | 🚗 Close-in boiler on (someone home before 21:00)
   id: f4cda301-822a-4737-a047-587118c5964e
   trigger:
     - platform: state

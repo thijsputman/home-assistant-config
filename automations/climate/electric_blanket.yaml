@@ -1,4 +1,4 @@
-- alias: 🌡️ | ⏰/✈️ Electric blanket on (daily at 22:30 / someone home)
+- alias: 🌡️ | ⏰/🚗 Electric blanket on (daily at 22:30 / someone home)
   id: f712246a-1aba-4efe-8834-9cd9a62f706c
   trigger:
     - platform: time

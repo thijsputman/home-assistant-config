@@ -1,5 +1,5 @@
 - alias: >-
-    💡 | ✈️ Inside lights off when everyone away (daily between 23:00 - 01:00)
+    💡 | 🚗 Inside lights off when everyone away (daily between 23:00 - 01:00)
   id: 9b24fc0b-fc61-432c-b881-aa2b644a2efe
   trigger:
     - platform: time
@@ -33,7 +33,7 @@
 # short while for no apparent reason... To prevent that, stop the script when
 # someone comes home. No need to switch on any lights, other automations (in
 # "📄 alarm/welcome.yaml" specifically) handle that.
-- alias: 💡 | ✈️ Stop "Lights out"-script when someone home
+- alias: 💡 | 🚗 Stop "Lights out"-script when someone home
   id: 9c2f2cea-8a22-40aa-ba35-575816f03acd
   trigger:
     - platform: state
@@ -53,7 +53,7 @@
 # *on* at dusk if dusk is _after_ the randomised switch off moment (somewhere
 # between 19:00 and 20:00)
 - alias: >-
-    💡 | ✈️ Attic lights on and off when everyone away (most weekdays)
+    💡 | 🚗 Attic lights on and off when everyone away (most weekdays)
   id: 10746e4d-a051-42c0-afb0-79b375ac17d2
   trigger:
     - platform: state
@@ -103,7 +103,7 @@
 # Leaving the Attic lights on when someone's home would lead the occupancy
 # detection in the Attic to assume there's someone in the Attic and
 # unintentionally switch on the heating/airco...
-- alias: 💡 | ✈️ Attic lights off when someone home
+- alias: 💡 | 🚗 Attic lights off when someone home
   id: 561c1b1f-4604-4f18-8635-d716dc677387
   trigger:
     - platform: state

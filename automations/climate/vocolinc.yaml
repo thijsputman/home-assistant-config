@@ -1,5 +1,5 @@
 - alias: >-
-    💨 | ⏰/✈️ Aroma diffuser Living room off (after 90 minutes / everyone away)
+    💨 | ⏰/🚗 Aroma diffuser Living room off (after 90 minutes / everyone away)
   id: dab99a02-cf11-43a2-a2af-c188dac07acf
   trigger:
     - platform: state

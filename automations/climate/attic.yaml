@@ -107,7 +107,7 @@
         temperature: 12.0
       entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🌡️ | ✈️ Attic radiator off (tado° from Away- to Home-mode)
+- alias: 🌡️ | 🚗 Attic radiator off (tado° from Away- to Home-mode)
   id: d8587843-f45f-48cc-811a-e7dbf346a31f
   trigger:
     # When tado° transitions from Away- to Home-mode, it restores all schedules

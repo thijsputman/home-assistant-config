@@ -54,7 +54,7 @@
         code: !secret alarm_code
       entity_id: alarm_control_panel.home_alarm
   mode: single
-- alias: 🚨 | ✈️ Alarm arm away (everyone away)
+- alias: 🚨 | 🚗 Alarm arm away (everyone away)
   id: 4cb07e27-5af6-4a81-b51c-dc35372c3deb
   trigger:
     - platform: state
@@ -75,7 +75,7 @@
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.home_alarm
   mode: single
-- alias: 🚨 | ✈️ Alarm disarm (someone home)
+- alias: 🚨 | 🚗 Alarm disarm (someone home)
   id: 1b7d2951-39c5-41d1-bcac-9acdf31c1173
   trigger:
     - platform: state

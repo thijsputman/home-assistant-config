@@ -11,6 +11,6 @@ wakeup_alarm:
               duration: 20
               chime: false
               rooms: bedroom
-              message: >- # cspell: disable-next-line
+              message: >-
                 media-source://media_source/sd/audio/4nsekecn.mp3
   mode: single
