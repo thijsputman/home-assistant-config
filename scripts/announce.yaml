@@ -249,6 +249,9 @@ tts_announce:
     speakers: >-
       {% set result = namespace(speakers=[]) %}
       {% set rooms = rooms if rooms is defined else [] %}
+      {% if rooms is string %}
+        {% set rooms = rooms.split(',') if ',' in rooms else [rooms] %}
+      {% endif %}
       {% for room in rooms %}
         {% if room == 'living_room' %}
           {% set result.speakers =
@@ -337,7 +340,7 @@ tts_announce:
             # pronounced, instead of being used as intonation hints as I
             # would've hoped); convert timestamps into a format slightly more
             # conductive to TTS; replace "ij" with "y" (English-language TTSs
-            # trip over it).
+            # trip over it – also hard-coded a fix for my own name 😇).
             announcement: >-
               {{
                 message |
@@ -347,7 +350,7 @@ tts_announce:
                   regex_replace('([0-9]{1,2}):0([1-9]{1})',
                     '\g<2> past \g<1>') |
                   regex_replace('([0-9]{1,2}):00', '\g<1> o\'clock') |
-                  replace('ij', 'y')
+                  replace('ij', 'y') | replace('Thijs', 'Tice')
               }}
         - service: tts.speak
           data:
@@ -412,6 +415,10 @@ tts_chime:
         speakers: >-
           {% set result = namespace(speakers=[]) %}
           {% set speakers = speakers if speakers is defined else [] %}
+          {% if speakers is string %}
+            {% set speakers = speakers.split(',') if ',' in speakers
+              else [speakers] %}
+          {% endif %}
           {% for speaker in speakers %}
             {% if speaker in
               [
