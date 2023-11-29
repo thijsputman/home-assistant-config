@@ -73,3 +73,8 @@ homeassistant.components.meater:
 homeassistant.config_entries:
   - >-
     ^Error occurred loading flow for integration (oralb|led_ble):
+# Testing the "Eufy Security" custom-component; works, but keeps throwing these
+# when the camera-stream is not active – ignore this for now...
+homeassistant.components.stream.stream.camera.bonus_room:
+  - >-
+    HTTP_NOT_FOUND.+rtsp:\/\/ha-yellow\.sgraastra:8554\/

@@ -1,16 +1,3 @@
-- alias: ✨ | 🕹️ Fireplace toggle (Magic Cube – turn clockwise)
-  id: fa8b26c2-5a32-4a64-a90a-c546465fef54
-  trigger:
-    - device_id: 7053d7e589bf4a4496cff59a24b7c83c
-      domain: deconz
-      platform: device
-      type: remote_turned_clockwise
-      subtype: ""
-  condition: []
-  action:
-    - service: input_boolean.toggle
-      entity_id: input_boolean.fireplace
-  mode: single
 - alias: ✨ | 🕹️ Fireplace toggle REST-command (input boolean)
   id: e885702e-c8fb-4720-84f7-07aa9f13855b
   trigger:
