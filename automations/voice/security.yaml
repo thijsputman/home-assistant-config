@@ -7,10 +7,20 @@
         - binary_sensor.openclose_12
       from: "off"
       to: "on"
+    - platform: state
+      id: home_alone
+      entity_id: group.family
+      from: not_home
+      to: home
   condition:
     - condition: state
       entity_id: binary_sensor.home_alone
       state: "on"
+    # Don't bother when the doorbell just rang (sensor is "on" for 1-minute;
+    # should be sufficient) – the doorbell is an announcement itself... 😉
+    - condition: state
+      entity_id: binary_sensor.vibration_43
+      state: "off"
     # Don't announce when asleep
     - condition: state
       entity_id: timer.everyone_asleep_delay
@@ -19,6 +29,16 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
+    # When you're the first person to come home (and thus are "Home alone" by
+    # definition) block further runs for 5-minutes. This prevents the situation
+    # where you would hear your own "The door just opened!"-announcement...
+    - if:
+        - condition: trigger
+          id: home_alone
+      then:
+        - delay: "00:05:00"
+        - stop: Someone just got home; not announcing...
+    # Otherwise, announce
     - service: script.turn_on
       target:
         entity_id: script.tts_announce
@@ -32,6 +52,8 @@
             The {{
               state_attr(trigger.entity_id, 'friendly_name') | lower
             }} just opened!
+  max_exceeded: silent
+  mode: single
 - alias: 🔊 | 🚗 Announce someone came home (home alone)
   id: 379cc525-afd4-489c-a8fd-b4e81b2932b0
   trigger:
@@ -64,6 +86,13 @@
       entity_id: binary_sensor.openclose_34
       from: "off"
       to: "on"
+    - platform: state
+      id: doors
+      entity_id:
+        - binary_sensor.openclose_12
+        - binary_sensor.openclose_16
+      from: "off"
+      to: "on"
   condition:
     - condition: state
       entity_id: timer.everyone_asleep_delay
@@ -71,23 +100,16 @@
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
-    # Only act if the _neither_ the front _nor_ the kitchen door saw a state
-    # change in the last 10-minutes (indicating they were opened – most likely
-    # the back gate opened as a result of someone leaving the house)
-    - condition: template
-      value_template: >-
-        {{
-          (
-            states.binary_sensor.openclose_12 is defined and
-            states.binary_sensor.openclose_12.last_changed >=
-              now() - timedelta(minutes=10)
-          ) or (
-            states.binary_sensor.openclose_16 is defined and
-            states.binary_sensor.openclose_16.last_changed >=
-              now() - timedelta(minutes=10)
-          )
-        }}
   action:
+    # If the Front or Kitchen door was opened block further runs for 10-minutes.
+    # The Back gate most likely opened as a result of someone leaving the house;
+    # no need to announce that...
+    - if:
+        - condition: trigger
+          id: doors
+      then:
+        - delay: "00:10:00"
+        - stop: Front/Kitchen door opened; not announcing...
     - service: script.turn_on
       target:
         entity_id: script.tts_announce
@@ -95,9 +117,9 @@
         variables:
           priority: attention
           message: >-
-            The {{
-              state_attr(trigger.entity_id, 'friendly_name') | lower
-            }} just opened!
+            The Back gate just opened!
+  max_exceeded: silent
+  mode: single
 - alias: 🔊 | 👋 Announce motion detected outside
   id: 1e350831-70d3-42f7-a01a-238c91782fe4
   trigger:
