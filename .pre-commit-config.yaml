@@ -40,7 +40,7 @@ repos:
       # Home Assistant YAML-files (using ".yamllint.yaml")
       - id: yamllint
         name: yamllint (Home Assistant)
-        entry: yamllint
+        entry: yamllint -s
         language: system
         types: [yaml]
       # Other YAML-files (hardcoded "default"-configuration)
@@ -48,7 +48,7 @@ repos:
         name: yamllint (other)
         # prettier-ignore
         entry:
-          "yamllint -d \"{extends: default, \
+          "yamllint -s -d \"{extends: default, \
             rules: {\
               document-start: disable,\
               quoted-strings: {\
