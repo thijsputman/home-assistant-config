@@ -52,6 +52,10 @@
             The {{
               state_attr(trigger.entity_id, 'friendly_name') | lower
             }} just opened!
+    # Once announced, block further runs for 10-minutes – for all practical
+    # purposes, a single announcement suffices. This prevents a flood of
+    # messages when home alone and – for example – putting out the garbage...
+    - delay: "00:10:00"
   max_exceeded: silent
   mode: single
 - alias: 🔊 | 🚗 Announce someone came home (home alone)
@@ -59,7 +63,13 @@
   trigger:
     - platform: state
       entity_id: binary_sensor.home_alone
+      from: "on"
       to: "off"
+    - platform: state
+      id: someone_home
+      entity_id: group.family
+      from: not_home
+      to: home
   condition:
     - condition: state
       entity_id: timer.everyone_asleep_delay
@@ -68,6 +78,15 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
+    # When coming home together, not everyone is detected "at home" at exactly
+    # the same time. To prevent an unnecessary "X is close to home...", block
+    # the script for 5-minutes (and then abort) when this happens.
+    - if:
+        - condition: trigger
+          id: someone_home
+      then:
+        - delay: "00:05:00"
+        - stop: Someone just got home; not announcing...
     - service: script.turn_on
       target:
         entity_id: script.tts_announce
@@ -79,6 +98,8 @@
           priority: attention
           message: >-
             {{ state_attr(trigger.entity_id, 'actor') }} is close to home...
+  max_exceeded: silent
+  mode: single
 - alias: 🔊 | 🚪 Announce Back gate open
   id: cc4ab718-0f26-49c0-b3c6-837b5f38adb1
   trigger:
