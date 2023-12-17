@@ -37,7 +37,7 @@
       timeout: "00:40:00"
       continue_on_timeout: true
     - if: >-
-        {{ wait.trigger is defined }}
+        {{ wait.trigger is not none }}
       then:
         - if: >-
             {{ wait.trigger.id == 'co2' }}
@@ -73,7 +73,7 @@
       timeout: "08:00:00"
       continue_on_timeout: true
     - if: >-
-        {{ wait.trigger is defined and wait.trigger.id == 'manual' }}
+        {{ wait.trigger is not none and wait.trigger.id == 'manual' }}
       then:
         - stop: The Sonair was manually stopped/lowered...
     - service: fan.set_percentage

@@ -97,7 +97,7 @@
             Rain is expected at {{
               (now() + timedelta(hours=2)) | as_timestamp |
                 timestamp_custom('%H:%M')
-            }}; that is in %WAIT_REMAINING%
+            }}; that is %WAIT_REMAINING%
     # Wait for up to 4 hours for it to start raining
     - wait_for_trigger:
         - platform: numeric_state
@@ -111,7 +111,7 @@
       continue_on_timeout: true
     - if:
         - >-
-          {{ wait.trigger is defined }}
+          {{ wait.trigger is not none }}
       # It started raining
       then:
         # Abort the announcement (for good measure – might have already expired)
