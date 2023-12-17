@@ -3,11 +3,7 @@
   trigger:
     - platform: state
       entity_id: sensor.hue_scene_living_room
-      to:
-        - Daytime
-        - Ambiance
-        - Movie (ambiance)
-        - Active
+      to: ~
     - platform: state
       entity_id: group.family
       from: not_home
@@ -16,23 +12,81 @@
     - condition: state
       entity_id: group.family
       state: home
-    - condition: state
-      entity_id: switch.on_off_plug_in_unit_8
-      state: "off"
-    # In case of presence trigger, ensure Living room has the correct Hue scene
-    # activated (superfluous for the scene-based trigger)
+    # Ensure Living room has the correct Hue scene activated (the presence-
+    # trigger cannot be state-guarded, so the check has to be done here)
     - condition: state
       entity_id: sensor.hue_scene_living_room
       state:
-        - Daytime
-        - Ambiance
-        - Movie (ambiance)
         - Active
+        - Ambiance
+        - Daytime
+        - Movie
+        - Movie (ambiance)
+        - <Off> # During daytime only
   action:
-    - service: switch.turn_on
-      entity_id: switch.on_off_plug_in_unit_8
+    - choose:
+        # Active
+        - conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Active
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.festavia_string_lights_1
+              data:
+                effect: candle
+        # Ambiance
+        - conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Ambiance
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.festavia_string_lights_1
+              data:
+                effect: fire
+                brightness_pct: 75
+        # Daytime
+        - conditions:
+            # During daytime only (the Hue scene is guarded against this; the
+            # off-state is not)
+            - condition: state
+              entity_id: sensor.time_of_day
+              state: day
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state:
+                - Daytime
+                - <Off>
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.festavia_string_lights_1
+              data:
+                effect: opal
+        # Movie
+        - conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state:
+                - Movie
+                - Movie (ambiance)
+          sequence:
+            - service: light.turn_on
+              target:
+                entity_id: light.festavia_string_lights_1
+              data:
+                effect: fire
+                brightness_pct: 25
+      default:
+        - stop: >-
+            Not changing Christmas tree lights: Unknown Living room Hue scene
+            "{{ states('sensor.hue_scene_living_room') }}"...
+          error: true
   mode: single
-- alias: 🎄 | 💡/🚗 Christmas tree off (Living room Hue scene / everyone away)
+- alias: 🎄 | 🚗 Christmas tree off (everyone away)
   id: 7d791dff-0c3d-4774-91e6-648ff3348e53
   trigger:
     - platform: state
@@ -40,19 +94,13 @@
       from: home
       to: not_home
       for: "00:05:00"
-    - platform: state
-      entity_id: sensor.hue_scene_living_room
-      to:
-        - <Off>
-        - <Unknown>
-        - Movie
   condition:
     - condition: state
-      entity_id: switch.on_off_plug_in_unit_8
+      entity_id: light.festavia_string_lights_1
       state: "on"
   action:
-    - service: switch.turn_off
-      entity_id: switch.on_off_plug_in_unit_8
+    - service: light.turn_off
+      entity_id: light.festavia_string_lights_1
   mode: single
 - alias: 🎄 | ⏰ Christmas star on (dusk)
   id: cc862e68-ace8-4bc6-b78b-26db199d5ba2
