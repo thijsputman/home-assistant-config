@@ -61,7 +61,7 @@
 - alias: 🔊 | 👀 TTS attention — Living Room
   id: 5d9c02cb-4720-46f0-b22d-87e278490cb9
   trigger:
-    # Interaction with the Hue Taps in the Living Room
+    # Interaction with the Hue Tap (Dial) in the Living Room
     - platform: event
       event_type: hue_event
       event_data:
@@ -72,19 +72,19 @@
       event_data:
         id: living_room_switch_couch_button
         type: initial_press
+    - platform: event
+      event_type: hue_event
+      event_data:
+        id: hue_tap_dial_ensuite_button
+        type: short_release
     # Interaction with the tablet in the Kitchen
     - platform: state
       entity_id: switch.p20hd_eea_screensaver
+      # Wait a short while; when the screensaver gets disabled, attention is
+      # initially direct towards the tablet...
+      id: delayed
       from: "on"
       to: "off"
-      # Wait a short while; when the screensaver gets disabled attention is
-      # initially direct towards the tablet...
-      for: "00:00:10"
-    # Interaction with the Magic Cube
-    - platform: event
-      event_type: deconz_event
-      event_data:
-        id: mi_magic_cube
     # Motion at the Kitchen counter
     - platform: state
       entity_id:
@@ -101,11 +101,17 @@
         - paused
         - idle
       to: "off"
-    # Opening the Kitchen door
+    # Closing the Kitchen door – relevant when _entering_ the house. Upon
+    # departure, this might cause some messages to be missed.
+    # For now the benefits outweigh the costs: When leaving it's likely other
+    # triggers already fired (ie, there are no messages queued up). The trigger
+    # could be made "smarter". That would require a separate automation which is
+    # overkill for now...
     - platform: state
       entity_id: binary_sensor.openclose_12
-      from: "off"
-      to: "on"
+      id: delayed
+      from: "on"
+      to: "off"
   condition:
     - condition: state
       entity_id: script.tts_queue
@@ -114,6 +120,11 @@
       entity_id: input_boolean.housekeeper_present
       state: "off"
   action:
+    - if:
+        - condition: trigger
+          id: delayed
+      then:
+        - delay: "00:00:10"
     - event: tts_attention
       event_data:
         room: living_room
