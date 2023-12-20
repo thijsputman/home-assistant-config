@@ -86,7 +86,7 @@
             "{{ states('sensor.hue_scene_living_room') }}"...
           error: true
   mode: single
-- alias: 🎄 | 🚗 Christmas tree off (everyone away)
+- alias: 🎄 | 💡/🚗 Christmas tree off (Living room off / everyone away)
   id: 7d791dff-0c3d-4774-91e6-648ff3348e53
   trigger:
     - platform: state
@@ -94,11 +94,23 @@
       from: home
       to: not_home
       for: "00:05:00"
+    - platform: state
+      id: lights_off
+      entity_id: sensor.hue_scene_living_room
+      to: <Off>
   condition:
     - condition: state
       entity_id: light.festavia_string_lights_1
       state: "on"
   action:
+    - if:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+        - condition: trigger
+          id: lights_off
+      then:
+        - stop: Ignoring lights-off trigger during daytime...
     - service: light.turn_off
       entity_id: light.festavia_string_lights_1
   mode: single
