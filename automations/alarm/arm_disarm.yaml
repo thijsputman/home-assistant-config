@@ -106,23 +106,49 @@
       entity_id: input_boolean.everyone_asleep
       state: "on"
   action:
-    - choose:
-        # Should only run if someone is home. If no-one's home, wait up to five
-        # minutes for a state change (the alarm might have been disabled
-        # manually; wait for presence detection to catch up...)
-        - conditions:
-            - condition: state
+    # Should only run if someone is home. If no-one's home, wait up to five
+    # minutes for a state change (the alarm might have been disabled manually;
+    # wait for presence detection to catch up...)
+    - if:
+        - condition: state
+          entity_id: group.family
+          state: not_home
+      then:
+        - wait_for_trigger:
+            - platform: state
               entity_id: group.family
-              state: not_home
-          sequence:
-            - wait_for_trigger:
-                - platform: state
-                  entity_id: group.family
-                  from: not_home
-                  to: home
-              timeout: "00:05:00"
-              continue_on_timeout: false
+              from: not_home
+              to: home
+          timeout: "00:05:00"
+          continue_on_timeout: false
     - service: input_boolean.turn_off
+      entity_id: input_boolean.everyone_asleep
+  mode: single
+# If the Home Alarm is "Armed Night" prior to "wakeup"-time, and "Everyone
+# asleep" is not enabled, enable it. Relevant when one of us gets up early,
+# leaves the house, and manually "arms night" the Home Alarm.
+# Without this automation, "Everyone asleep" would remain off in those cases,
+# causing the Home Alarm to not be aumatically disarmed at "wakeup"-time...
+- alias: 🚨 | 💤 Everyone asleep (alarm armed night)
+  id: 28f49e27-7c15-4eb9-95e4-509f48969362
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      from: arming
+      to: armed_night
+  condition:
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    # This should not happen after "wakeup"-time. The interval is intentionally
+    # a bit broader to also capture the (unlikely, but not impossible) situation
+    # where the Home Alarm is manually set to "Armed Night" prior to going to
+    # bed.
+    - condition: time
+      after: "23:00:00"
+      before: input_datetime.wakeup
+  action:
+    - service: input_boolean.turn_on
       entity_id: input_boolean.everyone_asleep
   mode: single
 - alias: 🚨 | 🧹 Alarm disarm (housekeeper comes when everyone away)
