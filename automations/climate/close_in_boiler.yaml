@@ -41,7 +41,7 @@
             - platform: numeric_state
               entity_id: sensor.power_57
               below: 50
-              for: "00:15:00"
+              for: "00:30:00"
           timeout: "01:30:00"
           continue_on_timeout: false
     - service: switch.turn_off
