@@ -203,7 +203,6 @@
   action:
     - service: light.turn_on
       data:
-        # This value is hard-coded in "📄 light/dawn.yaml"
         brightness: 128
       target:
         entity_id:
@@ -270,7 +269,7 @@
   action:
     - service: light.turn_on
       data:
-        brightness_pct: 50
+        brightness: 128
       target:
         entity_id: light.upstairs_hallway
   mode: single

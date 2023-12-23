@@ -1,0 +1,94 @@
+# The Hallway lights are often manually adjusted – generally speaking, these
+# changes don't need to persist after activity in the Hallway ends
+- alias: >-
+    💡 | 🕹️/👋 Restore hallway lights (10-minutes after activity ends)
+  id: 4e1d15da-52cb-47ea-90e7-1396257116eb
+  trigger:
+    - platform: state
+      entity_id:
+        - event.hallway_downstairs_switch_button_2
+        - event.hallway_downstairs_switch_button_2
+        - event.hallway_downstairs_switch_button_3
+        - event.hallway_downstairs_switch_button_4
+        - event.hallway_upstairs_switch_button_1
+        - event.hallway_upstairs_switch_button_2
+        - event.hallway_upstairs_switch_button_3
+        - event.hallway_upstairs_switch_button_4
+      to: ~
+  condition:
+    # Don't bother when everyone's asleep (e.g. a manual adjustment after going
+    # to the bathroom at night)
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+  action:
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - binary_sensor.presence_121 # Stairs
+            - binary_sensor.presence_123 # Downstairs hallway
+            - binary_sensor.presence_125 # Downstairs hallway
+            - binary_sensor.presence_127 # Upstairs hallway
+          from: "on"
+          to: "off"
+          for: "00:10:00"
+      timeout: "02:00:00"
+      continue_on_timeout: false
+    # Abort when going to bed / everyone's asleep
+    - condition: and
+      conditions:
+        - condition: state
+          entity_id: script.lights_out
+          state: "off"
+        - condition: state
+          entity_id: timer.everyone_asleep_delay
+          state: idle
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "off"
+    # Daytime
+    - if:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+      then:
+        # Downstairs hallway
+        - if:
+            - condition: numeric_state
+              entity_id: sensor.lightlevel_48
+              below: 60
+          then:
+            - service: light.turn_on
+              data:
+                brightness: 128
+              target:
+                entity_id:
+                  - light.hue_filament_bulb_1_4
+                  - light.hue_filament_bulb_1_5
+          else:
+            - service: light.turn_off
+              target:
+                entity_id:
+                  - light.hue_filament_bulb_1_4
+                  - light.hue_filament_bulb_1_5
+        # Upstairs hallway
+        - if:
+            - condition: numeric_state
+              entity_id: sensor.lightlevel_upstairs_hallway
+              below: 50
+          then:
+            - service: light.turn_on
+              data:
+                brightness: 128
+              target:
+                entity_id: light.upstairs_hallway
+          else:
+            - service: light.turn_off
+              target:
+                entity_id: light.upstairs_hallway
+      # Evening
+      else:
+        - service: scene.turn_on
+          target:
+            entity_id: scene.hallway_evening
+  mode: single
