@@ -1,8 +1,8 @@
 hue_activate_scene:
   alias: Hue activate scene
   description: >-
-    Activate a Hue scene based on the scene heuristically detected and stored in
-    one of the Hue scene template sensors.
+    Activate a Hue scene based on the scene stored in one of the Hue scene
+    template sensors.
   icon: mdi:movie-open-star
   fields:
     scene_entity:
@@ -16,17 +16,32 @@ hue_activate_scene:
             - sensor.hue_scene_kitchen_counter_cupboards
             - sensor.hue_scene_garden
   sequence:
+    - variables:
+        scene_id: >-
+          {%
+            if has_value(scene_entity) and
+              states(scene_entity) is not match("<.*>")
+          %}
+            {{
+              (
+                state_attr(scene_entity, 'light_id') |
+                  replace('light.', 'scene.')
+              ) ~ '_' ~ (
+                states(scene_entity) | lower |
+                  regex_replace('([^a-z ])+', '') | replace(' ', '_')
+              )
+            }}
+          {% else %}
+            <Unavailable>
+          {% endif %}
     - if:
         - >-
-          {{
-            state_attr(scene_entity, 'scene_id') is defined and
-            state_attr(scene_entity, 'scene_id') != '<None>'
-          }}
+          {{ scene_id != '<Unavailable>' }}
       then:
         - service: scene.turn_on
           target:
             entity_id: >-
-              {{ state_attr(scene_entity, 'scene_id') }}
+              {{ scene_id }}
       else:
         - if:
             - >-
@@ -71,20 +86,15 @@ hue_activate_scene_kitchen:
               target:
                 entity_id: >-
                   {{ scene_id }}
-            # Wait for the Kitchen to register its change before changing
-            # counter & cupboards; this is required for the scene heuristic to
-            # work properly. Not doing so will lead the Kitchen to revert back
-            # to its previous scene (instead of the newly activated one) after
-            # "Activity" in counter & cupboards ends.
+            # Slight delay to ensure the Hue scene template sensors are updated
+            # prior to making any further changes – it's possible this happens
+            # so fast we miss the trigger, hence the continue on timeout.
             - wait_for_trigger:
-                - platform: template
-                  value_template: >-
-                    {{
-                      state_attr('sensor.hue_scene_kitchen', 'scene_id') ==
-                        scene_id
-                    }}
-              timeout: "00:00:10"
-              continue_on_timeout: false
+                - platform: state
+                  entity_id: sensor.hue_scene_kitchen
+                  to: ~
+              timeout: "00:00:05"
+              continue_on_timeout: true
             - service: scene.turn_on
               target:
                 entity_id: scene.kitchen_counter_cupboards_activity
@@ -112,8 +122,8 @@ hue_activate_scene_kitchen:
                     - platform: state
                       entity_id: sensor.hue_scene_kitchen
                       to: <Off>
-                  timeout: "00:00:10"
-                  continue_on_timeout: false
+                  timeout: "00:00:05"
+                  continue_on_timeout: true
                 - service: scene.turn_on
                   target:
                     entity_id: scene.kitchen_counter_cupboards_activity
@@ -121,13 +131,10 @@ hue_activate_scene_kitchen:
                 - service: light.turn_off
                   target:
                     entity_id: light.kitchen
-          # Provide some feedback in case of invalid/missing arguments
           else:
-            - service: system_log.write
-              data:
-                level: error
-                message: >-
-                  Invalid call to script.hue_activate_scene_kitchen: incorrect
-                  "scene_id" or missing "turn_off"
+            - stop: >-
+                Invalid call to script.hue_activate_scene_kitchen: Incorrect
+                "scene_id" or missing "turn_off"...
+              error: true
   mode: parallel
   max: 5
