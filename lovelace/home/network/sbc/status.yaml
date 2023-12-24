@@ -14,7 +14,7 @@ cards:
             div.warning, div.error{
               margin-bottom: 6px;
             }
-    content: >-
+    content: |
       {%
         set updates=expand('group.sbc_apt') |
           selectattr('state', 'eq', 'on') | list | length
@@ -43,10 +43,10 @@ cards:
         {%- endfor -%}
         <br/>
       {% endif %}
-      ## <ha-icon icon="mdi:package-variant-closed-plus"></ha-icon>
-      **{{ updates if updates > 0 else 'no' }}
-      {{ 'devices** have' if updates != 1 else 'device** has' }}
-      package upgrades available
+      ## <ha-icon icon="mdi:package-variant-closed-plus"></ha-icon> **{{-
+        updates if updates > 0 else 'no' }} {{
+          'devices** have' if updates != 1 else 'device** has'
+        -}} package upgrades available
   - type: custom:auto-entities
     card:
       type: grid

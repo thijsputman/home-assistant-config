@@ -58,7 +58,7 @@ card:
           <ha-alert alert-type="warning">**{{ device_attr(update_id,
             'name') }}** requires a restart.</ha-alert>
         {%- endif %}
-        {% if states('sensor.pi4_status') != 'running' -%}
+        {% if states('sensor.ha_yellow_status') != 'running' -%}
           <ha-alert alert-type="error">systemd reports **{{-
             device_attr(update_id, 'name') }}** is _{{-
             states('sensor.pi4_status')}}_!</ha-alert>

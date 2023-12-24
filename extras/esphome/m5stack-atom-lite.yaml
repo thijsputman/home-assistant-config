@@ -4,7 +4,7 @@ substitutions:
   friendly_name: M5Stack Atom Lite
 packages:
   esphome.bluetooth-proxy: >-
-    github://esphome/bluetooth-proxies/m5stack-atom-lite.yaml@main
+    github://esphome/firmware/bluetooth-proxy/m5stack-atom-lite.yaml@main
 esphome:
   name: ${name}
   name_add_mac_suffix: true
