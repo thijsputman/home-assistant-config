@@ -128,15 +128,18 @@
   condition: []
   action:
     - delay: 3 # Queue this one up last
-    - service: weather.get_forecast
+    - service: weather.get_forecasts
       data:
         type: daily
       target:
         entity_id: weather.tomorrow_io
-      response_variable: weather
+      response_variable: response
     - condition: template
       value_template: >-
-        {{ weather.forecast | length > 0 }}
+        {{ response['weather.tomorrow_io'].forecast | length > 0 }}
+    - variables:
+        tomorrow: >-
+          {{ response['weather.tomorrow_io'].forecast[0] }}
     - service: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -148,26 +151,19 @@
           chime: false
           message: >-
             The forecast for today is {{
-              weather.forecast[0].condition |
+              tomorrow.condition |
                 replace('partlycloudy', 'partly cloudy') |
                 replace('cloudy-', 'cloudy with ') |
                 replace('snowy-rainy', 'wet snow') |
                 replace('-', ' ') }}
-            with a high of {{
-              weather.forecast[0].temperature | int(0)
-            }} degrees and a low of {{
-              weather.forecast[0].templow | int(0)
-            }} degrees.
+            with a high of {{ tomorrow.temperature | int(0)
+            }} degrees and a low of {{ tomorrow.templow | int(0) }} degrees.
     - if:
         - >-
-          {{
-            weather.forecast[0].precipitation | float(0) > 0
-          }}
+          {{ tomorrow.precipitation | float(0) > 0 }}
         # No sense in reporting rain if the main forecast mentions it...
         - >-
-          {{
-            weather.forecast[0].condition is not search('snow|rain')
-          }}
+          {{ tomorrow.condition is not search('snow|rain') }}
       then:
         - service: script.turn_on
           target:
@@ -179,10 +175,7 @@
               expiry: "01:00:00"
               chime: false
               message: >-
-                {%
-                  set precipitation =
-                    weather.forecast[0].precipitation | float(0)
-                %}
+                {% set precipitation = tomorrow.precipitation | float(0) %}
                 {% if precipitation <= 0.5 %}
                   There is a slight chance of rain.
                 {% elif precipitation <= 2.0 %}
