@@ -165,7 +165,7 @@
               📡 Connectivity:\n\n
                 {{ '✅' if states('binary_sensor.google_dns_ping') == 'on'
                   else '⛔' }} Internet ({{ state_attr(
-                    'binary_sensor.google_dns_ping', 'round_trip_time_avg'
+                    'binary_sensor.google_dns_ping', 'round_trip_time'
                   ) | float | round(1) }} ms)\n
                 {{ '✅' if states('binary_sensor.remote_ui') == 'on'
                   else '⛔' }} Nabu Casa\n

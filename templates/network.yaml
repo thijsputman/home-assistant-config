@@ -1,12 +1,17 @@
-# Google DNS
-- sensor:
-    - name: Google DNS (roundtrip time)
-      unique_id: bfe4cbc9-95a3-48af-80eb-af8176ca542e
-      icon: mdi:server-network
-      unit_of_measurement: ms
-      availability: >-
-        {{ has_value('binary_sensor.google_dns_ping') }}
+# Google DNS connectivity
+- trigger:
+    - platform: state
+      entity_id: sensor.pi4_rtt_ip_8_8_8_8
+      to: ~
+  binary_sensor:
+    - name: Google DNS (ping)
+      unique_id: 5e3ec139-c646-4203-9973-cbfeb06d481d
+      icon: mdi:table-tennis
+      device_class: connectivity
       state: >-
-        {{
-          state_attr('binary_sensor.google_dns_ping', 'round_trip_time_avg')
-        }}
+        {{ trigger.to_state.state | float(0) > 0 }}
+      attributes:
+        round_trip_time: >-
+          {{ states('sensor.pi4_rtt_ip_8_8_8_8') }}
+      availability: >-
+        {{ has_value('sensor.pi4_rtt_ip_8_8_8_8') }}
