@@ -76,7 +76,7 @@ card:
         - entity: sensor.dd_wrt_1_google_dns_roundtrip_time
           unit: ms – to Google Public DNS
           show_graph: false
-        - entity: sensor.google_dns_roundtrip_time
+        - entity: sensor.pi4_rtt_ip_8_8_8_8
           name: Pi4
           unit: ms – to Google Public DNS
           color: lightgrey

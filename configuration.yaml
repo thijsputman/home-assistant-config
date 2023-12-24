@@ -11,7 +11,7 @@ homeassistant:
 
 frontend:
   extra_module_url:
-    - /local/custom-jsm/card-mod.js?v=3.2.3
+    - /local/custom-jsm/card-mod.js?v=3.3.0
 
 system_log:
   fire_event: true
