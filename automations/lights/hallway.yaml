@@ -91,4 +91,4 @@
         - service: scene.turn_on
           target:
             entity_id: scene.hallway_evening
-  mode: single
+  mode: restart
