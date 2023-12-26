@@ -46,7 +46,7 @@ cards:
       ## <ha-icon icon="mdi:package-variant-closed-plus"></ha-icon> **{{-
         updates if updates > 0 else 'no' }} {{
           'devices** have' if updates != 1 else 'device** has'
-        -}} package upgrades available
+        }} package upgrades available
   - type: custom:auto-entities
     card:
       type: grid
