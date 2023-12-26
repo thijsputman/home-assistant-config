@@ -12,6 +12,7 @@ hue_activate_scene:
         entity:
           include_entities:
             - sensor.hue_scene_living_room
+            - sensor.hue_scene_ensuite
             - sensor.hue_scene_kitchen
             - sensor.hue_scene_kitchen_counter_cupboards
             - sensor.hue_scene_garden
@@ -35,8 +36,11 @@ hue_activate_scene:
             <Unavailable>
           {% endif %}
     - if:
+        # The above `has_value(scene_entity)` guards against unknown/unavailable
+        # states, but it doesn't guard against an _uninitialised_ sensor – hence
+        # the `has_value(scene_id)`, which filters out that edge case...
         - >-
-          {{ scene_id != '<Unavailable>' }}
+          {{ scene_id != '<Unavailable>' and has_value(scene_id) }}
       then:
         - service: scene.turn_on
           target:
