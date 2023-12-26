@@ -58,21 +58,22 @@
     # moment the announcement gets queued; this would prevent it from working
     # properly as there will _always_ be a single person home at that time
     # (namely, the person who's phone got detected first). By delaying the
-    # rendering until the last moment, chances are better (not 100% though) that
-    # it'll work as intended/expected.
+    # rendering until the last moment, chances are better (not 100% though)
+    # that it'll work as intended/expected...
     - wait_for_trigger:
         - platform: event
           event_type: tts_attention
-          event_data:
-            room: living_room
-      timeout: "00:10:00"
+      timeout: "00:20:00"
       continue_on_timeout: false
     - service: script.turn_on
       target:
         entity_id: script.tts_announce
       data:
         variables:
-          rooms: living_room
+          rooms: >-
+            {% if wait.trigger.event.data.room is defined %}
+              {{ wait.trigger.event.data.room }}
+            {% endif %}
           message: >-
             {#
               This is only works because there's two occupants with a single
