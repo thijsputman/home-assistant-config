@@ -115,7 +115,7 @@ card:
         library_view: download
         library_sizes: 2
         door: binary_sensor.openclose_18
-      - type: custom:logbook-card
+      - type: custom:multiple-logbook-card
         card_mod:
           style: |
             ha-card{
@@ -146,16 +146,22 @@ card:
             ha-card state-badge{
               height: unset !important;
             }
-        entity: binary_sensor.aarlo_motion_back_combined
+        entities:
+          - entity: binary_sensor.aarlo_motion_back
+            hidden_state:
+              - "off"
+              - unknown
+              - unavailable
+          - entity: binary_sensor.aarlo_motion_balcony
+            hidden_state:
+              - "off"
+              - unknown
+              - unavailable
         no_event: No motion detected in the past 24 hours.
         history: 1
         max_items: 10
         collapse: 1
         date_format: relative
-        hidden_state:
-          - "off"
-          - unknown
-          - unavailable
         show:
           state: false
           duration: true

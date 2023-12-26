@@ -1,18 +1,29 @@
-- trigger:
-    - platform: state
-      entity_id:
-        - binary_sensor.aarlo_motion_back
-        - binary_sensor.aarlo_motion_balcony
-      to: ~
-  binary_sensor:
-    - name: Aarlo Motion Back (combined)
-      unique_id: f26f7c26-9a78-48c9-9db4-161d0d7095b8
-      icon: mdi:run
-      device_class: motion
-      state: >-
-        {{ trigger.to_state.state }}
 - sensor:
     - name: Aarlo alarm state
       unique_id: 4258311e-603a-4716-8b3e-47fe8b86bd18
       icon: mdi:security
       state: !secret aarlo_alarm_state
+    - name: Aarlo Armed Front
+      unique_id: e939b7b6-1c4c-4acf-b1aa-88783f114155
+      icon: mdi:cctv
+      state: >-
+        {{ states('sensor.aarlo_alarm_state') in
+            ['armed_home', 'armed_night', 'armed_away'] }}
+      availability: >-
+        {{ is_state('binary_sensor.aarlo_connected_front', 'on') }}
+    - name: Aarlo Armed Back
+      unique_id: a8d49d62-5cd3-4512-a6c8-58fe598f3c05
+      icon: mdi:cctv
+      state: >-
+        {{ states('sensor.aarlo_alarm_state') in
+            [ 'armed_night', 'armed_away'] }}
+      availability: >-
+        {{ is_state('binary_sensor.aarlo_connected_back', 'on') }}
+    - name: Aarlo Armed Balcony
+      unique_id: 679d52e0-cb8f-4ac8-aff0-536e26b5b842
+      icon: mdi:cctv
+      state: >-
+        {{ states('sensor.aarlo_alarm_state') in
+            [ 'armed_night', 'armed_away'] }}
+      availability: >-
+        {{ is_state('binary_sensor.aarlo_connected_balcony', 'on') }}
