@@ -30,7 +30,20 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - !include home/climate/thermostat.yaml
+          - type: conditional
+            conditions:
+              - condition: user
+                users: !secret user_id_others
+            card: !include home/climate/thermostat.yaml
+          - type: conditional
+            conditions:
+              - condition: user
+                users: !secret user_id_me
+            card:
+              type: vertical-stack
+              cards:
+                - !include home/climate/thermostat_new.yaml
+                - !include home/climate/airco.yaml
       - type: vertical-stack
         cards:
           - !include home/climate/temperature.yaml

@@ -179,6 +179,7 @@ card:
           state: true
         control:
           hvac:
+            _name: Operation
             auto:
               name: false
             heat:
@@ -263,6 +264,7 @@ card:
           state: true
         control:
           hvac:
+            _name: Operation
             auto:
               name: false
             cool:
@@ -365,6 +367,7 @@ card:
           state: true
         control:
           hvac:
+            _name: Operation
             auto:
               name: false
             cool:
