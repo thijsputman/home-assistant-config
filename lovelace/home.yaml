@@ -272,7 +272,7 @@ views:
     path: media
     icon: mdi:filmstrip
     layout:
-      max_cols: 2
+      max_cols: 3
     cards:
       - type: vertical-stack
         cards:
@@ -286,3 +286,9 @@ views:
             entity: media_player.pi0_w2
           - type: media-control
             entity: media_player.mpi_mq1
+      - type: vertical-stack
+        cards:
+          - type: markdown
+            content: |
+              ## Guest WiFi
+              <img src="/local/guest-wifi.png"/>
