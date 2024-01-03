@@ -11,7 +11,7 @@
         {%
           set match = states('sensor.prusa_mini_filename') |
             regex_findall(
-              "^(.*?)(?:_0\.\d{1,2}n)?_0\.\d{1,2}mm_.*_MINI_.*\.gcode$"
+              "^(.*?)(?:_0\.\d{1,2}n)?_0\.\d{1,2}mm_.*_MINI(?:|IS)_.*\.b?gcode$"
             )
         %}
         {{
@@ -22,7 +22,7 @@
           {%
             set match = states('sensor.prusa_mini_filename') |
               regex_findall(
-                "^.*_(0\.\d{1,2})n_.*_MINI_.*\.gcode$"
+                "^.*_(0\.\d{1,2})n_.*_MINI(?:|IS)_.*\.b?gcode$"
               )
           %}
           {{
@@ -30,10 +30,9 @@
           }}
         layer_height: >-
           {%
-            set match = states('sensor.prusa_mini_filename') |
-              regex_findall(
-                "^.*?(?:_0\.\d{1,2}n)?_(0\.\d{1,2})mm_.*_MINI_.*\.gcode$"
-              )
+            set match = states('sensor.prusa_mini_filename') | regex_findall(
+              "^.*?(?:_0\.\d{1,2}n)?_(0\.\d{1,2})mm_.*_MINI(?:|IS)_.*\.b?gcode$"
+            )
           %}
           {{
             match[0] | float if (match | length > 0) else ''
@@ -42,7 +41,7 @@
           {%
             set match = states('sensor.prusa_mini_filename') |
               regex_findall(
-                "^.*_([A-Z]{2,4})_MINI_.*\.gcode$"
+                "^.*_([A-Z]{2,4})_MINI(?:|IS)_.*\.b?gcode$"
               )
           %}
           {{
@@ -52,7 +51,7 @@
           {%
             set match = states('sensor.prusa_mini_filename') |
               regex_findall(
-                "^.*_MINI_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.gcode$"
+                "^.*_MINI(?:|IS)_(?:(?:(\d{1,2})h|)(\d{1,2})m)\.b?gcode$"
               )
           %}
           {{
