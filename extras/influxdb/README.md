@@ -94,3 +94,6 @@ npm install
 - **19-9-2023** — Bought a new washing machine; use this date (with a couple
   days of margin) as the cut-off for power consumption (ie, "energy savings")
   analysis in the future...
+- **30-12-2023 @ 15:00 CET** util **00:00 CET** — Na data for
+  `sensor.dd_wrt_1_google_dns_roundtrip_time` due to the ping-script not
+  properly starting after a reboot of DD-WRT-1

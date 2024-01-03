@@ -167,5 +167,5 @@ card:
                   border-radius: 0px
                 }
             entity: binary_sensor.occupancy_attic
-            name: occupied
+            name: occupancy
             state_content: last-changed
