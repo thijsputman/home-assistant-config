@@ -12,6 +12,7 @@
 /tts
 /www/custom-jsm
 /www/guest-wifi.png
+/www/sysmon-mqtt/
 /var
 /home-assistant_v2.db*
 /*.log*

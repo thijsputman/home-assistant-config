@@ -39,7 +39,7 @@ Apart from the Home Assistant configuration, this repository contains several
 Thee most relevant ones are:
 
 - [📦 TC66C – MQTT Bridge](https://github.com/thijsputman/tc66c-mqtt)
-- [📦 Simple system monitoring over MQTT](./extras/sysmon-mqtt/README.md)
+- [📦 `sysmon-mqtt` — Simple system monitoring over MQTT](https://github.com/thijsputman/sysmon-mqtt)
 
 For a complete overview see the [`📁 extras/`](./extras/README.md) folder.
 

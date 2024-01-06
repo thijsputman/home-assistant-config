@@ -2,7 +2,8 @@
 
 Some extras I'm using in combination with my Home Assistant setup:
 
-- [🌍 TC66C – MQTT Bridge](https://github.com/thijsputman/tc66c-mqtt)
+- [📦 TC66C – MQTT Bridge](https://github.com/thijsputman/tc66c-mqtt)
+- [📦 `sysmon-mqtt` — Simple system monitoring over MQTT](https://github.com/thijsputman/sysmon-mqtt)
 - [`📁 androidtv`](./androidtv/README.md) – AndroidTV `adb`-server
 - [`📁 cold-storage`](./cold-storage/README.md) – Used "once upon a time";
   archived for now
@@ -13,7 +14,5 @@ Some extras I'm using in combination with my Home Assistant setup:
 - [`📁 ha-yellow`](./ha-yellow/README.md) – Home Assistant Yellow related
 - [`📁 influxdb`](./influxdb/README.md) – InfluxDB scratch-pad
 - [`📁 piper`](./piper/README.md) – Piper / Wyoming related
-- [`📁 sysmon-mqtt`](./sysmon-mqtt/README.md) – Simple system monitoring over
-  MQTT
 - [`📄 restart-container.sh`](./restart-container.sh) – Handle Home
   Assistant-container restart requests
