@@ -285,6 +285,8 @@ views:
           - type: media-control
             entity: media_player.pi0_w2
           - type: media-control
+            entity: media_player.pi0_guestroom
+          - type: media-control
             entity: media_player.mpi_mq1
       - type: vertical-stack
         cards:
