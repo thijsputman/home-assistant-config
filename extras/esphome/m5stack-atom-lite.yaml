@@ -21,7 +21,7 @@ ota:
 wifi:
   ssid: !secret wifi_devices_ssid
   password: !secret wifi_devices_password
-  fast_connect: true
+  domain: .sgraastra
 button:
   - platform: restart
     name: Restart
