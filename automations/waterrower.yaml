@@ -17,7 +17,7 @@
         entity_id: script.tts_announce
       data:
         variables:
-          rooms: bedroom
+          rooms: guestroom
           priority: attention
           duration: 2
           chime: false
@@ -92,71 +92,11 @@
         entity_id: script.tts_announce
       data:
         variables:
-          rooms: bedroom
+          rooms: guestroom
           priority: attention
           duration: 2
           chime: false
           message: >-
             media-source://media_source/sd/audio/Magic_Trick.ogg
-  mode: single
-  max_exceeded: silent
-# The WaterRower software (pirowflo) is a bit finicky – issues are mostely
-# resolved by restarting it...
-- alias: 🏅 | 🕹️ Restart WaterRower (Smart Switch)
-  id: bb9d5f6c-44ee-42ae-afb4-db00a9c3620a
-  trigger:
-    - device_id: 9cc578b2f62edb745139e97e695b5bb1
-      domain: deconz
-      platform: device
-      type: remote_button_double_press
-      subtype: turn_on
-  condition:
-    - condition: state
-      entity_id: input_boolean.waterrower
-      state: "on"
-  action:
-    - service: rest_command.waterrower
-      data:
-        action: restart
-    - service: script.turn_on
-      target:
-        entity_id: script.tts_announce
-      data:
-        variables:
-          rooms: bedroom
-          priority: attention
-          duration: 2
-          chime: false
-          message: >-
-            media-source://media_source/sd/audio/Magic_Trick.ogg
-  mode: single
-  max_exceeded: silent
-- alias: 🏅 | 🕹️ WaterRower toggle REST-command (input boolean)
-  id: 2696e0a5-f2dc-4c8a-94d4-98a25b850ed4
-  trigger:
-    - entity_id: input_boolean.waterrower
-      platform: state
-      to: ~
-  condition: []
-  action:
-    - choose:
-        - conditions:
-            - condition: state
-              entity_id: input_boolean.waterrower
-              state: "on"
-          sequence:
-            - service: rest_command.waterrower
-              data:
-                action: start
-            - delay: "00:00:05"
-        - conditions:
-            - condition: state
-              entity_id: input_boolean.waterrower
-              state: "off"
-          sequence:
-            - service: rest_command.waterrower
-              data:
-                action: stop
-            - delay: "00:00:05"
   mode: single
   max_exceeded: silent

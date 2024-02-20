@@ -100,13 +100,6 @@ rest_command:
     url: >-
       http://pi4.sgraastra:9000/hooks/fireplace-{{-
         action if action in ['start', 'stop'] else 'stop' }}
-  waterrower:
-    url: >-
-      {{
-        'http://pi0-ant.sgraastra:9001/index.html?' ~
-        'processname=pirowflo_SR_Smartrow_AntPlus_only&action=' ~
-        action if action in ['start', 'stop', 'restart'] else 'stop'
-      }}
 
 notify:
   - name: All devices
