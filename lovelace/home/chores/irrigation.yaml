@@ -9,6 +9,9 @@ cards:
             border: var(--llh-mod-card-border);
           }
         hui-vertical-stack-card$: |
+          #root{
+            gap: 0px !important;
+          }
           mini-graph-card, hui-button-card{
             margin: 0px !important;
           }

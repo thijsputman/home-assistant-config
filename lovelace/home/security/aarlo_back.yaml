@@ -7,11 +7,17 @@ card_mod:
         border: var(--llh-mod-card-border);
       }
     hui-vertical-stack-card$: |
+      #root{
+        gap: 0px !important;
+      }
       aarlo-glance:first-child{
         margin-bottom: 0px !important;
       }
       aarlo-glance:nth-child(2){
         margin-top: 0px !important;
+      }
+      multiple-logbook-card{
+        margin-top: 8px !important;
       }
 report_size: 3
 card:
