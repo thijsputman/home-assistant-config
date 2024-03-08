@@ -16,13 +16,13 @@ custom CSS.
 
 - `aarlo-glance.js?v=0.2.6.1`
 - [`auto-entities.js?v=1.12.1`](https://github.com/thomasloven/lovelace-auto-entities)
-- [`card-mod.js?v=3.2.3`](https://github.com/thomasloven/lovelace-card-mod/releases/tag/3.2.3)
+- [`card-mod.js?v=3.4.2`](https://github.com/thomasloven/lovelace-card-mod/releases/tag/3.4.2)
 - [`compass-card.js?v=2.0.0`](https://github.com/tomvanswam/compass-card/releases/tag/v2.0.0)
 - [`hass-hue-icons.js?v=1.2.51`](https://github.com/arallsopp/hass-hue-icons/releases/tag/v1.2.51)
 - `home-assistant-sun-card.js?v=0.1.4`
-- `layout-card.js?v=2.4.4`
-- [`logbook-card.js?v=2.2.0`](https://github.com/royto/logbook-card/releases/tag/2.2.0)
-- [`mini-graph-card-bundle.js?v=0.12.0-dev.3`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.12.0-dev.3)
+- [`layout-card.js?v=2.4.5`](https://github.com/thomasloven/lovelace-layout-card/releases/tag/v2.4.5)
+- [`logbook-card.js?v=2.4.1`](https://github.com/royto/logbook-card/releases/tag/2.4.1)
+- [`mini-graph-card-bundle.js?v=0.12.0`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.12.0)
 - [`paper-buttons-row.js?v=2.1.3`](https://github.com/jcwillox/lovelace-paper-buttons-row/releases/tag/2.1.3)
 - `simple-thermostat.js?v=2.5.0`
 - [`slider-entity-row.js?v=17.4.0`](https://github.com/thomasloven/lovelace-slider-entity-row/releases/tag/17.4.0)

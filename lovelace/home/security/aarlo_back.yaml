@@ -157,8 +157,8 @@ card:
               - "off"
               - unknown
               - unavailable
-        no_event: No motion detected in the past 24 hours.
-        history: 1
+        no_event: No motion detected in the past 12 hours.
+        hours_to_show: 12
         max_items: 10
         collapse: 1
         date_format: relative
