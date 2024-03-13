@@ -180,13 +180,12 @@
 # Occasionally, a race-condition occurs at startup where the deCONZ-integration
 # isn't yet up and running when the automations (that depend on devices provided
 # by deCONZ) are loaded. This causes all automations that depend on deCONZ
-# devices to fail to initialise. A reload of the automations once deCONZ is up
-# and running resvoles the issue.
+# devices to fail to initialise.
 # Below is a canary automation (specifically intended to fail to initialise on
-# the race-condition) and a second automation that reloads all automations when
-# the canary fails. Set up in this way to prevent having to create an automation
-# which triggers (the evaluation of a template condition) on _all_ logged ERRORs
-# (as that is the only other way to detect the race-condition).
+# the race-condition) and a second automation that acts when the canary fails.
+# Set up in this way to prevent having to create an automation which triggers
+# (the evaluation of a template condition) on _all_ logged ERRORs (as that is
+# the only other way to detect the race-condition).
 - alias: 🚧 | 🕹️ Reload automations at startup – canary
   id: 4705ec2c-8003-43dd-b5a0-0fbd0409673e
   trigger:
@@ -204,6 +203,10 @@
         {{ false }}
   action: []
   mode: single
+# As of Home Assistant 2024.3, it's not sufficient any more to simply reload all
+# automations – each affected automation needs to be individually disabled and
+# (re)enabled again for them to start picking up on the deCONZ events. See
+# <https://github.com/home-assistant/core/issues/112761> for more details.
 - alias: 🚧 | 🕹️ Reload automations at startup (deCONZ race-condition)
   id: c47ad5f2-8a4b-4d9d-88c0-b375d5c16df9
   trigger:
@@ -219,6 +222,17 @@
           trigger.event.data.message is search(
             "No deconz_event tied to device ")
         }}
+  variables:
+    affected_automations:
+      - automation.all_lights_out_bedside_smart_switches
+      - automation.bedroom_lights_toggle_bedroom_smart_switches
+      - automation.end_waterrower_exercise_session_smart_switch
+      - automation.goodnight_message_bedside_smart_switches
+      - automation.mute_unmute_the_alarm_bedroom_smart_switches
+      - automation.silence_the_sirens_bedroom_smart_switches
+      - automation.silence_wakeup_alarm_bedside_smart_switches
+      - automation.snooze_wakeup_alarm_bedroom_smart_switches
+      - automation.start_waterrower_exercise_session_smart_switch
   action:
     # Give deCONZ a bit of time to initialise; repeated failures will simply
     # trigger this automation again...
@@ -227,8 +241,17 @@
       data:
         level: warning
         message: >-
-          deCONZ canary triggered; reloading automations...
+          deCONZ canary triggered; attempting to recover affected automations...
     - service: automation.reload
+    - delay: "00:00:10"
+    - service: automation.turn_off
+      target:
+        entity_id: >-
+          {{ affected_automations }}
+    - service: automation.turn_on
+      target:
+        entity_id: >-
+          {{ affected_automations }}
   mode: single
   max_exceeded: silent
 - alias: 📱/🚨 | ⚡ Notify on prolonged power outage (⏰ > 10 minutes)
