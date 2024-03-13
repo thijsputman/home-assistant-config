@@ -154,7 +154,9 @@
     - platform: state
       entity_id:
         - media_player.bpi_m2z
+        - media_player.bpi_m2z_two
         - media_player.mpi_mq1
+        - media_player.mpi_mq1_guestroom
         - media_player.pi0_w2
       from: idle
       to: playing

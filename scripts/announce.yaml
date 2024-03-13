@@ -182,7 +182,7 @@ tts_queue:
             {% elif room == 'bedroom' %}
               media_player.pi0_w2
             {% elif room == 'guestroom' %}
-              media_player.pi0_guestroom
+              media_player.mpi_mq1_guestroom
             {% elif room == 'attic' %}
               media_player.mpi_mq1
             {% else %}
@@ -264,7 +264,7 @@ tts_announce:
             result.speakers + ['media_player.pi0_w2'] %}
         {% elif room == 'guestroom' %}
           {% set result.speakers =
-            result.speakers + ['media_player.pi0_guestroom'] %}
+            result.speakers + ['media_player.mpi_mq1_guestroom'] %}
         {% elif room == 'attic' %}
           {% set result.speakers =
             result.speakers + ['media_player.mpi_mq1'] %}
@@ -409,7 +409,7 @@ tts_chime:
             - media_player.bpi_m2z
             - media_player.mpi_mq1
             - media_player.pi0_w2
-            - media_player.pi0_guestroom
+            - media_player.mpi_mq1_guestroom
     type:
       description: Type of chime
       default: announce
@@ -436,7 +436,7 @@ tts_chime:
                 'media_player.bpi_m2z',
                 'media_player.mpi_mq1',
                 'media_player.pi0_w2',
-                'media_player.pi0_guestroom'
+                'media_player.mpi_mq1_guestroom'
               ]
             %}
               {% set result.speakers = result.speakers + [speaker] %}
