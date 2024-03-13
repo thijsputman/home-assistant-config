@@ -24,7 +24,6 @@ custom CSS.
 - [`logbook-card.js?v=2.4.1`](https://github.com/royto/logbook-card/releases/tag/2.4.1)
 - [`mini-graph-card-bundle.js?v=0.12.0`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.12.0)
 - [`paper-buttons-row.js?v=2.1.3`](https://github.com/jcwillox/lovelace-paper-buttons-row/releases/tag/2.1.3)
-- `simple-thermostat.js?v=2.5.0`
 - [`slider-entity-row.js?v=17.4.0`](https://github.com/thomasloven/lovelace-slider-entity-row/releases/tag/17.4.0)
 - [`vacuum-card.js?v=2.8.0`](https://github.com/denysdovhan/vacuum-card/releases/tag/v2.8.0)
 
