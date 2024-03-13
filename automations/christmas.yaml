@@ -1,19 +1,18 @@
-- alias: 🎄 | 💡/🚗 Christmas tree on (Living room Hue scene / someone home)
+- alias: 🎄 | 💡/🛡️ Christmas tree on (Living room Hue scene / alarm disarmed)
   id: 1f000056-9ced-4832-a6a0-4cbb93fb381e
   trigger:
     - platform: state
       entity_id: sensor.hue_scene_living_room
       to: ~
     - platform: state
-      entity_id: group.family
-      from: not_home
-      to: home
+      entity_id: alarm_control_panel.home_alarm
+      to: disarmed
   condition:
     - condition: state
-      entity_id: group.family
-      state: home
-    # Ensure Living room has the correct Hue scene activated (the presence-
-    # trigger cannot be state-guarded, so the check has to be done here)
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
+    # Ensure Living room has the correct Hue scene activated (the Home Alarm
+    # state trigger cannot be guarded, so the check has to be done here)
     - condition: state
       entity_id: sensor.hue_scene_living_room
       state:
@@ -86,14 +85,14 @@
             "{{ states('sensor.hue_scene_living_room') }}"...
           error: true
   mode: single
-- alias: 🎄 | 💡/🚗 Christmas tree off (Living room off / everyone away)
+- alias: 🎄 | 💡/🛡️ Christmas tree off (Living room off / "Armed away")
   id: 7d791dff-0c3d-4774-91e6-648ff3348e53
   trigger:
     - platform: state
-      entity_id: group.family
-      from: home
-      to: not_home
-      for: "00:05:00"
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - armed_away
+        - armed_vacation
     - platform: state
       id: lights_off
       entity_id: sensor.hue_scene_living_room

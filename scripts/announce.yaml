@@ -287,9 +287,13 @@ tts_announce:
       {% endif %}
   sequence:
     # Only announce when someone's home
-    - condition: state
-      entity_id: group.family
-      state: home
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state:
+            - armed_away
+            - armed_vacation
     # Optional chime before the announcement. If multiple announcements are
     # queued, use a different chime to "bridge" the messages.
     - if: >-

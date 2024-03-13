@@ -79,8 +79,8 @@
       after: "20:00:00"
       before: "02:00:00"
     - condition: state
-      entity_id: group.family
-      state: home
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
     - condition: state
       entity_id: input_boolean.fireplace
       state: "off"
@@ -113,8 +113,8 @@
       after: "20:00:00"
       before: "02:00:00"
     - condition: state
-      entity_id: group.family
-      state: home
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
     - condition: state
       entity_id: input_boolean.fireplace
       state: "on"

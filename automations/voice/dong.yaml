@@ -8,8 +8,8 @@
       minutes: 0
   condition:
     - condition: state
-      entity_id: group.family
-      state: home
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
     - condition: state
       entity_id: media_player.nvidia_shield_tv
       state: "off"
@@ -31,7 +31,7 @@
       entity_id: timer.wakeup_snooze_time
       state: idle
   action:
-    # In the Bedroom, the "Dong!" only sounds between 06:00 and 22:00
+    # In Bedroom and Guestroom, the "Dong!" only sounds between 06:00 and 22:00
     - if:
         - condition: time
           after: "05:59:00"

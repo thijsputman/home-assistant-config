@@ -8,10 +8,9 @@
       from: "off"
       to: "on"
     - platform: state
-      id: home_alone
-      entity_id: group.family
-      from: not_home
-      to: home
+      id: alarm_disarmed
+      entity_id: alarm_control_panel.home_alarm
+      to: disarmed
   condition:
     - condition: state
       entity_id: binary_sensor.home_alone
@@ -29,12 +28,12 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
-    # When you're the first person to come home (and thus are "Home alone" by
-    # definition) block further runs for 5-minutes. This prevents the situation
-    # where you would hear your own "The door just opened!"-announcement...
+    # When you've just disarmed the alarm, block further runs for 5-minutes.
+    # This prevents the situation where you would hear your own "The door just
+    # opened!"-announcement in case you came home alone...
     - if:
         - condition: trigger
-          id: home_alone
+          id: alarm_disarmed
       then:
         - delay: "00:05:00"
         - stop: Someone just got home; not announcing...
@@ -66,10 +65,9 @@
       from: "on"
       to: "off"
     - platform: state
-      id: someone_home
-      entity_id: group.family
-      from: not_home
-      to: home
+      id: alarm_disarmed
+      entity_id: alarm_control_panel.home_alarm
+      to: disarmed
   condition:
     - condition: state
       entity_id: timer.everyone_asleep_delay
@@ -78,12 +76,12 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
   action:
-    # When coming home together, not everyone is detected "at home" at exactly
+    # When disarming the alarm, not everyone is detected "at home" at exactly
     # the same time. To prevent an unnecessary "X is close to home...", block
     # the script for 5-minutes (and then abort) when this happens.
     - if:
         - condition: trigger
-          id: someone_home
+          id: alarm_disarmed
       then:
         - delay: "00:05:00"
         - stop: Someone just got home; not announcing...

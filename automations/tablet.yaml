@@ -1,5 +1,5 @@
 - alias: >-
-    📟 | 💤/🚗 Kitchen tablet screen off (everyone asleep / everyone away)
+    📟 | 💤/🛡️ Kitchen tablet screen off (everyone asleep / "Armed away")
   id: c82e78e4-d54f-48d0-be93-6d2be002d1b7
   trigger:
     - platform: state
@@ -7,10 +7,10 @@
       from: "off"
       to: "on"
     - platform: state
-      entity_id: group.family
-      from: home
-      to: not_home
-      for: "00:05:00"
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - armed_away
+        - armed_vacation
   condition:
     - condition: state
       entity_id: switch.p20hd_eea_screen
@@ -20,7 +20,7 @@
       entity_id: switch.p20hd_eea_screen
   mode: single
 - alias: >-
-    📟 | 💤/🚗 Kitchen tablet screen on (everyone awake / someone home)
+    📟 | 💤/🛡️ Kitchen tablet screen on (everyone awake / alarm disarmed)
   id: 2bb72694-569c-4203-9524-09ccbe70cc3f
   trigger:
     - platform: state
@@ -28,9 +28,8 @@
       from: "on"
       to: "off"
     - platform: state
-      entity_id: group.family
-      from: not_home
-      to: home
+      entity_id: alarm_control_panel.home_alarm
+      to: disarmed
   condition:
     - condition: state
       entity_id: switch.p20hd_eea_screen
@@ -47,3 +46,4 @@
     - service: switch.turn_on
       entity_id: switch.p20hd_eea_screensaver
   mode: single
+  max_exceeded: silent

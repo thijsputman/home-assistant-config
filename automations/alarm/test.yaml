@@ -1,4 +1,4 @@
-- alias: 🚨 | 📣 Test the sirens (1st Monday of the month at 12:00)
+- alias: 🛡️ | 📣 Test the sirens (1st Monday of the month at 12:00)
   id: 6125cbba-0fd0-448a-917e-10f00402c32f
   trigger:
     - platform: time
@@ -9,8 +9,8 @@
       value_template: >-
         {{ now().isoweekday() == 1 and now().day <= 7 }}
     - condition: state
-      entity_id: group.family
-      state: home
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
   action:
     - service: script.turn_on
       target:

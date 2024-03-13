@@ -42,9 +42,13 @@
     # If we're asleep, step up the urgency as the situation could be life
     # threatening...
     - if:
-        - condition: state
-          entity_id: group.family
-          state: home
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: alarm_control_panel.home_alarm
+              state:
+                - armed_away
+                - armed_vacation
         - condition: or
           conditions:
             - condition: state

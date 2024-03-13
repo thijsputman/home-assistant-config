@@ -262,12 +262,8 @@
                   states('sensor.ups_battery_runtime_minutes')
                 }} minutes of runtime remaining...
             {% endif %}
-    # If someone is home, also sound the alarm. The ZigBee controller is
-    # connected to the UPS; the sirens have backup batteries so most likely
-    # this'll work... 🤞
-    - condition: state
-      entity_id: group.family
-      state: home
+    # Also sound the alarm – the ZigBee controller is connected to the UPS; the
+    # sirens have backup batteries so most likely this'll work... 🤞
     - service: script.turn_on
       target:
         entity_id: script.sirens

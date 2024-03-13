@@ -7,14 +7,18 @@
       to: "on"
       for: "01:30:00"
     - platform: state
-      entity_id: group.family
-      from: home
-      to: not_home
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - armed_away
+        - armed_vacation
     # Trigger on Home Assistant (re)start to prevent missing the "held state"
     # (and staying on indefinitely)
     - platform: homeassistant
       event: start
-  condition: []
+  condition:
+    - condition: state
+      entity_id: humidifier.vocolinc_flb_living_room
+      state: "on"
   action:
     - service: humidifier.turn_off
       data:

@@ -118,9 +118,13 @@
       to: "on"
       for: "00:01:00"
   condition:
-    - condition: state
-      entity_id: group.family
-      state: home
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state:
+            - armed_away
+            - armed_vacation
     - condition: or
       conditions:
         - condition: state
