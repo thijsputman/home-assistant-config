@@ -8,7 +8,7 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - !include home/security/alarm_panel.yaml
+          - !include home/security/alarm.yaml
           - !include home/security/occupancy.yaml
       - type: vertical-stack
         cards:

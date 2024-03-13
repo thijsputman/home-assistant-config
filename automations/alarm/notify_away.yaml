@@ -33,6 +33,50 @@
               The following doors and/or windows are still open:
               <br><br>◾ {{ doors_windows | join('<br>◾ ') }}
             {% endif %}
+- alias: 🛡️ | 📱 Remind to arm the alarm ("auto-arm" disabled; everyone away)
+  id: cd8295e3-1d40-46f4-acf9-bb137c751566
+  trigger:
+    - platform: state
+      entity_id: group.family
+      from: home
+      to: not_home
+      for: "00:05:00"
+  condition:
+    - condition: state
+      entity_id: input_boolean.alarm_auto_arm_away
+      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state:
+            - armed_away
+            - armed_vacation
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Alert
+          criticalNotification: true
+          title: 🛡️ Everyone left the house
+          tag: alarm_away_manual
+          action_1: Arm the alarm
+          message: >-
+            Auto-arm is disabled, would you like to arm the Home Alarm?
+    - wait_for_trigger:
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: ACTION_1_alarm_away_manual
+      timeout: "04:00:00"
+      continue_on_timeout: false
+    - service: alarm_control_panel.alarm_arm_away
+      entity_id: alarm_control_panel.home_alarm
+  mode: single
+  max_exceeded: silent
 - alias: 🛡️ | 📱 Notify on "Armed away"
   id: e23e2cf8-502d-4e28-8758-9ab11b5fee14
   trigger:

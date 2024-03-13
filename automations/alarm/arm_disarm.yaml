@@ -70,6 +70,9 @@
     - condition: state
       entity_id: group.family
       state: not_home
+    - condition: state
+      entity_id: input_boolean.alarm_auto_arm_away
+      state: "on"
     - condition: not
       conditions:
         - condition: state

@@ -1,4 +1,8 @@
 alarm_auto_arm_night:
   name: Auto-arm Home Alarm at night
-  icon: mdi:shield-moon-outline
+  icon: mdi:shield-moon
+  initial: true
+alarm_auto_arm_away:
+  name: Auto-arm Home Alarm when away
+  icon: mdi:shield-car
   initial: true
