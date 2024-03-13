@@ -92,9 +92,9 @@ include:
     - sensor.power_108 # Television (i.e. Multimedia hub)
     - sensor.power_sonair_combined
     # Internet / Network
-    - sensor.dd_wrt_1_google_dns_roundtrip_time
-    - sensor.dd_wrt_1_wan_in_mbps
-    - sensor.dd_wrt_1_wan_out_mbps
+    - sensor.dd_wrt_1_rtt_ip_8_8_8_8
+    - sensor.dd_wrt_1_bandwidth_vlan2_rx
+    - sensor.dd_wrt_1_bandwidth_vlan2_tx
     - sensor.pi_hole_dns_unique_clients
     # Arlo – track battery levels to have some insight into how well they hold
     # up over time...

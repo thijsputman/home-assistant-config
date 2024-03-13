@@ -30,7 +30,7 @@ card:
                   font-variant-position: super;
                 }
       entities:
-        - entity: sensor.dd_wrt_1_1_minute_load
+        - entity: sensor.dd_wrt_1_cpu_load
           card_mod:
             style:
               state-badge$ ha-state-icon$: |
@@ -38,7 +38,7 @@ card:
                   content: "1"
                 }
           icon: mdi:router-wireless
-        - entity: sensor.dd_wrt_2_1_minute_load
+        - entity: sensor.dd_wrt_2_cpu_load
           card_mod:
             style:
               state-badge$ ha-state-icon$: |
@@ -72,11 +72,11 @@ card:
         state: false
         icon: false
       entities:
-        - entity: sensor.dd_wrt_1_1_minute_load
+        - entity: sensor.dd_wrt_1_cpu_load
           name: DD-WRT-1 (%)
           show_points: false
           show_fill: false
-        - entity: sensor.dd_wrt_2_1_minute_load
+        - entity: sensor.dd_wrt_2_cpu_load
           name: DD-WRT-2 (%)
           show_points: false
           show_fill: false
