@@ -1,4 +1,4 @@
-- alias: 🚨 | 📱 Notify on doors/windows left open ("Armed away")
+- alias: 🛡️ | 📱 Notify on doors/windows left open ("Armed away")
   id: c3684211-bceb-4256-8238-077f21798da1
   trigger:
     - platform: state
@@ -33,7 +33,7 @@
               The following doors and/or windows are still open:
               <br><br>◾ {{ doors_windows | join('<br>◾ ') }}
             {% endif %}
-- alias: 🚨 | 📱 Notify on "Armed away"
+- alias: 🛡️ | 📱 Notify on "Armed away"
   id: e23e2cf8-502d-4e28-8758-9ab11b5fee14
   trigger:
     - platform: state
@@ -52,12 +52,34 @@
           title: 🛡️ Home Alarm armed
           message: >-
             The Home Alarm just changed into "Armed away"-mode.
-- alias: 🚨 | 📱 Notify on alarm disarmed ("Armed away")
+- alias: 🛡️ | 📱 Notify on "Armed vacation"
+  id: 98c5ec82-3510-4640-9845-1c816c52a810
+  trigger:
+    - platform: state
+      entity_id: alarm_control_panel.home_alarm
+      to: armed_vacation
+  condition: []
+  action:
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: home alarm
+          channel: Notification
+          criticalNotification: true
+          title: 🛡️ Home Alarm activated Holiday-mode
+          message: >-
+            The Home Alarm just changed into "Armed vacation"-mode; enjoy your
+            travels... ✈️🏝️
+- alias: 🛡️ | 📱 Notify on alarm disarmed ("Armed away/vacation")
   id: a78d71df-f5a9-49f1-a584-18d5260e88db
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
-      from: armed_away
+      from:
+        - armed_away
+        - armed_vacation
       to: disarmed
   condition: []
   action:
@@ -114,7 +136,7 @@
     - service: persistent_notification.dismiss
       data:
         notification_id: alarm_away_openclose
-- alias: 🚨 | 📱 Notify when back gate opened ("Armed away")
+- alias: 🚨 | 📱 Notify when back gate opened ("Armed away/vacation")
   id: b1825172-d7ab-4114-8c4d-6030c6bae7b6
   trigger:
     - platform: state
@@ -124,7 +146,9 @@
   condition:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
-      state: armed_away
+      state:
+        - armed_away
+        - armed_vacation
   action:
     - service: script.turn_on
       target:
@@ -150,8 +174,8 @@
         # longer than during a normal working day.
         - conditions:
             - condition: state
-              entity_id: input_boolean.alarm_vacation_mode
-              state: "on"
+              entity_id: alarm_control_panel.home_alarm
+              state: armed_vacation
           sequence:
             - service: script.turn_on
               target:
@@ -169,7 +193,9 @@
     - wait_for_trigger:
         - platform: state
           entity_id: alarm_control_panel.home_alarm
-          from: armed_away
+          from:
+            - armed_away
+            - armed_vacation
           to: disarmed
       timeout: "00:05:00"
       continue_on_timeout: false

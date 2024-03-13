@@ -97,3 +97,5 @@ npm install
 - **30-12-2023 @ 15:00 CET** util **00:00 CET** — Na data for
   `sensor.dd_wrt_1_google_dns_roundtrip_time` due to the ping-script not
   properly starting after a reboot of DD-WRT-1
+- **13-3-2024** – Replaced `input_boolean.alarm_vacation_mode` with
+  `alarm_control_panel.home_alarm`'s `armed_vacation`-state

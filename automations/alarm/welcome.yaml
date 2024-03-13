@@ -1,4 +1,4 @@
-- alias: 🚨 | 💡 Downstairs lights on (armed → disarmed; door open)
+- alias: 🛡️ | 💡 Downstairs lights on (armed → disarmed; door open)
   id: 23900a05-e8bd-4296-a8fe-fdcaa53caedf
   trigger:
     - platform: state
@@ -6,6 +6,7 @@
       from:
         - arming
         - armed_away
+        - armed_vacation
         - armed_night
       to: disarmed
   condition:
@@ -39,13 +40,14 @@
     - service: scene.turn_on
       target:
         entity_id: scene.hallway_evening
-- alias: 🚨 | 💡 Downstairs lights on (armed → pending → disarmed)
+- alias: 🛡️ | 💡 Downstairs lights on (armed → pending → disarmed)
   id: 84d125f9-e88c-4bce-81e7-6f08a04f5afe
   trigger:
     - platform: state
       entity_id: alarm_control_panel.home_alarm
       from:
         - armed_away
+        - armed_vacation
         - armed_night
       to: pending
   condition:

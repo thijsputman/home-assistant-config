@@ -6,39 +6,21 @@
       entity_id: alarm_control_panel.home_alarm
       to: armed_away
       for: "01:30:00"
-  variables:
-    activity_while_armed: >-
-      {% from 'voice.jinja' import activity_while_armed %}
-      {{ activity_while_armed() }}
-  condition:
-    # It is possible for the alarm to arm while in Vacation-mode (e.g. the
-    # housekeeper visits)
-    - condition: state
-      entity_id: input_boolean.alarm_vacation_mode
-      state: "off"
+  condition: []
   action:
     - wait_for_trigger:
         - platform: state
-          id: vacation_mode
-          entity_id: input_boolean.alarm_vacation_mode
-          from: "off"
-          to: "on"
-        - platform: state
-          id: disarmed
           entity_id: alarm_control_panel.home_alarm
+          # The omission of "armed_vacation" is intentional: No value in
+          # summarising a vacation's worth of announcements; only continue from
+          # a regular "armed_away" state.
           from: armed_away
           to:
             - pending
             - disarmed
-      # Vacation-mode should kick in well before this moment...
+      # Home Alarm is "Armed Vacation" well before this timeout expires...
       timeout: "24:00:00"
       continue_on_timeout: false
-    # No value in summarising a vacation's worth of announcements, so only
-    # continue on the "disarmed" trigger — another automation handles clearing
-    # the queued up announcements when Vacation-mode switches off.
-    - condition: template
-      value_template: >-
-        {{ wait.trigger.id == 'disarmed' }}
     # Wait for pending Home Alarm to disarm; abort if it doesn't
     - if:
         - condition: state
@@ -74,6 +56,9 @@
             {% if wait.trigger.event.data.room is defined %}
               {{ wait.trigger.event.data.room }}
             {% endif %}
+          activity_while_armed: >-
+            {% from 'voice.jinja' import activity_while_armed %}
+            {{ activity_while_armed() }}
           message: >-
             {#
               This is only works because there's two occupants with a single
@@ -127,9 +112,9 @@
   id: 2ee10a57-7f48-4a3b-9877-39ddff276020
   trigger:
     - platform: state
-      entity_id: input_boolean.alarm_vacation_mode
-      from: "on"
-      to: "off"
+      entity_id: alarm_control_panel.home_alarm
+      from: armed_vacation
+      to: disarmed
   condition: []
   action:
     - event: tts_queue_abort_all

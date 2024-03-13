@@ -24,7 +24,7 @@ include:
     - sensor.consumption_170_cumulative # Irrigation (Balcony)
     - sensor.consumption_173_cumulative # Irrigation (Garden)
     - group.family # occupancy
-    - input_boolean.alarm_vacation_mode
+    - alarm_control_panel.home_alarm
     - sensor.time_of_day
     # Miscellaneous
     - media_player.nvidia_shield_tv
@@ -122,6 +122,10 @@ component_config_domain:
     ignore_attributes:
       - is_deconz_group
       - supported_color_modes
+  alarm_control_panel:
+    ignore_attributes:
+      - code_format
+      - code_arm_required
 component_config:
   media_player.nvidia_shield_tv:
     ignore_attributes:

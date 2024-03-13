@@ -116,6 +116,7 @@
       state:
         - armed_night
         - armed_away
+        - armed_vacation
   action:
     - service: scene.turn_on
       target:
@@ -270,7 +271,9 @@
           state: day
     - condition: state
       entity_id: alarm_control_panel.home_alarm
-      state: armed_away
+      state:
+        - armed_away
+        - armed_vacation
   action:
     - service: scene.turn_on
       target:

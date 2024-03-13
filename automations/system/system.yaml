@@ -129,9 +129,11 @@
       for: "24:00:00"
   condition:
     # Unlikely to happen, unless we're on vacation
-    - condition: state
-      entity_id: input_boolean.alarm_vacation_mode
-      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_vacation
   action:
     - service: script.turn_on
       target:
@@ -235,13 +237,15 @@
       to: "on"
       for: "00:10:00"
   condition:
-    # If Home Alarm is "Armed away", a different – more immediate – response is
-    # issued...
+    # If Home Alarm is "Armed away/vacation", a different – more immediate –
+    # response is issued...
     - condition: not
       conditions:
         - condition: state
           entity_id: alarm_control_panel.home_alarm
-          state: armed_away
+          state:
+            - armed_away
+            - armed_vacation
   action:
     - service: script.turn_on
       target:

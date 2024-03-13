@@ -156,8 +156,8 @@
       at: "02:00:00"
   condition:
     - condition: state
-      entity_id: input_boolean.alarm_vacation_mode
-      state: "on"
+      entity_id: alarm_control_panel.home_alarm
+      state: armed_vacation
     # On Tuesdays and Saturdays (i.e. twice-weekly)
     - condition: template
       value_template: >-

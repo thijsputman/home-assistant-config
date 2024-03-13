@@ -62,12 +62,21 @@
       from: home
       to: not_home
       for: "00:05:00"
+    # Fallback in case the Home Alarm is left in an incorrect state due to a
+    # unexpected Home Assistant (re)start
+    - platform: homeassistant
+      event: start
   condition:
+    - condition: state
+      entity_id: group.family
+      state: not_home
     - condition: not
       conditions:
         - condition: state
           entity_id: alarm_control_panel.home_alarm
-          state: armed_away
+          state:
+            - armed_away
+            - armed_vacation
     - condition: state
       entity_id: input_boolean.housekeeper_present
       state: "off"
@@ -85,7 +94,9 @@
   condition:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
-      state: armed_away
+      state:
+        - armed_away
+        - armed_vacation
   action:
     - service: alarm_control_panel.alarm_disarm
       data:
@@ -151,7 +162,7 @@
     - service: input_boolean.turn_on
       entity_id: input_boolean.everyone_asleep
   mode: single
-- alias: 🚨 | 🧹 Alarm disarm (housekeeper comes when everyone away)
+- alias: 🚨 | 🧹 Alarm disarm for housekeeper ("Armed away/vacation")
   id: 3e6dc009-efd8-4c15-bb6d-52430aa7d32c
   trigger:
     - platform: state
@@ -161,25 +172,34 @@
   condition:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
-      state: armed_away
+      state:
+        - armed_away
+        - armed_vacation
   action:
+    - variables:
+        alarm_state: >-
+          {{ states('alarm_control_panel.home_alarm') }}
     - service: alarm_control_panel.alarm_disarm
       data:
         code: !secret alarm_code
       entity_id: alarm_control_panel.home_alarm
-  mode: single
-- alias: 🚨 | 🧹 Alarm arm away (housekeeper leaves when everyone away)
-  id: 5cf9fd2b-f126-4a13-a637-213be05d1cea
-  trigger:
-    - platform: state
-      entity_id: input_boolean.housekeeper_present
-      from: "on"
-      to: "off"
-  condition:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: input_boolean.housekeeper_present
+          from: "on"
+          to: "off"
+      timeout: "06:00:00"
+      continue_on_timeout: true
     - condition: state
       entity_id: group.family
       state: not_home
-  action:
-    - service: alarm_control_panel.alarm_arm_away
-      entity_id: alarm_control_panel.home_alarm
+    - if:
+        - >-
+          {{ alarm_state == 'armed_vacation' }}
+      then:
+        - service: alarm_control_panel.alarm_arm_vacation
+          entity_id: alarm_control_panel.home_alarm
+      else:
+        - service: alarm_control_panel.alarm_arm_away
+          entity_id: alarm_control_panel.home_alarm
   mode: single

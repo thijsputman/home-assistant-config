@@ -31,6 +31,7 @@
       entity_id: alarm_control_panel.home_alarm
       to:
         - armed_away
+        - armed_vacation
         - armed_night
   condition: []
   action:
@@ -158,6 +159,7 @@
         - disarmed
         - armed_night
         - armed_away
+        - armed_vacation
     # Other triggers can pre-empt this one; that's no problem. The script will
     # wait (a while) for Arlo to connect.
     - platform: state

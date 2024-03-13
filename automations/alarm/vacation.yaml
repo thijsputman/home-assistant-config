@@ -1,4 +1,4 @@
-- alias: ✈️ | 🚨 Enable Vacation-mode ("Armed away" ⏰ > 16-hours)
+- alias: ✈️ | 🛡️ Enable Holiday-mode ("Armed away" ⏰ > 16-hours)
   id: c8b73e92-cc5f-4090-8c1f-cac4d6377630
   trigger:
     - platform: state
@@ -10,17 +10,14 @@
       event: start
   condition:
     - condition: state
-      entity_id: input_boolean.alarm_vacation_mode
-      state: "off"
-    - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
   action:
     # As this automation has a rather long-running trigger, a secondary trigger
     # on Home Assistant start is provided to ensure restarts don't interfer with
     # the logic: If Home Assistant starts while the alarm is "Armed Away", wait
-    # for 16-hours for it to disarm. If that does *not* happen, toggle on
-    # Vacation-mode.
+    # for 16-hours for it to move away from that state. If that does *not*
+    # happen, toggle on Holiday-mode...
     - if:
         - condition: trigger
           id: start
@@ -31,22 +28,5 @@
               from: armed_away
           timeout: "16:00:00"
           continue_on_timeout: false
-    - service: input_boolean.turn_on
-      entity_id: input_boolean.alarm_vacation_mode
-- alias: ✈️ | 🚨 Disable Vacation-mode (alarm disarmed)
-  id: edff3f2c-32bf-4347-946e-db14be11cd14
-  trigger:
-    - platform: state
+    - service: alarm_control_panel.alarm_arm_vacation
       entity_id: alarm_control_panel.home_alarm
-      to: disarmed
-  condition:
-    - condition: state
-      entity_id: input_boolean.alarm_vacation_mode
-      state: "on"
-    # Keep Vacation-mode active while the housekeeper is present
-    - condition: state
-      entity_id: input_boolean.housekeeper_present
-      state: "off"
-  action:
-    - service: input_boolean.turn_off
-      entity_id: input_boolean.alarm_vacation_mode

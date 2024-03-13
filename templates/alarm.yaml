@@ -23,6 +23,7 @@
       to:
         - armed_night
         - armed_away
+        - armed_vacation
   sensor:
     - name: Activity while armed — Arlo
       unique_id: d689fd5b-a3bb-4e72-b4ac-5851ac1407f6
@@ -70,6 +71,7 @@
       to:
         - armed_night
         - armed_away
+        - armed_vacation
   sensor:
     - name: Activity while armed — Doorbell
       unique_id: af8b198f-b766-4818-9b39-06cb5738739b

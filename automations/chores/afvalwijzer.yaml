@@ -12,9 +12,11 @@
         - gft
         - papier
     # No need to remind when we're on vacation...
-    - condition: state
-      entity_id: input_boolean.alarm_vacation_mode
-      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state: armed_vacation
   action:
     - variables:
         trash: >-

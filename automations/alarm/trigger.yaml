@@ -28,6 +28,7 @@
       entity_id: alarm_control_panel.home_alarm
       state:
         - armed_away
+        - armed_vacation
         - armed_night
   action:
     - service: alarm_control_panel.alarm_trigger
@@ -55,6 +56,7 @@
       entity_id: alarm_control_panel.home_alarm
       state:
         - armed_away
+        - armed_vacation
         - armed_night
   action:
     - service: alarm_control_panel.alarm_trigger

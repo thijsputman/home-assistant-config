@@ -101,9 +101,9 @@
   id: 58b5a8da-d714-4314-adbb-fbd0f6fc352c
   trigger:
     - platform: state
-      entity_id: input_boolean.alarm_vacation_mode
-      from: "off"
-      to: "on"
+      entity_id: alarm_control_panel.home_alarm
+      from: armed_away
+      to: armed_vacation
   condition:
     - condition: state
       entity_id:
@@ -120,10 +120,16 @@
   id: 7ae52e61-d2d3-4772-9e08-b1f93012e871
   trigger:
     - platform: state
-      entity_id: input_boolean.alarm_vacation_mode
-      from: "on"
-      to: "off"
+      entity_id: alarm_control_panel.home_alarm
+      from: armed_vacation
+      to: disarmed
   condition:
+    # Under the explicit condition someone's actually home – otherwise the
+    # housekeeper's arrival during a vacation will unintentionally trigger the
+    # Neato schedules back on...
+    - condition: state
+      entity_id: group.family
+      state: home
     - condition: state
       entity_id:
         - switch.d7_downstairs_schedule

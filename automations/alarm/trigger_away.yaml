@@ -1,4 +1,4 @@
-- alias: 🚨 | 👋 Trigger alarm (motion detected; "Armed away")
+- alias: 🚨 | 👋 Trigger alarm (motion detected; "Armed away/vacation")
   id: 358bd339-33e4-4c0a-a92e-0682346e48a1
   trigger:
     # Not all motion sensors are optimally positioned for intruder detection
@@ -26,7 +26,9 @@
   condition:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
-      state: armed_away
+      state:
+        - armed_away
+        - armed_vacation
     # Ignore motion sensors upstairs while Neato is active – Neato's LIDAR uses
     # infrared and thus triggers (PIR) motion sensors...
     - condition: or
@@ -73,7 +75,7 @@
       entity_id: alarm_control_panel.home_alarm
   mode: single
   max_exceeded: silent
-- alias: 🚨 | ⚡ Trigger alarm (power outage; "Armed away")
+- alias: 🚨 | ⚡ Trigger alarm (power outage; "Armed away/vacation")
   id: c9c16198-8524-440f-99ea-0b447c68b798
   trigger:
     - platform: state
@@ -82,7 +84,9 @@
   condition:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
-      state: armed_away
+      state:
+        - armed_away
+        - armed_vacation
   action:
     - service: alarm_control_panel.alarm_trigger
       entity_id: alarm_control_panel.home_alarm
