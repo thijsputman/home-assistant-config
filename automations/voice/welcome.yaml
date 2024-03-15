@@ -36,29 +36,19 @@
           continue_on_timeout: false
     # Abort all queued up announcements
     - event: tts_queue_abort_all
-    # Manually capture the "TTS attention"-event. The message is rendered the
+    # Give the situation a bit of time to settle. The message is rendered the
     # moment the announcement gets queued; this would prevent it from working
     # properly as there will _always_ be a single person home at that time
     # (namely, the person who's phone got detected first). By delaying the
-    # rendering until the last moment, chances are better (not 100% though)
-    # that it'll work as intended/expected...
-    - wait_for_trigger:
-        - platform: event
-          event_type: tts_attention
-      timeout: "00:20:00"
-      continue_on_timeout: false
+    # rendering a bit, chances are better (not 100% though) that it'll work as
+    # intended/expected...
+    - delay: "00:02:30"
     - service: script.turn_on
       target:
-        entity_id: script.tts_announce
+        entity_id: script.tts_queue
       data:
         variables:
-          rooms: >-
-            {% if wait.trigger.event.data.room is defined %}
-              {{ wait.trigger.event.data.room }}
-            {% endif %}
-          activity_while_armed: >-
-            {% from 'voice.jinja' import activity_while_armed %}
-            {{ activity_while_armed() }}
+          tag: welcome_home
           message: >-
             {#
               This is only works because there's two occupants with a single
@@ -103,6 +93,8 @@
               currently somewhere in {{ state_attr(sensor, 'locality') }}.
             {% endif %}
             While you were away,
+            {% from 'voice.jinja' import activity_while_armed %}
+            {% set activity_while_armed = activity_while_armed() %}
             {% if activity_while_armed | trim  == '' %}
                nothing of interest happened
             {% else %}
