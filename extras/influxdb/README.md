@@ -100,8 +100,9 @@ npm install
 - **13-3-2024** – Replaced `input_boolean.alarm_vacation_mode` with
   `alarm_control_panel.home_alarm`'s `armed_vacation`-state
 - **13-3-2024** – Replaced `sensor.dd_wrt_1_google_dns_roundtrip_time` with
-  `sensor.dd_wrt_1_rtt_ip_8_8_8_8`
-- **13-3-2024** – Replaced `sensor.dd_wrt_1_wan_in_mbps` with
-  `sensor.dd_wrt_1_bandwidth_vlan2_rx`
-- **13-3-2024** – Replaced `sensor.dd_wrt_1_wan_out_mbps` with
-  `sensor.dd_wrt_1_bandwidth_vlan2_tx`
+  `sensor.dd_wrt_1_rtt_ip_8_8_8_8`; `sensor.dd_wrt_1_wan_in_mbps` with
+  `sensor.dd_wrt_1_bandwidth_vlan2_rx`; `sensor.dd_wrt_1_wan_out_mbps` with
+  `sensor.dd_wrt_1_bandwidth_vlan2_tx` (for several days prior to this switch,
+  no data was reported for the old sensors)
+- **13-3-2024** – Added `sensor.home_nearest_direction_of_travel` and
+  `sensor.home_nearest_distance`

@@ -385,7 +385,7 @@ tts_announce:
               Crude heuristic to determine the duration of a spoken out string
             #}
             {% if duration is not number %}
-              {{ [1, (announcement | length / 10) | round(0)] | max }}
+              {{ [1, (announcement | length / 8) | round(0)] | max }}
             {% else %}
               {{ duration | int(5) }}
             {% endif %}

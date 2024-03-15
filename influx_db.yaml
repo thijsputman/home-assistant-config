@@ -24,6 +24,8 @@ include:
     - sensor.consumption_170_cumulative # Irrigation (Balcony)
     - sensor.consumption_173_cumulative # Irrigation (Garden)
     - group.family # occupancy
+    - sensor.home_nearest_direction_of_travel
+    - sensor.home_nearest_distance
     - alarm_control_panel.home_alarm
     - sensor.time_of_day
     # Miscellaneous

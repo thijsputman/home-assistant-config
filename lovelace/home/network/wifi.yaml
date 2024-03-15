@@ -27,9 +27,14 @@ entities:
     color: lightgrey
     show_points: false
     show_fill: false
+  - entity: sensor.mpi_mq1_guestroom_bandwidth_wlan0_signal
+    name: Guestroom
+    color: darkgrey
+    show_points: false
+    show_fill: false
   - entity: sensor.pi0_w2_bandwidth_wlan0_signal
     name: Bedroom
-    color: darkgrey
+    color: grey
     show_points: false
     show_fill: false
   - entity: sensor.pi4_sandbox_bandwidth_wlan0_signal
