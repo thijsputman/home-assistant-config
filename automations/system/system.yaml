@@ -226,6 +226,7 @@
     affected_automations:
       - automation.all_lights_out_bedside_smart_switches
       - automation.bedroom_lights_toggle_bedroom_smart_switches
+      - automation.cycle_through_attic_hallway_gangs_dimmer_switch
       - automation.end_waterrower_exercise_session_smart_switch
       - automation.goodnight_message_bedside_smart_switches
       - automation.mute_unmute_the_alarm_bedroom_smart_switches
@@ -233,6 +234,8 @@
       - automation.silence_wakeup_alarm_bedside_smart_switches
       - automation.snooze_wakeup_alarm_bedroom_smart_switches
       - automation.start_waterrower_exercise_session_smart_switch
+      - automation.turn_off_attic_hallway_lights_dimmer_switch
+      - automation.turn_on_attic_hallway_lights_dimmer_switch
   action:
     # Give deCONZ a bit of time to initialise; repeated failures will simply
     # trigger this automation again...
@@ -248,6 +251,7 @@
       target:
         entity_id: >-
           {{ affected_automations }}
+    - delay: "00:00:10"
     - service: automation.turn_on
       target:
         entity_id: >-
