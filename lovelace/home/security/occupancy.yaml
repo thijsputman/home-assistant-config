@@ -1,18 +1,112 @@
 type: horizontal-stack
 cards:
-  # Don't show when the Home Alarm is pending or triggered
-  - type: conditional
-    conditions:
-      - entity: alarm_control_panel.home_alarm
-        state_not: pending
-      - entity: alarm_control_panel.home_alarm
-        state_not: triggered
-    card:
-      type: horizontal-stack
-      cards:
-        - type: tile
-          entity: !secret person_1
-          show_entity_picture: true
-        - type: tile
-          entity: !secret person_2
-          show_entity_picture: true
+  - type: horizontal-stack
+    cards:
+      - type: custom:mod-card
+        card_mod:
+          style: |
+            ha-card {
+              background: var(--llh-mod-card-background);
+              border: var(--llh-mod-card-border);
+            }
+        report_size: 2
+        card:
+          type: vertical-stack
+          cards:
+            - type: tile
+              card_mod:
+                style: |
+                  ha-card{
+                    border: 0px;
+                    padding-top: 2px !important;
+                    padding-bottom: 0px !important;
+                  }
+                  ha-card div.background{
+                    border-radius: 0px
+                  }
+              entity: !secret person_1
+              show_entity_picture: true
+              state_content:
+                - state
+                - last-changed
+            - type: conditional
+              conditions:
+                - entity: !secret person_1
+                  state: not_home
+              card:
+                type: glance
+                card_mod:
+                  style: |
+                    ha-card{
+                      border: 0px;
+                      padding-top: 2px !important;
+                      padding-bottom: 0px !important;
+                    }
+                    ha-card div.background{
+                      border-radius: 0px
+                    }
+                    ha-card div.entities{
+                      padding-top: 0px !important;
+                    }
+                show_name: false
+                show_icon: true
+                show_state: true
+                entities:
+                  - entity: sensor.home_person_1_direction_of_travel
+                  - entity: sensor.home_person_1_distance
+                state_color: true
+                columns: 2
+      - type: custom:mod-card
+        card_mod:
+          style: |
+            ha-card {
+              background: var(--llh-mod-card-background);
+              border: var(--llh-mod-card-border);
+            }
+        report_size: 2
+        card:
+          type: vertical-stack
+          cards:
+            - type: tile
+              card_mod:
+                style: |
+                  ha-card{
+                    border: 0px;
+                    padding-top: 2px !important;
+                    padding-bottom: 0px !important;
+                  }
+                  ha-card div.background{
+                    border-radius: 0px
+                  }
+              entity: !secret person_2
+              show_entity_picture: true
+              state_content:
+                - state
+                - last-changed
+            - type: conditional
+              conditions:
+                - entity: !secret person_1
+                  state: not_home
+              card:
+                type: glance
+                card_mod:
+                  style: |
+                    ha-card{
+                      border: 0px;
+                      padding-top: 2px !important;
+                      padding-bottom: 0px !important;
+                    }
+                    ha-card div.background{
+                      border-radius: 0px
+                    }
+                    ha-card div.entities{
+                      padding-top: 0px !important;
+                    }
+                show_name: false
+                show_icon: true
+                show_state: true
+                entities:
+                  - entity: sensor.home_person_2_direction_of_travel
+                  - entity: sensor.home_person_2_distance
+                state_color: true
+                columns: 2
