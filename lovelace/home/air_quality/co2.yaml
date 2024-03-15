@@ -13,16 +13,20 @@ state_map:
   - value: "off"
   - value: "on"
 entities:
-  - entity: sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+  - entity: sensor.air_monitor_lite_7034_carbon_dioxide
     name: Living room
     show_points: false
     show_fill: false
-  - entity: sensor.qingping_air_monitor_lite_bedroom_environment_co2_density
+  - entity: sensor.air_monitor_lite_42b8_carbon_dioxide
     name: Bedroom
     show_points: false
     show_fill: false
-  - entity: sensor.xiaomi_miot_environment_co2_density
+  - entity: sensor.air_monitor_lite_be10_carbon_dioxide
     name: Attic
+    show_points: false
+    show_fill: false
+  - entity: sensor.air_monitor_lite_bf53_carbon_dioxide
+    name: Guestroom
     show_points: false
     show_fill: false
   - color: dimgray

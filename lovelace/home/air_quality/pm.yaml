@@ -20,7 +20,7 @@ card_mod:
           padding-bottom: 0px !important;
           margin-bottom: 0px !important;
         }
-report_size: 3
+report_size: 4
 card:
   type: vertical-stack
   cards:
@@ -48,12 +48,12 @@ card:
         labels: true
         labels_secondary: false
       entities:
-        - entity: sensor.qingping_air_monitor_lite_living_room_environment_pm10_density
+        - entity: sensor.air_monitor_lite_7034_pm10
           name: PM₁₀
           color: "#d4d4d4"
           show_points: false
           show_fill: false
-        - entity: sensor.qingping_air_monitor_lite_living_room_environment_pm2_5_density
+        - entity: sensor.air_monitor_lite_7034_pm25
           name: PM₂.₅ – Living room
           color: "#ff9800"
           show_points: false
@@ -82,7 +82,7 @@ card:
             border-radius: 0px;
             padding-top: 4px !important;
             margin-top: 0px !important;
-            background: linear-gradient(#D9E4E8, #FFFFFF 18%);
+            background: linear-gradient(#d9e4e8, #ffffff 18%);
           }
       name: PM – Bedroom (past 48h)
       icon: mdi:smog
@@ -103,12 +103,12 @@ card:
         labels: true
         labels_secondary: false
       entities:
-        - entity: sensor.qingping_air_monitor_lite_bedroom_environment_pm10_density
+        - entity: sensor.air_monitor_lite_42b8_pm10
           name: PM₁₀
           color: "#d4d4d4"
           show_points: false
           show_fill: false
-        - entity: sensor.qingping_air_monitor_lite_bedroom_environment_pm2_5_density
+        - entity: sensor.air_monitor_lite_42b8_pm25
           name: PM₂.₅ – Bedroom
           color: "#3498db"
           show_points: false
@@ -134,11 +134,10 @@ card:
       card_mod:
         style: |
           ha-card {
-            border-top-right-radius: 0px;
-            border-top-left-radius: 0px;
+            border-radius: 0px;
             padding-top: 4px !important;
             margin-top: 0px !important;
-            background: linear-gradient(#D9E4E8, #FFFFFF 18%);
+            background: linear-gradient(#d9e4e8, #ffffff 18%);
           }
       name: PM – Attic (past 48h)
       icon: mdi:smog
@@ -159,12 +158,12 @@ card:
         labels: true
         labels_secondary: false
       entities:
-        - entity: sensor.xiaomi_miot_environment_pm10_density
+        - entity: sensor.air_monitor_lite_be10_pm10
           name: PM₁₀
           color: "#d4d4d4"
           show_points: false
           show_fill: false
-        - entity: sensor.xiaomi_miot_environment_pm2_5_density
+        - entity: sensor.air_monitor_lite_be10_pm25
           name: PM₂.₅ – Attic
           color: "#e74c3c"
           show_points: false
@@ -180,6 +179,54 @@ card:
           smoothing: false
         - color: skyblue
           entity: binary_sensor.openclose_33
+          show_line: false
+          show_points: false
+          show_legend: false
+          y_axis: secondary
+          aggregate_func: max
+          smoothing: false
+    - type: custom:mini-graph-card
+      card_mod:
+        style: |
+          ha-card {
+            border-top-right-radius: 0px;
+            border-top-left-radius: 0px;
+            padding-top: 4px !important;
+            margin-top: 0px !important;
+            background: linear-gradient(#d9e4e8, #ffffff 18%);
+          }
+      name: PM – Guestroom (past 48h)
+      icon: mdi:smog
+      hour24: true
+      hours_to_show: 48
+      points_per_hour: 1
+      cache: true
+      decimals: 0
+      state_map:
+        - value: "off"
+          label: "0"
+        - value: "on"
+          label: "1"
+      show:
+        name: false
+        icon: false
+        state: false
+        labels: true
+        labels_secondary: false
+      entities:
+        - entity: sensor.air_monitor_lite_bf53_pm10
+          name: PM₁₀
+          color: "#d4d4d4"
+          show_points: false
+          show_fill: false
+        - entity: sensor.air_monitor_lite_bf53_pm25
+          name: PM₂.₅ – Guestroom
+          color: "#9b59b6"
+          show_points: false
+          show_fill: false
+        - color: dimgray
+          entity: sensor.time_of_day
+          attribute: numeric
           show_line: false
           show_points: false
           show_legend: false
