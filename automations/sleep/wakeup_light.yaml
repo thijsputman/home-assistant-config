@@ -28,16 +28,38 @@
         brightness: 255
         transition: 1200
       entity_id: light.bedroom
-    # Switch the Bedroom light off after 2 hours (accounting for the wakeup
-    # light duration)
+  mode: single
+  max_exceeded: silent
+- alias: 💡 | 💤/⏰ Bedroom lights on; off after 2-hours (at «wakeup » time)
+  id: 41125109-0a50-4f70-aaaf-ec40cd780a3e
+  trigger:
+    - platform: time
+      at: input_datetime.wakeup
+  condition:
+    # Run regardless of whether the lights are on – this ensures that if the
+    # lights are on, but at a lower intensity, we punch them back to maximum
+    # brightness at «wakeup » time...
+    - condition: state
+      entity_id: timer.wakeup_grace_time
+      state: idle
+    - condition: state
+      entity_id: input_boolean.wakeup_alarm_mute
+      state: "off"
+  action:
+    - service: light.turn_on
+      data:
+        color_temp_kelvin: 3800
+        brightness: 255
+      entity_id: light.bedroom
+    # Switch the lights off after 2-hours
     - wait_for_trigger:
         - platform: state
           entity_id: light.bedroom
           from: "on"
           to: "off"
-      timeout: "02:20:00"
+      timeout: "02:00:00"
       continue_on_timeout: true
-    # Trigger expired – continue; otherwise we abort (as the light was already
+    # Trigger expired – continue; otherwise we abort (the light were already
     # switched off)
     - condition: template
       value_template: >-
