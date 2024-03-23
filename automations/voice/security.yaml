@@ -161,12 +161,26 @@
     # Shield TV will stop playing) to complete – this way the announcement plays
     # at a more opportune moment...
     - delay: "00:00:05"
+    - variables:
+        # Don't announce on the first floor when someone is in bed
+        rooms: >-
+          {% if states('binary_sensor.occupancy_bed') == 'on' %}
+            {{
+              ['attic', 'living_room']
+            }}
+          {% else %}
+            {{
+              ['attic', 'bedroom', 'guestroom', 'living_room']
+            }}
+          {% endif %}
     - service: script.turn_on
       target:
         entity_id: script.tts_announce
       data:
         variables:
           priority: attention
+          rooms: >-
+            {{ rooms }}
           message: >-
             Motion detected at the {{
               trigger.to_state.attributes.camera_name | lower }}.

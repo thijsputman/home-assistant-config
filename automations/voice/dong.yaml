@@ -32,50 +32,46 @@
       state: idle
   action:
     # In Bedroom and Guestroom, the "Dong!" only sounds between 06:00 and 22:00
+    - variables:
+        rooms: >-
+          {% if now() < today_at('06:00') or now() > today_at('22:00') %}
+            {{
+              ['attic', 'living_room']
+            }}
+          {% else %}
+            {{
+              ['attic', 'bedroom', 'guestroom', 'living_room']
+            }}
+          {% endif %}
     - if:
         - condition: time
-          after: "05:59:00"
-          before: "22:59:00"
+          after: "11:59:00"
+          before: "12:01:00"
+      # Special "Dong!" at noon
       then:
-        - if:
-            - condition: time
-              after: "11:59:00"
-              before: "12:01:00"
-          # Special "Dong!" at noon
-          then:
-            - service: script.turn_on
-              target:
-                entity_id: script.tts_announce
-              data:
-                variables:
-                  priority: regular
-                  duration: 3
-                  chime: false
-                  message: >-
-                    media-source://media_source/sd/audio/hourly_dong.mp3
-          else:
-            - service: script.turn_on
-              target:
-                entity_id: script.tts_announce
-              data:
-                variables:
-                  priority: attention
-                  duration: 2
-                  chime: false
-                  message: >-
-                    media-source://media_source/sd/audio/Gentle_gong.ogg
-      else:
         - service: script.turn_on
           target:
             entity_id: script.tts_announce
           data:
             variables:
               priority: regular
+              duration: 3
+              chime: false
+              rooms: >-
+                {{ rooms }}
+              message: >-
+                media-source://media_source/sd/audio/hourly_dong.mp3
+      else:
+        - service: script.turn_on
+          target:
+            entity_id: script.tts_announce
+          data:
+            variables:
+              priority: attention
               duration: 2
               chime: false
-              rooms:
-                - attic
-                - living_room
+              rooms: >-
+                {{ rooms }}
               message: >-
                 media-source://media_source/sd/audio/Gentle_gong.ogg
   mode: single

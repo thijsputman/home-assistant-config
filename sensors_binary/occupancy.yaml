@@ -1,0 +1,7 @@
+- platform: group
+  name: Occupancy (Bed)
+  unique_id: 92d5d9e2-bd94-41f9-b72c-7491cdeca714
+  device_class: occupancy
+  entities:
+    - binary_sensor.withings_in_bed
+    - binary_sensor.withings_in_bed_2

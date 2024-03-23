@@ -270,7 +270,11 @@ tts_announce:
             result.speakers + ['media_player.mpi_mq1'] %}
         {% endif %}
       {% endfor %}
-      {% if result.speakers | length > 0 %}
+      {# Reduce to "group.speakers_all" when all speakers are selected #}
+      {% if
+        result.speakers | length > 0 and (result.speakers |
+          length) != (expand('group.speakers_all') | length)
+      %}
         {{ result.speakers | join(',') }}
       {% else %}
         group.speakers_all
@@ -442,7 +446,11 @@ tts_chime:
               {% set result.speakers = result.speakers + [speaker] %}
             {% endif %}
           {% endfor %}
-          {% if result.speakers | length > 0 %}
+          {# Reduce to "group.speakers_all" when all speakers are selected #}
+          {% if
+            result.speakers | length > 0 and (result.speakers |
+              length) != (expand('group.speakers_all') | length)
+          %}
             {{ result.speakers }}
           {% else %}
             group.speakers_all

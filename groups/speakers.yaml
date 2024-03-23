@@ -4,4 +4,5 @@ speakers_all:
   entities:
     - media_player.bpi_m2z # Living room
     - media_player.mpi_mq1 # Attic
+    - media_player.mpi_mq1_guestroom # Guestroom
     - media_player.pi0_w2 # Bedroom
