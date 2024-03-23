@@ -51,8 +51,6 @@
 Changes to Home Assistant; to be further explored/implemented (or just for
 future reference).
 
-- [ ] [2022.12: Tile card](https://www.home-assistant.io/blog/2022/12/07/release-202212/#tile-card-gets-features)
-      — further implement these around the dashboards
 - [ ] [2023.2: Grouping sensors](https://www.home-assistant.io/blog/2023/02/01/release-20232/#grouping-sensors)
       — and related helper changes (could replace some of the older "arithmetic"
       templates)
@@ -197,7 +195,6 @@ future reference).
       calamity); experiment with using this to trigger the alarm~~
   - Additionally, increases in CO₂ levels when no-one is home (i.e. Home Alarm
     is "Armed away") might indicate some-one is in the house...
-  - This can be used for occupancy detection too...
 
 ## Lights
 
@@ -226,37 +223,9 @@ future reference).
 
 ### Features
 
-- [ ] Create proxy template binary sensor for the "Everyone away"-state (instead
-      of using `group.family` directly; "Guest"-mode stops `group.family` from
-      automatically setting "Everyone away"). Setting the alarm to "Arm away"
-      should enable "Everyone away". This sensor can then be used to control the
-      alarm _and_ all other things that should (not) happen when no-one is
-      home....
-  - The template sensor should trigger when devices leave the home WiFi. If
-    triggered this way, also check GPS state (which _initially_ is leading). An
-    identical, but delayed, trigger re-evaluates this decision; _ignoring_ the
-    GPS state. GPS is convenient, but error-prone (updates slowly/not at all due
-    to Android (battery) issues; requires remote-UI connection – which is 99%,
-    but not 100% stable). To prevent short WiFi drops from wreaking havoc, we
-    rely on GPS. After a while it becomes better to assume to GPS has bugged out
-    and trust the WiFi. This solution isn't without its false positives either,
-    but they will be less problematic than _not_ triggering "Everyone away" at
-    all...
-  - Some more elaborate notifications might be in place to provide hints as to
-    _why_ "Everyone away" was enabled/disabled.
-- [ ] Add a "Guest-mode" toggle to stop (most of) the automations that run when
-      no-one is at home from triggering
-  - Requires "Everyone away"-state template binary sensor (see above)
-  - Perhaps this should also disable some of the "stricter" alarm triggers
-    (vibration and motion during "Armed night"; maybe even the `openclose`
-    sensors)?
-- [ ] Keep an eye on
-      <https://dresden-elektronik.github.io/deconz-rest-doc/endpoints/alarmsystems/>
-- [ ] Create a "Auto-disarm for Housekeeper" toggle (similar to the "Auto-arm at
-      night" toggle) that controls whether the alarm is automatically disabled
-      next time the housekeeper comes by
 - [ ] Occupancy simulation: Randomly trigger the "Active" scenes in the Kitchen
-      and Living room around dinner time
+      and Living room around dinner time; randomly trigger "Movie" scenes later
+      in the evening
 - [ ] Occupancy simulation: Randomly switch on Bedroom lights around bedtime;
       switch them off around the time "Lights out" gets started
 
@@ -279,15 +248,6 @@ future reference).
 
 ## Network
 
-- [ ] DD-WRT-1 appears to forget its Virtual AP settings on reboot...
-- [ ] Test (i.e. keep an eye on) whether the ping-scripts on DD-WRT-1 and
-      DD-WRT-2 automatically start on a reboot of the device
-  - On DD-WRT-1 the script _is_ started on `wanup` (with the correct arguments;
-    properly running in the background, executing a ping every 60-seconds). No
-    data appears in MQTT though (while independently running `mosquitto_pub`
-    works fine 😕). No clue what's going on here... Could be some kind of crazy
-    timing issue — test first with `startup` instead of `wanup` to rule out
-    those kinds of issues (script needs to be started only once anyway)
 - [ ] Upgrade both DD-WRT units to the latest firmware version
 - [ ] Setup a "devices" VLAN and a separate "devices" WiFi and setup switches
       and routing in such a way that only Home Assistant's Raspberry Pi can talk
@@ -319,6 +279,7 @@ future reference).
       need for Internet-connectivity. Block their MAC addresses in the router to
       prevent them from "phoning home" (actually, more to prevent people from
       "phoning in" through them).
+  - Block their MAC addresses in DD-WRT
 - [ ] Replace the ~~Living Room "copper lamp"~~, upstairs Hallway, and Guestroom
       bulbs with Hue filament bulbs (and remove the Zigbee-units from their
       cabling / power-sockets)
@@ -342,6 +303,3 @@ future reference).
 ### HA Yellow
 
 - [ ] Switch Home Assistant container over to the HA Yellow device
-- [ ] Run ESPHome and the Matter server as part of the `docker-compose` for Home
-      Assistant
-  - Move `deconz` and `mosquitto` out of it into their own "stacks"
