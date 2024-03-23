@@ -85,7 +85,7 @@ cards:
                 - last-changed
             - type: conditional
               conditions:
-                - entity: !secret person_1
+                - entity: !secret person_2
                   state: not_home
               card:
                 type: glance
