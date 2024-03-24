@@ -118,7 +118,7 @@
       entity_id: light.wardrobe
   mode: restart
 - alias: >-
-    💡 | 👋 Upstairs hallway light toggle (motion detected; everyone asleep)
+    💡 | 👋/💤 Upstairs hallway light toggle (motion detected; everyone asleep)
   id: 456be834-0809-442b-a022-2827923c3358
   trigger:
     - platform: state
@@ -151,7 +151,8 @@
       entity_id: light.upstairs_hallway
   mode: restart
 - alias: >-
-    💡 | 👋 Downstairs hallway light toggle (motion detected; everyone asleep)
+    💡 | 👋/💤 Downstairs hallway light toggle (motion detected; everyone
+    asleep)
   id: 6d3da877-2a4f-453a-a4a2-cda751548fe0
   trigger:
     # Trigger only on the sensor in the staircase (i.e. someone walks down from

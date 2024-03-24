@@ -89,3 +89,30 @@
         variables:
           activatedFrom: bedroom
   mode: single
+- alias: >-
+    💡 | ⏰/🛌 Dim Upstairs Hallway lights (after 23:00 with someone in bed)
+  id: 50d3b03a-db24-4e6c-966a-52e74435beab
+  trigger:
+    - platform: time
+      at: "23:00:00"
+    - platform: state
+      entity_id: binary_sensor.occupancy_bed
+      to: "on"
+      for: "00:05:00"
+  condition:
+    # Work in both directions: Once at 23:00 and then whenever someone gets into
+    # the bed after 23:00
+    - condition: time
+      after: "23:00:00"
+      before: "04:00:00"
+    - condition: state
+      entity_id: binary_sensor.occupancy_bed
+      state: "on"
+  action:
+    - condition: state
+      entity_id: light.upstairs_hallway
+      state: "on"
+    - service: light.turn_on
+      data:
+        brightness: 25
+      entity_id: light.upstairs_hallway

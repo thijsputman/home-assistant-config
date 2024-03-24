@@ -33,14 +33,13 @@
     - condition: state
       entity_id: binary_sensor.occupancy_bed
       state: "on"
-    # The Withings Sleep Analysers aren't 100% accurate, so a bit of margin is
-    # required – if the bed is empty for 10-minutes, abort; leave the blanket on
-    # (the regular "Off"-automation adequately handles things from there). If
+    # The Withings Sleep Analysers aren't 100% accurate, so we only specify the
+    # "to"-state – if the bed is empty for 10-minutes, abort; leave the blanket
+    # on (the regular "Off"-automation adequately handles things from there). If
     # someone's in the bed for more than 45-minutes, assume they went to sleep.
     - wait_for_trigger:
         - platform: state
           entity_id: binary_sensor.occupancy_bed
-          from: "on"
           to: "off"
           for: "00:10:00"
       timeout: "00:45:00"

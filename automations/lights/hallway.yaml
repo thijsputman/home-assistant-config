@@ -17,10 +17,13 @@
       to: ~
   condition:
     # Don't bother when everyone's asleep (e.g. a manual adjustment after going
-    # to the bathroom at night)
+    # to the bathroom at night) or when there's someone in the bed
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
+    - condition: state
+      entity_id: binary_sensor.occupancy_bed
+      state: "on"
   action:
     - wait_for_trigger:
         - platform: state
