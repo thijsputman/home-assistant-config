@@ -1,9 +1,11 @@
-- alias: 🌡️ | ⏰/🚗 Electric blanket on (daily at 22:30 / someone home)
+- alias: 🌡️ | ⏰/🚗 Electric blanket on (daily at 22:00 / someone home)
   id: f712246a-1aba-4efe-8834-9cd9a62f706c
   trigger:
     - platform: time
       id: time
-      at: "22:30:00"
+      at: "22:00:00"
+    # This is explicitly _not_ based around the Home Alarm-state, as it's
+    # dependent on one of us being home, not just anyone (ie, guests)...
     - platform: state
       entity_id: group.family
       from: not_home
@@ -21,45 +23,53 @@
         - condition: trigger
           id: time
         - condition: time
-          after: "22:30:00"
+          after: "22:00:00"
           before: "04:00:00"
   action:
     - service: switch.turn_on
       entity_id: switch.on_off_plug_in_unit_3
+    # If there's already someone in the bed, take care of switching off here
+    # (as the regular "Off"-automation won't trigger)
+    - condition: state
+      entity_id: binary_sensor.occupancy_bed
+      state: "on"
+    # The Withings Sleep Analysers aren't 100% accurate, so a bit of margin is
+    # required – if the bed is empty for 10-minutes, abort; leave the blanket on
+    # (the regular "Off"-automation adequately handles things from there). If
+    # someone's in the bed for more than 45-minutes, assume they went to sleep.
+    - wait_for_trigger:
+        - platform: state
+          entity_id: binary_sensor.occupancy_bed
+          from: "on"
+          to: "off"
+          for: "00:10:00"
+      timeout: "00:45:00"
+      continue_on_timeout: true
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    - condition: state
+      entity_id: switch.on_off_plug_in_unit_3
+      state: "on"
+    - service: switch.turn_off
+      entity_id: switch.on_off_plug_in_unit_3
   mode: single
-- alias: 🌡️ | 💡 Electric blanket off (Bedroom lights off / everyone asleep)
+  max_exceeded: silent
+- alias: >-
+    🌡️ | 🛌/💤 Electric blanket off (Someone in the bed / everyone asleep)
   id: e5b75f79-e60f-4d3e-b354-29a3622567ba
   trigger:
     - platform: state
-      id: bedroom_lights_off
-      entity_id: light.bedroom
-      from: "on"
-      to: "off"
+      entity_id: binary_sensor.occupancy_bed
+      from: "off"
+      to: "on"
       for: "00:20:00"
-    # Also turn off when everyone is asleep
+    # As a fallback, also turn off when everyone is asleep
     - platform: state
-      id: everyone_asleep
       entity_id: input_boolean.everyone_asleep
       from: "off"
       to: "on"
   condition:
-    - condition: or
-      conditions:
-        # Only act if the lights are switched off _after_ 23:00 (counting in the
-        # 20-minute trigger delay) – this aims to prevent prematurely switching
-        # off the blanket if there's activity in the Bedroom between 22:30 and
-        # 23:00. We _do_ want to switch the blanket on at 22:30 as it needs a
-        # while to heat up the bed...
-        - condition: and
-          conditions:
-            - condition: trigger
-              id: bedroom_lights_off
-            - condition: time
-              after: "23:20:00"
-              # Required to ensure the window spans across midnight
-              before: "02:00:00"
-        - condition: trigger
-          id: everyone_asleep
     - condition: state
       entity_id: switch.on_off_plug_in_unit_3
       state: "on"
