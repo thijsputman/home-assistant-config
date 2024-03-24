@@ -1,17 +1,17 @@
 # Thermostat – tado° (combination of HomeKit and online integration)
 #
-# Scheduling and "Away" mode are handled by the tado° app/service. The below
-# automations are mainly concerned with switching the "Away" mode on and off
+# Scheduling and "Away"-mode are handled by the tado° app/service. The below
+# automations are mainly concerned with switching the "Away"-mode on and off
 # and some exceptional scheduling conditions.
 
-- alias: 🌡️/❄️ | 🚗 tado° to "Away" mode (everyone away)
+- alias: 🌡️/❄️ | 🛡️ tado° to "Away"-mode ("Armed away/vacation")
   id: 7dd16eef-43de-458c-9231-145260a5bea8
   trigger:
     - platform: state
-      entity_id: group.family
-      from: home
-      to: not_home
-      for: "00:05:00"
+      entity_id: alarm_control_panel.home_alarm
+      to:
+        - armed_away
+        - armed_vacation
   condition:
     - condition: state
       entity_id: climate.tado_living_room
@@ -24,21 +24,13 @@
         preset_mode: away
       entity_id: climate.tado_living_room
   mode: single
-- alias: 🌡️/❄️ | 🚗 tado° to "Home" mode (someone home)
+- alias: >-
+    🌡️/❄️ | 🛡️ tado° to "Home"-mode (alarm disarmed)
   id: e9f167c4-5f85-4eb3-810b-942edd2c5f0f
   trigger:
     - platform: state
-      entity_id: group.family
-      from: not_home
-      to: home
-    # Tado integration's state doesn't update instantly (even when changes are
-    # made through the integration) – secondary, delayed, trigger to prevent
-    # short trips outside from leaving tado° stuck in "Away"-mode
-    - platform: state
-      entity_id: group.family
-      from: not_home
-      to: home
-      for: "00:05:00"
+      entity_id: alarm_control_panel.home_alarm
+      to: disarmed
   condition:
     - condition: state
       entity_id: climate.tado_living_room
@@ -51,6 +43,109 @@
         preset_mode: home
       entity_id: climate.tado_living_room
   mode: single
+  max_exceeded: silent
+- alias: >-
+    🌡️/❄️ | 🚗 tado° to "Home"-mode (proximity to home)
+  id: 745e4d9b-3b06-4860-af1b-28b959df460f
+  trigger:
+    # Car / public transport; further away from home
+    - platform: numeric_state
+      id: far
+      entity_id: sensor.home_nearest_distance
+      below: 45
+      for: "00:05:00"
+    # Bicycle; probably in the city-centre somewhere
+    - platform: numeric_state
+      id: near
+      entity_id: sensor.home_nearest_distance
+      below: 2
+      for: "00:02:00"
+  condition:
+    - condition: state
+      entity_id: sensor.home_nearest_direction_of_travel
+      state:
+        - towards
+        - stationary
+    # Home Alarm is a better proxy for the (expected) thermostat-state than the
+    # tado° preset-mode (it can lag a couple minutes behind)
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - armed_away
+        - armed_vacation
+  action:
+    # Car / public transport – ensure we're really moving closer. This assumes
+    # a speed (as the crow flies) of at least 60 km/h (realistic for both car
+    # and train travel towards home).
+    - if:
+        - condition: trigger
+          id: far
+      then:
+        - wait_for_trigger:
+            - platform: numeric_state
+              entity_id: sensor.home_nearest_distance
+              below: 30
+              for: "00:02:00"
+          timeout: "00:12:00"
+    # Bicycle – idem, but less obvious. Distance and speed are small, so there's
+    # not enough margin to repeat the previous approach. Instead, abort if
+    # direction of travel changes to "Away from"...
+    - if:
+        - condition: trigger
+          id: near
+      then:
+        - wait_for_trigger:
+            - platform: state
+              entity_id: sensor.home_nearest_direction_of_travel
+              to: away_from
+          timeout: "00:02:00"
+        - condition: template
+          value_template: >-
+            {{ wait.trigger is none }}
+    # Notify (with the option to cancel)
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: climate
+          channel: Notification
+          title: 🌡️ Pre-heating the house
+          tag: thermostat_proximity
+          action_1: Heating off
+          message: >-
+            It seems you're on your way home; pre-heating the house...
+    - service: climate.set_preset_mode
+      data:
+        preset_mode: home
+      entity_id: climate.tado_living_room
+    - wait_for_trigger:
+        # Arrived home
+        - platform: state
+          id: arrived_home
+          entity_id: alarm_control_panel.home_alarm
+          to: disarmed
+        # Cancelled from notification
+        - platform: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: ACTION_1_thermostat_proximity
+      timeout: "00:30:00"
+      continue_on_timeout: true
+    # Abort if arrived home, otherwise continue and switch the thermostat to
+    # "Away"-mode again (was a false positive)
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none or wait.trigger.id != 'arrived_home' }}
+    - service: climate.set_preset_mode
+      data:
+        preset_mode: away
+      entity_id: climate.tado_living_room
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: thermostat_proximity
+  mode: single
+  max_exceeded: silent
 # This assumes we don't go to bed too early: tado° Overwrites the temperature
 # at the next schedule change (19:00 or 20:30 depending on day of the week). If
 # we go to bed before that time, the heating will be switched on again later in
