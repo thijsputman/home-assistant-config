@@ -105,22 +105,17 @@
       entity_id: sensor.time_of_day
       from: dusk
       to: night
-      for: "00:00:30" # Give the "lights on"-automation time to complete
     # If Home Assistant is (re)started while this automation is running, the
     # lights won't be switched off – account for that edge case too...
     - platform: homeassistant
       id: ha_start
       event: start
-  condition:
-    - condition: state
-      entity_id: light.garden
-      state: "on"
+  condition: []
   action:
     # Garden lights normally go off at 23:00, _but_ should be on for at least
     # 90 minutes. If they've been on for less than that, delay execution beyond
-    # 23:00...
-    # Note the logic compensates for both the 30-second trigger delay _and_ the
-    # 5-minute timeout on the wait-for-trigger that follows.
+    # 23:00... Note the logic compensates for the 5-minute timeout on the
+    # wait-for-trigger that follows.
     - delay: >-
         {% set delay = (today_at("22:55") - now()).seconds %}
         {#
@@ -130,8 +125,8 @@
         #}
         {% if today_at("22:55") <= now() %}
           {{ 0 }}
-        {% elif trigger.id != 'ha_start' and delay < 5070 %}
-          {{ 5070 }}
+        {% elif trigger.id != 'ha_start' and delay < 5100 %}
+          {{ 5100 }}
         {% else %}
           {{ delay }}
         {% endif %}

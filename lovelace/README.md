@@ -21,7 +21,7 @@ custom CSS.
 - [`hass-hue-icons.js?v=1.2.51`](https://github.com/arallsopp/hass-hue-icons/releases/tag/v1.2.51)
 - `home-assistant-sun-card.js?v=0.1.4`
 - [`layout-card.js?v=2.4.5`](https://github.com/thomasloven/lovelace-layout-card/releases/tag/v2.4.5)
-- [`logbook-card.js?v=2.5.3`](https://github.com/royto/logbook-card/releases/tag/2.5.3)
+- [`logbook-card.js?v=2.5.5`](https://github.com/royto/logbook-card/releases/tag/2.5.5)
 - [`mini-graph-card-bundle.js?v=0.12.1`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.12.1)
 - [`paper-buttons-row.js?v=2.1.3`](https://github.com/jcwillox/lovelace-paper-buttons-row/releases/tag/2.1.3)
 - [`slider-entity-row.js?v=17.4.0`](https://github.com/thomasloven/lovelace-slider-entity-row/releases/tag/17.4.0)
