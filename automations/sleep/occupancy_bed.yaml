@@ -1,0 +1,82 @@
+- alias: 💡 | 🛌 Start "All lights off" (everyone in bed)
+  id: ca1cf82f-e82f-40bc-b0c3-a125993a6f4c
+  trigger:
+    - platform: state
+      entity_id:
+        - binary_sensor.withings_in_bed
+        - binary_sensor.withings_in_bed_2
+      from: "off"
+      to: "on"
+  condition:
+    - condition: state
+      entity_id: group.family
+      state: home
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: night
+    # Not when going to sleep or asleep
+    - condition: state
+      entity_id: script.lights_out
+      state: "off"
+    - condition: state
+      entity_id: timer.everyone_asleep_delay
+      state: idle
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    # Not after waking up (time of day could still be "night")
+    - condition: state
+      entity_id: timer.wakeup_grace_time
+      state: idle
+    # The Attic light is controlled manually (there's even an automation
+    # reminding us to switch it off), so it serves as the final fail-safe
+    - condition: state
+      entity_id: light.attic
+      state: "off"
+  action:
+    - if:
+        - condition: state
+          entity_id: !secret person_1
+          state: home
+        - condition: or
+          conditions:
+            # Sleep Analyser goes unavailable from time to time...
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: binary_sensor.withings_in_bed_2
+                  state: "on"
+            - condition: state
+              entity_id: !secret person_2
+              state: not_home
+      then:
+        - stop: Not all preconditions for "person 1" met
+    - if:
+        - condition: state
+          entity_id: !secret person_2
+          state: home
+        - condition: or
+          conditions:
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: binary_sensor.withings_in_bed
+                  state: "on"
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.pixel_6_pro_battery_state
+                  state: charging
+      then:
+        - stop: Not all preconditions for "person 2" met
+    - service: script.turn_on
+      target:
+        entity_id: script.lights_out
+      data:
+        variables:
+          activatedFrom: bedroom
+    # Allow only a single attempt per night – if it somehow fails, probably best
+    # to not keep retrying as that could be very annoying...
+    - delay: "06:00:00"
+  mode: single
+  max_exceeded: silent
