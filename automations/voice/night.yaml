@@ -1,52 +1,5 @@
-- alias: 🔊 | 🕹️ Trigger "Goodnight" announcements (bedside Smart Switches)
-  id: 01987760-fad4-4e0c-a525-8d77c6c5cae3
-  trigger:
-    - device_id: da1237666189a9a364fa383795ba532d
-      domain: deconz
-      platform: device
-      type: remote_button_double_press
-      subtype: turn_on
-    - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
-      domain: deconz
-      platform: device
-      type: remote_button_double_press
-      subtype: turn_on
-  condition: []
-  action:
-    # If "Lights out" isn't yet running, double pressing the Smart Switches
-    # starts that too (at the same time as this automation). To ensure the TTS
-    # runs as expected, don't directly abort if "Lights out" isn't running;
-    # instead give it a couple seconds and try again...
-    # Intentionally not using a "wait-for-trigger" as past experience has shown
-    # that in this specific instance, "Lights out" often started "in between"
-    # the state check and the trigger becoming active (essentially missing the
-    # intended state-transition). The below is crude, but more reliable.
-    - if:
-        condition: state
-        entity_id: script.lights_out
-        state: "off"
-      then:
-        - delay: 2
-    # Mental note: This should be _outside_ "then"; if it's inside it just
-    # aborts the rest of the "then" block, not the entire automation...
-    - condition: state
-      entity_id: script.lights_out
-      state: "on"
-    # Release all (if any) regular TTS announcements first
-    - event: tts_attention
-      event_data:
-        room: bedroom
-    # Slight delay to allow for the ("announce") TTS queue to fill
-    - delay: 2
-    - event: tts_announce
-      event_data:
-        room: bedroom
-        tag: goodnight
-  mode: single
-  max_exceeded: silent
 - alias: >-
-    🔊 | 🕹️ Trigger "Goodnight" announcements ("Lights out" triggered from
-    Kitchen tablet)
+    🔊 | 🕹️ Trigger "Goodnight" announcements ("Lights out"-script triggered)
   id: 6af957b0-bc4e-489c-8ff7-4ae492b7ca21
   trigger:
     - platform: state
@@ -55,20 +8,28 @@
       to: "on"
   variables:
     tablet_kitchen_user_id: !secret tablet_kitchen_user_id
-  condition:
-    - >-
-      {{ trigger.to_state.context.user_id == tablet_kitchen_user_id }}
+  condition: []
   action:
-    # Release all (if any) regular TTS announcements first
-    - event: tts_attention
-      event_data:
-        room: living_room
-    # Slight delay to allow for the ("announce") TTS queue to fill
-    - delay: 2
-    - event: tts_announce
-      event_data:
-        room: living_room
-        tag: goodnight
+    - variables:
+        room: >-
+          {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
+            living_room
+          {% elif states('binary_sensor.occupancy_bed') == 'on' %}
+            bedroom
+          {% endif %}
+    - if: >-
+        {{ room in ['living_room', 'bedroom'] }}
+      then:
+        - event: tts_attention
+          event_data:
+            room: >-
+              {{ room }}
+        - delay: 2
+        - event: tts_announce
+          event_data:
+            room: >-
+              {{ room }}
+            tag: goodnight
   mode: single
   max_exceeded: silent
 - alias: 🔊 | 💡 Queue "Goodnight" announcements ("Lights out" triggered)
