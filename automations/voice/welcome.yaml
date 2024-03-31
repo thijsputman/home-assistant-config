@@ -36,62 +36,85 @@
           continue_on_timeout: false
     # Abort all queued up announcements
     - event: tts_queue_abort_all
-    # Give the situation a bit of time to settle. The message is rendered the
-    # moment the announcement gets queued; this would prevent it from working
-    # properly as there will _always_ be a single person home at that time
-    # (namely, the person who's phone got detected first). By delaying the
-    # rendering a bit, chances are better (not 100% though) that it'll work as
-    # intended/expected...
-    - delay: "00:02:30"
+    # The message is rendered the moment the announcement gets queued; this
+    # would prevent it from working properly as there will _always_ be a single
+    # person home at that time (namely, the person who's phone got detected
+    # first).
+    # Wait an additional 5-minutes for more people to "arrive". This greatly
+    # increases the chance of rendering the correct message (at the cost of a
+    # moderate delay in announcing it).
+    - wait_for_trigger:
+        - platform: state
+          entity_id:
+            - !secret person_1
+            - !secret person_2
+          from: not_home
+          to: home
+      timeout: "00:05:00"
+      # After waiting 5-minutes, continue regardless...
+      continue_on_timeout: true
+    # The below only works because there's two occupants with a single phone
+    # each, so the "not_home" phone always belongs to the person who's away...
+    # The reason the "source"-device from the preceding trigger can't be used is
+    # the fact that each person has two devices: One (GPS-tracked) phone and one
+    # device whose MAC address is tracked on the network. The latter is often
+    # faster to respond, but of course doesn't provide an actual GPS location.
+    - variables:
+        home: >-
+          {{
+            expand('group.family') |
+            selectattr('state', '==', 'home') |
+            map(attribute = 'name') | list
+          }}
+        away: >-
+          {{
+            expand(
+              'device_tracker.pixel_6_pro',
+              'device_tracker.sm_g990b2'
+            ) |
+            selectattr('state', '==', 'not_home') |
+            map(attribute = 'entity_id') | list
+          }}
     - service: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
         variables:
-          tag: welcome_home
           message: >-
-            {#
-              This is only works because there's two occupants with a single
-              phone each, so the "not_home" phone always belongs to the person
-              who's away...
-              The reason the "source"-device from the above person's can't be
-              used is the fact that each person has two devices: One (GPS-
-              tracked) phone and one device who's MAC address is tracked on the
-              network. The latter is often faster to respond, but of course
-              doesn't provide an actual GPS location.
-            #}
-            {%
-              set home = expand('group.family') |
-                selectattr('state', '==', 'home') |
-                map(attribute = 'name') | list
-            %}
             Welcome home
             {% if home | length == 1 %}
               {{ home | first | regex_replace(' .*$', '') }}
             {% endif %}!
-            {%
-              set away =
-                expand(
-                  'device_tracker.pixel_6_pro',
-                  'device_tracker.sm_g990b2'
-                ) |
-                selectattr('state', '==', 'not_home') |
-                map(attribute = 'entity_id') | list
-            %}
-            {% if away | length == 1 %}
-              {%
-                set person_away = expand('group.family') |
-                  selectattr('state', '==', 'not_home') | list | first
-              %}
-              {%
-                set sensor = 'sensor.' ~ away | first |
-                  regex_replace('^.*\.', '') ~ '_geocoded_location'
-              %}
-              You are the only person home;
-              {{ person_away.name | regex_replace(' .*$', '') }} left
-              {{ person_away.last_changed | relative_time }} ago and is
-              currently somewhere in {{ state_attr(sensor, 'locality') }}.
-            {% endif %}
+    - if:
+        - >-
+          {{ away | length == 1 }}
+      then:
+        - service: script.turn_on
+          target:
+            entity_id: script.tts_queue
+          data:
+            variables:
+              chime: false
+              message: >-
+                {%
+                  set person_away = expand('group.family') |
+                    selectattr('state', '==', 'not_home') | list | first
+                %}
+                {%
+                  set sensor = 'sensor.' ~ away | first |
+                    regex_replace('^.*\.', '') ~ '_geocoded_location'
+                %}
+                You are the only person home;
+                {{ person_away.name | regex_replace(' .*$', '') }} left
+                {{ person_away.last_changed | relative_time }} ago and is
+                currently somewhere in {{ state_attr(sensor, 'locality') }}.
+    - service: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          chime: false
+          message: >-
             While you were away,
             {% from 'voice.jinja' import activity_while_armed %}
             {% set activity_while_armed = activity_while_armed() %}
