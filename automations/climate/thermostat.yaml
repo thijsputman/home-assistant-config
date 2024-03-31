@@ -132,6 +132,9 @@
             action: ACTION_1_thermostat_proximity
       timeout: "00:30:00"
       continue_on_timeout: true
+    - service: persistent_notification.dismiss
+      data:
+        notification_id: thermostat_proximity
     # Abort if arrived home, otherwise continue and switch the thermostat to
     # "Away"-mode again (was a false positive)
     - condition: template
@@ -141,9 +144,6 @@
       data:
         preset_mode: away
       entity_id: climate.tado_living_room
-    - service: persistent_notification.dismiss
-      data:
-        notification_id: thermostat_proximity
   mode: single
   max_exceeded: silent
 # This assumes we don't go to bed too early: tado° Overwrites the temperature

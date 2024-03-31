@@ -114,5 +114,5 @@
       state: "on"
     - service: light.turn_on
       data:
-        brightness: 25
+        brightness: 35
       entity_id: light.upstairs_hallway

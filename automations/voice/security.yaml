@@ -137,6 +137,9 @@
           priority: attention
           message: >-
             The Back gate just opened!
+    # The back gate gets a bit stuck from time to time; this prevents multiple
+    # announcements in rapid succession...
+    - delay: "00:00:30"
   max_exceeded: silent
   mode: single
 - alias: 🔊 | 👋 Announce motion detected outside
