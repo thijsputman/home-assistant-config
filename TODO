@@ -68,7 +68,7 @@ future reference).
 - [ ] Use the power consumption sensor for the "multimedia hub" in the Living
       room to detect if the projector is on (in which case certain lighting
       automation should be disabled) – as an addition to the Android TV based
-      automations (which work well, but only when the Shield TV is active and
+      automations (which work well, but only when the Android TV is active and
       not, for example, when the Nintendo Switch is used)
 - [ ] Enable the `retain`-attribute for all MQTT-topics (either by updating the
       publishing logic, or by manually toggling the attribute on the MQTT server
@@ -204,6 +204,7 @@ future reference).
 
 ### Features
 
+- [ ] Have Attic lights automatically change light temperature in the evening...
 - [ ] Daytime lights in the downstairs Hallway are switched on a bit too much...
 - [ ] Have the buttons next to the bed cycle through various light modes (with
       long press)

@@ -24,6 +24,7 @@ Anyway...
   - ["Remote" connections](#remote-connections)
 - [Setup](#setup)
   - [Keys](#keys)
+- [See Also](#see-also)
 
 ## `adb`-server
 
@@ -84,7 +85,7 @@ services:
       - ./extras/androidtv/keys:/androidtv/keys
     environment:
       # Hostname or IP address of your AndroidTV device; port 5555 is assumed
-      - ANDROIDTV_DEVICE=nvidia-shield-tv
+      - ANDROIDTV_DEVICE=android-tv.local
       # Optional: Enable verbose output; normally only "adb" messages are
       # logged — <https://developer.android.com/studio/command-line/variables>
       - ADB_TRACE=all
@@ -100,3 +101,7 @@ Home Assistant's AndroidTV integration by default keeps its keys in
 Rename those to `📄 adbkey` and `📄 adbkey.pub` respectively and feed them into
 the container (see above) to prevent having to reauthenticate with your
 AndroidTV-device.
+
+## See Also
+
+- [`📄 docs/ANDROIDTV.md`](/docs/ANDROIDTV.md)

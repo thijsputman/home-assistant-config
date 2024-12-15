@@ -9,6 +9,7 @@
 | Application name | Application ID                      |
 | ---------------- | ----------------------------------- |
 | Disney+          | `com.disney.disneyplus`             |
+| Dispatch         | com.spauldhaliwal.dispatch          |
 | Geforce NOW      | `com.nvidia.geforecenow`            |
 | HBO Max          | `com.hbo.hbonow`                    |
 | Live Channels    | `com.google.android.tv`             |
@@ -16,8 +17,8 @@
 | NPO Start        | `nl.uitzendinggemist`               |
 | Plex             | `com.plexapp.android`               |
 | Prime Video      | `com.amazon.amazonvideo.livingroom` |
-| Spotify          | `com.spotify.tv.android`            |
 | Shield TV        | `com.nvidia.shield.remote`          |
+| Spotify          | `com.spotify.tv.android`            |
 | YouTube          | `com.google.android.youtube.tv`     |
 
 ## State detection rules

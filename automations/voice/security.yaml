@@ -161,8 +161,8 @@
       state: "off"
   action:
     # Slightly delay the announcement to allow for other automations (e.g. the
-    # Shield TV will stop playing) to complete – this way the announcement plays
-    # at a more opportune moment...
+    # Android TV will stop playing) to complete – this way the announcement
+    # plays at a more opportune moment...
     - delay: "00:00:05"
     - variables:
         # Don't announce on the first floor when someone is in bed
