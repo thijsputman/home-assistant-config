@@ -3,6 +3,7 @@
   unique_id: f5b405d4-7963-419d-96bb-5fbda566b3aa
   device_class: moisture
   entities:
-    - binary_sensor.water_59 # Attic
+    - binary_sensor.water_59 # Attic (1)
+    - binary_sensor.water_192 # Attic (2)
     - binary_sensor.water_82 # Kitchen
     - binary_sensor.water_191 # Washing machine
