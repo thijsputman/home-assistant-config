@@ -107,16 +107,16 @@ persistent_notification:
     targetService: >-
       {% if targetDevices in ['home', 'my'] %}
         {% if targetDevices == 'my' %}
-          notify.mobile_app_pixel_6_pro
+          notify.mobile_app_pixel_9_pro
         {% elif targetDevices == 'home' %}
           {%
-            if is_state('device_tracker.pixel_6_pro', 'home') and
-              is_state('device_tracker.sm_g990b2', 'home')
+            if is_state('device_tracker.pixel_9_pro_unifi', 'home') and
+              is_state('device_tracker.samsung_s21_fe', 'home')
           %}
             notify.all_devices
-          {% elif is_state('device_tracker.pixel_6_pro', 'home') %}
-            notify.mobile_app_pixel_6_pro
-          {% elif is_state('device_tracker.sm_g990b2', 'home') %}
+          {% elif is_state('device_tracker.pixel_9_pro_unifi', 'home') %}
+            notify.mobile_app_pixel_9_pro
+          {% elif is_state('device_tracker.samsung_s21_fe', 'home') %}
             notify.mobile_app_sm_g990b2
           {% endif %}
         {% endif %}
@@ -166,8 +166,8 @@ persistent_notification:
         {{
           targetDevices != 'home' or (
             targetDevices == 'home' and (
-              is_state('device_tracker.sm_g990b2', 'home') or
-              is_state('device_tracker.pixel_6_pro', 'home')
+              is_state('device_tracker.samsung_s21_fe', 'home') or
+              is_state('device_tracker.pixel_9_pro_unifi', 'home')
             )
           )
         }}

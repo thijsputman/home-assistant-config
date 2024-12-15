@@ -69,8 +69,8 @@
         away: >-
           {{
             expand(
-              'device_tracker.pixel_6_pro',
-              'device_tracker.sm_g990b2'
+              'device_tracker.pixel_9_pro_unifi',
+              'device_tracker.samsung_s21_fe'
             ) |
             selectattr('state', '==', 'not_home') |
             map(attribute = 'entity_id') | list

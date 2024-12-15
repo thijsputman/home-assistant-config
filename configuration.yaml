@@ -105,7 +105,7 @@ notify:
   - name: All devices
     platform: group
     services:
-      - service: mobile_app_pixel_6_pro
+      - service: mobile_app_pixel_9_pro
       - service: mobile_app_sm_g990b2
   - name: log_hue_scene_heuristic
     platform: file
