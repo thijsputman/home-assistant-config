@@ -264,7 +264,8 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - !include home/media/shield_tv.yaml
+          - type: media-control
+            entity: media_player.epson_eh_ls800b
           - !include home/media/dvb.yaml
       - type: vertical-stack
         cards:

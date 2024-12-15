@@ -1,8 +1,8 @@
-- alias: 💡 | 📺 Dim lights (Shield TV playing)
+- alias: 💡 | 📺 Dim lights (Android TV playing)
   id: c136b7ec-1a71-49d3-b000-efddfcd4b433
   trigger:
     - platform: state
-      entity_id: media_player.nvidia_shield_tv
+      entity_id: media_player.epson_eh_ls800b
       from:
         - standby
         - paused
@@ -45,18 +45,18 @@
           target:
             entity_id: scene.hallway_movie
   mode: single
-- alias: 💡 | 📺 Restore lights (Shield TV on/paused)
+- alias: 💡 | 📺 Restore lights (Android TV on/paused)
   id: 586f5ad1-0c79-4213-820d-9e6ed587d540
   trigger:
     - platform: state
-      entity_id: media_player.nvidia_shield_tv
+      entity_id: media_player.epson_eh_ls800b
       from: playing
       to:
         - standby
         - paused
         - idle
     - platform: state
-      entity_id: media_player.nvidia_shield_tv
+      entity_id: media_player.epson_eh_ls800b
       from: "off"
       to:
         - standby
@@ -113,11 +113,11 @@
           target:
             entity_id: scene.hallway_evening
   mode: single
-- alias: 💡 | 📺 Restore lights (Shield TV off)
+- alias: 💡 | 📺 Restore lights (Android TV off)
   id: 42a90454-8626-47c7-9f83-fb8d7ded0453
   trigger:
     - platform: state
-      entity_id: media_player.nvidia_shield_tv
+      entity_id: media_player.epson_eh_ls800b
       from:
         - standby
         - playing

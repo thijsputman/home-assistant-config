@@ -121,7 +121,7 @@
               entity_id: light.ensuite
               state: "off"
     - condition: state
-      entity_id: media_player.nvidia_shield_tv
+      entity_id: media_player.epson_eh_ls800b
       state: "off"
   action:
     - service: scene.turn_on

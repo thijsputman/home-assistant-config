@@ -1,8 +1,0 @@
-- platform: history_stats
-  name: NVIDIA Shield TV playing (today)
-  entity_id: media_player.nvidia_shield_tv
-  state: playing
-  start: >-
-    {{ now().replace(hour=0).replace(minute=0).replace(second=0) }}
-  end: >-
-    {{ now() }}
