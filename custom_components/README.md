@@ -6,8 +6,6 @@
   [`v0.7.4.2`](https://github.com/twrecked/hass-aarlo/releases/tag/v0.7.4.2)
 - [`📁 afvalwijzer`](https://github.com/xirixiz/homeassistant-afvalwijzer) **@**
   [`2024.02.01`](https://github.com/xirixiz/homeassistant-afvalwijzer/releases/tag/2024.02.01)
-- [`📂 eufy-security`](https://github.com/fuatakgun/eufy_security) **@**
-  [`v7.7.4`](https://github.com/fuatakgun/eufy_security/releases/tag/v7.7.4)
 - [`📁 xiaomi_miot`](https://github.com/al-one/hass-xiaomi-miot) **@**
   [`v0.7.16`](https://github.com/al-one/hass-xiaomi-miot/releases/tag/v0.7.16)
 

@@ -28,9 +28,6 @@ include:
     - sensor.home_nearest_distance
     - alarm_control_panel.home_alarm
     - sensor.time_of_day
-    # Miscellaneous
-    - media_player.nvidia_shield_tv
-    - sensor.prusa_mini_printer_state
     # WeeWX
     - sensor.weewx_outside_temperature
     - sensor.weewx_outside_temperature_balcony
@@ -93,11 +90,6 @@ include:
     - sensor.ups_power_usage
     - sensor.power_108 # Television (i.e. Multimedia hub)
     - sensor.power_sonair_combined
-    # Internet / Network
-    - sensor.dd_wrt_1_rtt_ip_8_8_8_8
-    - sensor.dd_wrt_1_bandwidth_vlan2_rx
-    - sensor.dd_wrt_1_bandwidth_vlan2_tx
-    - sensor.pi_hole_dns_unique_clients
     # Arlo – track battery levels to have some insight into how well they hold
     # up over time...
     - sensor.aarlo_battery_level_front
@@ -128,11 +120,6 @@ component_config_domain:
     ignore_attributes:
       - code_format
       - code_arm_required
-component_config:
-  media_player.nvidia_shield_tv:
-    ignore_attributes:
-      - adb_response
-      - hdmi_input
 component_config_glob:
   # Ignore the voltage, current and temperature measurements provided by the
   # smart-plugs – the voltage/current measurements are redundant; better
