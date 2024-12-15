@@ -45,8 +45,6 @@ influxdb: !include influx_db.yaml
 tts:
   - platform: google_translate
 
-device_tracker: !include device_tracker.yaml
-
 utility_meter: !include utility_meter.yaml
 
 # Arlo

@@ -61,6 +61,13 @@
       below: 2
       for: "00:02:00"
   condition:
+    # Only relevant when we're heating the house – this automation (currently)
+    # doesn't make sense for the airco
+    - condition: state
+      entity_id: climate.tado_living_room
+      state:
+        - auto
+        - heat
     - condition: state
       entity_id: sensor.home_nearest_direction_of_travel
       state:
