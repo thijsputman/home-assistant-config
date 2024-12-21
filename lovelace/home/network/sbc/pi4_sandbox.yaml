@@ -20,15 +20,14 @@ card:
       title: Pi4 Sandbox
       entities:
         - entity: sensor.pi4_sandbox_cpu_load
-        - entity: sensor.pi4_sandbox_mem_used
-        - entity: sensor.pi4_sandbox_cpu_temp
-        - entity: sensor.pi4_sandbox_power_usage
-        - entity: sensor.pi4_sandbox_uptime
+        - entity: sensor.pi4_sandcastle_mem_used
+        - entity: sensor.pi4_sandcastle_cpu_temp
+        - entity: sensor.pi4_sandcastle_uptime
       show_name: false
       show_icon: true
       show_state: true
       state_color: false
-      columns: 5
+      columns: 4
     - type: custom:mini-graph-card
       card_mod:
         style: |
@@ -52,18 +51,18 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.pi4_sandbox_mem_used
+        - entity: sensor.pi4_sandcastle_mem_used
           name: Memory (%)
           show_points: false
           show_fill: true
           color: thistle
-        - entity: sensor.pi4_sandbox_cpu_load
+        - entity: sensor.pi4_sandcastle_cpu_load
           name: CPU (%)
           show_points: false
           show_fill: false
           color: var(--accent-color)
-        - entity: sensor.pi4_sandbox_power_usage
-          name: Power (W)
+        - entity: sensor.pi4_sandcastle_cpu_temp
+          name: Temperature (ºC)
           show_points: false
           show_fill: false
           y_axis: secondary

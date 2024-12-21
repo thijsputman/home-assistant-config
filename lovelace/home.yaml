@@ -119,7 +119,15 @@ views:
       - type: vertical-stack
         cards:
           - !include home/network/pi4.yaml
-          - !include home/network/ha_yellow.yaml
+          - !include home/network/pi4_sandcastle.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/network/pi5.yaml
+          - !include home/network/status.yaml
+      - type: vertical-stack
+        cards:
+          - !include home/network/wifi.yaml
+          - !include home/network/gammu.yaml
           - type: button
             name: Network » Single-board computers
             icon: mdi:raspberry-pi
@@ -129,15 +137,6 @@ views:
             tap_action:
               action: navigate
               navigation_path: network_sbc
-      - type: vertical-stack
-        cards:
-          - !include home/network/bandwidth_ping.yaml
-          - !include home/network/pihole.yaml
-      - type: vertical-stack
-        cards:
-          - !include home/network/routers_dns.yaml
-          - !include home/network/wifi.yaml
-          - !include home/network/gammu.yaml
   # Network » Single-board computers
   - title: Network » Single-board computers
     type: custom:masonry-layout
@@ -150,11 +149,7 @@ views:
       - type: vertical-stack
         cards:
           - !include home/network/sbc/pi4_sandbox.yaml
-          - !include home/network/sbc/pi4_sandcastle.yaml
-          - !include home/network/sbc/pi_hole.yaml
-      - type: vertical-stack
-        cards:
-          - !include home/network/sbc/status.yaml
+          - !include home/network/sbc/ha_yellow.yaml
       - type: vertical-stack
         cards:
           - !include home/network/sbc/mpi_mq1.yaml

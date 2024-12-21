@@ -17,12 +17,12 @@ card:
             margin: 0px !important;
             padding: 0px !important;
           }
-      title: Pi-hole
+      title: Pi5
       entities:
-        - entity: sensor.pi_hole_cpu_load
-        - entity: sensor.pi_hole_mem_used
-        - entity: sensor.pi_hole_cpu_temp
-        - entity: sensor.pi_hole_uptime
+        - entity: sensor.pi5_cpu_load
+        - entity: sensor.pi5_mem_used
+        - entity: sensor.pi5_cpu_temp
+        - entity: sensor.pi5_uptime
       show_name: false
       show_icon: true
       show_state: true
@@ -51,17 +51,17 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.pi_hole_mem_used
+        - entity: sensor.pi5_mem_used
           name: Memory (%)
           show_points: false
           show_fill: true
           color: thistle
-        - entity: sensor.pi_hole_cpu_load
+        - entity: sensor.pi5_cpu_load
           name: CPU (%)
           show_points: false
           show_fill: false
           color: var(--accent-color)
-        - entity: sensor.pi_hole_cpu_temp
+        - entity: sensor.pi5_cpu_temp
           name: Temperature (ºC)
           show_points: false
           show_fill: false

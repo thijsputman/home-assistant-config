@@ -18,7 +18,7 @@ color_thresholds:
 show:
   labels: hover
 entities:
-  - entity: sensor.pi4_sandbox_bandwidth_wlan0_signal
+  - entity: sensor.mpi_mq1_bandwidth_wlan0_signal
     unit: dBm — Attic
     show_state: true
     show_graph: false
@@ -37,7 +37,7 @@ entities:
     color: grey
     show_points: false
     show_fill: false
-  - entity: sensor.pi4_sandbox_bandwidth_wlan0_signal
+  - entity: sensor.mpi_mq1_bandwidth_wlan0_signal
     name: Attic
     show_points: false
     show_fill: true
