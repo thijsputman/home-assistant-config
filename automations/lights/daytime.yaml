@@ -120,9 +120,14 @@
             - condition: state
               entity_id: light.ensuite
               state: "off"
-    - condition: state
-      entity_id: media_player.epson_eh_ls800b
-      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: media_player.epson_eh_ls800b
+          state:
+            - idle
+            - playing
+            - paused
   action:
     - service: scene.turn_on
       target:

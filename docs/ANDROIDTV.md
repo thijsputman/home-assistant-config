@@ -9,7 +9,7 @@
 | Application name | Application ID                      |
 | ---------------- | ----------------------------------- |
 | Disney+          | `com.disney.disneyplus`             |
-| Dispatch         | com.spauldhaliwal.dispatch          |
+| Dispatch         | `com.spauldhaliwal.dispatch`        |
 | Geforce NOW      | `com.nvidia.geforecenow`            |
 | HBO Max          | `com.hbo.hbonow`                    |
 | Live Channels    | `com.google.android.tv`             |

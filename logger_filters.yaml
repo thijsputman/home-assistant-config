@@ -55,9 +55,18 @@ custom_components.xiaomi_miot.sensor:
   - >-
     Got MiioException while fetching the state: ?(Unable to discover the
     device |No response from the device)?[a-zA-Z0-9_\-]*, mapping:
-# Mopidy
+# Android TV (Epson EH-LS800B) goes offline after being switched off for a
+# while – doesn't impact its (intended) functionality, but does spam the logs
+# with a lot of useless errors...
+androidtv.adb_manager.adb_manager_async:
+  - ^Couldn't connect to .+:5555 via ADB server
+custom_components.androidtv.media_player:
+  - ^Failed to execute an ADB command.
 homeassistant.components.media_player:
+  # Mopidy
   - ^Updating mpd .+ took longer than the scheduled update interval
+  # Android TV
+  - ^Updating androidtv .+ took longer than the scheduled update interval
 # Meater servers go offline *a lot*
 homeassistant.components.meater:
   - >-

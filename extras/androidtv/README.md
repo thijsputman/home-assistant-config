@@ -63,6 +63,15 @@ the leading `127.0.0.:` as that limits it to local connections only). Note that
 configuration access in this way poses a substantial security-risk to your
 Android device...
 
+Alternatively, you can use SSH to forward port 5037 onto another host on-demand
+(without the need to expose it your entire network):
+
+```shell
+ssh -g -L 5037:127.0.0.1:5037 -N adb-host.local
+```
+
+You can now simply connect to ADB as if it were running on localhost.
+
 ## Setup
 
 Use the below `📄 docker-compose.yml` (start using `docker-compose up -d`):

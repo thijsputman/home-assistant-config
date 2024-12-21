@@ -3,10 +3,6 @@
   trigger:
     - platform: state
       entity_id: media_player.epson_eh_ls800b
-      from:
-        - standby
-        - paused
-        - idle
       to: playing
   condition:
     # Only act if Living room lights are on
@@ -50,14 +46,6 @@
   trigger:
     - platform: state
       entity_id: media_player.epson_eh_ls800b
-      from: playing
-      to:
-        - standby
-        - paused
-        - idle
-    - platform: state
-      entity_id: media_player.epson_eh_ls800b
-      from: "off"
       to:
         - standby
         - idle
@@ -118,11 +106,9 @@
   trigger:
     - platform: state
       entity_id: media_player.epson_eh_ls800b
-      from:
-        - standby
-        - playing
-        - paused
-        - idle
+      not_from:
+        - unknown
+        - unavailable
       to: "off"
   condition:
     # Only act if Living room lights are on _and_ it's not daytime

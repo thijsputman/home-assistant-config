@@ -10,9 +10,11 @@
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: disarmed
-    - condition: state
-      entity_id: media_player.epson_eh_ls800b
-      state: "off"
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: media_player.epson_eh_ls800b
+          state: playing
     # Don't play when going to sleep / being asleep
     - condition: state
       entity_id: script.lights_out
