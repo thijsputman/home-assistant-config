@@ -130,3 +130,4 @@
       data:
         scene_entity: sensor.hue_scene_living_room
   mode: single
+  max_exceeded: silent

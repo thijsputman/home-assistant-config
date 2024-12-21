@@ -85,6 +85,7 @@
             "{{ states('sensor.hue_scene_living_room') }}"...
           error: true
   mode: single
+  max_exceeded: silent
 - alias: 🎄 | 💡/🛡️ Christmas tree off (Living room off / "Armed away")
   id: 7d791dff-0c3d-4774-91e6-648ff3348e53
   trigger:

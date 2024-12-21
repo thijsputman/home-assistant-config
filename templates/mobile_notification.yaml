@@ -1,7 +1,7 @@
 - trigger:
     - platform: state
       id: incoming
-      entity_id: sensor.pixel_6_pro_last_notification
+      entity_id: sensor.pixel_9_pro_last_notification
       to: ~
     # Trigger back to "unavailable" after 10 seconds — this ensures subsequent
     # notifications with identical attributes are properly picked up on by the
@@ -12,7 +12,7 @@
     # on subsequent notifications from the same package (but with a different
     # message/payload).
     - platform: state
-      entity_id: sensor.pixel_6_pro_last_notification
+      entity_id: sensor.pixel_9_pro_last_notification
       to: ~
       for: "00:00:10"
   sensor:
@@ -23,15 +23,15 @@
       attributes:
         package: >-
           {{
-            state_attr('sensor.pixel_6_pro_last_notification', 'package')
+            state_attr('sensor.pixel_9_pro_last_notification', 'package')
           }}
         post_time: >-
           {{
-            ((state_attr('sensor.pixel_6_pro_last_notification', 'post_time')
+            ((state_attr('sensor.pixel_9_pro_last_notification', 'post_time')
               | int) / 1000) | round(0) | as_datetime
           }}
       state: >-
-        {{ states('sensor.pixel_6_pro_last_notification') }}
+        {{ states('sensor.pixel_9_pro_last_notification') }}
 - trigger:
     - platform: state
       entity_id: sensor.last_notification_unprocessed

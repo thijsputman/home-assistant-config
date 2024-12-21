@@ -18,7 +18,6 @@ entities:
   - sensor.failed_devices
   - input_text.failed_devices_active
 entity_globs:
-  - sensor.pi_hole_ads_*
   - sensor.ups_battery_run*
   - sensor.*_heartbeat*
   - sensor.*_uptime*

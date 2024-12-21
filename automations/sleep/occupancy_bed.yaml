@@ -65,7 +65,7 @@
             - condition: not
               conditions:
                 - condition: state
-                  entity_id: sensor.pixel_6_pro_battery_state
+                  entity_id: sensor.pixel_9_pro_battery_state
                   state: charging
       then:
         - stop: Not all preconditions for "person 2" met
