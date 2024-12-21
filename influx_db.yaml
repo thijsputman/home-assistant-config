@@ -28,6 +28,11 @@ include:
     - sensor.home_nearest_distance
     - alarm_control_panel.home_alarm
     - sensor.time_of_day
+    # Round-trip times
+    - sensor.pi4_rtt_ip_8_8_8_8
+    - sensor.pi4_rtt_dd_wrt_1_sgraastra
+    - sensor.pi5_rtt_ip_8_8_8_8
+    - sensor.pi5_rtt_dd_wrt_1_sgraastra
     # WeeWX
     - sensor.weewx_outside_temperature
     - sensor.weewx_outside_temperature_balcony
