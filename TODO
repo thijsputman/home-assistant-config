@@ -284,9 +284,6 @@ future reference).
 - [ ] Replace the ~~Living Room "copper lamp"~~, upstairs Hallway, and Guestroom
       bulbs with Hue filament bulbs (and remove the Zigbee-units from their
       cabling / power-sockets)
-- [ ] The single Pi-hole instance is a **substantial** single point of failure
-      in the network; consider running a backup Pi-hole on another machine
-      (configs will need to be synced though)
 
 ### Bluetooth
 
