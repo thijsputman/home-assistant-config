@@ -13,19 +13,6 @@
         {%- else -%}
           off
         {%- endif -%}
-    # Sonair (combined)
-    - name: Sonair (combined)
-      unique_id: 80fe5a11-0776-4407-98da-4401ab9de0e3
-      device_class: power
-      icon: mdi:air-filter
-      availability: >-
-        {{ has_value('sensor.power_sonair_combined') }}
-      state: >-
-        {%- if states('sensor.power_sonair_combined') | int(0) > 0 -%}
-          on
-        {%- else -%}
-          off
-        {%- endif -%}
     # Airco (Attic)
     - name: Airco (Attic)
       unique_id: 6cf706bc-7c95-4ec0-a522-dc207a8e720c

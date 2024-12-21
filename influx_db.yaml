@@ -94,7 +94,6 @@ include:
     - sensor.power_all_lights
     - sensor.ups_power_usage
     - sensor.power_108 # Television (i.e. Multimedia hub)
-    - sensor.power_sonair_combined
     # Arlo – track battery levels to have some insight into how well they hold
     # up over time...
     - sensor.aarlo_battery_level_front
