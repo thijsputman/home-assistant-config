@@ -228,7 +228,6 @@
       - automation.bedroom_lights_toggle_bedroom_smart_switches
       - automation.cycle_through_attic_hallway_gangs_dimmer_switch
       - automation.end_waterrower_exercise_session_smart_switch
-      - automation.goodnight_message_bedside_smart_switches
       - automation.mute_unmute_the_alarm_bedroom_smart_switches
       - automation.silence_the_sirens_bedroom_smart_switches
       - automation.silence_wakeup_alarm_bedside_smart_switches
