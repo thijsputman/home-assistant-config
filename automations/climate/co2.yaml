@@ -2,8 +2,7 @@
   id: 253698d1-02e6-4b00-a8f7-a7dac7d6935f
   trigger:
     - platform: numeric_state
-      entity_id: >-
-        sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+      entity_id: sensor.air_monitor_lite_7034_carbon_dioxide
       above: 1000
       for: "00:05:00"
   condition:
@@ -22,8 +21,7 @@
     - wait_for_trigger:
         - platform: numeric_state
           id: co2
-          entity_id: >-
-            sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+          entity_id: sensor.air_monitor_lite_7034_carbon_dioxide
           below: 800
           for: "00:05:00"
         # Short-circuit in case the Sonair was manually lowered or switched off
@@ -61,8 +59,7 @@
     - wait_for_trigger:
         - platform: numeric_state
           id: co2
-          entity_id: >-
-            sensor.qingping_air_monitor_lite_living_room_environment_co2_density
+          entity_id: sensor.air_monitor_lite_7034_carbon_dioxide
           below: 800
           for: "00:10:00"
         - platform: numeric_state

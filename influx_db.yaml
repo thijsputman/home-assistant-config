@@ -50,7 +50,7 @@ include:
     - sensor.temperature_30 # Hallway
     - sensor.temperature_37 # Guestroom
     - sensor.temperature_78 # Basement
-    # Air quality
+    # Air quality — deprecated
     - sensor.qingping_air_monitor_lite_bedroom_environment_co2_density
     - sensor.qingping_air_monitor_lite_living_room_environment_co2_density
     - sensor.xiaomi_miot_environment_co2_density
@@ -60,6 +60,19 @@ include:
     - sensor.qingping_air_monitor_lite_bedroom_environment_pm10_density
     - sensor.qingping_air_monitor_lite_living_room_environment_pm10_density
     - sensor.xiaomi_miot_environment_pm10_density
+    # Air quality
+    - sensor.air_monitor_lite_42b8_carbon_dioxide # Bedroom
+    - sensor.air_monitor_lite_42b8_pm10
+    - sensor.air_monitor_lite_42b8_pm25
+    - sensor.air_monitor_lite_7034_carbon_dioxide # Living room
+    - sensor.air_monitor_lite_7034_pm10
+    - sensor.air_monitor_lite_7034_pm25
+    - sensor.air_monitor_lite_be10_carbon_dioxide # Attic
+    - sensor.air_monitor_lite_be10_pm10
+    - sensor.air_monitor_lite_be10_pm25
+    - sensor.air_monitor_lite_bf53_carbon_dioxide # Guestroom
+    - sensor.air_monitor_lite_bf53_pm10
+    - sensor.air_monitor_lite_bf53_pm25
     - fan.sonair_guestroom
     - fan.sonair_living_room
     - fan.sonair_wardrobe

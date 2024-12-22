@@ -5,15 +5,16 @@
     # extremely high PM levels on a per sensor basis. PM10 closely tracks PM2.5,
     # so it's sufficient to trigger on PM2.5 alone...
     - platform: numeric_state
-      entity_id: >-
-        sensor.qingping_air_monitor_lite_living_room_environment_pm2_5_density
+      entity_id: sensor.air_monitor_lite_7034_pm25 # Living room
       above: 500
     - platform: numeric_state
-      entity_id: >-
-        sensor.qingping_air_monitor_lite_bedroom_environment_pm2_5_density
+      entity_id: sensor.air_monitor_lite_42b8_pm25 # Bedroom
       above: 250
     - platform: numeric_state
-      entity_id: sensor.xiaomi_miot_environment_pm2_5_density # Attic
+      entity_id: sensor.air_monitor_lite_bf53_pm25 # Guestroom
+      above: 250
+    - platform: numeric_state
+      entity_id: sensor.air_monitor_lite_be10_pm25 # Attic
       above: 150
   condition: []
   action:
