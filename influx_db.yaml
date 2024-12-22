@@ -41,15 +41,23 @@ include:
     - sensor.weewx_wind_speed
     - sensor.weewx_rain_hour
     - sensor.weewx_outside_humidity
-    # Temperatures
+    # Temperature & humidity
     - sensor.temperature_3 # Attic
+    - sensor.humidity_6
     - sensor.temperature_9 # Bedroom
+    - sensor.humidity_11
     - sensor.temperature_21 # Kitchen
+    - sensor.humidity_22
     - sensor.temperature_24 # Bathroom
+    - sensor.humidity_25
     - sensor.temperature_27 # Shed
+    - sensor.humidity_35
     - sensor.temperature_30 # Hallway
+    - sensor.humidity_31
     - sensor.temperature_37 # Guestroom
+    - sensor.humidity_38
     - sensor.temperature_78 # Basement
+    - sensor.humidity_79
     # Air quality — deprecated
     - sensor.qingping_air_monitor_lite_bedroom_environment_co2_density
     - sensor.qingping_air_monitor_lite_living_room_environment_co2_density
