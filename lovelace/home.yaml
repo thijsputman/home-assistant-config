@@ -54,11 +54,6 @@ views:
                 tap_action:
                   action: toggle
                 entity: switch.smart_plug_9
-              - type: button
-                name: VOCOlinc – Living room
-                tap_action:
-                  action: toggle
-                entity: humidifier.vocolinc_flb_living_room
   # Air-quality
   - title: Air-quality
     type: custom:masonry-layout
