@@ -353,12 +353,12 @@
   max_exceeded: silent
 # Stop Home Assistant (mainly to prevent database corruption) if a power failure
 # appears imminent
-- alias: 🚧 | 🔋 Stop Home Assistant (UPS 🔋 < 15%)
+- alias: 🚧 | 🔋 Stop Home Assistant (UPS 🔋 < 30%)
   id: e7dcf99d-a13d-43ed-a828-d19335c94787
   trigger:
     - platform: numeric_state
       entity_id: sensor.ups_battery_charge
-      below: 15
+      below: 30
   condition:
     # This intentionally does _not_ use "binary_sensor.power_outage" as the
     # below truly relies on the UPS and acts independent from the generalised
