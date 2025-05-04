@@ -189,8 +189,6 @@ future reference).
       radiator on". This is currently hard-coded in multiple automations based
       on temperature setpoints (> 16ºC and 18ºC respectively). Better to
       abstract this away.
-- [ ] Rename `sensor.xiaomi_miot_environment_co2_density` to match with the
-      other Qingping senors
 - [ ] ~~A sudden substantial increase in PM indicates a fire (or some kind of
       calamity); experiment with using this to trigger the alarm~~
   - Additionally, increases in CO₂ levels when no-one is home (i.e. Home Alarm
@@ -288,12 +286,7 @@ future reference).
 ### Bluetooth
 
 - [ ] The M5Stack Atom Lite Bluetooth proxies appear to be working just fine
-  - [ ] Consider moving the Air Monitor Lite-devices (Xiaomi Miot) over from
-        WiFi to Bluetooth — only makes sense if it's possible to use them
-        disconnected from the WiFi though (there are no problems with the Xiaomi
-        Miot integration; just seems more sensible to run these devices over
-        Bluetooth)
-  - [ ] Conversely: See if it's possible to disable Bluetooth on the
+  - [ ] See if it's possible to disable Bluetooth on the
         `Air Monitor Lite`-devices when used over WiFi — the unbound Bluetooth
         devices are effectively "leaking" occupancy information (ie. CO₂ levels)
         to the outside world...

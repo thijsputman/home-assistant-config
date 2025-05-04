@@ -14,5 +14,3 @@ Some extras I'm using in combination with my Home Assistant setup:
 - [`📁 ha-yellow`](./ha-yellow/README.md) – Home Assistant Yellow related
 - [`📁 influxdb`](./influxdb/README.md) – InfluxDB scratch-pad
 - [`📁 piper`](./piper/README.md) – Piper / Wyoming related
-- [`📄 restart-container.sh`](./restart-container.sh) – Handle Home
-  Assistant-container restart requests
