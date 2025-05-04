@@ -1,5 +1,0 @@
-- platform: afvalwijzer
-  provider: mijnafvalwijzer
-  postal_code: !secret afvalwijzer_postcode
-  street_number: !secret afvalwijzer_nummer
-  default_label: none
