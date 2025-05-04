@@ -1,10 +1,3 @@
-# Aarlo
-- platform: aarlo
-  siren: true
-  snapshot: true
-  siren_volume: 6
-  siren_duration: 10
-
 # Sonair CO₂-sensor toggles. There's no way to detect when the CO₂-sensor is
 # enabled/disabled outside of Home Assistant, so this only works (well) when no
 # external changes are made...

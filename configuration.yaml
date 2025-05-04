@@ -64,11 +64,6 @@ aarlo:
   save_media_to: /gtx/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
 
 alarm_control_panel:
-  - platform: aarlo
-    away_mode_name: Armed
-    disarmed_mode_name: Disarmed
-    home_mode_name: Home
-    night_mode_name: Night
   - platform: manual
     name: Home Alarm
     code: !secret alarm_code
@@ -81,13 +76,6 @@ alarm_control_panel:
     armed_night:
       delay_time: 60
       arming_time: 180
-
-camera:
-  - platform: aarlo
-
-media_player:
-  # Arlo
-  - platform: aarlo
 
 # RESTful commands
 rest_command:
