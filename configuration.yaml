@@ -27,9 +27,6 @@ logger:
   default: warning
   filters: !include logger_filters.yaml
 
-downloader:
-  download_dir: var/downloads
-
 lovelace:
   mode: storage
   dashboards:
