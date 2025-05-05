@@ -20,12 +20,12 @@
     - service: light.turn_on
       data:
         color_temp_kelvin: 2000
-        brightness: 5
+        brightness_pct: 1
       entity_id: light.bedroom
     - service: light.turn_on
       data:
-        color_temp_kelvin: 3800
-        brightness: 255
+        color_temp_kelvin: 4500
+        brightness_pct: 100
         transition: 1200
       entity_id: light.bedroom
   mode: single
@@ -48,8 +48,8 @@
   action:
     - service: light.turn_on
       data:
-        color_temp_kelvin: 3800
-        brightness: 255
+        color_temp_kelvin: 4500
+        brightness_pct: 100
       entity_id: light.bedroom
     # Switch the lights off after 2-hours
     - wait_for_trigger:

@@ -6,7 +6,7 @@
   trigger:
     - platform: state
       entity_id:
-        - event.hallway_downstairs_switch_button_2
+        - event.hallway_downstairs_switch_button_1
         - event.hallway_downstairs_switch_button_2
         - event.hallway_downstairs_switch_button_3
         - event.hallway_downstairs_switch_button_4
@@ -63,17 +63,18 @@
           then:
             - service: light.turn_on
               data:
-                brightness: 128
+                brightness_pct: 90
+                color_temp_kelvin: 4500
               target:
                 entity_id:
-                  - light.hue_filament_bulb_1_4
-                  - light.hue_filament_bulb_1_5
+                  - light.front_hallway
+                  - light.back_hallway
           else:
             - service: light.turn_off
               target:
                 entity_id:
-                  - light.hue_filament_bulb_1_4
-                  - light.hue_filament_bulb_1_5
+                  - light.front_hallway
+                  - light.back_hallway
         # Upstairs hallway
         - if:
             - condition: numeric_state
@@ -82,7 +83,8 @@
           then:
             - service: light.turn_on
               data:
-                brightness: 128
+                brightness_pct: 90
+                color_temp_kelvin: 4500
               target:
                 entity_id: light.upstairs_hallway
           else:

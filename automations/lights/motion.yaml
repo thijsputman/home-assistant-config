@@ -16,7 +16,7 @@
   action:
     - service: light.turn_on
       data:
-        brightness: 255
+        brightness_pct: 100
         color_temp_kelvin: 4500
       target:
         entity_id: light.toilet
@@ -139,7 +139,8 @@
   action:
     - service: light.turn_on
       data:
-        brightness: 40
+        brightness_pct: 15
+        color_temp_kelvin: 2200
       entity_id: light.upstairs_hallway
     - wait_for_trigger:
         - platform: state
@@ -175,7 +176,8 @@
   action:
     - service: light.turn_on
       data:
-        brightness: 40
+        brightness_pct: 15
+        color_temp_kelvin: 2200
       entity_id:
         - light.hue_filament_bulb_1_4
         - light.hue_filament_bulb_1_5

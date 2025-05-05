@@ -188,9 +188,9 @@
     - wait_for_trigger:
         - platform: state
           entity_id: light.upstairs_hallway
-          attribute: brightness
+          attribute: brightness_pct
           # This value is hard-coded in "📄 light/daytime.yaml"
-          to: 128
+          to: 90
       timeout: 30
       continue_on_timeout: true
     - condition: template

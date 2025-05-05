@@ -202,17 +202,18 @@
             - wakeup
         - condition: state
           entity_id:
-            - light.hue_filament_bulb_1_4
-            - light.hue_filament_bulb_1_5
+            - light.front_hallway
+            - light.back_hallway
           state: "off"
   action:
     - service: light.turn_on
       data:
-        brightness: 128
+        brightness_pct: 90
+        color_temp_kelvin: 4500
       target:
         entity_id:
-          - light.hue_filament_bulb_1_4
-          - light.hue_filament_bulb_1_5
+          - light.front_hallway
+          - light.back_hallway
   mode: single
 - alias: 💡 | ⛅ Hallway (downstairs) lights off during daytime (☀️ > 60 lux)
   id: 9b941157-f359-4d69-a19c-eaa242f6faf3
@@ -226,17 +227,17 @@
       entity_id: sensor.time_of_day
       state: day
     - condition: state
-      entity_id: light.hue_filament_bulb_1_4
+      entity_id: light.front_hallway
       state: "on"
     - condition: state
-      entity_id: light.hue_filament_bulb_1_5
+      entity_id: light.back_hallway
       state: "on"
   action:
     - service: light.turn_off
       target:
         entity_id:
-          - light.hue_filament_bulb_1_4
-          - light.hue_filament_bulb_1_5
+          - light.front_hallway
+          - light.back_hallway
   mode: single
 - alias: 💡 | ⛅ Hallway (upstairs) lights on during daytime (☀️ < 30 lux)
   id: 6fcf79b7-be12-4990-b2dd-21d8a85b4987
@@ -274,7 +275,8 @@
   action:
     - service: light.turn_on
       data:
-        brightness: 128
+        brightness_pct: 90
+        color_temp_kelvin: 4500
       target:
         entity_id: light.upstairs_hallway
   mode: single

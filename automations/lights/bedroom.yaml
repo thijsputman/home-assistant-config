@@ -114,5 +114,6 @@
       state: "on"
     - service: light.turn_on
       data:
-        brightness: 35
+        brightness_pct: 15
+        color_temp_kelvin: 2200
       entity_id: light.upstairs_hallway

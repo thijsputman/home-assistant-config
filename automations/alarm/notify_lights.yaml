@@ -123,7 +123,7 @@
         entity_id: scene.garden_active
     - service: light.turn_on
       data:
-        brightness: 255
+        brightness_pct: 100
         entity_id: light.hue_filament_bulb_1 # Light above the Kitchen door
     # Wait for 5 minutes to ensure this is not a false alarm
     - wait_for_trigger:
@@ -147,7 +147,7 @@
         entity_id: scene.garden_ambiance
     - service: light.turn_on
       data:
-        brightness: 77
+        brightness_pct: 30
         entity_id: light.hue_filament_bulb_1
   mode: single
   max_exceeded: silent
@@ -171,12 +171,12 @@
         entity_id:
           - scene.living_room_active
           - scene.kitchen_bright_custom
-          - scene.hallway_bright
+          - scene.hallway_concentrate
           - scene.garden_active
           - scene.bedroom_concentrate
           - scene.bathroom_concentrate
           - scene.wardrobe_bright
-          - scene.guestroom_bright
+          - scene.guestroom_concentrate
           - scene.attic_concentrate
     - service: light.turn_on
       data:
@@ -218,10 +218,10 @@
                 entity_id:
                   - scene.living_room_active
                   - scene.kitchen_bright_custom
-                  - scene.hallway_bright
+                  - scene.hallway_read
                   - scene.garden_ambiance
                   - scene.bedroom_bright
-                  - scene.guestroom_bright
+                  - scene.guestroom_read
                   - scene.attic_bright
             - service: light.turn_off
               data:
@@ -243,7 +243,7 @@
               - scene.kitchen_ambiance
               - scene.hallway_evening
               - scene.garden_ambiance
-              - scene.guestroom_evening
+              - scene.guestroom_relax
         - service: light.turn_off
           data:
             entity_id:
@@ -283,7 +283,7 @@
         entity_id: scene.living_room_active
     - service: scene.turn_on
       target:
-        entity_id: scene.hallway_bright
+        entity_id: scene.hallway_concentrate
     # The delay below is to prevent DoS-ing the system by rapidly opening and
     # closing the back gate...
     - delay: 60
