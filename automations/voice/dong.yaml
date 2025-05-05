@@ -75,5 +75,5 @@
               rooms: >-
                 {{ rooms }}
               message: >-
-                media-source://media_source/sd/audio/Gentle_gong.ogg
+                media-source://media_source/sd/audio/Gentle_gong.mp3
   mode: single

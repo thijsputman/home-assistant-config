@@ -22,7 +22,7 @@
           duration: 2
           chime: false
           message: >-
-            media-source://media_source/sd/audio/Magic_Trick.ogg
+            media-source://media_source/sd/audio/Magic_Trick.mp3
     - service: input_boolean.turn_on
       entity_id: input_boolean.waterrower
     - variables:
@@ -97,6 +97,6 @@
           duration: 2
           chime: false
           message: >-
-            media-source://media_source/sd/audio/Magic_Trick.ogg
+            media-source://media_source/sd/audio/Magic_Trick.mp3
   mode: single
   max_exceeded: silent

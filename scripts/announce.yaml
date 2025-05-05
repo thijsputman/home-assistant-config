@@ -457,13 +457,13 @@ tts_chime:
           {% endif %}
         sample: >-
           {% if type == 'bridge' %}
-            Pollen.ogg
+            Pollen.mp3
           {% elif type == 'attention' %}
-            Crosswalk.ogg
+            Crosswalk.mp3
           {% elif type == 'whisper' %}
-            Beginning.ogg
+            Beginning.mp3
           {% else %}
-            Night_Sky.ogg
+            Night_Sky.mp3
           {% endif %}
         volume: >-
           {% if type == 'attention' %}

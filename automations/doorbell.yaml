@@ -48,7 +48,7 @@
               duration: 4
               chime: false
               message: >-
-                media-source://media_source/sd/audio/doorbell.ogg
+                media-source://media_source/sd/audio/doorbell.mp3
     - service: script.turn_on
       target:
         entity_id: script.persistent_notification

@@ -41,5 +41,5 @@
           expiry: "01:00:00"
           chime: false
           message: >-
-            media-source://media_source/sd/audio/happy_birthday.ogg
+            media-source://media_source/sd/audio/happy_birthday.mp3
   mode: single
