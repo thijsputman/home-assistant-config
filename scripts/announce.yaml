@@ -341,7 +341,9 @@ tts_announce:
           target:
             entity_id: >-
               {{ speakers }}
-        - service: notify.log_tts_announce
+        - service: notify.send_message
+          target:
+            entity_id: notify.log_tts_announce
           data:
             message: >-
               {{ speakers.split(',') if ',' in speakers else speakers }}:
@@ -377,7 +379,9 @@ tts_announce:
               voice: en_US-danny-low
           target:
             entity_id: tts.piper
-        - service: notify.log_tts_announce
+        - service: notify.send_message
+          target:
+            entity_id: notify.log_tts_announce
           data:
             message: >-
               {{ speakers.split(',') if ',' in speakers else speakers }}:

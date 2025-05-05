@@ -408,7 +408,7 @@ sms_notification:
     - service: mqtt.publish
       data:
         topic: gammu/send
-        payload_template: >-
+        payload: >-
           {#
             There is a bit of trickery here to ensure the phone numbers survive
             intact: By concatenating with double-quotes _inside_ the Jinja

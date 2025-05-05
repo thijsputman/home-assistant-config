@@ -87,14 +87,6 @@ notify:
     services:
       - service: mobile_app_pixel_9_pro
       - service: mobile_app_sm_g990b2
-  - name: log_hue_scene_heuristic
-    platform: file
-    filename: /config/var/hue_scene_heuristic.log
-    timestamp: true
-  - name: log_tts_announce
-    platform: file
-    filename: /config/var/tts_announce.log
-    timestamp: true
 
 mqtt:
   sensor: !include_dir_merge_list mqtt/
