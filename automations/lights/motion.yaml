@@ -17,7 +17,7 @@
     - service: light.turn_on
       data:
         brightness: 255
-        kelvin: 4500
+        color_temp_kelvin: 4500
       target:
         entity_id: light.toilet
     - wait_for_trigger:

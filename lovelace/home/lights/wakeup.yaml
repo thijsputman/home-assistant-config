@@ -2,10 +2,10 @@ type: custom:mod-card
 card_mod:
   style:
     hui-horizontal-stack-card$: |
-      :host div#root > *{
+      :host div#root > hui-card > *{
         flex: 1 0 auto;
       }
-      :host div#root > :first-child{
+      :host div#root > hui-card > :first-child{
         flex: 4 0 auto !important;
       }
 report_size: 1
