@@ -1,8 +1,0 @@
-- state_topic: tc66c/pi4/power_W
-  name: Pi4 Power usage
-  unique_id: 6c957f9e-4cdb-423f-affd-0919313c2608
-  unit_of_measurement: W
-  device_class: power
-  value_template: >-
-    {{ value | round(2) }}
-  expire_after: 180

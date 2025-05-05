@@ -22,13 +22,12 @@ card:
         - entity: sensor.pi4_cpu_load
         - entity: sensor.pi4_mem_used
         - entity: sensor.pi4_cpu_temp
-        - entity: sensor.pi4_power_usage
         - entity: sensor.pi4_uptime
       show_name: false
       show_icon: true
       show_state: true
       state_color: false
-      columns: 5
+      columns: 4
     - type: markdown
       card_mod:
         style:
@@ -97,8 +96,8 @@ card:
           show_points: false
           show_fill: false
           color: var(--accent-color)
-        - entity: sensor.pi4_power_usage
-          name: Power (W)
+        - entity: sensor.pi5_cpu_temp
+          name: Temperature (ºC)
           show_points: false
           show_fill: false
           y_axis: secondary

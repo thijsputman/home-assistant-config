@@ -1,26 +1,10 @@
-# When database file becomes unavailable, Home Assistant quickly runs itself
-# into the ground (OOM-killer gets involved 😉) reporting the below two errors
-# over and over again — the hope is that by not logging these, Home Assistant
-# will at least keep running (which is better than crashing, restarting and
-# coming backup in safe mode without anything working).
-# This might cause some more benign errors to be filtered out too, for now
-# that's an acceptable trade off...
-homeassistant.components.recorder.core:
-  - ^Error while processing event EventTask\(
-  - >-
-    ^Unrecoverable sqlite3 database corruption detected: (.*) unable to open
-    database file
-homeassistant.helpers.entity:
-  # Neato
-  - >-
-    ^Update of (sensor|switch|vacuum)\.d7_[a-z0-9_]+ is taking over
-    [0-9]+ seconds$
-  # Mopidy
-  - >-
-    ^Update of media_player\.[a-z0-9_]+ is taking over [0-9]+ seconds$
 # The Neato integration generates *a lot* of warnings and errors; most of them
 # are of temporary nature – the ones that aren't, are picked up by the general
 # "device failure" automation...
+homeassistant.helpers.entity:
+  - >-
+    ^Update of (sensor|switch|vacuum)\.d7_[a-z0-9_]+ is taking over
+    [0-9]+ seconds$
 homeassistant.components.switch:
   - ^Updating neato [a-z]+ took longer than the scheduled update interval
 homeassistant.components.sensor:
@@ -39,23 +23,3 @@ homeassistant.components.neato.sensor:
 homeassistant.components.neato.switch:
   - >-
     ^Neato [a-z]+ connection error for '.+': Unable to communicate with robot$
-# Android TV (Epson EH-LS800B) goes offline after being switched off for a
-# while – doesn't impact its (intended) functionality, but does spam the logs
-# with a lot of useless errors...
-androidtv.adb_manager.adb_manager_async:
-  - ^Couldn't connect to .+:5555 via ADB server
-custom_components.androidtv.media_player:
-  - ^Failed to execute an ADB command.
-homeassistant.components.media_player:
-  # Mopidy
-  - ^Updating mpd .+ took longer than the scheduled update interval
-  # Android TV
-  - ^Updating androidtv .+ took longer than the scheduled update interval
-# Meater servers go offline *a lot*
-homeassistant.components.meater:
-  - >-
-    ^Unexpected error fetching meater_api data: Error connecting to Meater
-  - >-
-    ^Error requesting meater_api data: Cannot connect to host
-  - >-
-    ^Timeout fetching meater_api data
