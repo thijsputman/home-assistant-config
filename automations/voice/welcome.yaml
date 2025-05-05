@@ -55,10 +55,11 @@
       continue_on_timeout: true
     # The below only works because there's two occupants with a single phone
     # each, so the "not_home" phone always belongs to the person who's away...
-    # The reason the "source"-device from the preceding trigger can't be used is
-    # the fact that each person has two devices: One (GPS-tracked) phone and one
-    # device whose MAC address is tracked on the network. The latter is often
-    # faster to respond, but of course doesn't provide an actual GPS location.
+    # ❗N.B. The reason the "source"-device from the preceding trigger can't be
+    # used is the fact that each person has two devices: One (GPS-tracked) phone
+    # and one device whose MAC-address is tracked on the network. The latter is
+    # often faster to respond, but of course doesn't provide an actual GPS
+    # location – keep this in mind when updating the below!
     - variables:
         home: >-
           {{
@@ -69,8 +70,8 @@
         away: >-
           {{
             expand(
-              'device_tracker.pixel_9_pro_unifi',
-              'device_tracker.samsung_s21_fe'
+              'device_tracker.pixel_9_pro',
+              'device_tracker.sm_g990b2'
             ) |
             selectattr('state', '==', 'not_home') |
             map(attribute = 'entity_id') | list
@@ -107,7 +108,8 @@
                 You are the only person home;
                 {{ person_away.name | regex_replace(' .*$', '') }} left
                 {{ person_away.last_changed | relative_time }} ago and is
-                currently somewhere in {{ state_attr(sensor, 'locality') }}.
+                currently somewhere in {{ state_attr(sensor, 'sub_locality') }},
+                {{ state_attr(sensor, 'locality') }}.
     - service: script.turn_on
       target:
         entity_id: script.tts_queue
