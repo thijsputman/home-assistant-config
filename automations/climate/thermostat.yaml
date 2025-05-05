@@ -151,6 +151,22 @@
       data:
         preset_mode: away
       entity_id: climate.tado_living_room
+    # Notify on cancellation
+    - service: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          group: climate
+          channel: Alert
+          title: 🌡️ Pre-heating cancelled
+          tag: thermostat_proximity
+          message: >-
+            {% if wait.trigger is none %}
+              No-one came home...
+            {% else %}
+              As requested...
+            {% endif %}
   mode: single
   max_exceeded: silent
 # This assumes we don't go to bed too early: tado° Overwrites the temperature
