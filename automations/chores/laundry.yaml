@@ -115,6 +115,7 @@
   max_exceeded: silent
 - alias: 📱 | 👖 Notify on dryer done or reservoir full
   id: 72c3b569-a2e9-4c9e-85f1-cf9bbf49c86e
+  initial_state: false
   trigger:
     - platform: numeric_state
       entity_id: sensor.power_83
