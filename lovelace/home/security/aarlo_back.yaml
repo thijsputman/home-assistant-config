@@ -128,8 +128,6 @@ card:
               border: 0px;
               padding-top: 1px !important;
               margin-top: 0px !important;
-              border-top-left-radius: 0px !important;
-              border-top-right-radius: 0px !important;
             }
             ha-card .card-header{
               display: none;
