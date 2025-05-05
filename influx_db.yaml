@@ -154,7 +154,7 @@ component_config_glob:
   "sensor.aarlo_*":
     ignore_attributes:
       - attribution
-      - brand
-      - camera_name # Could/should be inferred from friendly_name
+      - device_brand
+      - device_name # Could/should be inferred from friendly_name
       - device_id # Device serial-# (sort of PII)
-      - model
+      - device_model

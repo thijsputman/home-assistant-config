@@ -186,4 +186,4 @@
             {{ rooms }}
           message: >-
             Motion detected at the {{
-              trigger.to_state.attributes.camera_name | lower }}.
+              trigger.to_state.attributes.device_name | lower }}.

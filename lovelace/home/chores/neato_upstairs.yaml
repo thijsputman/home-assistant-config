@@ -20,6 +20,7 @@ card_mod:
       }
       ha-card .preview .metadata .status-text{
         text-transform: lowercase;
+        margin-left: 0px !important;
       }
       ha-card .stats .stats-block:nth-child(1)::first-letter{
         text-transform: capitalize;
