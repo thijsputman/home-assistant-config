@@ -5,6 +5,8 @@ homeassistant.helpers.entity:
   - >-
     ^Update of (sensor|switch|vacuum)\.d7_[a-z0-9_]+ is taking over
     [0-9]+ seconds$
+  - >-
+    ^Update for vacuum\.d7_[a-z0-9_]+ fails$
 homeassistant.components.switch:
   - ^Updating neato [a-z]+ took longer than the scheduled update interval
 homeassistant.components.sensor:

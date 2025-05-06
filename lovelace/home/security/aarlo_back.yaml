@@ -127,7 +127,7 @@ card:
             ha-card{
               border: 0px;
               padding-top: 1px !important;
-              margin-top: 0px !important;
+              margin-top: 8px !important;
             }
             ha-card .card-header{
               display: none;
