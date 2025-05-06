@@ -20,8 +20,8 @@
               data:
                 flash: long
                 entity_id:
-                  - light.hue_filament_bulb_1_5
-                  - light.hue_filament_bulb_1_4
+                  - light.front_hallway
+                  - light.back_hallway
         # Kitchen door opened
         - conditions:
             - condition: state

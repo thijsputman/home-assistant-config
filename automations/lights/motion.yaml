@@ -179,8 +179,8 @@
         brightness_pct: 15
         color_temp_kelvin: 2200
       entity_id:
-        - light.hue_filament_bulb_1_4
-        - light.hue_filament_bulb_1_5
+        - light.front_hallway
+        - light.back_hallway
     # Wait for _all_ motion sensors in the downstairs hallway to clear
     - wait_template: >-
         {{
@@ -191,8 +191,8 @@
     - delay: 60
     - service: light.turn_off
       entity_id:
-        - light.hue_filament_bulb_1_4
-        - light.hue_filament_bulb_1_5
+        - light.front_hallway
+        - light.back_hallway
   mode: restart
 - alias: 💡 | 👋 Attic hallway light toggle (motion detected)
   id: 6eb9fb1b-c177-4e11-986c-d6cfec41454a

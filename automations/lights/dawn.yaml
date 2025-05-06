@@ -147,19 +147,20 @@
     - condition: or
       conditions:
         - condition: state
-          entity_id: light.hue_filament_bulb_1_4
+          entity_id: light.front_hallway
           state: "on"
         - condition: state
-          entity_id: light.hue_filament_bulb_1_5
+          entity_id: light.back_hallway
           state: "on"
   action:
     - wait_for_trigger:
         - platform: state
           entity_id:
-            - light.hue_filament_bulb_1_4
-            - light.hue_filament_bulb_1_5
-          attribute: brightness
-          to: 128
+            - light.front_hallway
+            - light.back_hallway
+          attribute: brightness_pct
+          # This value is hard-coded in "📄 light/daytime.yaml"
+          to: 90
       timeout: 30
       continue_on_timeout: true
     - condition: template
@@ -168,8 +169,8 @@
     - service: light.turn_off
       target:
         entity_id:
-          - light.hue_filament_bulb_1_4
-          - light.hue_filament_bulb_1_5
+          - light.light.front_hallway
+          - light.light.back_hallway
   mode: single
 - alias: >-
     💡 | ⏰ Inside lights off – Upstairs hallway (daily at sunrise;
