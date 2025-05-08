@@ -18,26 +18,21 @@ color_thresholds:
 show:
   labels: hover
 entities:
-  - entity: sensor.mpi_mq1_bandwidth_wlan0_signal
+  - entity: sensor.m5stack_atom_lite_841714_wifi_signal
     unit: dBm — Attic
     show_state: true
     show_graph: false
-  - entity: sensor.bpi_m2_zero_bandwidth_wlan0_signal
+  - entity: sensor.m5stack_atom_lite_842c58_wifi_signal
     name: Living room
     color: lightgrey
     show_points: false
     show_fill: false
-  - entity: sensor.mpi_mq1_guestroom_bandwidth_wlan0_signal
+  - entity: sensor.m5stack_atom_lite_8426b4_wifi_signal
     name: Guestroom
     color: darkgrey
     show_points: false
     show_fill: false
-  - entity: sensor.pi0_w2_bandwidth_wlan0_signal
-    name: Bedroom
-    color: grey
-    show_points: false
-    show_fill: false
-  - entity: sensor.mpi_mq1_bandwidth_wlan0_signal
+  - entity: sensor.m5stack_atom_lite_841714_wifi_signal
     name: Attic
     show_points: false
     show_fill: true

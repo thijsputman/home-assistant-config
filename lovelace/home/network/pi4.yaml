@@ -17,7 +17,7 @@ card:
             margin: 0px !important;
             padding: 0px !important;
           }
-      title: Raspberry Pi 4
+      title: Pi4
       entities:
         - entity: sensor.pi4_cpu_load
         - entity: sensor.pi4_mem_used

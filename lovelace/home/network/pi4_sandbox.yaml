@@ -17,12 +17,12 @@ card:
             margin: 0px !important;
             padding: 0px !important;
           }
-      title: Pi5
+      title: Pi4 Sandbox
       entities:
-        - entity: sensor.pi5_cpu_load
-        - entity: sensor.pi5_mem_used
-        - entity: sensor.pi5_cpu_temp
-        - entity: sensor.pi5_uptime
+        - entity: sensor.pi4_sandbox_cpu_load
+        - entity: sensor.pi4_sandbox_mem_used
+        - entity: sensor.pi4_sandbox_cpu_temp
+        - entity: sensor.pi4_sandbox_uptime
       show_name: false
       show_icon: true
       show_state: true
@@ -47,21 +47,21 @@ card:
                 margin-bottom: 6px;
               }
       content: >-
-        {% set update_id = 'update.pi5_apt' %}
+        {% set update_id = 'update.pi4_sandbox_apt' %}
         {% if states(update_id) == 'on' -%}
           <ha-alert alert-type="info">**{{ device_attr(update_id,
             'name') }}** has {{ state_attr(update_id,
             'latest_version') }} package upgrade(s) available.
           </ha-alert>
         {%- endif %}
-        {% if states('binary_sensor.pi5_reboot_required') == 'on' -%}
+        {% if states('binary_sensor.pi4_sandbox_reboot_required') == 'on' -%}
           <ha-alert alert-type="warning">**{{ device_attr(update_id,
             'name') }}** requires a restart.</ha-alert>
         {%- endif %}
-        {% if states('sensor.pi5_status') != 'running' -%}
+        {% if states('sensor.pi4_sandbox_status') != 'running' -%}
           <ha-alert alert-type="error">systemd reports **{{-
             device_attr(update_id, 'name') }}** is _{{-
-            states('sensor.pi5_status')}}_!</ha-alert>
+            states('sensor.pi4_sandbox_status')}}_!</ha-alert>
         {%- endif %}
     - type: custom:mini-graph-card
       card_mod:
@@ -86,17 +86,17 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.pi5_mem_used
+        - entity: sensor.pi4_sandbox_mem_used
           name: Memory (%)
           show_points: false
           show_fill: true
           color: thistle
-        - entity: sensor.pi5_cpu_load
+        - entity: sensor.pi4_sandbox_cpu_load
           name: CPU (%)
           show_points: false
           show_fill: false
           color: var(--accent-color)
-        - entity: sensor.pi5_cpu_temp
+        - entity: sensor.pi4_sandbox_cpu_temp
           name: Temperature (ºC)
           show_points: false
           show_fill: false

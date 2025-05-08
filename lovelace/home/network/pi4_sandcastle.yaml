@@ -28,6 +28,41 @@ card:
       show_state: true
       state_color: false
       columns: 4
+    - type: markdown
+      card_mod:
+        style:
+          .: |
+            ha-card {
+              border: 0px;
+              margin: 0px !important;
+              padding: 0px !important;
+            }
+            ha-markdown {
+              padding-top: 8px !important;
+              padding-bottom: 8px !important;
+            }
+          ha-markdown$ha-alert:
+            $: |
+              div.issue-type{
+                margin-bottom: 6px;
+              }
+      content: >-
+        {% set update_id = 'update.pi4_sandcastle_apt' %}
+        {% if states(update_id) == 'on' -%}
+          <ha-alert alert-type="info">**{{ device_attr(update_id,
+            'name') }}** has {{ state_attr(update_id,
+            'latest_version') }} package upgrade(s) available.
+          </ha-alert>
+        {%- endif %}
+        {% if states('binary_sensor.pi4_sandcastle_reboot_required') == 'on' -%}
+          <ha-alert alert-type="warning">**{{ device_attr(update_id,
+            'name') }}** requires a restart.</ha-alert>
+        {%- endif %}
+        {% if states('sensor.pi4_sandcastle_status') != 'running' -%}
+          <ha-alert alert-type="error">systemd reports **{{-
+            device_attr(update_id, 'name') }}** is _{{-
+            states('sensor.pi4_sandcastle_status')}}_!</ha-alert>
+        {%- endif %}
     - type: custom:mini-graph-card
       card_mod:
         style: |
@@ -42,7 +77,7 @@ card:
       points_per_hour: 2
       lower_bound: 0
       lower_bound_secondary: 0
-      upper_bound_secondary: ~6
+      upper_bound_secondary: ~7
       cache: true
       show:
         labels: hover

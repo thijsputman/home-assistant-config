@@ -118,38 +118,12 @@ views:
       - type: vertical-stack
         cards:
           - !include home/network/pi5.yaml
-          - !include home/network/status.yaml
+          - !include home/network/ha_yellow.yaml
       - type: vertical-stack
         cards:
           - !include home/network/wifi.yaml
           - !include home/network/gammu.yaml
-          - type: button
-            name: Network » Single-board computers
-            icon: mdi:raspberry-pi
-            show_state: false
-            show_name: false
-            icon_height: 3em
-            tap_action:
-              action: navigate
-              navigation_path: network_sbc
-  # Network » Single-board computers
-  - title: Network » Single-board computers
-    type: custom:masonry-layout
-    path: network_sbc
-    subview: true
-    icon: mdi:raspberry-pi
-    layout:
-      min_height: 1
-    cards:
-      - type: vertical-stack
-        cards:
-          - !include home/network/sbc/pi4_sandbox.yaml
-          - !include home/network/sbc/ha_yellow.yaml
-      - type: vertical-stack
-        cards:
-          - !include home/network/sbc/mpi_mq1.yaml
-          - !include home/network/sbc/bpi_m2_zero.yaml
-          - !include home/network/sbc/pi0_w2.yaml
+          - !include home/network/pi4_sandbox.yaml
   # Weather
   - title: Weather
     path: weather
