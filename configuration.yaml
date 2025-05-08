@@ -41,25 +41,6 @@ tts:
 
 utility_meter: !include utility_meter.yaml
 
-# Arlo
-aarlo:
-  username: !secret arlo_username
-  password: !secret arlo_password
-  backend: sse
-  # As per <https://github.com/twrecked/hass-aarlo/releases/tag/v0.7.4b19> –
-  # caveat: seems to prevent the library from updating with new recordings...
-  # backend: mqtt
-  # mqtt_host: mqtt-cluster-z1.arloxcld.com
-  refresh_devices_every: 2
-  stream_timeout: 120
-  user_agent: linux
-  tfa_source: imap
-  tfa_type: email
-  tfa_host: imap.gmail.com:993
-  tfa_username: !secret aarlo_imap_user
-  tfa_password: !secret aarlo_imap_password
-  save_media_to: /gtx/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
-
 alarm_control_panel:
   - platform: manual
     name: Home Alarm

@@ -1,4 +1,3 @@
 version: 1
 aarlo:
-  backend: sse
   save_media_to: /gtx/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
