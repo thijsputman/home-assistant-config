@@ -173,7 +173,7 @@
             }}
           {% else %}
             {{
-              ['attic', 'bedroom', 'guestroom', 'living_room']
+              ['attic', 'bedroom', 'living_room']
             }}
           {% endif %}
     - service: script.turn_on

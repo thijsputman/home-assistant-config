@@ -17,12 +17,12 @@
         entity_id: script.tts_announce
       data:
         variables:
-          rooms: guestroom
+          rooms: bedroom
           priority: attention
           duration: 2
           chime: false
           message: >-
-            media-source://media_source/sd/audio/Magic_Trick.mp3
+            media-source://media_source/sd/audio/Magic_Trick.ogg
     - service: input_boolean.turn_on
       entity_id: input_boolean.waterrower
     - variables:
@@ -92,11 +92,11 @@
         entity_id: script.tts_announce
       data:
         variables:
-          rooms: guestroom
+          rooms: bedroom
           priority: attention
           duration: 2
           chime: false
           message: >-
-            media-source://media_source/sd/audio/Magic_Trick.mp3
+            media-source://media_source/sd/audio/Magic_Trick.ogg
   mode: single
   max_exceeded: silent

@@ -210,13 +210,11 @@ views:
       - type: vertical-stack
         cards:
           - type: media-control
-            entity: media_player.bpi_m2z
+            entity: media_player.ha_voice_living_room
           - type: media-control
-            entity: media_player.pi0_w2
+            entity: media_player.ha_voice_bedroom
           - type: media-control
-            entity: media_player.mpi_mq1_guestroom
-          - type: media-control
-            entity: media_player.mpi_mq1
+            entity: media_player.ha_voice_attic
       - type: vertical-stack
         cards:
           - type: markdown

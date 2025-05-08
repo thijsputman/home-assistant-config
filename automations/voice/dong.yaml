@@ -42,7 +42,7 @@
             }}
           {% else %}
             {{
-              ['attic', 'bedroom', 'guestroom', 'living_room']
+              ['attic', 'bedroom', 'living_room']
             }}
           {% endif %}
     - if:
@@ -75,5 +75,5 @@
               rooms: >-
                 {{ rooms }}
               message: >-
-                media-source://media_source/sd/audio/Gentle_gong.mp3
+                media-source://media_source/sd/audio/Gentle_gong.ogg
   mode: single

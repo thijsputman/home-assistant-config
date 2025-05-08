@@ -61,7 +61,7 @@
         entity_id: script.wakeup_alarm
     - service: media_player.media_stop
       data:
-        entity_id: media_player.pi0_w2
+        entity_id: media_player.ha_voice_bedroom
     # The snooze timer allows other automations to modify their behaviour while
     # the wakeup alarm is snoozed (e.g. the Bedroom light can't be switched off
     # using the Smart Switches while the wakeup alarm is snoozed)
@@ -107,7 +107,7 @@
         entity_id: script.wakeup_alarm
     - service: media_player.media_stop
       data:
-        entity_id: media_player.pi0_w2
+        entity_id: media_player.ha_voice_bedroom
     # Let other automations know the wakeup alarm was silenced
     - event: wakeup_alarm_silenced
   mode: single

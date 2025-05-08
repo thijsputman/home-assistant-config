@@ -178,13 +178,11 @@ tts_queue:
             {% set room = wait.trigger.event.data.room if
               wait.trigger.event.data.room is defined else '_undefined_' %}
             {% if room == 'living_room' %}
-              media_player.bpi_m2z
+              media_player.ha_voice_living_room
             {% elif room == 'bedroom' %}
-              media_player.pi0_w2
-            {% elif room == 'guestroom' %}
-              media_player.mpi_mq1_guestroom
+              media_player.ha_voice_bedroom
             {% elif room == 'attic' %}
-              media_player.mpi_mq1
+              media_player.ha_voice_attic
             {% else %}
               group.speakers_all
             {% endif %}
@@ -219,7 +217,6 @@ tts_announce:
           options:
             - attic
             - bedroom
-            - guestroom
             - living_room
     message:
       description: The message to announce
@@ -258,16 +255,13 @@ tts_announce:
       {% for room in rooms %}
         {% if room == 'living_room' %}
           {% set result.speakers =
-            result.speakers + ['media_player.bpi_m2z'] %}
+            result.speakers + ['media_player.ha_voice_living_room'] %}
         {% elif room == 'bedroom' %}
           {% set result.speakers =
-            result.speakers + ['media_player.pi0_w2'] %}
-        {% elif room == 'guestroom' %}
-          {% set result.speakers =
-            result.speakers + ['media_player.mpi_mq1_guestroom'] %}
+            result.speakers + ['media_player.ha_voice_bedroom'] %}
         {% elif room == 'attic' %}
           {% set result.speakers =
-            result.speakers + ['media_player.mpi_mq1'] %}
+            result.speakers + ['media_player.ha_voice_attic'] %}
         {% endif %}
       {% endfor %}
       {# Reduce to "group.speakers_all" when all speakers are selected #}
@@ -283,11 +277,11 @@ tts_announce:
       {{ message | trim is match('media-source:\/\/', True) }}
     volume: >-
       {% if priority == 'attention' %}
-        0.65
+        0.90
       {% elif priority == 'whisper' %}
-        0.25
+        0.55
       {% else %}
-        0.45
+        0.70
       {% endif %}
   sequence:
     # Only announce when someone's home
@@ -414,10 +408,9 @@ tts_chime:
         entity:
           multiple: true
           include_entities:
-            - media_player.bpi_m2z
-            - media_player.mpi_mq1
-            - media_player.pi0_w2
-            - media_player.mpi_mq1_guestroom
+            - media_player.ha_voice_living_room
+            - media_player.ha_voice_bedroom
+            - media_player.ha_voice_attic
     type:
       description: Type of chime
       default: announce
@@ -441,10 +434,9 @@ tts_chime:
           {% for speaker in speakers %}
             {% if speaker in
               [
-                'media_player.bpi_m2z',
-                'media_player.mpi_mq1',
-                'media_player.pi0_w2',
-                'media_player.mpi_mq1_guestroom'
+                'media_player.ha_voice_living_room',
+                'media_player.ha_voice_bedroom',
+                'media_player.ha_voice_attic'
               ]
             %}
               {% set result.speakers = result.speakers + [speaker] %}
@@ -461,23 +453,23 @@ tts_chime:
           {% endif %}
         sample: >-
           {% if type == 'bridge' %}
-            Pollen.mp3
+            Pollen.ogg
           {% elif type == 'attention' %}
-            Crosswalk.mp3
+            Crosswalk.ogg
           {% elif type == 'whisper' %}
-            Beginning.mp3
+            Beginning.ogg
           {% else %}
-            Night_Sky.mp3
+            Night_Sky.ogg
           {% endif %}
         volume: >-
           {% if type == 'attention' %}
-            0.65
+            0.90
           {% elif type == 'whisper' %}
-            0.25
+            0.55
           {% elif type == 'bridge' %}
-            0.25
+            0.55
           {% else %}
-            0.45
+            0.70
           {% endif %}
     - service: media_player.volume_set
       data:
