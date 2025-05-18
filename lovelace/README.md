@@ -20,7 +20,7 @@ custom CSS.
 - [`compass-card.js?v=2.0.2`](https://github.com/tomvanswam/compass-card/releases/tag/v2.0.2)
 - [`hass-hue-icons.js?v=1.2.51`](https://github.com/arallsopp/hass-hue-icons/releases/tag/v1.2.51)
 - `home-assistant-sun-card.js?v=0.1.4`
-- [`layout-card.js?v=2.4.5`](https://github.com/thomasloven/lovelace-layout-card/releases/tag/v2.4.5)
+- [`layout-card.js?v=2.4.6`](https://github.com/thomasloven/lovelace-layout-card/releases/tag/v2.4.6)
 - [`logbook-card.js?v=2.5.5`](https://github.com/royto/logbook-card/releases/tag/2.5.5)
 - [`mini-graph-card-bundle.js?v=0.13.0-dev.3`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.13.0-dev.3)
 - [`paper-buttons-row.js?v=2.1.3`](https://github.com/jcwillox/lovelace-paper-buttons-row/releases/tag/2.1.3)
