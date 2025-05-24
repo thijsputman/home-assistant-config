@@ -50,8 +50,8 @@
     - trigger: conversation
       id: conversation
       command:
-        - "goodnight"
-        - "switch off (all|the|all the) lights"
+        - goodnight
+        - switch off (all|the|all the) lights
   conditions:
     # Guard against conversation-triggers from outside the Bedroom
     - >-
@@ -107,8 +107,8 @@
   triggers:
     - trigger: conversation
       command:
-        - "goodnight"
-        - "switch off (all|the|all the) lights"
+        - goodnight
+        - switch off (all|the|all the) lights
   conditions:
     - >-
       {{

@@ -1,4 +1,4 @@
-language: "en"
+language: en
 intents:
   CustomHelloWorld:
     data:
