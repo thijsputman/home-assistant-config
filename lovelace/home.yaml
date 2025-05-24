@@ -100,7 +100,7 @@ views:
                   service: light.turn_on
                   data:
                     entity_id: light.attic
-                    flash: short
+                    flash: long
                 icon: hue:room-attic
                 name: Blink Attic
           - !include home/lights/hue_scenes.yaml

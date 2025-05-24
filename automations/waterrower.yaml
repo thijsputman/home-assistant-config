@@ -85,11 +85,10 @@
       entity_id: input_boolean.waterrower
     - action: script.turn_on
       target:
-        entity_id: script.tts_announce
+        entity_id: script.play_sample
       data:
         variables:
           rooms: guestroom
-          volume: 0.7
-          message: media_source/sd/audio/Magic_Trick.ogg
+          message: Magic_Trick.ogg
   mode: single
   max_exceeded: silent
