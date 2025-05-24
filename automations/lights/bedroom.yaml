@@ -1,17 +1,17 @@
-- alias: 💡 | 🕹️ Bedroom lights toggle (bedside Smart Switches)
+- alias: Bedroom lights toggle
   id: f03f5e56-2eaf-4bc0-8424-d316445b0236
-  trigger:
+  triggers:
     - device_id: da1237666189a9a364fa383795ba532d
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_short_press
       subtype: turn_on
     - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_short_press
       subtype: turn_on
-  condition:
+  conditions:
     # Don't act when the wakeup alarm is sounding or snoozed (the light is
     # supposed to stay on in those cases)
     - condition: state
@@ -29,25 +29,36 @@
         - condition: state
           entity_id: alarm_control_panel.home_alarm
           state: triggered
-  action:
-    - service: light.toggle
+  actions:
+    - action: light.toggle
       target:
         entity_id: light.bedroom
   mode: single
-- alias: 💡 | 🕹️ All lights out (bedside Smart Switches)
+- alias: All lights out
   id: bce1284e-8bd4-4234-bbbc-652c4a3c192d
-  trigger:
+  triggers:
     - device_id: da1237666189a9a364fa383795ba532d
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_double_press
       subtype: turn_on
     - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_double_press
       subtype: turn_on
-  condition:
+    - trigger: conversation
+      id: conversation
+      command:
+        - "goodnight"
+        - "switch off (all|the|all the) lights"
+  conditions:
+    # Guard against conversation-triggers from outside the Bedroom
+    - >-
+      {{
+        trigger.id != 'conversation' or device_entities(trigger.device_id) |
+          contains('assist_satellite.ha_voice_bedroom')
+      }}
     # Only act at night, if the "Lights out"-script isn't running, and not
     # everyone is asleep yet. As our bedtime is quite flexible, this trigger is
     # rather broad – which explains the large number of exceptions that
@@ -81,25 +92,47 @@
         - condition: state
           entity_id: alarm_control_panel.home_alarm
           state: triggered
-  action:
-    - service: script.turn_on
+  actions:
+    # No response needed; the TTS-announcement handles this...
+    - set_conversation_response: ""
+    - action: script.turn_on
       target:
         entity_id: script.lights_out
       data:
         variables:
           activatedFrom: bedroom
   mode: single
-- alias: >-
-    💡 | ⏰/🛌 Dim Upstairs Hallway lights (after 23:00 with someone in bed)
-  id: 50d3b03a-db24-4e6c-966a-52e74435beab
-  trigger:
-    - platform: time
+- alias: All lights out – usage hint
+  id: fedb85c3-5a9a-4a45-a086-16dad1eb2d55
+  triggers:
+    - trigger: conversation
+      command:
+        - "goodnight"
+        - "switch off (all|the|all the) lights"
+  conditions:
+    - >-
+      {{
+        device_entities(trigger.device_id) |
+          contains('assist_satellite.ha_voice_bedroom') != true
+      }}
+    - condition: state
+      entity_id: sensor.time_of_day
+      state:
+        - dawn
+        - day
+  actions:
+    - set_conversation_response: >-
+        Sorry, this only works at night from the Bedroom
+- alias: Dim Upstairs Hallway lights
+  id: 74696fc3-90c2-4296-b372-b2ada671955f
+  triggers:
+    - trigger: time
       at: "23:00:00"
-    - platform: state
+    - trigger: state
       entity_id: binary_sensor.occupancy_bed
       to: "on"
       for: "00:05:00"
-  condition:
+  conditions:
     # Work in both directions: Once at 23:00 and then whenever someone gets into
     # the bed after 23:00
     - condition: time
@@ -108,11 +141,11 @@
     - condition: state
       entity_id: binary_sensor.occupancy_bed
       state: "on"
-  action:
+  actions:
     - condition: state
       entity_id: light.upstairs_hallway
       state: "on"
-    - service: light.turn_on
+    - action: light.turn_on
       data:
         brightness_pct: 15
         color_temp_kelvin: 2200

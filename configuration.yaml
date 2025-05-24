@@ -97,5 +97,6 @@ automation: !include automations.yaml
 automation custom: !include_dir_merge_list automations/
 
 script: !include_dir_merge_named scripts/
+intent_script: !include_dir_merge_named intents/
 
 scene: !include scenes.yaml

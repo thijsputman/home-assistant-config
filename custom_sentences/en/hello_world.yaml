@@ -1,0 +1,17 @@
+language: "en"
+intents:
+  CustomHelloWorld:
+    data:
+      - sentences:
+          - blink [the] {room}
+lists:
+  room:
+    values:
+      - in: living room
+        out: living_room
+      - in: bedroom
+        out: bedroom
+      - in: guestroom
+        out: guestroom
+      - in: attic
+        out: attic
