@@ -3,11 +3,11 @@
     or silenced)
   id: 5cfff24f-e0c7-422a-a181-9836432e1cf4
   trigger:
-    - platform: event
+    - trigger: event
       event_type: timer.started
       event_data:
         entity_id: timer.wakeup_snooze_time
-    - platform: event
+    - trigger: event
       event_type: wakeup_alarm_silenced
   action:
     # Slight delay both for "ergonomic" reasons and to allow other automations
@@ -20,12 +20,12 @@
 - alias: 🔊 | 💤 Queue "Good morning!" (everyone awake)
   id: f1a0a203-6d0e-4c91-99a8-ced118c4c478
   trigger:
-    - platform: state
+    - trigger: state
       entity_id: input_boolean.everyone_asleep
       from: "on"
       to: "off"
   action:
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
@@ -38,7 +38,7 @@
 - alias: 🔊 | 📹 Queue "Activity while armed"-announcement
   id: bd31f54a-d88e-44d0-958b-4da2eb248150
   trigger:
-    - platform: state
+    - trigger: state
       entity_id: input_boolean.everyone_asleep
       from: "on"
       to: "off"
@@ -51,7 +51,7 @@
       {{ activity_while_armed | trim != '' }}
   action:
     - delay: 1 # Ensure "Good morning!" comes first
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
@@ -59,7 +59,6 @@
           channel: announce
           tag: good_morning
           expiry: "01:00:00"
-          chime: false
           message: >-
             While you were asleep, {{ activity_while_armed }}.
   mode: single
@@ -68,7 +67,7 @@
 - alias: 🔊 | 📅 Queue calendar announcement (calendar-event)
   id: b52670b7-b0a8-4fc8-bed2-6145f2197976
   trigger:
-    - platform: calendar
+    - trigger: calendar
       event: start
       entity_id: calendar.home
       offset: -01:00:00
@@ -96,14 +95,13 @@
       }}
   action:
     - delay: 1 # Ensure "Good morning!" comes first
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
         variables:
           channel: announce
           tag: good_morning
-          chime: false
           expiry: >-
             {{
               [0,
@@ -121,14 +119,14 @@
 - alias: 🔊 | ⛅ Queue today's weather forecast
   id: c74b7fa1-eb7d-46d7-ba62-7186e2c5cc32
   trigger:
-    - platform: state
+    - trigger: state
       entity_id: input_boolean.everyone_asleep
       from: "on"
       to: "off"
   condition: []
   action:
     - delay: 3 # Queue this one up last
-    - service: weather.get_forecasts
+    - action: weather.get_forecasts
       data:
         type: daily
       target:
@@ -140,7 +138,7 @@
     - variables:
         tomorrow: >-
           {{ response['weather.tomorrow_io'].forecast[0] }}
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
@@ -148,7 +146,6 @@
           channel: announce
           tag: good_morning
           expiry: "01:00:00"
-          chime: false
           message: >-
             The forecast for today is {{
               tomorrow.condition |
@@ -158,29 +155,17 @@
                 replace('-', ' ') }}
             with a high of {{ tomorrow.temperature | int(0)
             }} degrees and a low of {{ tomorrow.templow | int(0) }} degrees.
-    - if:
-        - >-
-          {{ tomorrow.precipitation | float(0) > 0 }}
-        # No sense in reporting rain if the main forecast mentions it...
-        - >-
-          {{ tomorrow.condition is not search('snow|rain') }}
-      then:
-        - service: script.turn_on
-          target:
-            entity_id: script.tts_queue
-          data:
-            variables:
-              channel: announce
-              tag: good_morning
-              expiry: "01:00:00"
-              chime: false
-              message: >-
-                {% set precipitation = tomorrow.precipitation | float(0) %}
-                {% if precipitation <= 0.5 %}
-                  There is a slight chance of rain.
-                {% elif precipitation <= 2.0 %}
-                  Some rain is expected.
-                {% else %}
-                  It will likely rain.
-                {% endif %}
+            {%
+              if tomorrow.precipitation | float(0) > 0 and
+                tomorrow.condition is not search('snow|rain')
+            %}
+              {% set precipitation = tomorrow.precipitation | float(0) %}
+              {% if precipitation <= 0.5 %}
+                There is a slight chance of rain.
+              {% elif precipitation <= 2.0 %}
+                Some rain is expected.
+              {% else %}
+                It will likely rain.
+              {% endif %}
+            {% endif %}
   mode: single

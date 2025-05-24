@@ -188,6 +188,8 @@ views:
           - type: media-control
             entity: media_player.ha_voice_bedroom
           - type: media-control
+            entity: media_player.ha_voice_guestroom
+          - type: media-control
             entity: media_player.ha_voice_attic
       - type: vertical-stack
         cards:

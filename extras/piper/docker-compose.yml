@@ -1,12 +1,11 @@
-version: "3"
 services:
   piper:
     container_name: piper
-    image: rhasspy/wyoming-piper:1.2.0
+    image: rhasspy/wyoming-piper:1.5.4
     user: 1000:1003
     command:
       - --voice
-      - en_US-amy-low
+      - en_US-danny-low
       - --length-scale
       - "1.15"
     volumes:

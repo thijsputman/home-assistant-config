@@ -5,12 +5,9 @@ wakeup_alarm:
     - repeat:
         count: 4
         sequence:
-          - service: script.tts_announce
+          - action: script.play_sample
             data:
-              priority: attention
-              duration: 20
-              chime: false
+              volume: 0.9
               rooms: bedroom
-              message: >-
-                media-source://media_source/sd/audio/4nsekecn.mp3
+              sample: 4nsekecn.mp3
   mode: single

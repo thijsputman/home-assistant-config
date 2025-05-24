@@ -1,19 +1,19 @@
 - alias: 💡 | 🚪 Blink Attic lights (doorbell rang)
   id: e08720ba-f27a-4308-aeef-275c606872b6
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.vibration_43
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: binary_sensor.occupancy_attic
       state: "on"
-  action:
+  actions:
     - repeat:
         count: 2
         sequence:
-          - service: light.turn_on
+          - action: light.turn_on
             data:
               flash: short
             entity_id: light.attic
@@ -23,13 +23,13 @@
     📱/🔊 | 🚪 Notify devices at home and announce in Attic
     (doorbell rang; auto-dismissed)
   id: dd5d2646-26e3-4c71-aa3c-b7f49151606e
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.vibration_43
       from: "off"
       to: "on"
-  condition: []
-  action:
+  conditions: []
+  actions:
     - variables:
         rang_at: >-
           {{ now() }}
@@ -38,18 +38,15 @@
           entity_id: binary_sensor.occupancy_attic
           state: "on"
       then:
-        - service: script.turn_on
+        - action: script.turn_on
           target:
-            entity_id: script.tts_announce
+            entity_id: script.play_sample
           data:
             variables:
               rooms: attic
-              priority: attention
-              duration: 4
-              chime: false
-              message: >-
-                media-source://media_source/sd/audio/doorbell.ogg
-    - service: script.turn_on
+              volume: 0.90
+              message: doorbell.ogg
+    - action: script.turn_on
       target:
         entity_id: script.persistent_notification
       data:
@@ -65,7 +62,7 @@
     # Wait for the front door to open or close (indicating someone responded to
     # the doorbell)
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.openclose_16
           from:
             - "on"
@@ -91,7 +88,7 @@
               value_template: >-
                 {{ wait.trigger is none }}
           sequence:
-            - service: script.turn_on
+            - action: script.turn_on
               target:
                 entity_id: script.persistent_notification
               data:
@@ -106,7 +103,7 @@
                   image: >-
                     {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
             # Furthermore, queue a TTS announcement
-            - service: script.turn_on
+            - action: script.turn_on
               target:
                 entity_id: script.tts_queue
               data:
@@ -118,7 +115,7 @@
       # Otherwise (i.e. the door was opened/closed), dismiss the notification
       # and the pending announcement
       default:
-        - service: persistent_notification.dismiss
+        - action: persistent_notification.dismiss
           data:
             notification_id: doorbell
         - event: tts_queue_abort
@@ -128,21 +125,21 @@
   max_exceeded: silent
 - alias: 📹 | 🚪 Arlo snapshot (doorbell rang)
   id: dbfbeeab-04a2-404f-8771-5109ec19f729
-  trigger:
+  triggers:
     # Sensor stays active for 60 seconds, so there's no need to guard against
     # multiple triggers in rapid succession...
-    - platform: state
+    - trigger: state
       entity_id: binary_sensor.vibration_43
       from: "off"
       to: "on"
-  condition:
+  conditions:
     # Don't disturb an active capture/recording-session
     - condition: not
       conditions:
         - condition: state
           entity_id: camera.aarlo_front
           state: recording
-  action:
+  actions:
     - variables:
         filename: >-
           -{{ now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') }}.jpg
@@ -153,33 +150,33 @@
           {% else %}
             -unknown
           {% endif %}
-    - service: aarlo.camera_request_snapshot_to_file
+    - action: aarlo.camera_request_snapshot_to_file
       data:
         filename: >-
-          /config/var/doorbell/front{{ time_of_day ~ filename }}
+          /gtx/var/aarlo-snapshots/doorbell/front{{ time_of_day ~ filename }}
       entity_id: camera.aarlo_front
   mode: single
 - alias: 📱 | 🚪 Send Arlo capture (camera active when doorbell rang)
   id: a811aa28-9084-4158-87b4-a063e9b8358c
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.vibration_43
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: binary_sensor.aarlo_motion_front
       state: "on"
-  action:
+  actions:
     - wait_for_trigger:
-        - platform: event
+        - trigger: event
           event_type: aarlo_capture_updated
       timeout: 60
       # If no capture comes in within one minute, it was (most likely) already
       # taken before the doorbell rang – continue and send the previously
       # available thumbnail...
       continue_on_timeout: true
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.persistent_notification
       data:

@@ -3,7 +3,7 @@
   trigger:
     # It seems "hours: *" is not the way to go — it works but (appears?) to
     # interfer with other automations running at the top of the hour... 🤨
-    - platform: time_pattern
+    - trigger: time_pattern
       seconds: 0
       minutes: 0
   condition:
@@ -33,7 +33,8 @@
       entity_id: timer.wakeup_snooze_time
       state: idle
   action:
-    # In Bedroom and Guestroom, the "Dong!" only sounds between 06:00 and 22:00
+    # In the Bedroom and Guestroom, the "Dong!" only sounds between 06:00 and
+    # 22:00...
     - variables:
         rooms: >-
           {% if now() < today_at('06:00') or now() > today_at('22:00') %}
@@ -42,7 +43,7 @@
             }}
           {% else %}
             {{
-              ['attic', 'bedroom', 'living_room']
+              ['attic', 'bedroom', 'living_room', 'guestroom']
             }}
           {% endif %}
     - if:
@@ -51,29 +52,23 @@
           before: "12:01:00"
       # Special "Dong!" at noon
       then:
-        - service: script.turn_on
+        - action: script.turn_on
           target:
-            entity_id: script.tts_announce
+            entity_id: script.play_sample
           data:
             variables:
-              priority: regular
-              duration: 3
-              chime: false
+              volume: 0.9
               rooms: >-
                 {{ rooms }}
-              message: >-
-                media-source://media_source/sd/audio/hourly_dong.mp3
+              sample: hourly_dong.mp3
       else:
-        - service: script.turn_on
+        - action: script.turn_on
           target:
-            entity_id: script.tts_announce
+            entity_id: script.play_sample
           data:
             variables:
-              priority: attention
-              duration: 2
-              chime: false
+              volume: 0.55
               rooms: >-
                 {{ rooms }}
-              message: >-
-                media-source://media_source/sd/audio/Gentle_gong.ogg
+              sample: Spell.ogg
   mode: single

@@ -2,7 +2,7 @@
     🔊 | 🕹️ Trigger "Goodnight" announcements ("Lights out"-script triggered)
   id: 6af957b0-bc4e-489c-8ff7-4ae492b7ca21
   trigger:
-    - platform: state
+    - trigger: state
       entity_id: script.lights_out
       from: "off"
       to: "on"
@@ -35,19 +35,16 @@
 - alias: 🔊 | 💡 Queue "Goodnight" announcements ("Lights out" triggered)
   id: 4bce7cff-f340-4fd7-9b18-b6a7aa85d38f
   trigger:
-    - platform: state
+    - trigger: state
       entity_id: script.lights_out
       from: "off"
       to: "on"
   variables:
-    goodnight_alarm: >-
-      {% from 'voice.jinja' import goodnight_alarm %}
-      {{ goodnight_alarm() }}
     albert_heijn_eta: >-
       {% from 'voice.jinja' import albert_heijn_eta %}
       {{ albert_heijn_eta() }}
   action:
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
@@ -55,22 +52,10 @@
           channel: announce
           tag: goodnight
           priority: whisper
-          message: Switching off all lights.
-    - if:
-        - >-
-          {{ goodnight_alarm | trim != '' }}
-      then:
-        - service: script.turn_on
-          target:
-            entity_id: script.tts_queue
-          data:
-            variables:
-              channel: announce
-              tag: goodnight
-              priority: whisper
-              chime: false
-              message: >-
-                {{ goodnight_alarm }}
+          message: >-
+            {% from 'voice.jinja' import goodnight_alarm %}
+            Switching off all lights.
+            {{ goodnight_alarm() }}
     - if:
         - >-
           {{ albert_heijn_eta | trim != '' }}
@@ -82,7 +67,7 @@
               as_datetime > now()
           }}
       then:
-        - service: script.turn_on
+        - action: script.turn_on
           target:
             entity_id: script.tts_queue
           data:
@@ -90,10 +75,9 @@
               channel: announce
               tag: goodnight
               priority: whisper
-              chime: false
               message: >-
                 {{ albert_heijn_eta }}
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
@@ -101,7 +85,6 @@
           channel: announce
           tag: goodnight
           priority: whisper
-          chime: false
           message: Goodnight...
   mode: single
   max_exceeded: silent

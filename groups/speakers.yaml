@@ -1,7 +1,16 @@
-speakers_all:
-  name: All speakers
+speakers_voice_all:
+  name: All HA Voice-speakers
   icon: mdi:speaker-wireless
   entities:
     - media_player.ha_voice_living_room
     - media_player.ha_voice_attic
     - media_player.ha_voice_bedroom
+    - media_player.ha_voice_guestroom
+satellites_all:
+  name: All satellites
+  icon: mdi:account-voice
+  entities:
+    - assist_satellite.ha_voice_living_room
+    - assist_satellite.ha_voice_attic
+    - assist_satellite.ha_voice_bedroom
+    - assist_satellite.ha_voice_guestroom

@@ -1,7 +1,7 @@
 - alias: 🚨 | 📱 Notify on alarm pending
   id: 601cb512-c43b-4155-b58f-122441d49d22
   trigger:
-    - platform: state
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to: pending
   condition: []
@@ -26,7 +26,7 @@
             sort(reverse=true, attribute='last_changed') |
             map(attribute='name') | list
           }}
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.persistent_notification
       data:
@@ -54,7 +54,7 @@
 - alias: 🚨 | 📱/🔊 Notify on alarm sounding
   id: 05a2188b-8940-4311-adfb-bea75a792000
   trigger:
-    - platform: state
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to: triggered
   condition: []
@@ -75,7 +75,7 @@
             sort(reverse=true, attribute='last_changed') |
             map(attribute='name') | list
           }}
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.sms_notification
       data:
@@ -92,7 +92,7 @@
                 the alarm:\n◾ {{ tripped_sensors | join('\\n◾ ') }}
               {% endif %}
             {% endif %}
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.persistent_notification
       data:
@@ -120,7 +120,7 @@
               .
             {% endif %}
     # Queue TTS announcement (released when silencing the alarm)
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
@@ -134,31 +134,15 @@
               The alarm was triggered by {{ tripped_sensors[0] }}.
             {% elif tripped_sensors | length > 1 %}
               The following {{ tripped_sensors | length }} sensors triggered
-              the alarm:
+              the alarm: {{ tripped_sensors | join(', ') }}.
             {% endif %}
-    - if:
-        - >-
-          {{ tripped_sensors | length > 1 }}
-      then:
-        - service: script.turn_on
-          target:
-            entity_id: script.tts_queue
-          data:
-            variables:
-              channel: announce
-              tag: home_alarm
-              priority: attention
-              chime: false
-              expiry: "00:10:00"
-              message: >-
-                {{ tripped_sensors | join(', ') }}
   mode: single
 - alias: 🚨 | 📱 Notify on alarm disarmed
   id: d06c2a3e-f1a7-41c2-9bf3-d29c6c352c93
   variables:
     tablet_kitchen_user_id: !secret tablet_kitchen_user_id
   trigger:
-    - platform: state
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       from:
         - pending
@@ -190,7 +174,7 @@
               {% endif %}
             {% endif %}
           {% endif %}
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.sms_notification
       data:
@@ -201,7 +185,7 @@
             {% if actor != '' %}
               {{ actor }}
             {% endif %}.
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.persistent_notification
       data:

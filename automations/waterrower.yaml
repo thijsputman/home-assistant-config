@@ -4,7 +4,7 @@
   trigger:
     - device_id: 9cc578b2f62edb745139e97e695b5bb1
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_short_press
       subtype: turn_on
   condition:
@@ -12,32 +12,28 @@
       entity_id: input_boolean.waterrower
       state: "off"
   action:
-    - service: script.turn_on
+    - action: script.turn_on
       target:
-        entity_id: script.tts_announce
+        entity_id: script.play_sample
       data:
         variables:
-          rooms: bedroom
-          priority: attention
-          duration: 2
-          chime: false
-          message: >-
-            media-source://media_source/sd/audio/Magic_Trick.ogg
-    - service: input_boolean.turn_on
+          rooms: guestroom
+          message: Magic_Trick.ogg
+    - action: input_boolean.turn_on
       entity_id: input_boolean.waterrower
     - variables:
         fan_speed: >-
           {{ state_attr('fan.sonair_guestroom', 'percentage') }}
         fan_co2: >-
           {{ states('switch.co2_sensor_sonair_guestroom') }}
-    - service: fan.set_percentage
+    - action: fan.set_percentage
       data:
         percentage: 100
       target:
         entity_id: fan.sonair_guestroom
     # Restore previous fan settings after exercise session
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: input_boolean.waterrower
           from: "on"
           to: "off"
@@ -54,11 +50,11 @@
         - >-
           {{ fan_co2 }}
       then:
-        - service: switch.turn_on
+        - action: switch.turn_on
           target:
             entity_id: switch.co2_sensor_sonair_guestroom
       else:
-        - service: fan.set_percentage
+        - action: fan.set_percentage
           data:
             percentage: >-
               {{ fan_speed }}
@@ -68,7 +64,7 @@
     - condition: state
       entity_id: input_boolean.waterrower
       state: "on"
-    - service: input_boolean.turn_off
+    - action: input_boolean.turn_off
       entity_id: input_boolean.waterrower
   mode: single
   max_exceeded: silent
@@ -77,7 +73,7 @@
   trigger:
     - device_id: 9cc578b2f62edb745139e97e695b5bb1
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_short_press
       subtype: turn_on
   condition:
@@ -85,18 +81,15 @@
       entity_id: input_boolean.waterrower
       state: "on"
   action:
-    - service: input_boolean.turn_off
+    - action: input_boolean.turn_off
       entity_id: input_boolean.waterrower
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_announce
       data:
         variables:
-          rooms: bedroom
-          priority: attention
-          duration: 2
-          chime: false
-          message: >-
-            media-source://media_source/sd/audio/Magic_Trick.ogg
+          rooms: guestroom
+          volume: 0.7
+          message: media_source/sd/audio/Magic_Trick.ogg
   mode: single
   max_exceeded: silent

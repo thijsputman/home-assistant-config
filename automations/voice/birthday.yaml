@@ -1,7 +1,7 @@
 - alias: 🔊 | 🎂 Queue "Happy birthday!"
   id: 424f4e83-29a2-42b8-9031-07a1b1a0390d
   trigger:
-    - platform: calendar
+    - trigger: calendar
       event: start
       entity_id: calendar.home
   condition:
@@ -17,11 +17,11 @@
     # below trigger; triggering here gives us the opportunity to impact
     # (ie, cancel) the other notifications...
     - wait_for_trigger:
-        - platform: event
+        - trigger: event
           event_type: timer.started
           event_data:
             entity_id: timer.wakeup_snooze_time
-        - platform: event
+        - trigger: event
           event_type: wakeup_alarm_silenced
       timeout: "12:00:00"
       continue_on_timeout: false
@@ -29,17 +29,14 @@
     - event: tts_queue_abort
       event_data:
         tag: good_morning
-    - service: script.turn_on
+    # Slight delay (similar to the regular announcement-delay)
+    - delay: 5
+    - action: script.turn_on
       target:
-        entity_id: script.tts_queue
+        entity_id: script.play_sample
       data:
         variables:
-          channel: announce
-          tag: good_morning
-          priority: attention
-          duration: 42
-          expiry: "01:00:00"
-          chime: false
-          message: >-
-            media-source://media_source/sd/audio/happy_birthday.ogg
+          rooms: bedroom
+          volume: 0.9
+          message: happy_birthday.ogg
   mode: single

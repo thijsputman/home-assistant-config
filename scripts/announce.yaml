@@ -23,21 +23,10 @@ tts_queue:
   fields:
     message:
       description: >-
-        The message to queue for announcement – to queue a sample instead of a
-        text message, use "media-source://..." as message
+        The message to queue for announcement
       required: true
       selector:
         text: # yamllint disable-line rule:empty-values
-    duration:
-      description: >-
-        The length (in seconds) of the spoken out announcement (when omitted,
-        a crude heuristic is applied) – when providing a sample, provide the
-        sample's duration here!
-      required: false
-      selector:
-        number:
-          min: 1
-          max: 300
     expiry:
       description: >-
         Validity of the announcement – for the "attention"-channel defaults to
@@ -56,7 +45,7 @@ tts_queue:
             - attention
             - announce
     priority:
-      description: Message priority (ie, volume)
+      description: Message priority
       required: false
       default: regular
       selector:
@@ -65,12 +54,6 @@ tts_queue:
             - attention
             - regular
             - whisper
-    chime:
-      description: Chime before announcing
-      required: false
-      default: true
-      selector:
-        boolean: # yamllint disable-line rule:empty-values
     tag:
       description: >-
         Announcement tag – can be used to abort queued announcements _and_ in
@@ -103,13 +86,13 @@ tts_queue:
     - repeat:
         sequence:
           - wait_for_trigger:
-              - platform: event
+              - trigger: event
                 id: attention
                 event_type: tts_attention
-              - platform: event
+              - trigger: event
                 id: announce
                 event_type: tts_announce
-              - platform: event
+              - trigger: event
                 id: abort
                 event_type: tts_queue_abort
                 event_data:
@@ -120,7 +103,7 @@ tts_queue:
                       {# For manual intervention / debugging purposes #}
                       ABORT_{{ context.id }}
                     {% endif %}
-              - platform: event
+              - trigger: event
                 id: abort
                 event_type: tts_queue_abort_all
             # Ensure we respect the original timeout by updating it with the
@@ -169,31 +152,18 @@ tts_queue:
                 future_time_tts(wait.remaining | int(0))
               )
           }}
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.tts_announce
       data:
         variables:
-          speakers: >-
-            {% set room = wait.trigger.event.data.room if
-              wait.trigger.event.data.room is defined else '_undefined_' %}
-            {% if room == 'living_room' %}
-              media_player.ha_voice_living_room
-            {% elif room == 'bedroom' %}
-              media_player.ha_voice_bedroom
-            {% elif room == 'attic' %}
-              media_player.ha_voice_attic
-            {% else %}
-              group.speakers_all
-            {% endif %}
+          rooms: >-
+            {{
+              wait.trigger.event.data.room if
+                wait.trigger.event.data.room is defined else none
+            }}
           message: >-
             {{ message }}
-          duration: >-
-            {% if duration is number %}
-              {{ duration }}
-            {% endif %}
-          chime: >-
-            {{ chime | bool(true) if chime is defined else true }}
           priority: >-
             {{ priority if priority is defined else none }}
   mode: parallel
@@ -217,26 +187,15 @@ tts_announce:
           options:
             - attic
             - bedroom
+            - guestroom
             - living_room
     message:
       description: The message to announce
       required: true
       selector:
         text: # yamllint disable-line rule:empty-values
-    duration:
-      required: false
-      selector:
-        number:
-          min: 1
-          max: 300
-    chime:
-      description: Chime before announcing
-      required: false
-      default: true
-      selector:
-        boolean: # yamllint disable-line rule:empty-values
     priority:
-      description: Message priority (ie, volume)
+      description: Message priority
       required: false
       default: regular
       selector:
@@ -246,40 +205,30 @@ tts_announce:
             - regular
             - whisper
   variables:
+    satellites: >-
+      {% from 'rooms.jinja' import rooms_satellites %}
+      {{ rooms_satellites(rooms) }}
     speakers: >-
-      {% set result = namespace(speakers=[]) %}
-      {% set rooms = rooms if rooms is defined else [] %}
-      {% if rooms is string %}
-        {% set rooms = rooms.split(',') if ',' in rooms else [rooms] %}
-      {% endif %}
-      {% for room in rooms %}
-        {% if room == 'living_room' %}
-          {% set result.speakers =
-            result.speakers + ['media_player.ha_voice_living_room'] %}
-        {% elif room == 'bedroom' %}
-          {% set result.speakers =
-            result.speakers + ['media_player.ha_voice_bedroom'] %}
-        {% elif room == 'attic' %}
-          {% set result.speakers =
-            result.speakers + ['media_player.ha_voice_attic'] %}
+      {% from 'rooms.jinja' import rooms_speakers %}
+      {{ rooms_speakers(rooms) }}
+    preannounce_sample: >-
+      {% if this.attributes.current == 0 %}
+        {% if priority == 'attention' %}
+          Crosswalk.ogg
+        {% elif priority == 'whisper' %}
+          Portal.ogg
+        {% else %}
+          Bubble.ogg
         {% endif %}
-      {% endfor %}
-      {# Reduce to "group.speakers_all" when all speakers are selected #}
-      {% if
-        result.speakers | length > 0 and (result.speakers |
-          length) != (expand('group.speakers_all') | length)
-      %}
-        {{ result.speakers | join(',') }}
+      {# Bridge between two consecutive announcements #}
       {% else %}
-        group.speakers_all
+        Pollen.ogg
       {% endif %}
-    is_sample: >-
-      {{ message | trim is match('media-source:\/\/', True) }}
     volume: >-
       {% if priority == 'attention' %}
         0.90
       {% elif priority == 'whisper' %}
-        0.55
+        0.45
       {% else %}
         0.70
       {% endif %}
@@ -292,200 +241,146 @@ tts_announce:
           state:
             - armed_away
             - armed_vacation
-    # Optional chime before the announcement. If multiple announcements are
-    # queued, use a different chime to "bridge" the messages.
-    - if: >-
-        {{ chime | bool(true) if chime is defined else true }}
-      then:
-        - if: >-
-            {{ this.attributes.current == 0 }}
-          then:
-            - service: script.tts_chime
-              data:
-                type: >-
-                  {% if priority in ['attention', 'whisper'] %}
-                    {{ priority }}
-                  {% else %}
-                    announce
-                  {% endif %}
-                speakers: >-
-                  {{ speakers }}
-          else:
-            - service: script.tts_chime
-              data:
-                type: bridge
-                speakers: >-
-                  {{ speakers }}
-    - service: media_player.volume_set
+    # XXX Cope nicely with empty message...
+    - variables:
+        # Compress all whitespace; remove all HTML-tags (they are
+        # pronounced, instead of being used as intonation hints as I
+        # would've hoped); convert timestamps into a format slightly more
+        # conductive to TTS; replace "ij" with "y" (English-language TTSs
+        # trip over it – also hard-coded a fix for my own name 😇).
+        announcement: >-
+          {{
+            message |
+              regex_replace('[ \n]+', ' ') |
+              regex_replace('<.+?>', '') |
+              regex_replace('0([1-9]{1}):([0-9]{2})', '\g<1>:\g<2>') |
+              regex_replace('([0-9]{1,2}):0([1-9]{1})',
+                '\g<2> past \g<1>') |
+              regex_replace('([0-9]{1,2}):00', '\g<1> o\'clock') |
+              replace('ij', 'y') | replace('Thijs', 'Tice')
+          }}
+    - action: media_player.volume_set
       data:
         volume_level: >-
           {{ volume }}
       target:
         entity_id: >-
           {{ speakers }}
-    - if:
-        - >-
-          {{ is_sample }}
-      then:
-        - service: media_player.play_media
-          data:
-            media_content_type: music
-            media_content_id: >-
-              {{ message | trim }}
-          target:
-            entity_id: >-
-              {{ speakers }}
-        - service: notify.send_message
-          target:
-            entity_id: notify.log_tts_announce
-          data:
-            message: >-
-              {{ speakers.split(',') if ',' in speakers else speakers }}:
-              Played sample "{{ message | trim }}" (🔊 {{ volume }})
-        - delay: >-
-            {{ duration if duration is defined else 0 | int(1) }}
-      else:
-        - variables:
-            # Compress all whitespace; remove all HTML-tags (they are
-            # pronounced, instead of being used as intonation hints as I
-            # would've hoped); convert timestamps into a format slightly more
-            # conductive to TTS; replace "ij" with "y" (English-language TTSs
-            # trip over it – also hard-coded a fix for my own name 😇).
-            announcement: >-
-              {{
-                message |
-                  regex_replace('[ \n]+', ' ') |
-                  regex_replace('<.+?>', '') |
-                  regex_replace('0([1-9]{1}):([0-9]{2})', '\g<1>:\g<2>') |
-                  regex_replace('([0-9]{1,2}):0([1-9]{1})',
-                    '\g<2> past \g<1>') |
-                  regex_replace('([0-9]{1,2}):00', '\g<1> o\'clock') |
-                  replace('ij', 'y') | replace('Thijs', 'Tice')
-              }}
-        - service: tts.speak
-          data:
-            cache: true
-            media_player_entity_id: >-
-              {{ speakers }}
-            message: >-
-              {{ announcement }}
-            options:
-              voice: en_US-danny-low
-          target:
-            entity_id: tts.piper
-        - service: notify.send_message
-          target:
-            entity_id: notify.log_tts_announce
-          data:
-            message: >-
-              {{ speakers.split(',') if ',' in speakers else speakers }}:
-              {{ announcement }} (🔊 {{ volume }})
-        # For queued execution to work properly, the script needs to block while
-        # the announcement is playing...
-        - delay: >-
-            {#
-              Crude heuristic to determine the duration of a spoken out string
-            #}
-            {% if duration is not number %}
-              {{ [1, (announcement | length / 9) | round(0)] | max }}
-            {% else %}
-              {{ duration | int(5) }}
-            {% endif %}
+    - action: assist_satellite.announce
+      target:
+        entity_id: >-
+          {{ satellites }}
+      data:
+        message: >-
+          {{ announcement }}
+        preannounce: true
+        preannounce_media_id: >-
+          media-source://media_source/sd/audio/{{- preannounce_sample -}}
+    - action: media_player.volume_set
+      data:
+        volume_level: 0.70
+      target:
+        entity_id: >-
+          {{ speakers }}
+    - action: notify.send_message
+      target:
+        entity_id: notify.log_tts_announce
+      data:
+        message: >-
+          {{ satellites.split(',') if ',' in satellites else satellites }}:
+          {{ announcement }} (🔊 {{ volume }})
   mode: queued
   max: 10
   trace:
     stored_traces: 20
-tts_chime:
-  alias: TTS chime [internal]
-  icon: mdi:instrument-triangle
+play_sample:
+  alias: Play sample
+  icon: mdi:speaker-message
   fields:
-    speakers:
+    rooms:
       description: >-
-        Speaker-entities to chime – when omitted uses _all_ speakers; multiple
+        Rooms to play in – when omitted announces in _all_ rooms; multiple
         selection possible
       required: true
       selector:
-        entity:
-          multiple: true
-          include_entities:
-            - media_player.ha_voice_living_room
-            - media_player.ha_voice_bedroom
-            - media_player.ha_voice_attic
-    type:
-      description: Type of chime
-      default: announce
-      required: false
-      selector:
         select:
+          multiple: true
           options:
-            - attention
-            - announce
-            - whisper
-            - bridge
+            - attic
+            - bedroom
+            - guestroom
+            - living_room
+    sample:
+      description: The sample to play
+      required: true
+      selector:
+        text: # yamllint disable-line rule:empty-values
+    volume:
+      description: Volume to play sample at
+      required: false
+      default: 0.70
+      selector:
+        number:
+          min: 0.0
+          max: 1.0
+          step: 0.01
+  variables:
+    speakers: >-
+      {% from 'rooms.jinja' import rooms_speakers %}
+      {{ rooms_speakers(rooms) }}
+    volume: >-
+      {{ volume if volume is defined else 0.70 }}
   sequence:
-    - variables:
-        speakers: >-
-          {% set result = namespace(speakers=[]) %}
-          {% set speakers = speakers if speakers is defined else [] %}
-          {% if speakers is string %}
-            {% set speakers = speakers.split(',') if ',' in speakers
-              else [speakers] %}
-          {% endif %}
-          {% for speaker in speakers %}
-            {% if speaker in
-              [
-                'media_player.ha_voice_living_room',
-                'media_player.ha_voice_bedroom',
-                'media_player.ha_voice_attic'
-              ]
-            %}
-              {% set result.speakers = result.speakers + [speaker] %}
-            {% endif %}
-          {% endfor %}
-          {# Reduce to "group.speakers_all" when all speakers are selected #}
-          {% if
-            result.speakers | length > 0 and (result.speakers |
-              length) != (expand('group.speakers_all') | length)
-          %}
-            {{ result.speakers }}
-          {% else %}
-            group.speakers_all
-          {% endif %}
-        sample: >-
-          {% if type == 'bridge' %}
-            Pollen.ogg
-          {% elif type == 'attention' %}
-            Crosswalk.ogg
-          {% elif type == 'whisper' %}
-            Beginning.ogg
-          {% else %}
-            Night_Sky.ogg
-          {% endif %}
-        volume: >-
-          {% if type == 'attention' %}
-            0.90
-          {% elif type == 'whisper' %}
-            0.55
-          {% elif type == 'bridge' %}
-            0.55
-          {% else %}
-            0.70
-          {% endif %}
-    - service: media_player.volume_set
+    # Only play when someone's home
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: alarm_control_panel.home_alarm
+          state:
+            - armed_away
+            - armed_vacation
+    - action: media_player.volume_set
       data:
         volume_level: >-
           {{ volume }}
       target:
         entity_id: >-
           {{ speakers }}
-    - service: media_player.play_media
+    - action: media_player.play_media
       data:
         media_content_type: music
         media_content_id: >-
           media-source://media_source/sd/audio/{{- sample -}}
+        announce: true
       target:
         entity_id: >-
           {{ speakers }}
-    # Block during the chime
-    - delay: "00:00:01"
-  mode: single
+    # Block script while the sample is playing
+    - wait_for_trigger:
+        - trigger: template
+          value_template: >-
+            {{
+              expand(
+                speakers.split(',') if ',' in speakers else [speakers]
+              ) | selectattr("state", "eq", "playing") | list | length == 0
+            }}
+          for: "00:00:01" # Template resolves slightly too fast...
+      timeout: "00:02:00"
+      continue_on_timeout: true
+    - action: media_player.volume_set
+      data:
+        volume_level: 0.70
+      target:
+        entity_id: >-
+          {{ speakers }}
+    - action: notify.send_message
+      target:
+        entity_id: notify.log_tts_announce
+      data:
+        message: >-
+          {{ speakers.split(',') if ',' in speakers else speakers }}:
+          Played sample "{{- sample -}}" (🔊 {{ volume }})
+  mode: queued
+  max: 5
+  trace:
+    stored_traces: 10

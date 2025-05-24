@@ -1,9 +1,9 @@
 - alias: 💤 | 🔊 Wakeup alarm bedroom (at «wakeup» time)
   id: 4f9e08f9-b352-4945-b788-215e301ef883
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: input_datetime.wakeup
-  condition:
+  conditions:
     - condition: state
       state: home
       entity_id: group.family
@@ -13,18 +13,18 @@
     - condition: state
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"
-  action:
+  actions:
     # Don't block on sounding the alarm
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.wakeup_alarm
     # Wait for the snooze timer to start or for the "wakeup_alarm_silenced"
     # event – both indicate interaction with the bedside Smart Switches
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: timer.wakeup_snooze_time
           to: active
-        - platform: event
+        - trigger: event
           event_type: wakeup_alarm_silenced
       timeout: 300
       continue_on_timeout: true
@@ -32,44 +32,44 @@
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.wakeup_alarm
   mode: single
 - alias: 💤 | 🕹️ Snooze wakeup alarm (bedside Smart Switches)
   id: 3c49fa1c-db0a-44ea-8fb3-8e57c515e310
-  trigger:
+  triggers:
     - device_id: da1237666189a9a364fa383795ba532d
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_short_press
       subtype: turn_on
     - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_short_press
       subtype: turn_on
-  condition:
+  conditions:
     - condition: state
       entity_id: script.wakeup_alarm
       state: "on"
-  action:
+  actions:
     # Stop the wakeup alarm – the additional "media_stop" ensures the sound
     # stops playing right away (instead of at the end of the current play-loop)
-    - service: script.turn_off
-      target:
-        entity_id: script.wakeup_alarm
-    - service: media_player.media_stop
+    - action: media_player.media_stop
       data:
         entity_id: media_player.ha_voice_bedroom
+    - action: script.turn_off
+      target:
+        entity_id: script.wakeup_alarm
     # The snooze timer allows other automations to modify their behaviour while
     # the wakeup alarm is snoozed (e.g. the Bedroom light can't be switched off
     # using the Smart Switches while the wakeup alarm is snoozed)
-    - service: timer.start
+    - action: timer.start
       target:
         entity_id: timer.wakeup_snooze_time
     - wait_for_trigger:
-        - platform: event
+        - trigger: event
           event_type: timer.finished
           event_data:
             entity_id: timer.wakeup_snooze_time
@@ -79,7 +79,7 @@
     # We are now effectively in an alarm loop that can be broken by silencing
     # the wakeup alarm _or_ by not responding to it at all (hence there's no
     # risk of a runaway alarm loop).
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.wakeup_alarm
   mode: single
@@ -89,25 +89,25 @@
   trigger:
     - device_id: da1237666189a9a364fa383795ba532d
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_double_press
       subtype: turn_on
     - device_id: b26003b4b78afd0e5b2c3bcb3b06eeeb
       domain: deconz
-      platform: device
+      trigger: device
       type: remote_button_double_press
       subtype: turn_on
-  condition:
+  conditions:
     - condition: state
       entity_id: script.wakeup_alarm
       state: "on"
-  action:
-    - service: script.turn_off
-      target:
-        entity_id: script.wakeup_alarm
-    - service: media_player.media_stop
+  actions:
+    - action: media_player.media_stop
       data:
         entity_id: media_player.ha_voice_bedroom
+    - action: script.turn_off
+      target:
+        entity_id: script.wakeup_alarm
     # Let other automations know the wakeup alarm was silenced
     - event: wakeup_alarm_silenced
   mode: single

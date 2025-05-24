@@ -1,0 +1,69 @@
+{# Convert from rooms to satellites and speakers #}
+
+{% macro rooms_satellites(rooms) %}
+
+  {% set result = namespace(satellites=[]) %}
+  {% set rooms = rooms if rooms is defined else [] %}
+  {% if rooms is string %}
+    {% set rooms = rooms.split(',') if ',' in rooms else [rooms] %}
+  {% endif %}
+  {% for room in rooms %}
+    {% if room == 'living_room' %}
+      {% set result.satellites =
+        result.satellites + ['assist_satellite.ha_voice_living_room'] %}
+    {% elif room == 'bedroom' %}
+      {% set result.satellites =
+        result.satellites + ['assist_satellite.ha_voice_bedroom'] %}
+    {% elif room == 'guestroom' %}
+      {% set result.satellites =
+        result.satellites + ['assist_satellite.ha_voice_guestroom'] %}
+    {% elif room == 'attic' %}
+      {% set result.satellites =
+        result.satellites + ['assist_satellite.ha_voice_attic'] %}
+    {% endif %}
+  {% endfor %}
+  {# Reduce to "group.satellites_all" when all satellites are selected #}
+  {% if
+    result.satellites | length > 0 and (result.satellites |
+      length) != (expand('group.satellites_all') | length)
+  %}
+    {{ result.satellites | join(',') }}
+  {% else %}
+    group.satellites_all
+  {% endif %}
+
+{% endmacro %}
+
+{% macro rooms_speakers(rooms) %}
+
+  {% set result = namespace(speakers=[]) %}
+  {% set rooms = rooms if rooms is defined else [] %}
+  {% if rooms is string %}
+    {% set rooms = rooms.split(',') if ',' in rooms else [rooms] %}
+  {% endif %}
+  {% for room in rooms %}
+    {% if room == 'living_room' %}
+      {% set result.speakers =
+        result.speakers + ['media_player.ha_voice_living_room'] %}
+    {% elif room == 'bedroom' %}
+      {% set result.speakers =
+        result.speakers + ['media_player.ha_voice_bedroom'] %}
+    {% elif room == 'guestroom' %}
+      {% set result.speakers =
+        result.speakers + ['media_player.ha_voice_guestroom'] %}
+    {% elif room == 'attic' %}
+      {% set result.speakers =
+        result.speakers + ['media_player.ha_voice_attic'] %}
+    {% endif %}
+  {% endfor %}
+  {# Reduce to "group.speakers_voice_all" when all speakers are selected #}
+  {% if
+    result.speakers | length > 0 and (result.speakers |
+      length) != (expand('group.speakers_voice_all') | length)
+  %}
+    {{ result.speakers | join(',') }}
+  {% else %}
+    group.speakers_voice_all
+  {% endif %}
+
+{% endmacro %}
