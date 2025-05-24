@@ -1,3 +1,5 @@
 version: 1
 aarlo:
   save_media_to: /gtx/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
+  stream_snapshot: true
+  stream_snapshot_stop: 0

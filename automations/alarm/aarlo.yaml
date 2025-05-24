@@ -2,16 +2,16 @@
   id: 093a7fa4-2045-4c7e-a8fb-2ff211c44213
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: "22:30:00"
-  condition:
+  conditions:
     # Only act if Arlo is currently disarmed (to prevent unintentionally
     # toggling from armed "Night" or "Away" to armed "Home")
     - condition: state
       entity_id: !secret aarlo_control_panel
       state: disarmed
-  action:
+  actions:
     # Wait (indefinitely) for Aarlo to be connected – this can lead to race
     # conditions between this and the next two automations (which also wait
     # indefinitely). It beats not waiting at all though (in which case
@@ -19,22 +19,22 @@
     # stuck in the wrong state).
     - wait_template: >-
         {{ states(aarlo_connected_sensor) == 'on' }}
-    - service: alarm_control_panel.alarm_arm_home
+    - action: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
   mode: restart
 - alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
   id: 6fcafedb-78df-4fa4-a7ac-80aec0750cd1
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to:
         - armed_away
         - armed_vacation
         - armed_night
-  condition: []
-  action:
+  conditions: []
+  actions:
     # Wait (indefinitely) for Aarlo to be connected
     - wait_template: >-
         {{ states(aarlo_connected_sensor) == 'on' }}
@@ -44,24 +44,24 @@
               entity_id: alarm_control_panel.home_alarm
               state: armed_night
           sequence:
-            - service: alarm_control_panel.alarm_arm_night
+            - action: alarm_control_panel.alarm_arm_night
               entity_id: !secret aarlo_control_panel
       # Armed "Away" is stricter than armed "Night", so we default to that...
       default:
-        - service: alarm_control_panel.alarm_arm_away
+        - action: alarm_control_panel.alarm_arm_away
           entity_id: !secret aarlo_control_panel
   mode: restart
 - alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
   id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       id: alarm_disarmed
       entity_id: alarm_control_panel.home_alarm
       to: disarmed
     # Fallback in case Home Alarm wasn't armed during the night
-    - platform: state
+    - trigger: state
       id: everyone_awake
       entity_id: input_boolean.everyone_asleep
       from: "on"
@@ -69,7 +69,7 @@
       # Slight delay to prevent race-condition (the regular trigger fires at
       # wake-up time too)
       for: "00:00:30"
-  condition:
+  conditions:
     - condition: or
       conditions:
         # Regular trigger
@@ -90,24 +90,24 @@
             - condition: state
               entity_id: !secret aarlo_control_panel
               state: armed_home
-  action:
+  actions:
     # Wait (indefinitely) for Aarlo to be connected
     - wait_template: >-
         {{ states(aarlo_connected_sensor) == 'on' }}
-    - service: alarm_control_panel.alarm_disarm
+    - action: alarm_control_panel.alarm_disarm
       entity_id: !secret aarlo_control_panel
   mode: restart
 - alias: 📹 | ⏳ Pause Arlo "Armed home" (timer started)
   id: ed2ae249-369f-4503-9122-21a5e49e1c21
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type:
         - timer.started
         - timer.restarted
       event_data:
         entity_id: timer.aarlo_pause
-  condition: []
-  action:
+  conditions: []
+  actions:
     - choose:
         - conditions:
             - condition: not
@@ -116,28 +116,28 @@
                   entity_id: !secret aarlo_control_panel
                   state: armed_home
           sequence:
-            - service: timer.cancel
+            - action: timer.cancel
               data:
                 entity_id: timer.aarlo_pause
       default:
-        - service: alarm_control_panel.alarm_disarm
+        - action: alarm_control_panel.alarm_disarm
           entity_id: !secret aarlo_control_panel
   mode: single
 - alias: 📹 | ⏳ Resume Arlo "Armed home" (timer ended)
   id: 71bb747a-25c5-416a-a98d-66c33789a702
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type:
         - timer.finished
         - timer.paused
       event_data:
         entity_id: timer.aarlo_pause
-  condition:
+  conditions:
     - condition: state
       entity_id: !secret aarlo_control_panel
       state: disarmed
-  action:
-    - service: alarm_control_panel.alarm_arm_home
+  actions:
+    - action: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
   mode: single
 - alias: >-
@@ -146,14 +146,14 @@
   id: 769a4449-f68b-4403-a09b-87b81cbe1581
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
-  trigger:
-    - platform: time_pattern
+  triggers:
+    - trigger: time_pattern
       hours: /2
       minutes: 0
       seconds: 0
-    - platform: homeassistant
+    - trigger: homeassistant
       event: start
-    - platform: state
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to:
         - disarmed
@@ -162,11 +162,11 @@
         - armed_vacation
     # Other triggers can pre-empt this one; that's no problem. The script will
     # wait (a while) for Arlo to connect.
-    - platform: state
+    - trigger: state
       entity_id: !secret aarlo_connected_sensor
       to: "on"
-  condition: []
-  action:
+  conditions: []
+  actions:
     # Arlo should be connected; wait up to 5 minutes for Arlo to connect. Mainly
     # to cope with the fact that – at Home Assistant start – Arlo might not be
     # connected yet...
@@ -184,7 +184,7 @@
                   entity_id: camera.aarlo_back
                   state: recording
           sequence:
-            - service: aarlo.camera_request_snapshot
+            - action: aarlo.camera_request_snapshot
               entity_id: camera.aarlo_back
     # Balcony camera
     - choose:
@@ -196,7 +196,7 @@
                   entity_id: camera.aarlo_balcony
                   state: recording
           sequence:
-            - service: aarlo.camera_request_snapshot
+            - action: aarlo.camera_request_snapshot
               entity_id: camera.aarlo_balcony
     # Front camera
     # In case of a regular/timed snapshot, ensure at least five minutes have
@@ -222,96 +222,94 @@
         - condition: state
           entity_id: camera.aarlo_front
           state: recording
-    - service: aarlo.camera_request_snapshot
+    - action: aarlo.camera_request_snapshot
       entity_id: camera.aarlo_front
   mode: single
   max_exceeded: silent
 - alias: 📹 | ⏰ Store daily snapshots (dawn, noon, dusk and midnight)
   id: e56ad77e-9f8e-43f7-9fe6-6b2678a86df6
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       id: dawn
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-    - platform: state
+    - trigger: state
       id: dusk
       entity_id: sensor.time_of_day
       from: day
       to: dusk
-    - platform: state
+    - trigger: state
       id: noon
       entity_id: sun.sun
       attribute: rising
       from: true
       to: false
-    - platform: state
+    - trigger: state
       id: midnight
       entity_id: sun.sun
       attribute: rising
       from: false
       to: true
-  condition: []
-  action:
+  conditions: []
+  actions:
     - variables:
         filename: >-
           {{ trigger.id }}-{{-
             now() | as_timestamp | timestamp_custom('%Y%m%d%H%M')
           -}}.jpg
-    # Front
-    - choose:
-        - conditions:
+    - parallel:
+        # Front
+        - if:
             - condition: not
               conditions:
                 - condition: state
                   entity_id: camera.aarlo_front
                   state: recording
-          sequence:
-            - service: aarlo.camera_request_snapshot_to_file
+          then:
+            - action: aarlo.camera_request_snapshot_to_file
               data:
                 filename: >-
-                  /config/var/aarlo/front-{{ filename }}
+                  /gtx/var/aarlo-snapshots/daily/front-{{ filename }}
               entity_id: camera.aarlo_front
-    # Back
-    - choose:
-        - conditions:
+        # Back
+        - if:
             - condition: not
               conditions:
                 - condition: state
                   entity_id: camera.aarlo_back
                   state: recording
-          sequence:
-            - service: aarlo.camera_request_snapshot_to_file
+          then:
+            - action: aarlo.camera_request_snapshot_to_file
               data:
                 filename: >-
-                  /config/var/aarlo/back-{{ filename }}
+                  /gtx/var/aarlo-snapshots/daily/back-{{ filename }}
               entity_id: camera.aarlo_back
-    # Balcony
-    - choose:
-        - conditions:
+        # Balcony
+        - if:
             - condition: not
               conditions:
                 - condition: state
                   entity_id: camera.aarlo_balcony
                   state: recording
-          sequence:
-            - service: aarlo.camera_request_snapshot_to_file
+          then:
+            - action: aarlo.camera_request_snapshot_to_file
               data:
                 filename: >-
-                  /config/var/aarlo/balcony-{{ filename }}
+                  /gtx/var/aarlo-snapshots/daily/balcony-{{ filename }}
               entity_id: camera.aarlo_balcony
   mode: single
 - alias: 📹 | 🤖 Store activity snapshot (Arlo recording)
   id: 4dbb8ad5-e671-4f72-ba30-70fe0a29932e
-  trigger:
+  triggers:
     # This triggers if the capture was updated by an Arlo recording (i.e. the
     # camera was active and detected motion) – this event does _not_ fire when a
     # manual snapshot is taken (including the snapshots taken by other
     # automations)
-    - platform: event
+    - trigger: event
       event_type: aarlo_capture_updated
-  condition: []
-  action:
+  conditions: []
+  actions:
     - variables:
         filename: >-
           -{{ now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') }}.jpg
@@ -331,7 +329,7 @@
                 - recording
                 - recently active
           sequence:
-            - service: downloader.download_file
+            - action: downloader.download_file
               data:
                 url: >-
                   {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
@@ -346,7 +344,7 @@
                 - recording
                 - recently active
           sequence:
-            - service: downloader.download_file
+            - action: downloader.download_file
               data:
                 url: >-
                   {{ state_attr('camera.aarlo_back', 'last_thumbnail') }}
@@ -361,7 +359,7 @@
                 - recording
                 - recently active
           sequence:
-            - service: downloader.download_file
+            - action: downloader.download_file
               data:
                 url: >-
                   {{ state_attr('camera.aarlo_balcony', 'last_thumbnail') }}

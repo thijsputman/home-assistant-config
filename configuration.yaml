@@ -5,6 +5,7 @@ homeassistant:
   allowlist_external_dirs:
     - /config/var
     - /gtx/var
+    - /tmp
   media_dirs:
     sd: /config/var
     gtx: /gtx/var
