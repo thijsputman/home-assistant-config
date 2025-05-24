@@ -21,11 +21,6 @@
             >= today_at('00:00:00')
         }}
   action:
-    # Abort any previously queued announcements — they're superseded by this
-    # "Good morning"-announcement...
-    - event: tts_queue_abort
-      event_data:
-        tag: albert_heijn_eta
     - variables:
         eta_start: >-
           {{
