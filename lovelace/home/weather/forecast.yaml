@@ -8,3 +8,4 @@ card_mod:
       padding-top: 0px !important;
     }
 entity: weather.tomorrow_io
+forecast_type: daily

@@ -47,6 +47,7 @@ card:
         state: false
         labels: true
         labels_secondary: false
+        loading_indicator: false
       entities:
         - entity: sensor.air_monitor_lite_7034_pm10
           name: PM₁₀
@@ -157,6 +158,7 @@ card:
         state: false
         labels: true
         labels_secondary: false
+        loading_indicator: false
       entities:
         - entity: sensor.air_monitor_lite_be10_pm10
           name: PM₁₀
@@ -213,6 +215,7 @@ card:
         state: false
         labels: true
         labels_secondary: false
+        loading_indicator: false
       entities:
         - entity: sensor.air_monitor_lite_bf53_pm10
           name: PM₁₀

@@ -1,18 +1,18 @@
 - alias: 🌦️ | 📱/🔊 Notify Attic window is open (starts raining)
   id: 4dd59c72-309a-441a-b97c-07a69c6898da
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.weewx_rain_rate_hour
       above: 1.0
-  condition:
+  conditions:
     - condition: state
       entity_id: sensor.attic_window_position
       state: open
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
-  action:
-    - service: script.turn_on
+  actions:
+    - action: script.turn_on
       target:
         entity_id: script.tts_announce
       data:
@@ -23,7 +23,7 @@
     # Explicitly block any further runs of this automation while the
     # notification is up (i.e. once a notification is up, no additional
     # notifications are raised)
-    - service: script.persistent_notification
+    - action: script.persistent_notification
       data:
         group: weather
         channel: Alert
@@ -37,21 +37,21 @@
   max_exceeded: silent
 - alias: 🌦️ | 📱 Dismiss Attic window notification (stops raining)
   id: 0bfb45f6-5516-4f37-86f1-d7bb7af88e94
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.weewx_rain_rate_hour
       below: 1.0
       for: "00:10:00"
-  condition: []
-  action:
-    - service: persistent_notification.dismiss
+  conditions: []
+  actions:
+    - action: persistent_notification.dismiss
       data:
         notification_id: rain-attic
   mode: single
 - alias: 🌦️ | 📱 Dismiss Attic window notification (window closed)
   id: dd524898-9606-4c30-b7dc-d061515ee6bc
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.attic_window_position
       from:
         - ajar
@@ -60,30 +60,30 @@
         - ajar-locked
         - closed-ventilate
         - closed
-  condition:
+  conditions:
     - condition: numeric_state
       entity_id: sensor.weewx_rain
       above: 0
-  action:
-    - service: persistent_notification.dismiss
+  actions:
+    - action: persistent_notification.dismiss
       data:
         notification_id: rain-attic
   mode: single
 - alias: 🌦️ | 🔊 Announce expected rain (Buienradar forecast)
   id: 47715bbc-60bf-4417-9932-73e59a9edbf8
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.buienradar_precipitation_forecast_total
       above: 0.25
-  condition:
+  conditions:
     # Don't bother if it's already raining...
     - condition: not
       conditions:
         - condition: numeric_state
           entity_id: sensor.weewx_rain_hour
           above: 0
-  action:
-    - service: script.turn_on
+  actions:
+    - action: script.turn_on
       target:
         entity_id: script.tts_queue
       data:
@@ -100,7 +100,7 @@
             }}; that is %WAIT_REMAINING%
     # Wait for up to 4 hours for it to start raining
     - wait_for_trigger:
-        - platform: numeric_state
+        - trigger: numeric_state
           # Note the use of the rain-rate (as opposed to "weewx_rain_hour", its
           # integral) – the former is more responsive, so better suited as a
           # trigger; the latter is better suited as the "it is raining"-
@@ -120,7 +120,7 @@
             tag: forecast_rain
         # Now wait for it to stop raining...
         - wait_for_trigger:
-            - platform: numeric_state
+            - trigger: numeric_state
               entity_id: sensor.weewx_rain_hour
               below: 0.1
               for: "04:00:00"

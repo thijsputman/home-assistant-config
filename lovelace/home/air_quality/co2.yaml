@@ -9,6 +9,7 @@ decimals: 0
 show:
   labels: true
   labels_secondary: false
+  loading_indicator: false
 state_map:
   - value: "off"
   - value: "on"

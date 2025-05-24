@@ -1,5 +1,5 @@
 - trigger:
-    - platform: state
+    - trigger: state
       id: incoming
       entity_id: sensor.pixel_9_pro_last_notification
       to: ~
@@ -11,7 +11,7 @@
     # attribute (e.g. package == com.icemobile.albertheijn) would not trigger
     # on subsequent notifications from the same package (but with a different
     # message/payload).
-    - platform: state
+    - trigger: state
       entity_id: sensor.pixel_9_pro_last_notification
       to: ~
       for: "00:00:10"
@@ -33,7 +33,7 @@
       state: >-
         {{ states('sensor.pixel_9_pro_last_notification') }}
 - trigger:
-    - platform: state
+    - trigger: state
       entity_id: sensor.last_notification_unprocessed
       attribute: package
       to: com.icemobile.albertheijn
@@ -56,6 +56,11 @@
             search(
               'verwacht(?:en)?(?: ?morgen) tussen \d{2}:\d{2} ' ~
               'en \d{2}:\d{2} uur bij je te zijn')
+        %}
+          {{ true }}
+        {# Handle the "Te vroeg"-message #}
+        {% elif states('sensor.last_notification_unprocessed') is
+          search('mogelijk al tussen')
         %}
           {{ true }}
         {# Ignore the "Er is een update over je bestelling online"-message #}
