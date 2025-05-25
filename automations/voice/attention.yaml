@@ -13,28 +13,37 @@
 # (a blast of) TTS notification(s) is when someone is actively "interacting"
 # with a room (e.g., switching on the lights; opening a window).
 
-- alias: 🔊 | 👀 TTS attention — Attic
+- alias: TTS attention — Attic
   id: c832165f-53c5-425e-a6dc-e3002b72bdde
-  trigger:
+  triggers:
     # Interaction with Attic Hue Tap
-    - platform: event
+    - trigger: event
       event_type: hue_event
       event_data:
         id: attic_switch_button
         type: initial_press
     # Change of position/orientation for the Attic window
-    - platform: state
+    - trigger: state
       id: attic_window
       entity_id: sensor.attic_window_position
       not_to:
         - unavailabe
         - unknown
     # Motion in the Attic hallway
-    - platform: state
+    - trigger: state
       entity_id: binary_sensor.presence_91
       from: "off"
       to: "on"
-  condition:
+    # HA Voice satellite
+    - trigger: state
+      entity_id: assist_satellite.ha_voice_attic
+      from:
+        - listening
+        - processing
+        - responding
+      to: idle
+      for: "00:00:10"
+  conditions:
     # It seems using a combination of not_from/not_to to filter out transitions
     # that go "through" unavailable/unknown (happens, for example, when template
     # sensors are reloaded) doesn't work... So, rely on a template-condition
@@ -52,33 +61,33 @@
     - condition: state
       entity_id: input_boolean.housekeeper_present
       state: "off"
-  action:
+  actions:
     - event: tts_attention
       event_data:
         room: attic
   mode: single
   max_exceeded: silent
-- alias: 🔊 | 👀 TTS attention — Living Room
+- alias: TTS attention — Living Room
   id: 5d9c02cb-4720-46f0-b22d-87e278490cb9
-  trigger:
+  triggers:
     # Interaction with the Hue Tap (Dial) in the Living Room
-    - platform: event
+    - trigger: event
       event_type: hue_event
       event_data:
         id: living_room_switch_garden_button
         type: initial_press
-    - platform: event
+    - trigger: event
       event_type: hue_event
       event_data:
         id: living_room_switch_couch_button
         type: initial_press
-    - platform: event
+    - trigger: event
       event_type: hue_event
       event_data:
         id: hue_tap_dial_ensuite_button
         type: short_release
     # Interaction with the tablet in the Kitchen
-    - platform: state
+    - trigger: state
       entity_id: switch.p20hd_eea_screensaver
       # Wait a short while; when the screensaver gets disabled, attention is
       # initially direct towards the tablet...
@@ -86,14 +95,14 @@
       from: "on"
       to: "off"
     # Motion at the Kitchen counter
-    - platform: state
+    - trigger: state
       entity_id:
         - binary_sensor.presence_53 # Sink
         - binary_sensor.presence_155 # Coffee machine
       from: "off"
       to: "on"
     # Switching off the Android TV
-    - platform: state
+    - trigger: state
       entity_id: media_player.epson_eh_ls800b
       from:
         - standby
@@ -107,19 +116,28 @@
     # triggers already fired (ie, there are no messages queued up). The trigger
     # could be made "smarter". That would require a separate automation which is
     # overkill for now...
-    - platform: state
+    - trigger: state
       entity_id: binary_sensor.openclose_12
       id: delayed
       from: "on"
       to: "off"
-  condition:
+    # HA Voice satellite
+    - trigger: state
+      entity_id: assist_satellite.ha_voice_living_room
+      from:
+        - listening
+        - processing
+        - responding
+      to: idle
+      for: "00:00:10"
+  conditions:
     - condition: state
       entity_id: script.tts_queue
       state: "on"
     - condition: state
       entity_id: input_boolean.housekeeper_present
       state: "off"
-  action:
+  actions:
     - if:
         - condition: trigger
           id: delayed
@@ -130,32 +148,41 @@
         room: living_room
   mode: single
   max_exceeded: silent
-- alias: 🔊 | 👀 TTS attention — Bedroom
+- alias: TTS attention — Bedroom
   id: 9e6be318-a6e4-4dc4-9536-bd8175580bd2
-  trigger:
+  triggers:
     # Interaction with Bedroom Hue Tap
-    - platform: event
+    - trigger: event
       event_type: hue_event
       event_data:
         id: bedroom_switch_button
         type: initial_press
     # Opening the Balcony door
-    - platform: state
+    - trigger: state
       entity_id: binary_sensor.openclose_18
       from: "off"
       to: "on"
     # Opening or closing the Bedroom windows
-    - platform: state
+    - trigger: state
       entity_id:
         - binary_sensor.openclose_19
         - binary_sensor.openclose_20
       to: ~
     # Motion in the Upstairs hallway
-    - platform: state
+    - trigger: state
       entity_id: binary_sensor.presence_127
       from: "off"
       to: "on"
-  condition:
+    # HA Voice satellite
+    - trigger: state
+      entity_id: assist_satellite.ha_voice_bedroom
+      from:
+        - listening
+        - processing
+        - responding
+      to: idle
+      for: "00:00:10"
+  conditions:
     - condition: state
       entity_id: script.tts_queue
       state: "on"
@@ -176,7 +203,7 @@
     - condition: time
       after: "06:00:00"
       before: "23:00:00"
-  action:
+  actions:
     - event: tts_attention
       event_data:
         room: bedroom
