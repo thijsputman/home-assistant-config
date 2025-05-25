@@ -3,15 +3,15 @@ intents:
   CustomHelloWorld:
     data:
       - sentences:
-          - blink [the] {room}
+          - blink [the] {room} [lights]
 lists:
   room:
     values:
       - in: living room
-        out: living_room
+        out: light.signe_gradient_floor_1
       - in: bedroom
-        out: bedroom
-      - in: guestroom
-        out: guestroom
+        out: light.bedroom
+      - in: guest room
+        out: light.guestroom
       - in: attic
-        out: attic
+        out: light.attic

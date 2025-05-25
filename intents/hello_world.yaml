@@ -1,27 +1,11 @@
 CustomHelloWorld:
   speech:
-    text: ""
+    text: >-
+      Blinking the {{ area_name(room) }} lights!
   async_action: true
   action:
     - action: light.turn_on
       data:
         entity_id: >-
-          {% if room == 'living_room' %}
-             light.ensuite
-          {% elif room == 'bedroom'%}
-             light.bedroom
-          {% elif room == 'guestroom' %}
-             light.guestroom
-          {% elif room == 'attic' %}
-            light.attic
-          {% endif %}
+          {{ room }}
         flash: long
-    - delay: 2
-    - action: script.turn_on
-      target:
-        entity_id: script.tts_announce
-      data:
-        variables:
-          rooms: >-
-            {{ room }}
-          message: Blink, blink!
