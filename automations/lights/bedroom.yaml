@@ -110,16 +110,18 @@
         - goodnight
         - switch off (all|the|all the) lights
   conditions:
-    - >-
-      {{
-        device_entities(trigger.device_id) |
-          contains('assist_satellite.ha_voice_bedroom') != true
-      }}
-    - condition: state
-      entity_id: sensor.time_of_day
-      state:
-        - dawn
-        - day
+    - condition: or
+      conditions:
+        - >-
+          {{
+            device_entities(trigger.device_id) |
+              contains('assist_satellite.ha_voice_bedroom') != true
+          }}
+        - condition: state
+          entity_id: sensor.time_of_day
+          state:
+            - dawn
+            - day
   actions:
     - set_conversation_response: >-
         Sorry, this only works at night from the Bedroom
