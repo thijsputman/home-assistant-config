@@ -1,4 +1,4 @@
-- alias: 📹 | ⏰ Arm Arlo "Armed home" (daily at 22:30)
+- alias: Arlo "Armed home"
   id: 093a7fa4-2045-4c7e-a8fb-2ff211c44213
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
@@ -22,7 +22,7 @@
     - action: alarm_control_panel.alarm_arm_home
       entity_id: !secret aarlo_control_panel
   mode: restart
-- alias: 📹 | 🤖 Arm Arlo (following "Home Alarm")
+- alias: Arm Arlo (following "Home Alarm")
   id: 6fcafedb-78df-4fa4-a7ac-80aec0750cd1
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
@@ -51,7 +51,7 @@
         - action: alarm_control_panel.alarm_arm_away
           entity_id: !secret aarlo_control_panel
   mode: restart
-- alias: 📹 | 🤖 Disarm Arlo (following "Home Alarm")
+- alias: Disarm Arlo (following "Home Alarm")
   id: 82789ffd-a7ef-476f-a51d-41ed4f32c30f
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
@@ -97,52 +97,7 @@
     - action: alarm_control_panel.alarm_disarm
       entity_id: !secret aarlo_control_panel
   mode: restart
-- alias: 📹 | ⏳ Pause Arlo "Armed home" (timer started)
-  id: ed2ae249-369f-4503-9122-21a5e49e1c21
-  triggers:
-    - trigger: event
-      event_type:
-        - timer.started
-        - timer.restarted
-      event_data:
-        entity_id: timer.aarlo_pause
-  conditions: []
-  actions:
-    - choose:
-        - conditions:
-            - condition: not
-              conditions:
-                - condition: state
-                  entity_id: !secret aarlo_control_panel
-                  state: armed_home
-          sequence:
-            - action: timer.cancel
-              data:
-                entity_id: timer.aarlo_pause
-      default:
-        - action: alarm_control_panel.alarm_disarm
-          entity_id: !secret aarlo_control_panel
-  mode: single
-- alias: 📹 | ⏳ Resume Arlo "Armed home" (timer ended)
-  id: 71bb747a-25c5-416a-a98d-66c33789a702
-  triggers:
-    - trigger: event
-      event_type:
-        - timer.finished
-        - timer.paused
-      event_data:
-        entity_id: timer.aarlo_pause
-  conditions:
-    - condition: state
-      entity_id: !secret aarlo_control_panel
-      state: disarmed
-  actions:
-    - action: alarm_control_panel.alarm_arm_home
-      entity_id: !secret aarlo_control_panel
-  mode: single
-- alias: >-
-    📹 | ⏰/🤖 Snapshot (every 2 hours / HA start; "Home Alarm"-state;
-    Arlo connected)
+- alias: Update "two-hour" snapshot
   id: 769a4449-f68b-4403-a09b-87b81cbe1581
   variables:
     aarlo_connected_sensor: !secret aarlo_connected_sensor
@@ -160,74 +115,69 @@
         - armed_night
         - armed_away
         - armed_vacation
-    # Other triggers can pre-empt this one; that's no problem. The script will
-    # wait (a while) for Arlo to connect.
-    - trigger: state
-      entity_id: !secret aarlo_connected_sensor
-      to: "on"
   conditions: []
   actions:
-    # Arlo should be connected; wait up to 5 minutes for Arlo to connect. Mainly
-    # to cope with the fact that – at Home Assistant start – Arlo might not be
-    # connected yet...
+    # Arlo should be connected; wait up to 10-minutes for Arlo to connect.
+    # Prevent issues with the capture when Home Assistant was just (re)started,
+    # _and_ copes with the (as of recent) unstable Arlo-connectivity...
     - wait_template: >-
         {{ states(aarlo_connected_sensor) == 'on' }}
-      timeout: 300
+      timeout: "00:10:00"
       continue_on_timeout: false
-    # Back camera
-    - choose:
-        - conditions:
+    - parallel:
+        # Back camera
+        - if:
             # Don't disturb an active recording session
             - condition: not
               conditions:
                 - condition: state
                   entity_id: camera.aarlo_back
                   state: recording
-          sequence:
+          then:
             - action: aarlo.camera_request_snapshot
               entity_id: camera.aarlo_back
-    # Balcony camera
-    - choose:
-        - conditions:
-            # Don't disturb an active recording session
+        # Balcony camera
+        - if:
             - condition: not
               conditions:
                 - condition: state
                   entity_id: camera.aarlo_balcony
                   state: recording
-          sequence:
+          then:
             - action: aarlo.camera_request_snapshot
               entity_id: camera.aarlo_balcony
-    # Front camera
-    # In case of a regular/timed snapshot, ensure at least five minutes have
-    # passed since the doorbell last rang (the 4-minute time delta is
-    # intentional as the sensor remains active for 1 minute). This prevents a
-    # "race condition" where we overwrite the doorbell capture with a regular
-    # capture too quickly (and send out the wrong capture in doorbell related
-    # notifications).
-    - wait_template: >-
-        {{
-          trigger.platform != 'time_pattern' or (
-            states.binary_sensor.vibration_43 is defined and
-            states.binary_sensor.vibration_43.last_changed <=
-              now() - timedelta(minutes=4)
-          )
-        }}
-      timeout: 300
-      # If timer expires, update snapshot regardless
-      continue_on_timeout: true
-    # Don't disturb an active recording session
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: camera.aarlo_front
-          state: recording
-    - action: aarlo.camera_request_snapshot
-      entity_id: camera.aarlo_front
+        # Front camera
+        - sequence:
+            # In case of a regular/timed snapshot, ensure at least five-minutes
+            # have passed since the doorbell last rang (the four-minute time
+            # delta is intentional as the sensor remains active for one-minute).
+            # This prevents a race condition where we overwrite the doorbell
+            # capture with a regular capture too quickly (and send out the wrong
+            # capture in doorbell related notifications).
+            - wait_template: >-
+                {{
+                  trigger.platform != 'time_pattern' or (
+                    states.binary_sensor.vibration_43 is defined and
+                    states.binary_sensor.vibration_43.last_changed <=
+                      now() - timedelta(minutes=4)
+                  )
+                }}
+              timeout: 300
+              # if timer expires, update snapshot regardless
+              continue_on_timeout: true
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: camera.aarlo_front
+                  state: recording
+            - action: aarlo.camera_request_snapshot
+              entity_id: camera.aarlo_front
   mode: single
   max_exceeded: silent
-- alias: 📹 | ⏰ Store daily snapshots (dawn, noon, dusk and midnight)
+- alias: Store daily snapshots
   id: e56ad77e-9f8e-43f7-9fe6-6b2678a86df6
+  variables:
+    aarlo_connected_sensor: !secret aarlo_connected_sensor
   triggers:
     - trigger: state
       id: dawn
@@ -253,6 +203,12 @@
       to: true
   conditions: []
   actions:
+    # Arlo should be connected; wait up to 10-minutes for Arlo to connect.
+    # In order to cope with the (as of recent) unstable Arlo-connectivity...
+    - wait_template: >-
+        {{ states(aarlo_connected_sensor) == 'on' }}
+      timeout: "00:10:00"
+      continue_on_timeout: false
     - variables:
         filename: >-
           {{ trigger.id }}-{{-
@@ -299,16 +255,22 @@
                   /gtx/var/aarlo-snapshots/daily/balcony-{{ filename }}
               entity_id: camera.aarlo_balcony
   mode: single
-- alias: 📹 | 🤖 Store activity snapshot (Arlo recording)
+- alias: Store activity snapshot
   id: 4dbb8ad5-e671-4f72-ba30-70fe0a29932e
   triggers:
-    # This triggers if the capture was updated by an Arlo recording (i.e. the
-    # camera was active and detected motion) – this event does _not_ fire when a
-    # manual snapshot is taken (including the snapshots taken by other
-    # automations)
     - trigger: event
       event_type: aarlo_capture_updated
-  conditions: []
+  conditions:
+    # Prevent trigger in case of a manual snapshot (e.g., by another automation)
+    - condition: state
+      entity_id:
+        - camera.aarlo_front
+        - camera.aarlo_back
+        - camera.aarlo_balcony
+      state:
+        - recording
+        - recently active
+      match: any
   actions:
     - variables:
         filename: >-
@@ -320,15 +282,15 @@
           {% else %}
             -unknown
           {% endif %}
-    - choose:
+    - parallel:
         # Front
-        - conditions:
+        - if:
             - condition: state
               entity_id: camera.aarlo_front
               state:
                 - recording
                 - recently active
-          sequence:
+          then:
             - action: downloader.download_file
               data:
                 url: >-
@@ -337,13 +299,13 @@
                 filename: >-
                   {{ 'front' ~ time_of_day ~ filename }}
         # Back
-        - conditions:
+        - if:
             - condition: state
               entity_id: camera.aarlo_back
               state:
                 - recording
                 - recently active
-          sequence:
+          then:
             - action: downloader.download_file
               data:
                 url: >-
@@ -352,13 +314,13 @@
                 filename: >-
                   {{ 'back' ~ time_of_day ~ filename }}
         # Balcony
-        - conditions:
+        - if:
             - condition: state
               entity_id: camera.aarlo_balcony
               state:
                 - recording
                 - recently active
-          sequence:
+          then:
             - action: downloader.download_file
               data:
                 url: >-
@@ -366,5 +328,4 @@
                 subdir: arlo/activity
                 filename: >-
                   {{ 'balcony' ~ time_of_day ~ filename }}
-  mode: parallel
-  max: 4
+  mode: single
