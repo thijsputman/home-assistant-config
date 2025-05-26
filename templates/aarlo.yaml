@@ -3,6 +3,7 @@
       unique_id: 4258311e-603a-4716-8b3e-47fe8b86bd18
       icon: mdi:security
       state: !secret aarlo_alarm_state
+- binary_sensor:
     - name: Aarlo Armed Front
       unique_id: e939b7b6-1c4c-4acf-b1aa-88783f114155
       icon: mdi:cctv

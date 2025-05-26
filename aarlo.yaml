@@ -3,3 +3,4 @@ aarlo:
   save_media_to: /gtx/var/aarlo/${SN}/${Y}/${m}/${Y}-${m}-${d}-${t}
   stream_snapshot: true
   stream_snapshot_stop: 0
+  media_retry: [5, 15, 25, 60, 300] # yamllint disable-line rule:brackets

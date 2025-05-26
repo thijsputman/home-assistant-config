@@ -83,7 +83,7 @@ card:
               {%- if states('binary_sensor.aarlo_armed_balcony') == 'on' -%}
                 border: 3px solid var(--label-badge-red);
               {%- elif
-                states('sensor.aarlo_last_back') != 'unknown' and
+                states('sensor.aarlo_last_balcony') != 'unknown' and
                 strptime(
                   now().year ~ ' ' ~ states('sensor.aarlo_last_balcony'),
                   '%Y %m-%d %H:%M'
