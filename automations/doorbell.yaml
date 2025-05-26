@@ -45,7 +45,7 @@
             variables:
               rooms: attic
               volume: 0.90
-              message: doorbell.ogg
+              sample: doorbell.ogg
     - action: script.turn_on
       target:
         entity_id: script.persistent_notification

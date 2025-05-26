@@ -18,7 +18,7 @@
       data:
         variables:
           rooms: guestroom
-          message: Magic_Trick.ogg
+          sample: Magic_Trick.ogg
     - action: input_boolean.turn_on
       entity_id: input_boolean.waterrower
     - variables:
@@ -89,6 +89,6 @@
       data:
         variables:
           rooms: guestroom
-          message: Magic_Trick.ogg
+          sample: Magic_Trick.ogg
   mode: single
   max_exceeded: silent
