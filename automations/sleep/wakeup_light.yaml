@@ -1,9 +1,9 @@
-- alias: 💡 | 💤 Wakeup light bedroom (at «wakeup light start» time)
+- alias: Wakeup light Bedroom
   id: 8dfa00b1-9749-4b77-b0c9-7eceaf146bf6
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: input_datetime.wakeup_light_start
-  condition:
+  conditions:
     - condition: state
       entity_id: light.bedroom
       state: "off"
@@ -16,26 +16,18 @@
     - condition: state
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"
-  action:
-    - service: light.turn_on
-      data:
-        color_temp_kelvin: 2000
-        brightness_pct: 1
-      entity_id: light.bedroom
-    - service: light.turn_on
-      data:
-        color_temp_kelvin: 4500
-        brightness_pct: 100
-        transition: 1200
-      entity_id: light.bedroom
+  actions:
+    - action: script.turn_on
+      target:
+        entity_id: script.wakeup_light
   mode: single
   max_exceeded: silent
-- alias: 💡 | 💤/⏰ Bedroom lights on; off after 2-hours (at «wakeup » time)
+- alias: Bedroom lights on; off after 2-hours
   id: 41125109-0a50-4f70-aaaf-ec40cd780a3e
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: input_datetime.wakeup
-  condition:
+  conditions:
     # Run regardless of whether the lights are on – this ensures that if the
     # lights are on, but at a lower intensity, we punch them back to maximum
     # brightness at «wakeup » time...
@@ -45,15 +37,13 @@
     - condition: state
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"
-  action:
-    - service: light.turn_on
-      data:
-        color_temp_kelvin: 4500
-        brightness_pct: 100
-      entity_id: light.bedroom
+  actions:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.bedroom_concentrate
     # Switch the lights off after 2-hours
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: light.bedroom
           from: "on"
           to: "off"
@@ -64,7 +54,7 @@
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: light.turn_off
+    - action: light.turn_off
       entity_id: light.bedroom
   mode: single
   max_exceeded: silent

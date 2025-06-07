@@ -1,13 +1,13 @@
-- alias: 🎄 | 💡/🛡️ Christmas tree on (Living room Hue scene / alarm disarmed)
+- alias: Christmas tree on
   id: 1f000056-9ced-4832-a6a0-4cbb93fb381e
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.hue_scene_living_room
       to: ~
-    - platform: state
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to: disarmed
-  condition:
+  conditions:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: disarmed
@@ -21,8 +21,8 @@
         - Daytime
         - Movie
         - Movie (ambiance)
-        - <Off> # During daytime only
-  action:
+        - «Off» # During daytime only
+  actions:
     - choose:
         # Active
         - conditions:
@@ -30,7 +30,7 @@
               entity_id: sensor.hue_scene_living_room
               state: Active
           sequence:
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: light.festavia_string_lights_1
               data:
@@ -41,7 +41,7 @@
               entity_id: sensor.hue_scene_living_room
               state: Ambiance
           sequence:
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: light.festavia_string_lights_1
               data:
@@ -58,9 +58,9 @@
               entity_id: sensor.hue_scene_living_room
               state:
                 - Daytime
-                - <Off>
+                - «Off»
           sequence:
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: light.festavia_string_lights_1
               data:
@@ -73,7 +73,7 @@
                 - Movie
                 - Movie (ambiance)
           sequence:
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: light.festavia_string_lights_1
               data:
@@ -86,23 +86,23 @@
           error: true
   mode: single
   max_exceeded: silent
-- alias: 🎄 | 💡/🛡️ Christmas tree off (Living room off / "Armed away")
+- alias: Christmas tree off
   id: 7d791dff-0c3d-4774-91e6-648ff3348e53
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to:
         - armed_away
         - armed_vacation
-    - platform: state
+    - trigger: state
       id: lights_off
       entity_id: sensor.hue_scene_living_room
-      to: <Off>
-  condition:
+      to: «Off»
+  conditions:
     - condition: state
       entity_id: light.festavia_string_lights_1
       state: "on"
-  action:
+  actions:
     - if:
         - condition: state
           entity_id: sensor.time_of_day
@@ -111,36 +111,36 @@
           id: lights_off
       then:
         - stop: Ignoring lights-off trigger during daytime...
-    - service: light.turn_off
+    - action: light.turn_off
       entity_id: light.festavia_string_lights_1
   mode: single
-- alias: 🎄 | ⏰ Christmas star on (dusk)
+- alias: Christmas star on
   id: cc862e68-ace8-4bc6-b78b-26db199d5ba2
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: day
       to: dusk
-  condition:
+  conditions:
     - condition: state
       entity_id: switch.on_off_plug_in_unit_7
       state: "off"
-  action:
-    - service: switch.turn_on
+  actions:
+    - action: switch.turn_on
       entity_id: switch.on_off_plug_in_unit_7
   mode: single
-- alias: 🎄 | ⏰ Christmas star off (dawn)
+- alias: Christmas star off
   id: 1f6b28e7-a390-4385-9d3d-52c756cb648f
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: night
       to: dawn
-  condition:
+  conditions:
     - condition: state
       entity_id: switch.on_off_plug_in_unit_7
       state: "on"
-  action:
-    - service: switch.turn_off
+  actions:
+    - action: switch.turn_off
       entity_id: switch.on_off_plug_in_unit_7
   mode: single

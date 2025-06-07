@@ -125,7 +125,7 @@
   actions:
     - set_conversation_response: >-
         Sorry, this only works at night from the Bedroom
-- alias: Dim Upstairs Hallway lights
+- alias: Dim upstairs hallway lights
   id: 74696fc3-90c2-4296-b372-b2ada671955f
   triggers:
     - trigger: time
@@ -147,8 +147,6 @@
     - condition: state
       entity_id: light.upstairs_hallway
       state: "on"
-    - action: light.turn_on
-      data:
-        brightness_pct: 15
-        color_temp_kelvin: 2200
-      entity_id: light.upstairs_hallway
+    - action: scene.turn_on
+      target:
+        entity_id: scene.hallway_upstairs_nightlight

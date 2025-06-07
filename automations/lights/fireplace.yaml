@@ -1,17 +1,17 @@
-- alias: ✨ | 🕹️ Fireplace toggle REST-command (input boolean)
+- alias: Fireplace toggle
   id: e885702e-c8fb-4720-84f7-07aa9f13855b
-  trigger:
+  triggers:
     - entity_id: input_boolean.fireplace
       platform: state
-  condition: []
-  action:
+  conditions: []
+  actions:
     - choose:
         - conditions:
             - condition: state
               entity_id: input_boolean.fireplace
               state: "on"
           sequence:
-            - service: rest_command.fireplace
+            - action: rest_command.fireplace
               data:
                 action: start
         - conditions:
@@ -19,45 +19,45 @@
               entity_id: input_boolean.fireplace
               state: "off"
           sequence:
-            - service: rest_command.fireplace
+            - action: rest_command.fireplace
               data:
                 action: stop
   mode: single
-- alias: ✨ | 💡/⏰ Fireplace off (Living room lights off / daily at 02:00)
+- alias: Fireplace off
   id: 84653754-190c-4571-85e8-e5eca37e81a9
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: light.living_room
       from: "on"
       to: "off"
-    - platform: time
+    - trigger: time
       at: "02:00:00"
-  condition:
+  conditions:
     - condition: state
       entity_id: input_boolean.fireplace
       state: "on"
-  action:
-    - service: input_boolean.turn_off
+  actions:
+    - action: input_boolean.turn_off
       entity_id: input_boolean.fireplace
     # Wait for the Fireplace to transition back to "on" – in reality the lights
     # never turned off, but the state change indicates the lights are under
     # normal control again...
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: light.fireplace
           from: "off"
           to: "on"
       timeout: "00:01:00"
       continue_on_timeout: true
-    - service: light.turn_off
+    - action: light.turn_off
       entity_id:
         - light.fireplace_1_living_room
         - light.fireplace_2_living_room
   mode: single
-- alias: ✨ | 💡 Fireplace on (Living room Hue scene change after 20:00)
+- alias: Fireplace on
   id: 0997f7bb-f73d-4bb4-a0bc-c31d6c8d8875
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.hue_scene_living_room
       to:
         - Ambiance
@@ -65,13 +65,13 @@
         - Movie (ambiance)
       for: "00:02:00"
     # Also trigger at 20:00 and at nightfall
-    - platform: time
+    - trigger: time
       at: "20:00:00"
-    - platform: state
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dusk
       to: night
-  condition:
+  conditions:
     - condition: state
       entity_id: sensor.time_of_day
       state: night
@@ -92,20 +92,20 @@
         - Ambiance
         - Movie
         - Movie (ambiance)
-  action:
-    - service: input_boolean.turn_on
+  actions:
+    - action: input_boolean.turn_on
       entity_id: input_boolean.fireplace
   mode: single
-- alias: ✨ | 💡 Fireplace off (Living room Hue scene change after 20:00)
+- alias: Fireplace off
   id: af1142fe-e8fe-4f6f-83c7-0d60f650e899
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.hue_scene_living_room
       to:
-        # The <Off> state is covered by a separate automation
+        # The «Off» state is covered by a separate automation
         - Active
         - Daytime
-  condition:
+  conditions:
     - condition: state
       entity_id: sensor.time_of_day
       state: night
@@ -118,15 +118,15 @@
     - condition: state
       entity_id: input_boolean.fireplace
       state: "on"
-  action:
-    - service: input_boolean.turn_off
+  actions:
+    - action: input_boolean.turn_off
       entity_id: input_boolean.fireplace
     # The fireplace lights will remain in whatever state they were in when the
     # animation stopped; re-applying the current scene restores them to their
     # proper setting. We have to wait a bit for the lights to be under normal
     # control again (empirically determinted to be ± 15 seconds).
     - delay: 20
-    - service: script.hue_activate_scene
+    - action: script.hue_activate_scene
       data:
         scene_entity: sensor.hue_scene_living_room
   mode: single

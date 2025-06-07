@@ -1,25 +1,25 @@
 # Change scene in Kitchen twice to ensure the Gledopto controllers follow
-- alias: 💡 | 🩹 Enforce Kitchen scene change for Gledopto controllers
+- alias: Enforce Kitchen scene change for Gledopto controllers
   id: 66dc6374-f19a-437c-966b-0679400fc2b5
-  trigger:
+  triggers:
     # By prioritising (and blocking for a while) on the Kitchen counter &
     # cupboards trigger, we ensure that change gets priority over the Kitchen
     # as a whole — as the Gledopto controllers are part of both sets of Hue
     # scenes, this is the most straightforward way to reapply their scene (no
     # need to figure out what to do, simply punch in the triggered scene change
     # again).
-    - platform: state
+    - trigger: state
       entity_id: sensor.hue_scene_kitchen_counter_cupboards
-      not_to: <Off>
-    - platform: state
+      not_to: «Off»
+    - trigger: state
       entity_id: sensor.hue_scene_kitchen
-      not_to: <Off>
+      not_to: «Off»
       for: "00:00:01"
-  condition: []
-  action:
+  conditions: []
+  actions:
     - condition: >-
         {{ trigger.entity_id is defined }}
-    - service: script.hue_activate_scene
+    - action: script.hue_activate_scene
       data:
         scene_entity: >-
           {{ trigger.entity_id }}
@@ -28,31 +28,31 @@
   max_exceeded: silent
 # Occasionally, the Innr colour bulbs in the Garden refuse a scene change, so
 # whenever we change the Garden, change it twice to ensure they properly follow
-- alias: 💡 | 🩹 Enforce Garden scene change for Innr bulbs
+- alias: Enforce Garden scene change for Innr bulbs
   id: 0c7cd39c-6355-45ee-9e53-ab2d3c940f08
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.hue_scene_garden
-      not_to: <Off>
+      not_to: «Off»
       # Best result is achieved if the repeat command is slightly delayed
       for: "00:00:03"
-  condition: []
-  action:
-    - service: script.hue_activate_scene
+  conditions: []
+  actions:
+    - action: script.hue_activate_scene
       data:
         scene_entity: sensor.hue_scene_garden
   mode: restart
 # Idem for the Chandelier in the Ensuite...
-- alias: 💡 | 🩹 Enforce Ensuite scene change for Chandelier
+- alias: Enforce Ensuite scene change for Chandelier
   id: 48db5b8d-2b8d-4651-a29e-c6614a144b6d
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.hue_scene_ensuite
-      not_to: <Off>
+      not_to: «Off»
       for: "00:00:03"
-  condition: []
-  action:
-    - service: script.hue_activate_scene
+  conditions: []
+  actions:
+    - action: script.hue_activate_scene
       data:
         scene_entity: sensor.hue_scene_ensuite
   mode: restart

@@ -11,3 +11,34 @@ wakeup_alarm:
               rooms: bedroom
               sample: 4nsekecn.mp3
   mode: single
+wakeup_light:
+  alias: Wake-up light
+  icon: mdi:alarm-plus
+  sequence:
+    - action: light.turn_on
+      data:
+        color_temp_kelvin: 2000
+        brightness_pct: 1
+      entity_id: light.bedroom
+    - action: light.turn_on
+      data:
+        color_temp_kelvin: 4300
+        brightness_pct: 100
+        transition: 1200 # 20-minutes
+      entity_id: light.bedroom
+    # Wait for the fade to complete (or, abort in case it's overridden)
+    - wait_for_trigger:
+        - trigger: state
+          entity_id: sensor.hue_scene_bedroom
+          from: «Wakeup»
+      timeout: "00:20:00"
+      continue_on_timeout: true
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is none }}
+    # After the fade in, set Bedroom lights to a known scene identical to the
+    # end-result of the fade
+    - action: scene.turn_on
+      target:
+        entity_id: scene.bedroom_concentrate
+  mode: single

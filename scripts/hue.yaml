@@ -16,6 +16,11 @@ hue_activate_scene:
             - sensor.hue_scene_kitchen
             - sensor.hue_scene_kitchen_counter_cupboards
             - sensor.hue_scene_garden
+            - sensor.hue_scene_bedroom
+            - sensor.hue_scene_attic
+            - sensor.hue_scene_hallway
+            - sensor.hue_scene_hallway_downstairs
+            - sensor.hue_scene_hallway_upstairs
   sequence:
     - variables:
         scene_id: >-
@@ -33,25 +38,25 @@ hue_activate_scene:
               )
             }}
           {% else %}
-            <Unavailable>
+            «Unavailable»
           {% endif %}
     - if:
         # The above `has_value(scene_entity)` guards against unknown/unavailable
         # states, but it doesn't guard against an _uninitialised_ sensor – hence
         # the `has_value(scene_id)`, which filters out that edge case...
         - >-
-          {{ scene_id != '<Unavailable>' and has_value(scene_id) }}
+          {{ scene_id != '«Unavailable»' and has_value(scene_id) }}
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: >-
               {{ scene_id }}
       else:
         - if:
             - >-
-              {{ states(scene_entity) == '<Off>' }}
+              {{ states(scene_entity) == '«Off»' }}
           then:
-            - service: light.turn_off
+            - action: light.turn_off
               target:
                 entity_id: >-
                   {{ state_attr(scene_entity, 'light_id') }}
@@ -86,7 +91,7 @@ hue_activate_scene_kitchen:
               entity_id: sensor.hue_scene_kitchen_counter_cupboards
               state: Activity
           then:
-            - service: scene.turn_on
+            - action: scene.turn_on
               target:
                 entity_id: >-
                   {{ scene_id }}
@@ -94,17 +99,17 @@ hue_activate_scene_kitchen:
             # prior to making any further changes – it's possible this happens
             # so fast we miss the trigger, hence the continue on timeout.
             - wait_for_trigger:
-                - platform: state
+                - trigger: state
                   entity_id: sensor.hue_scene_kitchen
                   to: ~
               timeout: "00:00:05"
               continue_on_timeout: true
-            - service: scene.turn_on
+            - action: scene.turn_on
               target:
                 entity_id: scene.kitchen_counter_cupboards_activity
           # Otherwise, simply apply the scene to Kitchen alone
           else:
-            - service: scene.turn_on
+            - action: scene.turn_on
               target:
                 entity_id: >-
                   {{ scene_id }}
@@ -119,20 +124,20 @@ hue_activate_scene_kitchen:
                   entity_id: sensor.hue_scene_kitchen_counter_cupboards
                   state: Activity
               then:
-                - service: light.turn_off
+                - action: light.turn_off
                   target:
                     entity_id: light.kitchen
                 - wait_for_trigger:
-                    - platform: state
+                    - trigger: state
                       entity_id: sensor.hue_scene_kitchen
-                      to: <Off>
+                      to: «Off»
                   timeout: "00:00:05"
                   continue_on_timeout: true
-                - service: scene.turn_on
+                - action: scene.turn_on
                   target:
                     entity_id: scene.kitchen_counter_cupboards_activity
               else:
-                - service: light.turn_off
+                - action: light.turn_off
                   target:
                     entity_id: light.kitchen
           else:
