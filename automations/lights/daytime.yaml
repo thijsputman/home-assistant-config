@@ -1,22 +1,24 @@
-- alias: 💡 | ⛅ Kitchen lights on during daytime (☀️ < 80 lux)
+- alias: Kitchen lights
   id: 5b3387c6-763b-47da-b938-1eaefcd0ffd1
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.lightlevel_47
       for: "00:01:00"
       below: 80
-    - platform: state
+    - trigger: state
       id: dawn
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-    - platform: time
+    - trigger: time
       id: wakeup
       at: input_datetime.wakeup
-  condition:
+  conditions:
     # In case of the wakeup-trigger, "everyone asleep" isn't relevant (and most
     # likely still active as there's a race condition between this automation
     # and the one that toggles "everyone asleep" off)
+    # The reason for this complexity is that "everyone asleep" can potentially
+    # also toggle off at night (when someone comes home late).
     - condition: or
       conditions:
         - condition: state
@@ -50,47 +52,47 @@
               state: Activity
             - condition: state
               entity_id: sensor.hue_scene_kitchen
-              state: <Off>
-  action:
-    - service: script.hue_activate_scene_kitchen
+              state: «Off»
+  actions:
+    - action: script.hue_activate_scene_kitchen
       data:
         scene_id: scene.kitchen_daytime
   mode: single
-- alias: 💡 | ⛅ Kitchen lights off during daytime (☀️ > 90 lux)
+- alias: Kitchen lights off
   id: 2c48592e-2d8b-42f1-880b-44183ffc442a
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.lightlevel_47
       for: "00:10:00"
       above: 90
-  condition:
+  conditions:
     - condition: state
       entity_id: sensor.time_of_day
       state: day
     - condition: state
       entity_id: sensor.hue_scene_kitchen
       state: Daytime
-  action:
-    - service: script.hue_activate_scene_kitchen
+  actions:
+    - action: script.hue_activate_scene_kitchen
       data:
         turn_off: true
   mode: single
-- alias: 💡 | ⛅ Living room lights on during daytime (☀️ < 25 lux)
+- alias: Living room lights on
   id: 05a5eb32-be80-4130-a561-d21015851ae8
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.lightlevel_46
       for: "00:01:00"
       below: 25
-    - platform: state
+    - trigger: state
       id: dawn
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-    - platform: time
+    - trigger: time
       id: wakeup
       at: input_datetime.wakeup
-  condition:
+  conditions:
     - condition: or
       conditions:
         - condition: state
@@ -128,57 +130,128 @@
             - idle
             - playing
             - paused
-  action:
-    - service: scene.turn_on
+  actions:
+    - action: scene.turn_on
       target:
         entity_id: scene.living_room_daytime
-    - service: scene.turn_on
+    - action: scene.turn_on
       target:
         entity_id: scene.ensuite_daytime
   mode: single
-- alias: 💡 | ⛅ Living room lights off during daytime (☀️ > 30 lux)
+- alias: Living room lights off
   id: 21a8d2ce-746d-460a-9c65-b9ddf4f1b3b1
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.lightlevel_46
       for: "00:10:00"
       above: 30
-  condition:
+  conditions:
     - condition: state
       entity_id: sensor.time_of_day
       state: day
-  action:
+  actions:
     - if:
         - condition: state
           entity_id: sensor.hue_scene_living_room
           state: Daytime
       then:
-        - service: light.turn_off
+        - action: light.turn_off
           entity_id: light.living_room
     - if:
         - condition: state
           entity_id: sensor.hue_scene_ensuite
           state: Daytime
       then:
-        - service: light.turn_off
+        - action: light.turn_off
           entity_id: light.ensuite
   mode: single
-- alias: 💡 | ⛅ Hallway (downstairs) lights on during daytime (☀️ < 40 lux)
+- alias: Hallway (downstairs) lights on
   id: 1815106e-2684-4397-8fe8-73711ca6e7b5
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.lightlevel_48
       for: "00:01:00"
       below: 40
-    - platform: state
-      id: dawn
+    # Switch from daytime to reduced daytime lighting
+    - trigger: numeric_state
+      id: sun_elevation
+      entity_id: sun.sun
+      attribute: elevation
+      below: 40
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-    - platform: time
+    - trigger: time
       id: wakeup
       at: input_datetime.wakeup
-  condition:
+  conditions:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "off"
+        - condition: trigger
+          id: wakeup
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: or
+      conditions:
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: sun_elevation
+            - condition: numeric_state
+              entity_id: sensor.lightlevel_48
+              below: 60
+        - condition: numeric_state
+          entity_id: sensor.lightlevel_48
+          below: 40
+  actions:
+    - action: script.turn_on
+      target:
+        entity_id: script.hallway_downstairs_daytime_lights
+  mode: single
+- alias: Hallway (downstairs) lights off
+  id: 9b941157-f359-4d69-a19c-eaa242f6faf3
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_48
+      for: "00:10:00"
+      above: 60
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: state
+      entity_id: light.front_hallway
+      state: "on"
+    - condition: state
+      entity_id: light.back_hallway
+      state: "on"
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id:
+          - light.front_hallway
+          - light.back_hallway
+  mode: single
+- alias: Hallway (upstairs) lights on
+  id: 6fcf79b7-be12-4990-b2dd-21d8a85b4987
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_upstairs_hallway
+      for: "00:01:00"
+      below: 30
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+    - trigger: time
+      id: wakeup
+      at: input_datetime.wakeup
+  conditions:
     - condition: or
       conditions:
         - condition: state
@@ -190,112 +263,29 @@
       entity_id: sensor.time_of_day
       state: day
     - condition: numeric_state
-      entity_id: sensor.lightlevel_48
-      below: 40
-    # Don't act if the lights are already on, _unless_ we are running because
-    # of a dawn/wakeup-trigger
-    - condition: or
-      conditions:
-        - condition: trigger
-          id:
-            - dawn
-            - wakeup
-        - condition: state
-          entity_id:
-            - light.front_hallway
-            - light.back_hallway
-          state: "off"
-  action:
-    - service: light.turn_on
-      data:
-        brightness_pct: 90
-        color_temp_kelvin: 4500
-      target:
-        entity_id:
-          - light.front_hallway
-          - light.back_hallway
-  mode: single
-- alias: 💡 | ⛅ Hallway (downstairs) lights off during daytime (☀️ > 60 lux)
-  id: 9b941157-f359-4d69-a19c-eaa242f6faf3
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.lightlevel_48
-      for: "00:10:00"
-      above: 60
-  condition:
-    - condition: state
-      entity_id: sensor.time_of_day
-      state: day
-    - condition: state
-      entity_id: light.front_hallway
-      state: "on"
-    - condition: state
-      entity_id: light.back_hallway
-      state: "on"
-  action:
-    - service: light.turn_off
-      target:
-        entity_id:
-          - light.front_hallway
-          - light.back_hallway
-  mode: single
-- alias: 💡 | ⛅ Hallway (upstairs) lights on during daytime (☀️ < 30 lux)
-  id: 6fcf79b7-be12-4990-b2dd-21d8a85b4987
-  trigger:
-    - platform: numeric_state
-      entity_id: sensor.lightlevel_upstairs_hallway
-      for: "00:01:00"
-      below: 30
-    - platform: state
-      id: dawn_wakeup
-      entity_id: sensor.time_of_day
-      from: dawn
-      to: day
-    - platform: time
-      id: dawn_wakeup
-      at: input_datetime.wakeup
-  condition:
-    - condition: state
-      entity_id: input_boolean.everyone_asleep
-      state: "off"
-    - condition: state
-      entity_id: sensor.time_of_day
-      state: day
-    - condition: numeric_state
       entity_id: sensor.lightlevel_upstairs_hallway
       below: 30
-    # In case of the dawn/wakeup-trigger we don't care if the lights are off
-    - condition: or
-      conditions:
-        - condition: trigger
-          id: dawn_wakeup
-        - condition: state
-          entity_id: light.upstairs_hallway
-          state: "off"
-  action:
-    - service: light.turn_on
-      data:
-        brightness_pct: 90
-        color_temp_kelvin: 4500
+  actions:
+    - action: scene.turn_on
       target:
-        entity_id: light.upstairs_hallway
+        entity_id: scene.hallway_upstairs_daytime
   mode: single
-- alias: 💡 | ⛅ Hallway (upstairs) lights off during daytime (☀️ > 50 lux)
+- alias: Hallway (upstairs) lights off
   id: 14585406-3c8d-4c76-902a-af71e509e95d
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.lightlevel_upstairs_hallway
       for: "00:10:00"
       above: 50
-  condition:
+  conditions:
     - condition: state
       entity_id: sensor.time_of_day
       state: day
     - condition: state
       entity_id: light.upstairs_hallway
       state: "on"
-  action:
-    - service: light.turn_off
+  actions:
+    - action: light.turn_off
       target:
         entity_id: light.upstairs_hallway
   mode: single

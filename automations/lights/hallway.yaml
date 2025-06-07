@@ -1,32 +1,16 @@
-# The Hallway lights are often manually adjusted – generally speaking, these
-# changes don't need to persist after activity in the Hallway ends
-- alias: >-
-    💡 | 🕹️/👋 Restore hallway lights (10-minutes after activity ends)
+# The Hallway lights are often manually adjusted – these changes don't need to
+# persist after activity in the Hallway ends
+- alias: Restore hallway lights after inactivity
   id: 4e1d15da-52cb-47ea-90e7-1396257116eb
-  trigger:
-    - platform: state
-      entity_id:
-        - event.hallway_downstairs_switch_button_1
-        - event.hallway_downstairs_switch_button_2
-        - event.hallway_downstairs_switch_button_3
-        - event.hallway_downstairs_switch_button_4
-        - event.hallway_upstairs_switch_button_1
-        - event.hallway_upstairs_switch_button_2
-        - event.hallway_upstairs_switch_button_3
-        - event.hallway_upstairs_switch_button_4
-      to: ~
-  condition:
-    # Don't bother when everyone's asleep (e.g. a manual adjustment after going
-    # to the bathroom at night) or when there's someone in the bed
-    - condition: state
-      entity_id: input_boolean.everyone_asleep
-      state: "off"
-    - condition: state
-      entity_id: binary_sensor.occupancy_bed
-      state: "on"
-  action:
+  triggers:
+    - trigger: state
+      entity_id: sensor.hue_scene_hallway
+      to: «Override»
+  conditions: []
+  actions:
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
+          id: motion_stop
           entity_id:
             - binary_sensor.presence_121 # Stairs
             - binary_sensor.presence_123 # Downstairs hallway
@@ -35,65 +19,100 @@
           from: "on"
           to: "off"
           for: "00:10:00"
+        - trigger: state
+          entity_id: sensor.hue_scene_hallway
+          not_to: «Override»
       timeout: "02:00:00"
       continue_on_timeout: false
-    # Abort when going to bed / everyone's asleep
-    - condition: and
-      conditions:
-        - condition: state
-          entity_id: script.lights_out
-          state: "off"
-        - condition: state
-          entity_id: timer.everyone_asleep_delay
-          state: idle
-        - condition: state
-          entity_id: input_boolean.everyone_asleep
-          state: "off"
+    # Only restore when there's no more activity
+    - condition: template
+      value_template: >-
+        {{ wait.trigger is not none and wait.trigger.id == 'motion_stop' }}
     # Daytime
     - if:
         - condition: state
           entity_id: sensor.time_of_day
           state: day
       then:
-        # Downstairs hallway
+        # Downstairs
         - if:
             - condition: numeric_state
               entity_id: sensor.lightlevel_48
               below: 60
           then:
-            - service: light.turn_on
-              data:
-                brightness_pct: 90
-                color_temp_kelvin: 4500
+            - action: script.turn_on
               target:
-                entity_id:
-                  - light.front_hallway
-                  - light.back_hallway
+                entity_id: script.hallway_downstairs_daytime_lights
           else:
-            - service: light.turn_off
+            - action: light.turn_off
               target:
-                entity_id:
-                  - light.front_hallway
-                  - light.back_hallway
-        # Upstairs hallway
+                entity_id: light.hallway_downstairs
+        # Upstairs
         - if:
             - condition: numeric_state
               entity_id: sensor.lightlevel_upstairs_hallway
               below: 50
           then:
-            - service: light.turn_on
-              data:
-                brightness_pct: 90
-                color_temp_kelvin: 4500
+            - action: scene.turn_on
               target:
-                entity_id: light.upstairs_hallway
+                entity_id: scene.hallway_upstairs_daytime
           else:
-            - service: light.turn_off
+            - action: light.turn_off
               target:
                 entity_id: light.upstairs_hallway
       # Evening
       else:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.hallway_evening
-  mode: restart
+  mode: single
+- alias: Dim hallway lights
+  id: 2a98868c-c030-4159-803e-3cc6193a9872
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.vibration_43 # Doorbell
+      from: "off"
+      to: "on"
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: night
+    - condition: state
+      entity_id: light.hallway_downstairs
+      state: "on"
+  actions:
+    - wait_for_trigger:
+        - trigger: state
+          entity_id:
+            - binary_sensor.presence_121 # Stairs
+            - binary_sensor.presence_123 # Downstairs hallway
+            - binary_sensor.presence_125 # Downstairs hallway
+          from: "off"
+          to: "on"
+      timeout: "00:02:00"
+      continue_on_timeout: false
+    - action: light.turn_on
+      data:
+        brightness_pct: 3
+        entity_id: light.hallway_downstairs
+    # Restore lights on opening the front door, or after five-minutes if the
+    # door isn't opened
+    - wait_for_trigger:
+        - trigger: state
+          entity_id: binary_sensor.openclose_16
+          from: "off"
+          to: "on"
+          for: "00:00:05"
+        # Abort if the lights get otherwise changed
+        - trigger: state
+          id: abort
+          entity_id: light.hallway_downstairs
+          to: ~
+      timeout: "00:05:00"
+      continue_on_timeout: true
+    - condition: >-
+        {{ wait.trigger is none or wait.trigger.id != 'abort' }}
+    # Restore the previous (ie, current) scene
+    - action: script.hue_activate_scene
+      data:
+        scene_entity: sensor.hue_scene_hallway_downstairs
