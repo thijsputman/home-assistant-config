@@ -1,7 +1,7 @@
 CustomHelloWorld:
   speech:
     text: >-
-      Blinking the {{ area_name(room) }} lights!
+      Party-time in the {{ area_name(room) }}!
   async_action: true
   action:
     - action: light.turn_on

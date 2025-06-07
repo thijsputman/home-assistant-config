@@ -3,7 +3,7 @@ intents:
   CustomHelloWorld:
     data:
       - sentences:
-          - blink [the] {room} [lights]
+          - party time [in the] {room}
 lists:
   room:
     values:

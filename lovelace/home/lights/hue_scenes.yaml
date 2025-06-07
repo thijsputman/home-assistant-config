@@ -16,12 +16,12 @@ card_mod:
           color: var(--secondary-text-color) !important;
         }
         div::before{
-          content: "<";
+          content: "«";
           position: relative;
           right: -0.2em;
         }
         div::after{
-          content: ">";
+          content: "»";
           position: relative;
           right: 0.2em;
         }
