@@ -14,7 +14,6 @@ ignore: |
   /.storage
   /blueprints
   /custom_components
-  /known_devices.yaml
 
 extends: default
 

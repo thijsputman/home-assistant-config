@@ -4,4 +4,3 @@
 /custom_components/*
 !/custom_components/README.md
 /www/custom-jsm
-/known_devices.yaml
