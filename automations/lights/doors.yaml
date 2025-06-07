@@ -1,176 +1,160 @@
-- alias: >-
-    💡 | 🚪 Front door light to maximum brightness (door open / doorbell rang)
+- alias: Front door light to maximum brightness
   id: 78c89018-504b-4ff1-8aa1-fbebc14206e9
-  trigger:
-    - platform: state
+  triggers:
+    # Front door
+    - trigger: state
       entity_id: binary_sensor.openclose_16
       from: "off"
       to: "on"
-    - platform: state
+    # Doorbell
+    - trigger: state
       entity_id: binary_sensor.vibration_43
       from: "off"
       to: "on"
       # Slight delay on doorbell activation to not startle visitors / make it
       # less obvious the lights are automated
       for: "00:00:03"
-  condition:
+  variables:
+    light_state: >-
+      {{ states('light.hue_filament_bulb_1_2') }}
+    light_brightness: >-
+      {{ state_attr('light.hue_filament_bulb_1_2', 'brightness') | int(0) }}
+  conditions:
     - condition: not
       conditions:
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-    # Only continue if the light is _not_ yet at maximum brightness – continuing
-    # would overwrite the previous state and prevent restoring lights at the end
-    # of the automation. Repeatedly pressing the doorbell
-    # N.B. cannot use a regular state/attribute condition as the "brightness"
-    # attribute is missing when the light is off.
-    - condition: template
-      value_template: >-
-        {{
-          state_attr('light.hue_filament_bulb_1_2', 'brightness')
-            | int(-1) < 255
-        }}
-  action:
-    - variables:
-        light_state: >-
-          {{ states('light.hue_filament_bulb_1_2') }}
-        light_brightness: >-
-          {{ state_attr('light.hue_filament_bulb_1_2', 'brightness') | int(0) }}
-    - service: light.turn_on
+  actions:
+    - action: light.turn_on
       data:
         brightness: 255
         entity_id: light.hue_filament_bulb_1_2
-    # Wait for the front door to be closed for 30 seconds or for the doorbell
-    # to have rang 30 minutes ago. Theoretically this could lead us to switch
-    # the lights off while the front door is still open – in practice this is
-    # unlikely to ever happen...
+    # Wait for the front door to be closed for 30-seconds, or for the doorbell
+    # to have rang 30-minutes ago
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.openclose_16
           from: "on"
           to: "off"
           for: "00:00:30"
-        - platform: state
+        - trigger: state
           id: doorbell
           entity_id: binary_sensor.vibration_43
           from: "on"
           to: "off"
-          for: "00:29:00" # Sensor stays "on" for 60 seconds
-        # Short-circuit if the light is switched off (covers both manual
-        # intervention and the light getting switched off at dawn by another
-        # automation) or in case of pending Home Alarm (at which point an alarm
-        # related automation takes over).
-        - platform: state
+          for: "00:29:00" # Sensor stays "on" for 1-minute
+        # Abort if the light gets otherwise changed (this prevents us from
+        # messing with other lighting automations)
+        # N.B. To prevent triggering on the transition initiated above (which is
+        # not instantaneous), we use a "from"-attribute check to trigger on
+        # leaving the state we explicitly set above.
+        - trigger: state
           id: abort
           entity_id: light.hue_filament_bulb_1_2
-          to: "off"
-        - platform: state
-          id: abort
+          attribute: brightness
+          from: 255
+      timeout: "02:00:00"
+      continue_on_timeout: true
+    - condition: >-
+        {{ wait.trigger is none or wait.trigger.id != 'abort' }}
+    # In case of a pending or triggered Home Alarm, don't further interfer
+    - condition: not
+      conditions:
+        - condition: state
           entity_id: alarm_control_panel.home_alarm
-          to: pending
-      timeout: "24:00:00"
-      continue_on_timeout: false
-    - condition: template
-      value_template: >-
-        {{ wait.trigger.id != 'abort' }}
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ light_state == 'on' and light_brightness > 0 }}
-          sequence:
-            - service: light.turn_on
-              data:
-                brightness: >-
-                  {{ light_brightness }}
-              target:
-                entity_id: light.hue_filament_bulb_1_2
-      default:
-        - service: light.turn_off
+          state:
+            - pending
+            - triggered
+    - if: >-
+        {{ light_state == 'on' and light_brightness > 0 }}
+      then:
+        - action: light.turn_on
+          data:
+            brightness: >-
+              {{ light_brightness }}
+          target:
+            entity_id: light.hue_filament_bulb_1_2
+      else:
+        - action: light.turn_off
           target:
             entity_id: light.hue_filament_bulb_1_2
   mode: single
   max_exceeded: silent
-- alias: 💡 | 🚪 Kitchen door light to maximum brightness (door open)
+- alias: Kitchen door light to maximum brightness
   id: ffff8c6f-9dbd-4791-8c32-766e1570811e
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.openclose_12
       from: "off"
       to: "on"
-  condition:
+  variables:
+    light_state: >-
+      {{ states('light.hue_filament_bulb_1') }}
+    light_brightness: >-
+      {{ state_attr('light.hue_filament_bulb_1', 'brightness') | int(0) }}
+  conditions:
     - condition: not
       conditions:
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-    # Only continue if the light is not yet at maximum brightness
-    - condition: template
-      value_template: >-
-        {{
-          state_attr('light.hue_filament_bulb_1', 'brightness')
-            | int(-1) < 255
-        }}
-  action:
-    - variables:
-        light_state: >-
-          {{ states('light.hue_filament_bulb_1') }}
-        light_brightness: >-
-          {{ state_attr('light.hue_filament_bulb_1', 'brightness') | int(0) }}
-    - service: light.turn_on
+  actions:
+    - action: light.turn_on
       data:
         brightness: 255
         entity_id: light.hue_filament_bulb_1
-    # Wait for the back door to be closed for 30 seconds
+    - delay: 5
+    # Wait for the back door to be closed for 30-seconds
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.openclose_12
           from: "on"
           to: "off"
           for: "00:00:30"
-        # Short-circuit if the light is switched off or pending Home Alarm
-        - platform: state
+        # Abort if the light gets otherwise changed
+        - trigger: state
           id: abort
           entity_id: light.hue_filament_bulb_1
-          to: "off"
-        - platform: state
-          id: abort
+          attribute: brightness
+          from: 255
+      timeout: "02:00:00"
+      continue_on_timeout: true
+    - condition: >-
+        {{ wait.trigger is none or wait.trigger.id != 'abort' }}
+    - condition: not
+      conditions:
+        - condition: state
           entity_id: alarm_control_panel.home_alarm
-          to: pending
-      timeout: "24:00:00"
-      continue_on_timeout: false
-    - condition: template
-      value_template: >-
-        {{ wait.trigger.id != 'abort' }}
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ light_state == 'on' and light_brightness > 0 }}
-          sequence:
-            - service: light.turn_on
-              data:
-                brightness: >-
-                  {{ light_brightness }}
-              target:
-                entity_id: light.hue_filament_bulb_1
-      default:
-        - service: light.turn_off
+          state:
+            - pending
+            - triggered
+    - if: >-
+        {{ light_state == 'on' and light_brightness > 0 }}
+      then:
+        - action: light.turn_on
+          data:
+            brightness: >-
+              {{ light_brightness }}
+          target:
+            entity_id: light.hue_filament_bulb_1
+      else:
+        - action: light.turn_off
           target:
             entity_id: light.hue_filament_bulb_1
   mode: single
   max_exceeded: silent
-- alias: 💡 | 🚪 Garden lights on (Kitchen/Shed door or Back gate open)
+- alias: Garden lights on
   id: cd0a0eac-d482-4add-ba9f-28e63fae0d26
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id:
-        - binary_sensor.openclose_12
-        - binary_sensor.openclose_34
-        - binary_sensor.openclose_189
+        - binary_sensor.openclose_12 # Kitchen door
+        - binary_sensor.openclose_34 # Back gate
+        - binary_sensor.openclose_189 # Shed door
       from: "off"
       to: "on"
-  condition:
+  conditions:
     # Other automations are in effect if the alarm is armed (or triggered)
     - condition: state
       entity_id: alarm_control_panel.home_alarm
@@ -183,30 +167,29 @@
     - condition: state
       entity_id: light.garden
       state: "off"
-  action:
-    - service: scene.turn_on
+  actions:
+    - action: scene.turn_on
       target:
         entity_id: scene.garden_ambiance
     # Wait for the door to close
     - wait_for_trigger:
-        - platform: template
+        - trigger: template
           value_template: >-
             {{ is_state(trigger.entity_id, 'off') }}
     # Keep the lights on for an additional 5 minutes – abort if we transition
     # from dusk to night (lights should stay on) or if the lights get switched
     # off (nothing more to do)
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: sensor.time_of_day
           from: dusk
           to: night
-        - platform: state
+        - trigger: state
           entity_id: light.garden
           to: "off"
       timeout: "00:05:00"
       continue_on_timeout: true
-    - condition: template
-      value_template: >-
+    - condition: >-
         {{ wait.trigger is none }}
     # Also, don't bother switching the lights back off at dusk; they'll be
     # switched on again soon anyway...
@@ -215,6 +198,6 @@
         - condition: state
           entity_id: sensor.time_of_day
           state: dusk
-    - service: light.turn_off
+    - action: light.turn_off
       entity_id: light.garden
   mode: restart
