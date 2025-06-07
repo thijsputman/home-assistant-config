@@ -6,6 +6,8 @@ homeassistant.helpers.entity:
     ^Update of (sensor|switch|vacuum)\.d7_[a-z0-9_]+ is taking over
     [0-9]+ seconds$
   - >-
+    ^Update of (sensor|switch|vacuum)\.d7_[a-z0-9_]+ fails$
+  - >-
     ^Update for vacuum\.d7_[a-z0-9_]+ fails$
 homeassistant.components.switch:
   - ^Updating neato [a-z]+ took longer than the scheduled update interval
@@ -25,3 +27,10 @@ homeassistant.components.neato.sensor:
 homeassistant.components.neato.switch:
   - >-
     ^Neato [a-z]+ connection error for '.+': Unable to communicate with robot$
+# Since updating to 0.8, Aarlo started generating a lot of noise too – these
+# appear to be the most common/harmless/transient ones...
+pyaarlo:
+  - request-error=ReadTimeout
+  - error loading the image library
+  - event loop closed by server
+  - failed to read modes (v2)
