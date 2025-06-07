@@ -74,9 +74,11 @@
       from: "off"
       to: "on"
   conditions:
-    - condition: state
-      entity_id: sensor.time_of_day
-      state: night
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
     - condition: state
       entity_id: light.hallway_downstairs
       state: "on"
@@ -93,7 +95,7 @@
       continue_on_timeout: false
     - action: light.turn_on
       data:
-        brightness_pct: 3
+        brightness: 8
         entity_id: light.hallway_downstairs
     # Restore lights on opening the front door, or after five-minutes if the
     # door isn't opened
@@ -107,7 +109,8 @@
         - trigger: state
           id: abort
           entity_id: light.hallway_downstairs
-          to: ~
+          attribute: brightness
+          from: 8
       timeout: "00:05:00"
       continue_on_timeout: true
     - condition: >-

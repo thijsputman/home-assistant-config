@@ -46,7 +46,7 @@
                 entity_id: light.festavia_string_lights_1
               data:
                 effect: fire
-                brightness_pct: 75
+                brightness: 190
         # Daytime
         - conditions:
             # During daytime only (the Hue scene is guarded against this; the
@@ -78,7 +78,7 @@
                 entity_id: light.festavia_string_lights_1
               data:
                 effect: fire
-                brightness_pct: 25
+                brightness: 60
       default:
         - stop: >-
             Not changing Christmas tree lights: Unknown Living room Hue scene
