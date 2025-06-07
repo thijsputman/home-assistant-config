@@ -1,17 +1,15 @@
-- alias: >-
-    💡 | 🛡️ Inside lights off when "Armed away/vacation"
-    (daily between 23:00 - 01:00)
+- alias: Inside lights off
   id: 9b24fc0b-fc61-432c-b881-aa2b644a2efe
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: "23:00:00"
-  condition:
+  conditions:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state:
         - armed_away
         - armed_vacation
-  action:
+  actions:
     - delay: >-
         {{ range(7200) | random }}
     - condition: state
@@ -19,7 +17,7 @@
       state:
         - armed_away
         - armed_vacation
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.lights_out
       data:
@@ -27,7 +25,7 @@
           # Randomly toggle between activation from the Kitchen and activation
           # from the Bedroom
           activatedFrom: >-
-            {% if (range(100) | random) >= 50 %}
+            {% if (range(100) | random) >= 80 %}
               kitchen
             {% else %}
               bedroom
@@ -38,33 +36,32 @@
 # short while for no apparent reason... To prevent that, stop the script when
 # someone comes home. No need to switch on any lights, other automations (in
 # "📄 alarm/welcome.yaml" specifically) handle that.
-- alias: 💡 | 🛡️ Stop "Lights out"-script (alarm disarmed)
+- alias: Stop "Lights out"-script
   id: 9c2f2cea-8a22-40aa-ba35-575816f03acd
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to: disarmed
-  condition:
+  conditions:
     - condition: state
       entity_id: script.lights_out
       state: "on"
-  action:
-    - service: script.turn_off
+  actions:
+    - action: script.turn_off
       target:
         entity_id: script.lights_out
   mode: single
 # Combined into a single automation to prevent the lights from getting switched
 # *on* at dusk if dusk is _after_ the randomised switch off moment (somewhere
 # between 19:00 and 20:00)
-- alias: >-
-    💡 | 🛡️ Attic lights on and off when "Armed away/vacation" (most weekdays)
+- alias: Attic lights on and off
   id: 10746e4d-a051-42c0-afb0-79b375ac17d2
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: day
       to: dusk
-  condition:
+  conditions:
     - condition: time
       weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     - condition: state
@@ -77,12 +74,12 @@
     # momentarily)
     - condition: time
       before: "19:30:00"
-  action:
+  actions:
     # ± 85% Chance of switching the lights on
     - condition: template
       value_template: >-
         {{ (range(0, 99) | random) > 15 }}
-    - service: scene.turn_on
+    - action: scene.turn_on
       target:
         entity_id: scene.attic_away
     # Wait until it's 19:00
@@ -91,7 +88,7 @@
           before: "19:00:00"
       then:
         - wait_for_trigger:
-            - platform: time
+            - trigger: time
               at: "19:00:00"
           # Should never timeout; if it does, best to continue...
           timeout: "04:00:00"
@@ -104,25 +101,25 @@
       state:
         - armed_away
         - armed_vacation
-    - service: light.turn_off
+    - action: light.turn_off
       target:
         entity_id: light.attic
   mode: single
 # Leaving the Attic lights on when someone's home would lead the occupancy
 # detection in the Attic to assume there's someone in the Attic and
 # unintentionally switch on the heating/airco...
-- alias: 💡 | 🛡️ Attic lights off (alarm disarmed)
+- alias: Attic lights off
   id: 561c1b1f-4604-4f18-8635-d716dc677387
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to: disarmed
-  condition:
+  conditions:
     - condition: state
       entity_id: light.attic
       state: "on"
-  action:
-    - service: light.turn_off
+  actions:
+    - action: light.turn_off
       target:
         entity_id: light.attic
   mode: single
