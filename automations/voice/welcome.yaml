@@ -58,8 +58,10 @@
     # ❗N.B. The reason the "source"-device from the preceding trigger can't be
     # used is the fact that each person has two devices: One (GPS-tracked) phone
     # and one device whose MAC-address is tracked on the network. The latter is
-    # often faster to respond, but of course doesn't provide an actual GPS
-    # location – keep this in mind when updating the below!
+    # often faster to respond, but of course doesn't provide a GPS location.
+    # ❗N.B. The GPS-device's state can trail (substantially) behind the
+    # MAC-address based device. This is why both are explicitly checked before
+    # use in the below template.
     - variables:
         home: >-
           {{
@@ -86,37 +88,30 @@
             {% if home | length == 1 %}
               {{ home | first | regex_replace(' .*$', '') }}
             {% endif %}!
-    - if:
-        - >-
-          {{ away | length == 1 }}
-      then:
-        - action: script.turn_on
-          target:
-            entity_id: script.tts_queue
-          data:
-            variables:
-              message: >-
-                {%
-                  set person_away = expand('group.family') |
-                    selectattr('state', '==', 'not_home') | list | first
-                %}
-                {%
-                  set sensor = 'sensor.' ~ away | first |
-                    regex_replace('^.*\.', '') ~ '_geocoded_location'
-                %}
-                You are the only person home;
-                {{ person_away.name | regex_replace(' .*$', '') }} left
-                {{ person_away.last_changed | relative_time }} ago and is
-                currently somewhere in {{ state_attr(sensor, 'sub_locality') }},
-                {{ state_attr(sensor, 'locality') }}.
-                While you were away,
-                {% from 'voice.jinja' import activity_while_armed %}
-                {% set activity_while_armed = activity_while_armed() %}
-                {% if activity_while_armed | trim  == '' %}
-                  nothing of interest happened
-                {% else %}
-                  {{ activity_while_armed }}
-                {% endif %}.
+            {% if home | length == 1 and away | length == 1 %}
+              {%
+                set person_away = expand('group.family') |
+                  selectattr('state', '==', 'not_home') | list | first
+              %}
+              {%
+                set sensor = 'sensor.' ~ away | first |
+                  regex_replace('^.*\.', '') ~ '_geocoded_location'
+              %}
+              You are the only person home;
+              {{ person_away.name | regex_replace(' .*$', '') }} left
+              {{ person_away.last_changed | relative_time }} ago,
+              and is currently somewhere in
+              {{ state_attr(sensor, 'sub_locality') }},
+              {{ state_attr(sensor, 'locality') }}.
+            {% endif %}
+            While you were away,
+            {% from 'voice.jinja' import activity_while_armed %}
+            {% set activity_while_armed = activity_while_armed() %}
+            {% if activity_while_armed | trim  == '' %}
+              nothing of interest happened
+            {% else %}
+              {{ activity_while_armed }}
+            {% endif %}.
 - alias: 🔊 | ✈️ Clear queued up announcements (back from vacation)
   id: 2ee10a57-7f48-4a3b-9877-39ddff276020
   trigger:
