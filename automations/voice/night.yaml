@@ -1,40 +1,36 @@
-- alias: >-
-    🔊 | 🕹️ Trigger "Goodnight" announcements ("Lights out"-script triggered)
+- alias: Trigger "Goodnight" announcements
   id: 6af957b0-bc4e-489c-8ff7-4ae492b7ca21
-  trigger:
+  triggers:
     - trigger: state
       entity_id: script.lights_out
       from: "off"
       to: "on"
   variables:
     tablet_kitchen_user_id: !secret tablet_kitchen_user_id
-  condition: []
-  action:
+  conditions: []
+  actions:
     - variables:
         room: >-
           {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
             living_room
-          {% elif states('binary_sensor.occupancy_bed') == 'on' %}
+          {% else %}
             bedroom
           {% endif %}
-    - if: >-
-        {{ room in ['living_room', 'bedroom'] }}
-      then:
-        - event: tts_attention
-          event_data:
-            room: >-
-              {{ room }}
-        - delay: 2
-        - event: tts_announce
-          event_data:
-            room: >-
-              {{ room }}
-            tag: goodnight
+    - event: tts_attention
+      event_data:
+        room: >-
+          {{ room }}
+    - delay: 2
+    - event: tts_announce
+      event_data:
+        room: >-
+          {{ room }}
+        tag: goodnight
   mode: single
   max_exceeded: silent
-- alias: 🔊 | 💡 Queue "Goodnight" announcements ("Lights out" triggered)
+- alias: Queue "Goodnight" announcements
   id: 4bce7cff-f340-4fd7-9b18-b6a7aa85d38f
-  trigger:
+  triggers:
     - trigger: state
       entity_id: script.lights_out
       from: "off"
@@ -43,7 +39,16 @@
     albert_heijn_eta: >-
       {% from 'voice.jinja' import albert_heijn_eta %}
       {{ albert_heijn_eta() }}
-  action:
+    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
+  conditions: []
+  actions:
+    - variables:
+        priority: >-
+          {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
+            regular
+          {% else %}
+            whisper
+          {% endif %}
     - action: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -51,7 +56,8 @@
         variables:
           channel: announce
           tag: goodnight
-          priority: whisper
+          priority: >-
+            {{ priority }}
           message: >-
             {% from 'voice.jinja' import goodnight_alarm %}
             Switching off all lights.
@@ -74,7 +80,8 @@
             variables:
               channel: announce
               tag: goodnight
-              priority: whisper
+              priority: >-
+                {{ priority }}
               message: >-
                 {{ albert_heijn_eta }}
     - action: script.turn_on
@@ -84,7 +91,8 @@
         variables:
           channel: announce
           tag: goodnight
-          priority: whisper
+          priority: >-
+            {{ priority }}
           message: Goodnight...
   mode: single
   max_exceeded: silent

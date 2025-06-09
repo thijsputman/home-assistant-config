@@ -46,7 +46,7 @@ lights_out:
                       > 0
                   }}
               then:
-                - service: light.turn_off
+                - action: light.turn_off
                   target:
                     entity_id: >-
                       {{ rooms_on | reject('eq', 'light.kitchen') | join(',') }}
@@ -62,25 +62,25 @@ lights_out:
                       state: "off"
               then:
                 # Dim Kitchen lights to provide a visual cue
-                - service: scene.turn_on
+                - action: scene.turn_on
                   target:
                     entity_id: scene.kitchen_movie
                 # Turn on Hallway lights so there's light when going upstairs
-                - service: scene.turn_on
+                - action: scene.turn_on
                   target:
                     entity_id: scene.hallway_evening
                 - delay: "00:05:00"
                 # Lower Hallway brightness 1-minute prior to switching it off
-                - service: light.turn_on
+                - action: light.turn_on
                   data:
                     brightness_step_pct: -15
                     entity_id:
                       - light.hallway
                 - delay: "00:01:00"
-                - service: light.turn_off
+                - action: light.turn_off
                   data:
                     entity_id: light.kitchen
-                - service: light.turn_off
+                - action: light.turn_off
                   data:
                     transition: 10
                     entity_id: light.hallway
@@ -93,7 +93,7 @@ lights_out:
                 - >-
                   {{ rooms_on | length > 0 }}
               then:
-                - service: light.turn_off
+                - action: light.turn_off
                   target:
                     entity_id: >-
                       {{ rooms_on | join(',') }}
@@ -102,7 +102,7 @@ lights_out:
                 entity_id: light.hallway
                 state: "on"
               then:
-                - service: light.turn_off
+                - action: light.turn_off
                   data:
                     transition: 10
                     entity_id: light.hallway
@@ -111,7 +111,7 @@ lights_out:
                   entity_id: light.bedroom
                   state: "on"
               then:
-                - service: light.turn_off
+                - action: light.turn_off
                   data:
                     transition: 10
                     entity_id: light.bedroom
@@ -126,7 +126,7 @@ lights_out:
             is_state('binary_sensor.presence_63', 'off')
           }}
       then:
-        - service: light.turn_off
+        - action: light.turn_off
           data:
             transition: 10
             entity_id:
@@ -152,11 +152,11 @@ lights_out:
           }}
     - condition: >-
         {{ force_off != '' }}
-    - service: light.turn_off
+    - action: light.turn_off
       target:
         entity_id: >-
           {{ force_off }}
-    - service: system_log.write
+    - action: system_log.write
       data:
         level: warning
         message: >-
