@@ -104,7 +104,6 @@
       data:
         brightness: 255
         entity_id: light.hue_filament_bulb_1
-    - delay: 5
     # Wait for the back door to be closed for 30-seconds
     - wait_for_trigger:
         - trigger: state

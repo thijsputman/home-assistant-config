@@ -1,12 +1,12 @@
-- alias: 🔊 | ⏰ Hourly "Dong!"
+- alias: Hourly "Dong!"
   id: d3514110-c85e-48ff-b60b-8dec439f0f6f
-  trigger:
+  triggers:
     # It seems "hours: *" is not the way to go — it works but (appears?) to
     # interfer with other automations running at the top of the hour... 🤨
     - trigger: time_pattern
       seconds: 0
       minutes: 0
-  condition:
+  conditions:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: disarmed
@@ -32,7 +32,7 @@
     - condition: state
       entity_id: timer.wakeup_snooze_time
       state: idle
-  action:
+  actions:
     # In the Bedroom and Guestroom, the "Dong!" only sounds between 06:00 and
     # 22:00...
     - variables:
@@ -67,7 +67,7 @@
             entity_id: script.play_sample
           data:
             variables:
-              volume: 0.55
+              volume: 0.8
               rooms: >-
                 {{ rooms }}
               sample: Spell.ogg
