@@ -30,9 +30,20 @@
           entity_id: alarm_control_panel.home_alarm
           state: triggered
   actions:
-    - action: light.toggle
-      target:
-        entity_id: light.bedroom
+    - if:
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_bedroom
+              state: «Off»
+      then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.bedroom_bright
+      else:
+        - action: light.turn_off
+          target:
+            entity_id: light.bedroom
   mode: single
 - alias: All lights out
   id: bce1284e-8bd4-4234-bbbc-652c4a3c192d
