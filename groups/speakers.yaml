@@ -14,3 +14,11 @@ satellites_all:
     - assist_satellite.ha_voice_attic
     - assist_satellite.ha_voice_bedroom
     - assist_satellite.ha_voice_guestroom
+led_rings_all:
+  name: All satellite LED-rings
+  icon: mdi:asterisk-circle-outline
+  entities:
+    - light.ha_voice_living_room_led_ring
+    - light.ha_voice_attic_led_ring
+    - light.ha_voice_bedroom_led_ring
+    - light.ha_voice_guestroom_led_ring

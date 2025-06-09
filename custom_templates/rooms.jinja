@@ -67,3 +67,37 @@
   {% endif %}
 
 {% endmacro %}
+
+{% macro rooms_led_rings(rooms) %}
+
+  {% set result = namespace(led_rings=[]) %}
+  {% set rooms = rooms if rooms is defined else [] %}
+  {% if rooms is string %}
+    {% set rooms = rooms.split(',') if ',' in rooms else [rooms] %}
+  {% endif %}
+  {% for room in rooms %}
+    {% if room == 'living_room' %}
+      {% set result.led_rings =
+        result.led_rings + ['light.ha_voice_living_room_led_ring'] %}
+    {% elif room == 'bedroom' %}
+      {% set result.led_rings =
+        result.led_rings + ['light.ha_voice_bedroom_led_ring'] %}
+    {% elif room == 'guestroom' %}
+      {% set result.led_rings =
+        result.led_rings + ['light.ha_voice_guestroom_led_ring'] %}
+    {% elif room == 'attic' %}
+      {% set result.led_rings =
+        result.led_rings + ['light.ha_voice_attic_led_ring'] %}
+    {% endif %}
+  {% endfor %}
+  {# Reduce to "group.led_rings_all" when all speakers are selected #}
+  {% if
+    result.led_rings | length > 0 and (result.led_rings |
+      length) != (expand('group.led_rings_all') | length)
+  %}
+    {{ result.led_rings | join(',') }}
+  {% else %}
+    group.led_rings_all
+  {% endif %}
+
+{% endmacro %}
