@@ -31,11 +31,9 @@
           state: triggered
   actions:
     - if:
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: sensor.hue_scene_bedroom
-              state: «Off»
+        - condition: state
+          entity_id: sensor.hue_scene_bedroom
+          state: «Off»
       then:
         - action: scene.turn_on
           target:

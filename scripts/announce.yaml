@@ -313,7 +313,9 @@ tts_announce:
           target:
             entity_id: >-
               {{ speakers }}
-        - sequence:
+        # Intentionally create a race-condition in an attempt to change the
+        # LED-ring's colour without actually turning on the lights...
+        - parallel:
             - action: light.turn_on
               data:
                 brightness: 180
