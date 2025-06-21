@@ -22,7 +22,7 @@ custom CSS.
 - `home-assistant-sun-card.js?v=0.1.4`
 - [`layout-card.js?v=2.4.6`](https://github.com/thomasloven/lovelace-layout-card/releases/tag/v2.4.6)
 - [`logbook-card.js?v=2.5.5`](https://github.com/royto/logbook-card/releases/tag/2.5.5)
-- [`mini-graph-card-bundle.js?v=0.13.0-dev.3`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.13.0-dev.3)
+- [`mini-graph-card-bundle.js?v=0.13.0`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.13.0)
 - [`paper-buttons-row.js?v=2.1.3`](https://github.com/jcwillox/lovelace-paper-buttons-row/releases/tag/2.1.3)
 - [`slider-entity-row.js?v=17.4.0`](https://github.com/thomasloven/lovelace-slider-entity-row/releases/tag/17.4.0)
 - [`vacuum-card.js?v=2.8.1`](https://github.com/denysdovhan/vacuum-card/releases/tag/v2.8.1)
