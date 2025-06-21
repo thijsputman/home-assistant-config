@@ -169,8 +169,8 @@
     - service: light.turn_off
       target:
         entity_id:
-          - light.light.front_hallway
-          - light.light.back_hallway
+          - light.front_hallway
+          - light.back_hallway
   mode: single
 - alias: >-
     💡 | ⏰ Inside lights off – Upstairs hallway (daily at sunrise;
