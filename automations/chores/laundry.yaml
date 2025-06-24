@@ -11,7 +11,7 @@
         - platform: numeric_state
           id: cycle_completed
           entity_id: sensor.power_86_actual
-          below: 1
+          below: 5
           for: "00:20:00"
         # Short-circuit on door open
         - platform: state
