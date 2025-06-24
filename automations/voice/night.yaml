@@ -16,19 +16,40 @@
           {% else %}
             bedroom
           {% endif %}
-    - event: tts_attention
-      event_data:
-        room: >-
-          {{ room }}
-    - delay: 2
-    - event: tts_announce
-      event_data:
-        room: >-
-          {{ room }}
-        tag: goodnight
+        priority: >-
+          {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
+            regular
+          {% else %}
+            whisper
+          {% endif %}
+    - parallel:
+        # Release all queued up "attention"
+        - event: tts_attention
+          event_data:
+            room: >-
+              {{ room }}
+        - sequence:
+            # Give the other announcements time to queue up...
+            - delay: 5
+            # ...and finally add a "Goodnight" at the end of the queue
+            - action: script.turn_on
+              target:
+                entity_id: script.tts_queue
+              data:
+                variables:
+                  channel: announce
+                  tag: goodnight
+                  priority: >-
+                    {{ priority }}
+                  message: Goodnight...
+            - event: tts_announce
+              event_data:
+                room: >-
+                  {{ room }}
+                tag: goodnight
   mode: single
   max_exceeded: silent
-- alias: Queue "Goodnight" announcements
+- alias: Queue "Lights off"-announcement
   id: 4bce7cff-f340-4fd7-9b18-b6a7aa85d38f
   triggers:
     - trigger: state
@@ -36,12 +57,10 @@
       from: "off"
       to: "on"
   variables:
-    albert_heijn_eta: >-
-      {% from 'voice.jinja' import albert_heijn_eta %}
-      {{ albert_heijn_eta() }}
     tablet_kitchen_user_id: !secret tablet_kitchen_user_id
   conditions: []
   actions:
+    - delay: 2
     - variables:
         priority: >-
           {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
@@ -62,28 +81,6 @@
             {% from 'voice.jinja' import goodnight_alarm %}
             Switching off all lights.
             {{ goodnight_alarm() }}
-    - if:
-        - >-
-          {{ albert_heijn_eta | trim != '' }}
-        # Only relevant if Albert Heijn ETA is in the future — otherwise we're
-        # probably about to replay this morning's announcement...
-        - >-
-          {{
-            states('sensor.last_notification_albert_heijn_eta') |
-              as_datetime > now()
-          }}
-      then:
-        - action: script.turn_on
-          target:
-            entity_id: script.tts_queue
-          data:
-            variables:
-              channel: announce
-              tag: goodnight
-              priority: >-
-                {{ priority }}
-              message: >-
-                {{ albert_heijn_eta }}
     - action: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -94,5 +91,74 @@
           priority: >-
             {{ priority }}
           message: Goodnight...
+  mode: single
+  max_exceeded: silent
+- alias: Queue "Albert Heijn"-reminder
+  id: e1aa5416-a8cd-4c82-b8e9-d9a0bf1da556
+  triggers:
+    - trigger: state
+      entity_id: script.lights_out
+      from: "off"
+      to: "on"
+  variables:
+    albert_heijn_eta: >-
+      {% from 'voice.jinja' import albert_heijn_eta %}
+      {{ albert_heijn_eta() }}
+    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
+  conditions:
+    - >-
+      {{ albert_heijn_eta | trim != '' }}
+    # Only relevant if Albert Heijn ETA is in the future — otherwise we're
+    # probably about to replay this morning's announcement...
+    - >-
+      {{
+        states('sensor.last_notification_albert_heijn_eta') |
+          as_datetime > now()
+      }}
+  actions:
+    - delay: 4 # Queue this one up last
+    - variables:
+        priority: >-
+          {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
+            regular
+          {% else %}
+            whisper
+          {% endif %}
+    - action: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: goodnight
+          priority: >-
+            {{ priority }}
+          message: >-
+            {{ albert_heijn_eta }}
+  mode: single
+  max_exceeded: silent
+- alias: Queue "Attic window open"-warning
+  id: d7e4036d-7484-4bd0-a688-601cb7f5c98c
+  triggers:
+    - trigger: state
+      entity_id: script.lights_out
+      from: "off"
+      to: "on"
+  conditions:
+    - condition: state
+      entity_id: sensor.attic_window_position
+      state: open
+  actions:
+    - delay: 1 # Queue this one up first
+    - action: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: goodnight
+          priority: regular
+          message: >-
+            The Attic window is still open
   mode: single
   max_exceeded: silent
