@@ -13,7 +13,7 @@
       unit_of_measurement: °C
       device_class: temperature
       availability: >-
-        {{ has_value('climate.tado_smart_thermostat') }}
+        {{ states('climate.tado_smart_thermostat') == 'heat' }}
       state: >-
         {{ state_attr('climate.tado_smart_thermostat', 'temperature') }}
     # Smart Radiator (Attic) – via HomeKit controller
@@ -30,7 +30,7 @@
       unit_of_measurement: °C
       device_class: temperature
       availability: >-
-        {{ has_value('climate.tado_smart_radiator_attic') }}
+        {{ states('climate.tado_smart_radiator_attic') == 'heat' }}
       state: >-
         {{ state_attr('climate.tado_smart_radiator_attic', 'temperature') }}
     # Smart AC Control (Attic) – via HomeKit controller
@@ -47,6 +47,6 @@
       unit_of_measurement: °C
       device_class: temperature
       availability: >-
-        {{ has_value('climate.tado_smart_ac_control_attic') }}
+        {{ states('climate.tado_smart_ac_control_attic') == 'cool' }}
       state: >-
         {{ state_attr('climate.tado_smart_ac_control_attic', 'temperature') }}
