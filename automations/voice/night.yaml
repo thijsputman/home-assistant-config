@@ -81,16 +81,6 @@
             {% from 'voice.jinja' import goodnight_alarm %}
             Switching off all lights.
             {{ goodnight_alarm() }}
-    - action: script.turn_on
-      target:
-        entity_id: script.tts_queue
-      data:
-        variables:
-          channel: announce
-          tag: goodnight
-          priority: >-
-            {{ priority }}
-          message: Goodnight...
   mode: single
   max_exceeded: silent
 - alias: Queue "Albert Heijn"-reminder
