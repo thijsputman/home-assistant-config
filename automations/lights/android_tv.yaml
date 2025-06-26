@@ -1,25 +1,41 @@
-- alias: 💡 | 📺 Dim lights (Android TV playing)
+- alias: Dim lights
   id: c136b7ec-1a71-49d3-b000-efddfcd4b433
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: media_player.epson_eh_ls800b
       to: playing
-  condition:
-    # Only act if Living room lights are on
-    - condition: state
-      entity_id: light.living_room
-      state: "on"
-  action:
-    - service: scene.turn_on
-      target:
-        entity_id: scene.living_room_movie
+  conditions: []
+  actions:
+    # Living room
+    - if:
+        # Only act if Living room lights are on, and not in Daytime-mode. During
+        # the day, switching on the projector is most likely more functional
+        # than for entertainment purposes – also, the new Epson is more than
+        # bright enough to overpower the Daytime-lighting...
+        - condition: state
+          entity_id: light.living_room
+          state: "on"
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Daytime
+      then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_movie
     # Ensuite
     - if:
         - condition: state
           entity_id: light.ensuite
           state: "on"
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_ensuite
+              state: Daytime
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.ensuite_movie
     # Kitchen
@@ -27,128 +43,92 @@
         - condition: state
           entity_id: light.kitchen
           state: "on"
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen
+              state: Daytime
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.kitchen_movie
-    # Hallway
+    # Hallway – downstairs
     - if:
         - condition: state
-          entity_id: light.hallway
+          entity_id: light.hallway_downstairs
           state: "on"
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_hallway_downstairs
+              state: Daytime
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
-            entity_id: scene.hallway_movie
+            entity_id: scene.hallway_downstairs_movie
   mode: single
-- alias: 💡 | 📺 Restore lights (Android TV on/paused)
+- alias: Restore lights
   id: 586f5ad1-0c79-4213-820d-9e6ed587d540
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
+      id: paused
       entity_id: media_player.epson_eh_ls800b
       to:
         - standby
         - idle
         - paused
-  condition:
-    # Only act if Living room lights are on _and_ it's not daytime. They
-    # daytime- condition is the easiest way to prevent turning the lights back
-    # on when it's not needed (as it's most likely light enough during the day).
-    # The "light on"-condition might seem counter-intuitive, but even when
-    # playing some lights in the Living room remain on. As _all_ Android TV
-    # automations are conditional on the lights being on, the Android TV alone
-    # can never turn the lights on if they weren't on to begin with.
-    # This is the cleanest way (i.e. dependent only on the state of the Living
-    # room lights) to prevent the Android TV from turning on the lights if it
-    # wakes up unattended at the night...
-    - condition: state
-      entity_id: light.living_room
-      state: "on"
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: sensor.time_of_day
-          state: day
-  action:
-    - service: scene.turn_on
-      target:
-        entity_id: scene.living_room_movie_ambiance
-    # Ensuite
-    - if:
-        - condition: state
-          entity_id: light.ensuite
-          state: "on"
-      then:
-        - service: scene.turn_on
-          target:
-            entity_id: scene.ensuite_ambiance
-    # Kitchen
-    - if:
-        - condition: state
-          entity_id: light.kitchen
-          state: "on"
-      then:
-        - service: scene.turn_on
-          target:
-            entity_id: scene.kitchen_ambiance
-    # Hallway
-    - if:
-        - condition: state
-          entity_id: light.hallway
-          state: "on"
-      then:
-        - service: scene.turn_on
-          target:
-            entity_id: scene.hallway_evening
-  mode: single
-- alias: 💡 | 📺 Restore lights (Android TV off)
-  id: 42a90454-8626-47c7-9f83-fb8d7ded0453
-  trigger:
-    - platform: state
+    - trigger: state
       entity_id: media_player.epson_eh_ls800b
       not_from:
         - unknown
         - unavailable
       to: "off"
-  condition:
-    # Only act if Living room lights are on _and_ it's not daytime
-    - condition: state
-      entity_id: light.living_room
-      state: "on"
-    - condition: not
-      conditions:
+  conditions: []
+  actions:
+    # Living room
+    - if:
         - condition: state
-          entity_id: sensor.time_of_day
-          state: day
-  action:
-    - service: scene.turn_on
-      target:
-        entity_id: scene.living_room_ambiance
+          entity_id: sensor.hue_scene_living_room
+          state:
+            - Movie
+            - Movie (ambiance)
+      then:
+        - if:
+            - condition: trigger
+              id: paused
+          then:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.living_room_movie_ambiance
+          else:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.living_room_ambiance
     # Ensuite
     - if:
         - condition: state
-          entity_id: light.ensuite
-          state: "on"
+          entity_id: sensor.hue_scene_ensuite
+          state: Movie
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.ensuite_ambiance
     # Kitchen
     - if:
         - condition: state
-          entity_id: light.kitchen
-          state: "on"
+          entity_id: sensor.hue_scene_kitchen
+          state: Movie
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.kitchen_ambiance
-    # Hallway
+    # Hallway – downstairs
     - if:
         - condition: state
-          entity_id: light.hallway
-          state: "on"
+          entity_id: sensor.hue_scene_hallway_downstairs
+          state: Movie
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
-            entity_id: scene.hallway_evening
+            entity_id: scene.hallway_downstairs_evening
   mode: single
