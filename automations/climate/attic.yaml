@@ -1,11 +1,11 @@
-- alias: 🌡️ | 👀 Attic radiator on (occupied)
+- alias: Attic radiator on
   id: e5978d8a-cfec-4b8d-a78d-03e973de84ae
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.occupancy_attic
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: binary_sensor.openclose_33 # Attic window
       state: "off"
@@ -17,22 +17,22 @@
       entity_id: climate.tado_smart_thermostat
       state: heat
   action:
-    - service: climate.set_temperature
+    - action: climate.set_temperature
       data:
         temperature: 21.0
       entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🌡️ | 🤖 Attic radiator retain setpoint (while occupied)
+- alias: Attic radiator retain setpoint
   id: 4e9442c0-9b22-441a-9f3c-13fee3cedd52
   # This is primarily to prevent the tado°-schedule from switching the Attic
   # heating off on weekdays at 19:00 (while the Attic is still occupied). Manual
   # adjustments also trigger this automation, but since it only triggers below
   # 18°, manual temperature adjustments are generally unaffected...
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.tado_smart_radiator_attic_setpoint
       below: 18.0
-  condition:
+  conditions:
     - condition: state
       entity_id: binary_sensor.occupancy_attic
       state: "on"
@@ -46,35 +46,35 @@
     - condition: state
       entity_id: climate.tado_smart_thermostat
       state: heat
-  action:
-    - service: climate.set_temperature
+  actions:
+    - action: climate.set_temperature
       data:
         temperature: 21.0
       entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🌡️ | 👀 Attic radiator off (unoccupied)
+- alias: Attic radiator off
   id: 19c32aa8-2c41-4026-ba1a-798a34a2bf6b
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.occupancy_attic
       from: "on"
       to: "off"
-  condition:
+  conditions:
     - condition: state
       entity_id: climate.tado_smart_radiator_attic
       state: heat
-  action:
-    - service: climate.set_temperature
+  actions:
+    - action: climate.set_temperature
       data:
         temperature: 12.0
       entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🌡️ | ⏰ Attic radiator off (weekdays at 09:00 when remains unoccupied)
+- alias: Attic radiator off
   id: fc16d0c4-d9ea-48da-ad28-ca9f83065f5d
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: "09:00:00"
-  condition:
+  conditions:
     - condition: time
       weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     # Only relevant if the Attic radiator is on
@@ -89,9 +89,9 @@
     - condition: state
       entity_id: binary_sensor.occupancy_attic
       state: "off"
-  action:
+  actions:
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.occupancy_attic
           from: "off"
           to: "on"
@@ -102,17 +102,17 @@
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: climate.set_temperature
+    - action: climate.set_temperature
       data:
         temperature: 12.0
       entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🌡️ | 🚗 Attic radiator off (tado° from Away- to Home-mode)
+- alias: Attic radiator off
   id: d8587843-f45f-48cc-811a-e7dbf346a31f
-  trigger:
+  triggers:
     # When tado° transitions from Away- to Home-mode, it restores all schedules
     # and thus potentially switches the Attic radiator on...
-    - platform: state
+    - trigger: state
       entity_id: climate.tado_attic
       attribute: preset_mode
       from: away
@@ -120,7 +120,7 @@
       # Hold the state for a short while to ensure HomeKit (which we use for
       # radiator control) catches up with the online state...
       for: "00:02:00"
-  condition:
+  conditions:
     # Only relevant if the Attic radiator is on
     - condition: numeric_state
       entity_id: sensor.tado_smart_radiator_attic_setpoint
@@ -128,21 +128,21 @@
     - condition: state
       entity_id: climate.tado_smart_radiator_attic
       state: heat
-  action:
-    - service: climate.set_temperature
+  actions:
+    - action: climate.set_temperature
       data:
         temperature: 12.0
       entity_id: climate.tado_smart_radiator_attic
   mode: single
-- alias: 🌡️ | 🤖 Attic radiator off (Living room thermostat lowered)
+- alias: Attic radiator off
   id: 529a20b2-7b28-4cf7-84c3-72c5d851d853
-  trigger:
+  triggers:
     # Mainly intended as a fail-safe to ensure the Attic radiator (which can
     # control the cv-boiler by itself) doesn't stay on throughout the night...
-    - platform: numeric_state
+    - trigger: numeric_state
       entity_id: sensor.tado_smart_thermostat_setpoint
       below: 16.0
-  condition:
+  conditions:
     # Only relevant if the Attic radiator is on
     - condition: numeric_state
       entity_id: sensor.tado_smart_radiator_attic_setpoint
@@ -150,8 +150,8 @@
     - condition: state
       entity_id: climate.tado_smart_radiator_attic
       state: heat
-  action:
-    - service: climate.set_temperature
+  actions:
+    - action: climate.set_temperature
       data:
         temperature: 12.0
       entity_id: climate.tado_smart_radiator_attic
@@ -190,18 +190,18 @@
       target:
         entity_id: climate.tado_attic
   mode: single
-- alias: ❄️ | 👀 Airco – Attic enable schedule (occupied; "Airco active" on)
+- alias: Airco – Attic enable schedule
   id: f3bd94fa-4646-4c70-9e0d-fd7288579bfe
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.occupancy_attic
       from: "off"
       to: "on"
-    - platform: state
+    - trigger: state
       entity_id: input_boolean.airco_active
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: time
       weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     - condition: state
@@ -221,8 +221,8 @@
         - condition: state
           entity_id: climate.tado_attic_ac
           state: auto
-  action:
-    - service: climate.set_hvac_mode
+  actions:
+    - action: climate.set_hvac_mode
       data:
         hvac_mode: auto
       target:
@@ -231,37 +231,37 @@
 # The "Attic off"-automation is broader than the "Attic on"-automation. It turns
 # the airco off unconditionally (i.e. if it's not already off) – this to prevent
 # leaving the airco on unintentionally...
-- alias: ❄️ | 👀 Airco – Attic off (unoccupied; "Airco active" off)
+- alias: Airco – Attic off
   id: 426b173e-cef1-4e6d-a7f0-a1249db7c745
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.occupancy_attic
       from: "on"
       to: "off"
-    - platform: state
+    - trigger: state
       entity_id: input_boolean.airco_active
       from: "on"
       to: "off"
-  condition:
+  conditions:
     - condition: not
       conditions:
         - condition: state
           entity_id: climate.tado_attic_ac
           state: "off"
-  action:
-    - service: climate.set_hvac_mode
+  actions:
+    - action: climate.set_hvac_mode
       data:
         hvac_mode: "off"
       target:
         entity_id: climate.tado_attic_ac
   mode: single
-- alias: ❄️ | 🌡️ Airco – Attic enable schedule (🌡️ < 25ºC when occupied)
+- alias: Airco – Attic enable schedule
   id: 0669c656-3142-4572-8e4b-30e9c65b4761
-  trigger:
-    - platform: numeric_state
+  triggers:
+    - trigger: numeric_state
       entity_id: sensor.temperature_3
       above: 25.0
-  condition:
+  conditions:
     - condition: time
       weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     - condition: state
@@ -276,19 +276,19 @@
     - condition: state
       entity_id: climate.tado_attic_ac
       state: "off"
-  action:
-    - service: climate.set_hvac_mode
+  actions:
+    - action: climate.set_hvac_mode
       data:
         hvac_mode: auto
       target:
         entity_id: climate.tado_attic_ac
   mode: single
-- alias: ❄️ | ⏰ Airco – Attic off (weekdays at 09:00 when remains unoccupied)
+- alias: Airco – Attic off
   id: bc7a77e4-3fad-4b78-a2aa-91b0e507681a
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: "09:00:00"
-  condition:
+  conditions:
     - condition: time
       weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     - condition: state
@@ -300,9 +300,9 @@
     - condition: state
       entity_id: binary_sensor.occupancy_attic
       state: "off"
-  action:
+  actions:
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.occupancy_attic
           from: "off"
           to: "on"
@@ -313,18 +313,18 @@
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: climate.set_hvac_mode
+    - action: climate.set_hvac_mode
       data:
         hvac_mode: "off"
       target:
         entity_id: climate.tado_attic_ac
   mode: single
-- alias: ❄️ | ⏰ Airco – Attic enable schedule (daily at 01:00)
+- alias: Airco – Attic restore schedule
   id: 63196195-97ca-473b-860d-1394b54ea6ed
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: "01:00:00"
-  condition:
+  conditions:
     - condition: time
       weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     - condition: state
@@ -339,18 +339,18 @@
         - condition: state
           entity_id: climate.tado_attic_ac
           state: auto
-  action:
-    - service: climate.set_hvac_mode
+  actions:
+    - action: climate.set_hvac_mode
       data:
         hvac_mode: auto
       target:
         entity_id: climate.tado_attic_ac
-- alias: 🌡️ | ⏰ Attic radiator enable schedule (daily at 01:00)
+- alias: Attic radiator restore schedule
   id: 2024e4d4-ea94-4109-a217-37dcd6b653fd
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: "01:00:00"
-  condition:
+  conditions:
     - condition: time
       weekday: [mon, tue, wed, thu, fri] # yamllint disable-line rule:brackets
     - condition: state
@@ -365,23 +365,23 @@
         - condition: state
           entity_id: climate.tado_attic
           state: auto
-  action:
-    - service: climate.set_hvac_mode
+  actions:
+    - action: climate.set_hvac_mode
       data:
         hvac_mode: auto
       target:
         entity_id: climate.tado_attic
-- alias: ❄️ | 🚪 Airco – Attic off (window open)
+- alias: Airco – Attic off
   id: 717e590f-b4d7-4cf9-8efd-c540f5ea3298
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.openclose_33
       from: "off"
       to: "on"
     # Using HomeKit to trigger – when using a schedule, the online tadoº
     # integration doesn't trigger to "cool" (instead, it stays in "auto") so
     # it's of no use here...
-    - platform: state
+    - trigger: state
       entity_id: climate.tado_smart_ac_control_attic
       from: "off"
       to: cool
@@ -389,14 +389,14 @@
       # too fast might cause the "physical" commands to the Airco to criss-cross
       # with the "virtual" state, leaving the entire thing messed up
       for: "00:00:30"
-  condition:
+  conditions:
     - condition: state
       entity_id: binary_sensor.openclose_33
       state: "on"
     - condition: state
       entity_id: climate.tado_smart_ac_control_attic
       state: cool
-  action:
+  actions:
     - variables:
         # Take state from the (online) tadoº integration (so we can distinguish
         # between "cool" and "auto" hvac-modes)
@@ -410,10 +410,10 @@
     # Control via (online) tadoº integration – this ensures a planned schedule
     # change doesn't overrule the off-state (and thus switches on the airco
     # regardless of the fact the window is still open)
-    - service: climate.turn_off
+    - action: climate.turn_off
       target:
         entity_id: climate.tado_attic_ac
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.persistent_notification
       data:
@@ -429,19 +429,19 @@
             back to {{ last_hvac_mode }}-mode...
     - wait_for_trigger:
         # Action from mobile notification
-        - platform: event
+        - trigger: event
           id: switch_off
           event_type: mobile_app_notification_action
           event_data:
             action: ACTION_1_airco_attic_window
         # Window closed
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.openclose_33
           from: "on"
           to: "off"
       timeout: "06:00:00"
       continue_on_timeout: true
-    - service: persistent_notification.dismiss
+    - action: persistent_notification.dismiss
       data:
         notification_id: airco_attic_window
     # Only restore the Airco's state if the window was closed, otherwise keep
@@ -462,14 +462,14 @@
               value_template: >-
                 {{ last_hvac_mode == 'auto' }}
           sequence:
-            - service: climate.set_hvac_mode
+            - action: climate.set_hvac_mode
               data:
                 hvac_mode: >-
                   {{ last_hvac_mode }}
               target:
                 entity_id: climate.tado_attic_ac
       default:
-        - service: script.climate_set_operating_mode
+        - action: script.climate_set_operating_mode
           data:
             entity_id: climate.tado_attic_ac
             hvac_mode: >-
@@ -479,14 +479,14 @@
             temperature: >-
               {{ last_temperature }}
   mode: restart
-- alias: 🌡️ | 🚪 Attic radiator off (window open)
+- alias: Attic radiator off
   id: 336491f4-871a-4ac2-8e9e-f4f83cd123f6
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.openclose_33
       from: "off"
       to: "on"
-    - platform: state
+    - trigger: state
       entity_id: climate.tado_smart_radiator_attic
       from: "off"
       to: heat
@@ -503,10 +503,10 @@
           {{ states('climate.tado_attic') }}
         last_temperature: >-
           {{ state_attr('climate.tado_smart_radiator_attic', 'temperature') }}
-    - service: climate.turn_off
+    - action: climate.turn_off
       target:
         entity_id: climate.tado_attic
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.persistent_notification
       data:
@@ -521,18 +521,18 @@
             Please close the window in the Attic to allow the radiator to switch
             back to {{ last_hvac_mode }}-mode...
     - wait_for_trigger:
-        - platform: event
+        - trigger: event
           id: switch_off
           event_type: mobile_app_notification_action
           event_data:
             action: ACTION_1_radiator_attic_window
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.openclose_33
           from: "on"
           to: "off"
       timeout: "06:00:00"
       continue_on_timeout: true
-    - service: persistent_notification.dismiss
+    - action: persistent_notification.dismiss
       data:
         notification_id: radiator_attic_window
     - condition: template
@@ -546,14 +546,14 @@
               value_template: >-
                 {{ last_hvac_mode == 'auto' }}
           sequence:
-            - service: climate.set_hvac_mode
+            - action: climate.set_hvac_mode
               data:
                 hvac_mode: >-
                   {{ last_hvac_mode }}
               target:
                 entity_id: climate.tado_attic
       default:
-        - service: script.climate_set_operating_mode
+        - action: script.climate_set_operating_mode
           data:
             entity_id: climate.tado_attic
             hvac_mode: >-
