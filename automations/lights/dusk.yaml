@@ -14,7 +14,7 @@
       target:
         entity_id: scene.garden_ambiance
   mode: single
-- alias: 💡 | ⏰ Inside lights on (daily at sunset)
+- alias: Inside lights on
   id: 0ca01a00-8847-41f1-b852-70f4c4a49275
   triggers:
     - trigger: state
