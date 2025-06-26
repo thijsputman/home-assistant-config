@@ -39,14 +39,14 @@ irrigation_manual:
         # opened (at the risk of tripping the physical protection in unexpected
         # situations).
         - unavailable
-    - service: switch.turn_on
+    - action: switch.turn_on
       target:
         entity_id: >-
           {{ valve }}
     - repeat:
         sequence:
           - wait_for_trigger:
-              - platform: state
+              - trigger: state
                 entity_id:
                   - sensor.consumption_170
                   - sensor.consumption_173
@@ -57,7 +57,7 @@ irrigation_manual:
           - if: >-
               {{ wait.trigger is none }}
             then:
-              - service: switch.turn_off
+              - action: switch.turn_off
                 target:
                   entity_id: >-
                     {{ valve }}
@@ -83,7 +83,7 @@ irrigation_manual:
                     wait.trigger.from_state.state | int
                   ] | max
                 }}
-          - service: input_number.set_value
+          - action: input_number.set_value
             target:
               entity_id: >-
                 {{ input_entity }}
@@ -95,7 +95,7 @@ irrigation_manual:
             input_entity is not defined or
             states(input_entity) | int <= 0
           }}
-    - service: switch.turn_off
+    - action: switch.turn_off
       target:
         entity_id: >-
           {{ valve }}

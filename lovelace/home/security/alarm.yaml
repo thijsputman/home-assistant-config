@@ -96,14 +96,14 @@ card:
               state_styles:
                 "on":
                   icon:
-                    color: rgb(var(--rgb-amber-color))
+                    color: var(--amber-color)
                   name:
-                    color: rgb(var(--rgb-amber-color))
+                    color: var(--amber-color)
             - name: Auto-arm when away
               entity: input_boolean.alarm_auto_arm_away
               state_styles:
                 "on":
                   icon:
-                    color: rgb(var(--rgb-amber-color))
+                    color: var(--amber-color)
                   name:
-                    color: rgb(var(--rgb-amber-color))
+                    color: var(--amber-color)
