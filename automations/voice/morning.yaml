@@ -1,30 +1,33 @@
-- alias: >-
-    🔊 | 🕹️ Trigger "Good morning!" announcements (wakeup alarm snoozed
-    or silenced)
+- alias: Trigger "Good morning!" announcements
   id: 5cfff24f-e0c7-422a-a181-9836432e1cf4
-  trigger:
+  triggers:
     - trigger: event
       event_type: timer.started
       event_data:
         entity_id: timer.wakeup_snooze_time
     - trigger: event
       event_type: wakeup_alarm_silenced
-  action:
+  conditions: []
+  actions:
     # Slight delay both for "ergonomic" reasons and to allow other automations
-    # to queue up their TTS announcements
+    # to queue up their TTS announcements. Furthermore, there's no need to
+    # explicitly pull "attention"; that happens automatically once the speaker
+    # starts announcing – we want those to come out after the "Good morning"-
+    # announcements anyway...
     - delay: 5
     - event: tts_announce
       event_data:
         room: bedroom
         tag: good_morning
-- alias: 🔊 | 💤 Queue "Good morning!" (everyone awake)
+- alias: Queue "Good morning!"
   id: f1a0a203-6d0e-4c91-99a8-ced118c4c478
-  trigger:
+  triggers:
     - trigger: state
       entity_id: input_boolean.everyone_asleep
       from: "on"
       to: "off"
-  action:
+  conditions: []
+  actions:
     - action: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -35,9 +38,9 @@
           expiry: "01:00:00"
           message: Good morning!
   mode: single
-- alias: 🔊 | 📹 Queue "Activity while armed"-announcement
+- alias: Queue "Activity while armed"-announcement
   id: bd31f54a-d88e-44d0-958b-4da2eb248150
-  trigger:
+  triggers:
     - trigger: state
       entity_id: input_boolean.everyone_asleep
       from: "on"
@@ -46,10 +49,10 @@
     activity_while_armed: >-
       {% from 'voice.jinja' import activity_while_armed %}
       {{ activity_while_armed() }}
-  condition:
+  conditions:
     - >-
       {{ activity_while_armed | trim != '' }}
-  action:
+  actions:
     - delay: 1 # Ensure "Good morning!" comes first
     - action: script.turn_on
       target:
@@ -64,14 +67,14 @@
   mode: single
 # N.B. Another automation is responsible for (potentially) changing the «wakeup»
 # time to be ahead of appointments in the morning
-- alias: 🔊 | 📅 Queue calendar announcement (calendar-event)
+- alias: Queue calendar announcement
   id: b52670b7-b0a8-4fc8-bed2-6145f2197976
-  trigger:
+  triggers:
     - trigger: calendar
       event: start
       entity_id: calendar.home
       offset: -01:00:00
-  condition:
+  conditions:
     # Ignore all-day appointments
     - >-
       {{ trigger.calendar_event.all_day is false }}
@@ -93,7 +96,7 @@
           timedelta(hours = 1) <= now() and
         today_at(states('input_datetime.wakeup')) >= now ()
       }}
-  action:
+  actions:
     - delay: 1 # Ensure "Good morning!" comes first
     - action: script.turn_on
       target:
@@ -116,15 +119,15 @@
                 timestamp_custom('%H:%M')
             }}. That is %WAIT_REMAINING%
   mode: queued
-- alias: 🔊 | ⛅ Queue today's weather forecast
+- alias: Queue today's weather forecast
   id: c74b7fa1-eb7d-46d7-ba62-7186e2c5cc32
-  trigger:
+  triggers:
     - trigger: state
       entity_id: input_boolean.everyone_asleep
       from: "on"
       to: "off"
-  condition: []
-  action:
+  conditions: []
+  actions:
     - delay: 3 # Queue this one up last
     - action: weather.get_forecasts
       data:

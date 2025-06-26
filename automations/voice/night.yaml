@@ -83,50 +83,6 @@
             {{ goodnight_alarm() }}
   mode: single
   max_exceeded: silent
-- alias: Queue "Albert Heijn"-reminder
-  id: e1aa5416-a8cd-4c82-b8e9-d9a0bf1da556
-  triggers:
-    - trigger: state
-      entity_id: script.lights_out
-      from: "off"
-      to: "on"
-  variables:
-    albert_heijn_eta: >-
-      {% from 'voice.jinja' import albert_heijn_eta %}
-      {{ albert_heijn_eta() }}
-    tablet_kitchen_user_id: !secret tablet_kitchen_user_id
-  conditions:
-    - >-
-      {{ albert_heijn_eta | trim != '' }}
-    # Only relevant if Albert Heijn ETA is in the future — otherwise we're
-    # probably about to replay this morning's announcement...
-    - >-
-      {{
-        states('sensor.last_notification_albert_heijn_eta') |
-          as_datetime > now()
-      }}
-  actions:
-    - delay: 4 # Queue this one up last
-    - variables:
-        priority: >-
-          {% if trigger.to_state.context.user_id == tablet_kitchen_user_id %}
-            regular
-          {% else %}
-            whisper
-          {% endif %}
-    - action: script.turn_on
-      target:
-        entity_id: script.tts_queue
-      data:
-        variables:
-          channel: announce
-          tag: goodnight
-          priority: >-
-            {{ priority }}
-          message: >-
-            {{ albert_heijn_eta }}
-  mode: single
-  max_exceeded: silent
 - alias: Queue "Attic window open"-warning
   id: d7e4036d-7484-4bd0-a688-601cb7f5c98c
   triggers:
