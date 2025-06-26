@@ -1,13 +1,13 @@
-- alias: 💡 | ⏰ Inside lights on (dark outside when everyone wakes up)
+- alias: Inside lights on
   id: 4ad4a1ef-cc9c-4193-b212-f7dbfa20cd72
-  trigger:
+  triggers:
     # The "wakeup" time can happen multiple times during a morning cycle; as we
     # only act if lights are off, there's little harm in running this automation
     # multiple times (could actually be useful: Someone getting up early might
     # have switched the lights off on their way out the door).
-    - platform: time
+    - trigger: time
       at: input_datetime.wakeup
-  condition:
+  conditions:
     - condition: or
       conditions:
         - condition: state
@@ -16,14 +16,14 @@
         - condition: state
           entity_id: sensor.time_of_day
           state: dawn
-  action:
+  actions:
     # Living room
     - if:
         - condition: state
           entity_id: light.living_room
           state: "off"
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.living_room_ambiance
     # Ensuite
@@ -32,7 +32,7 @@
           entity_id: light.ensuite
           state: "off"
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.ensuite_ambiance
     # Kitchen
@@ -41,7 +41,7 @@
           entity_id: light.kitchen
           state: "off"
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.kitchen_ambiance
     # Hallway
@@ -50,28 +50,26 @@
           entity_id: light.hallway
           state: "off"
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.hallway_evening
   mode: single
-- alias: >-
-    💡 | ⏰ Inside lights off – Living room (daily at sunrise;
-    daytime lighting aware)
+- alias: Inside lights off – Living room
   id: 4adbf84d-a5d3-478a-b422-ea2a3d505c3e
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-  condition:
+  conditions:
     - condition: state
       entity_id: light.living_room
       state: "on"
-  action:
+  actions:
     # If the light _doesn't_ transition to Daytime within 30 seconds, turn it
     # off... This allows the daytime lighting automation to take precedence
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: sensor.hue_scene_living_room
           to: Daytime
       timeout: 30
@@ -79,37 +77,38 @@
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: light.turn_off
+    - action: light.turn_off
       target:
         entity_id: light.living_room
   mode: single
-- alias: >-
-    💡 | ⏰ Inside lights off – Ensuite (daily at sunrise)
+- alias: Inside lights off – Ensuite
   id: a3d47ffd-337d-4c61-ba82-b1600ca671ff
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-  condition:
+  conditions:
     - condition: state
       entity_id: light.ensuite
       state: "on"
-  action:
-    - service: light.turn_off
+  actions:
+    - wait_for_trigger:
+        - trigger: state
+          entity_id: sensor.hue_scene_ensuite
+          to: Daytime
+    - action: light.turn_off
       target:
         entity_id: light.ensuite
   mode: single
-- alias: >-
-    💡 | ⏰ Inside lights off – Kitchen (daily at sunrise;
-    daytime lighting aware)
+- alias: Inside lights off – Kitchen
   id: 36c03621-a126-457e-b916-a0af315c7a72
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-  condition:
+  conditions:
     - condition: state
       entity_id: light.kitchen
       state: "on"
@@ -120,9 +119,9 @@
         - condition: state
           entity_id: sensor.hue_scene_kitchen
           state: Bright (custom)
-  action:
+  actions:
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: sensor.hue_scene_kitchen
           to: Daytime
       timeout: 30
@@ -130,74 +129,57 @@
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: script.hue_activate_scene_kitchen
+    - action: script.hue_activate_scene_kitchen
       data:
         turn_off: true
   mode: single
-- alias: >-
-    💡 | ⏰ Inside lights off – Downstairs hallway (daily at sunrise;
-    daytime lighting aware)
+- alias: Inside lights off – Downstairs hallway
   id: be42179a-5665-4e50-8a2a-e474386ba982
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-  condition:
-    - condition: or
-      conditions:
-        - condition: state
-          entity_id: light.front_hallway
-          state: "on"
-        - condition: state
-          entity_id: light.back_hallway
-          state: "on"
-  action:
+  conditions:
+    - condition: state
+      entity_id: light.hallway_downstairs
+      state: "on"
+  actions:
     - wait_for_trigger:
-        - platform: state
-          entity_id:
-            - light.front_hallway
-            - light.back_hallway
-          attribute: brightness_pct
-          # This value is hard-coded in "📄 light/daytime.yaml"
-          to: 90
+        - trigger: state
+          entity_id: sensor.hue_scene_hallway_downstairs
+          to: Daytime
       timeout: 30
       continue_on_timeout: true
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: light.turn_off
+    - action: light.turn_off
       target:
-        entity_id:
-          - light.front_hallway
-          - light.back_hallway
+        entity_id: light.hallway_downstairs
   mode: single
-- alias: >-
-    💡 | ⏰ Inside lights off – Upstairs hallway (daily at sunrise;
-    daytime lighting aware)
+- alias: Inside lights off – Upstairs hallway
   id: cb13a7e2-2a2a-4788-ac6e-efe09b10d0fe
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-  condition:
+  conditions:
     - condition: state
       entity_id: light.upstairs_hallway
       state: "on"
-  action:
+  actions:
     - wait_for_trigger:
-        - platform: state
-          entity_id: light.upstairs_hallway
-          attribute: brightness_pct
-          # This value is hard-coded in "📄 light/daytime.yaml"
-          to: 90
+        - trigger: state
+          entity_id: sensor.hue_scene_hallway_upstairs
+          to: Daytime
       timeout: 30
       continue_on_timeout: true
     - condition: template
       value_template: >-
         {{ wait.trigger is none }}
-    - service: light.turn_off
+    - action: light.turn_off
       target:
         entity_id: light.upstairs_hallway
   mode: single
@@ -205,14 +187,14 @@
 # situations (mainly initiated in "📄 alarm/alert.yaml"). Under normal
 # circumstances they _don't_ run – the lights they switch off should already be
 # off at sunrise...
-- alias: 💡 | ⏰ House lights off (daily at sunrise)
+- alias: House lights off
   id: 314514eb-0cce-4519-833d-40300537a27b
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-  condition:
+  conditions:
     - condition: or
       conditions:
         - condition: state
@@ -221,26 +203,26 @@
         - condition: state
           entity_id: light.guestroom
           state: "on"
-  action:
-    - service: light.turn_off
+  actions:
+    - action: light.turn_off
       target:
         entity_id:
           - light.front_back_door
           - light.guestroom
   mode: single
-- alias: 💡 | ⏰ Garden lights off (daily at sunrise)
+- alias: Garden lights off
   id: bca8278d-d0b5-41a6-a828-8310255cb93d
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-  condition:
+  conditions:
     - condition: state
       entity_id: light.garden
       state: "on"
-  action:
-    - service: light.turn_off
+  actions:
+    - action: light.turn_off
       target:
         entity_id: light.garden
   mode: single

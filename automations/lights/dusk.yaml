@@ -1,28 +1,28 @@
-- alias: 💡 | ⏰ Garden lights on (daily at civil dusk)
+- alias: Garden lights on
   id: 8fa0a6d4-f80a-4312-8669-9f5525bbf3d5
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dusk
       to: night
-  condition:
+  conditions:
     - condition: state
       entity_id: light.garden
       state: "off"
-  action:
-    - service: scene.turn_on
+  actions:
+    - action: scene.turn_on
       target:
         entity_id: scene.garden_ambiance
   mode: single
 - alias: 💡 | ⏰ Inside lights on (daily at sunset)
   id: 0ca01a00-8847-41f1-b852-70f4c4a49275
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: day
       to: dusk
-  condition: []
-  action:
+  conditions: []
+  actions:
     # Living room
     - if:
         - condition: or
@@ -34,7 +34,7 @@
               entity_id: sensor.hue_scene_living_room
               state: Daytime
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.living_room_ambiance
     # Ensuite
@@ -48,7 +48,7 @@
               entity_id: sensor.hue_scene_ensuite
               state: Daytime
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.ensuite_ambiance
     # Kitchen
@@ -62,30 +62,51 @@
               entity_id: sensor.hue_scene_kitchen
               state: Daytime
       then:
-        - service: script.hue_activate_scene_kitchen
+        - action: script.hue_activate_scene_kitchen
           data:
             scene_id: scene.kitchen_ambiance
-    # Hallway – turn on lights regardless of their state. The daytime light
-    # automation most likely already switched them on; the below ensures they
-    # don't get stuck at their – too high – daytime brightness level...
-    - service: scene.turn_on
-      target:
-        entity_id: scene.hallway_evening
+    # Hallway
+    - if:
+        - condition: or
+          conditions:
+            - condition: state
+              entity_id: light.hallway
+              state: "off"
+            # Daytime lighting on; no active override
+            - condition: and
+              conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_hallway_downstairs
+                  state:
+                    - Daytime
+                    - Daytime (reduced)
+                - condition: state
+                  entity_id: sensor.hue_scene_hallway_upstairs
+                  state: Daytime
+                - condition: not
+                  conditions:
+                    - condition: state
+                      entity_id: sensor.hue_scene_hallway
+                      state: «Override»
+      then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.hallway_evening
   mode: single
 # The distinction between "Inside lights" and "House lights" is somewhat
 # arbitrary – it serves to keep the dusk and dawn lighting automations aligned.
 # See "📄 lights/dawn.yaml" for more details...
-- alias: 💡 | ⏰ House lights on (daily at sunset)
+- alias: House lights on
   id: 260c4540-8991-4541-93a2-2c5200733de8
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: day
       to: dusk
-  condition: []
-  action:
+  conditions: []
+  actions:
     # Front and back (i.e. Kitchen) door
-    - service: scene.turn_on
+    - action: scene.turn_on
       target:
         entity_id: scene.front_back_door_evening
     # Guestroom
@@ -94,24 +115,24 @@
           entity_id: light.guestroom
           state: "off"
       then:
-        - service: scene.turn_on
+        - action: scene.turn_on
           target:
             entity_id: scene.guestroom_relax
   mode: single
-- alias: 💡 | ⏰ Garden lights off (daily after 23:00)
+- alias: Garden lights off
   id: 99711cfd-e1c7-47d8-83af-94876e126b6c
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.time_of_day
       from: dusk
       to: night
     # If Home Assistant is (re)started while this automation is running, the
     # lights won't be switched off – account for that edge case too...
-    - platform: homeassistant
+    - trigger: homeassistant
       id: ha_start
       event: start
-  condition: []
-  action:
+  conditions: []
+  actions:
     # Garden lights normally go off at 23:00, _but_ should be on for at least
     # 90 minutes. If they've been on for less than that, delay execution beyond
     # 23:00... Note the logic compensates for the 5-minute timeout on the
@@ -135,7 +156,7 @@
     # for their triggers at the end of our run and add an additional delay if
     # they occur.
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - binary_sensor.openclose_12 # Kitchen door
             - binary_sensor.openclose_34 # Back gate
@@ -154,22 +175,22 @@
     - condition: state
       entity_id: sensor.hue_scene_garden
       state: Ambiance
-    - service: light.turn_off
+    - action: light.turn_off
       entity_id:
         - light.garden
         - light.hue_filament_bulb_1 # Back door light
   # Override in case Home Assistant got restarted during the day (allowing the
   # proper trigger to take over)
   mode: restart
-- alias: 💡 | ⏰ Front door light off (daily at 22:30)
+- alias: Front door light off
   id: dc5c6595-78d3-43c9-94ab-24ddd2a4073d
-  trigger:
-    - platform: time
-      at: "22:30:00"
-  condition:
+  triggers:
+    - trigger: time
+      at: "23:00:00"
+  conditions:
     - condition: state
       entity_id: light.hue_filament_bulb_1_2
       state: "on"
-  action:
-    - service: light.turn_off
+  actions:
+    - action: light.turn_off
       entity_id: light.hue_filament_bulb_1_2
