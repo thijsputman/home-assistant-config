@@ -1,0 +1,8 @@
+CustomRainToday:
+  speech:
+    text: >-
+      {% if (states('sensor.weewx_rain_day') | float(0)) > 0 %}
+        It rained {{ states('sensor.weewx_rain_day') }} millimetre today.
+      {% else %}
+        There was no rain today...
+      {% endif %}

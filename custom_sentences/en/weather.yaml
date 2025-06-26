@@ -1,0 +1,7 @@
+language: en
+intents:
+  CustomRainToday:
+    data:
+      - sentences:
+          - did it rain [today]
+          - how much rain did we have [today]
