@@ -161,29 +161,32 @@
 # the leading indicator of whether the heating/boiler is on. Using the Tado
 # integration to ensure the operation mode change persists, which is not
 # possible via HomeKit.
-- alias: 🌡️ | 🤖 Attic radiator operation mode (follow Living room thermostat)
+- alias: Attic radiator operation mode
   id: da50685d-7a61-470c-96d0-07c6ee84a53b
-  trigger:
-    - platform: state
-      entity_id: climate.tado_living_room
+  triggers:
+    - trigger: state
+      entity_id:
+        - climate.tado_living_room
+        # Recently, Tado has started bugging out, and occasionally switches
+        # itself momentarily to "heat" or "auto" for no apparent reason – this
+        # additional trigger corrects for this abhorrent behaviour...
+        - climate.tado_attic
       # Explicitly specify relevant HVAC modes to prevent the automation from
-      # running at every (irrelevant) attribute change. This has the additional
-      # benefit of ensuring "trigger.to_state.state" always contains a valid
-      # HVAC mode for the Attic radiator.
+      # running at every (irrelevant) attribute change.
       to:
         - auto
         - heat
         - "off"
-  condition:
+  conditions:
     # Only run if the states differ
     - condition: template
       value_template: >-
-        {{ trigger.to_state.state != states('climate.tado_attic') }}
-  action:
-    - service: climate.set_hvac_mode
+        {{ states('climate.tado_living_room') != states('climate.tado_attic') }}
+  actions:
+    - action: climate.set_hvac_mode
       data:
         hvac_mode: >-
-          {{ trigger.to_state.state }}
+          {{ states('climate.tado_living_room') }}
       target:
         entity_id: climate.tado_attic
   mode: single
