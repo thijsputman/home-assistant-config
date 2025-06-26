@@ -305,31 +305,14 @@ tts_announce:
         preannounce: true
         preannounce_media_id: >-
           media-source://media_source/sd/audio/{{- preannounce_sample -}}
-    # Restore volume and LED-ring colour to theirs defaults
-    - parallel:
-        - action: media_player.volume_set
-          data:
-            volume_level: 0.70
-          target:
-            entity_id: >-
-              {{ speakers }}
-        # Intentionally create a race-condition in an attempt to change the
-        # LED-ring's colour without actually turning on the lights...
-        - parallel:
-            - action: light.turn_on
-              data:
-                brightness: 180
-                rgb_color:
-                  - 0
-                  - 0
-                  - 255
-              target:
-                entity_id: >-
-                  {{ led_rings }}
-            - action: light.turn_off
-              target:
-                entity_id: >-
-                  {{ led_rings }}
+    # Restore volume to its default – LED-ring colour is not restored here as
+    # it can't be done without (momentarily) switching the light on...
+    - action: media_player.volume_set
+      data:
+        volume_level: 0.70
+      target:
+        entity_id: >-
+          {{ speakers }}
     - action: notify.send_message
       target:
         entity_id: notify.log_tts_announce

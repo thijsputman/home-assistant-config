@@ -1,0 +1,27 @@
+# The colour is modified when "script.tts_announce" gets called. It is restored
+# whenever one the satellites starts listening (as this is the only way to do
+# so covertly).
+- alias: Restore HA Voice LED-ring colour
+  id: 99916b32-acee-4e00-8d55-836df3413ad7
+  trigger:
+    - trigger: state
+      entity_id:
+        - assist_satellite.ha_voice_living_room
+        - assist_satellite.ha_voice_attic
+        - assist_satellite.ha_voice_bedroom
+        - assist_satellite.ha_voice_guestroom
+      to: listening
+  condition: []
+  action:
+    - action: light.turn_on
+      data:
+        brightness: 180
+        rgb_color:
+          - 0
+          - 0
+          - 255
+      target:
+        entity_id: >-
+          {{ trigger.to_state.entity_id }}
+  mode: parallel
+  max: 3
