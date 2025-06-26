@@ -13,6 +13,29 @@
       to: listening
   condition: []
   action:
+    - variables:
+        led_ring: >-
+          {%
+            if trigger.to_state.entity_id ==
+              'assist_satellite.ha_voice_living_room'
+          %}
+            light.ha_voice_living_room_led_ring
+          {%
+            elif trigger.to_state.entity_id ==
+              'assist_satellite.ha_voice_attic'
+          %}
+            light.ha_voice_attic_led_ring
+          {%
+            elif trigger.to_state.entity_id ==
+              'assist_satellite.ha_voice_bedroom'
+          %}
+            light.ha_voice_bedroom_led_ring
+          {%
+            elif trigger.to_state.entity_id ==
+              'assist_satellite.ha_voice_guestroom'
+          %}
+            light.ha_voice_guestroom_led_ring
+          {% endif %}
     - action: light.turn_on
       data:
         brightness: 180
@@ -22,6 +45,14 @@
           - 255
       target:
         entity_id: >-
-          {{ trigger.to_state.entity_id }}
+          {{ led_ring }}
+    - wait_template: >-
+        {{ states(trigger.to_state.entity_id) == 'idle' }}
+      timeout: "00:05:00"
+      continue_on_timeout: false
+    - action: light.turn_off
+      target:
+        entity_id: >-
+          {{ led_ring }}
   mode: parallel
   max: 3
