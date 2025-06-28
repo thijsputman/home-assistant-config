@@ -560,6 +560,11 @@
         {% elif trigger.id == 'scene_change' %}
           {% if trigger.entity_id in ['scene.hallway_evening'] %}
             Evening
+          {%
+            elif trigger.entity_id in ['scene.hallway_downstairs_evening'] and
+              states('sensor.hue_scene_hallway_upstairs') == 'Evening'
+          %}
+            Evening
           {% else %}
             «Zones»
           {% endif %}
