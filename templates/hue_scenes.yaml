@@ -673,3 +673,63 @@
         light_id: light.hallway_upstairs
       availability: >-
         {{ has_value('light.hallway_upstairs') }}
+# Wardrobe [Hue room]
+- trigger:
+    - trigger: state
+      id: scene_change
+      entity_id:
+        - scene.wardrobe_bright
+        - scene.wardrobe_concentrate
+        - scene.wardrobe_nighttime
+      to: ~
+    - trigger: state
+      id: button_press
+      entity_id:
+        - event.wardrobe_switch_button_1
+        - event.wardrobe_switch_button_2
+        - event.wardrobe_switch_button_3
+        # event.wardrobe_switch_button_4 – lights off
+      to: ~
+    - trigger: state
+      id: lights_off
+      entity_id: light.wardrobe
+      to: "off"
+  sensor:
+    - name: Hue scene (Wardrobe)
+      unique_id: 315b29c6-1b2b-4c34-88de-c64dc7ba48f6
+      icon: mdi:movie-filter
+      state: >-
+        {% if trigger.id == 'lights_off' %}
+          «Off»
+        {% elif trigger.id == 'scene_change' %}
+          {% if trigger.entity_id in ['scene.wardrobe_bright'] %}
+            Concentrate
+          {% elif trigger.entity_id in ['scene.wardrobe_concentrate'] %}
+            Bright
+          {% elif trigger.entity_id in ['scene.wardrobe_nighttime'] %}
+            Nighttime
+          {% endif %}
+        {% elif trigger.id == 'button_press' %}
+          {% if trigger.entity_id in ['event.wardrobe_switch_button_1'] %}
+            {% if this.state == 'Concentrate' %}
+              Bright
+            {% elif this.state == 'Bright' %}
+              Nighttime
+            {% else %}
+              Concentrate
+            {% endif %}
+          {% elif trigger.entity_id in
+            [
+              'event.wardrobe_switch_button_2',
+              'event.wardrobe_switch_button_3'
+            ]
+          %}
+            «Override»
+          {% endif %}
+        {% else %}
+          {{ this.state }}
+        {% endif %}
+      attributes:
+        light_id: light.wardrobe
+      availability: >-
+        {{ has_value('light.wardrobe') }}

@@ -6,7 +6,11 @@
     - trigger: state
       entity_id: sensor.hue_scene_hallway
       to: «Override»
-  conditions: []
+  conditions:
+    # Only act under normal circumstances (i.e. the alarm is disarmed)
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
   actions:
     - wait_for_trigger:
         - trigger: state

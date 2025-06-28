@@ -1,11 +1,11 @@
-- alias: 💡 | 👋 Toilet light toggle (motion detected)
+- alias: Toilet light toggle
   id: e884ea40-fdf9-4069-ad27-4e09d8a45e2e
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.presence_60
       from: "off"
       to: "on"
-  condition:
+  conditions:
     # Only switch on the lights under normal circumstances (i.e. the alarm is
     # either disarmed or "Armed night")
     - condition: state
@@ -13,37 +13,34 @@
       state:
         - disarmed
         - armed_night
-  action:
-    - service: light.turn_on
-      data:
-        brightness_pct: 100
-        color_temp_kelvin: 4500
+  actions:
+    - action: scene.turn_on
       target:
-        entity_id: light.toilet
+        entity_id: scene.toilet_concentrate
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.presence_60
           from: "on"
           to: "off"
     - delay: 270
-    - service: light.turn_on
+    - action: light.turn_on
       data:
         brightness_step_pct: -30
       target:
         entity_id: light.toilet
     - delay: 30
-    - service: light.turn_off
+    - action: light.turn_off
       target:
         entity_id: light.toilet
   mode: restart
-- alias: 💡 | 👋 Basement light toggle (motion detected)
+- alias: Basement light toggle
   id: 7a1ebf52-c69e-4bf5-8670-0b32bba52600
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.presence_50
       from: "off"
       to: "on"
-  condition:
+  conditions:
     # Only switch on the lights under normal circumstances (i.e. the alarm is
     # either disarmed or "Armed night")
     - condition: state
@@ -51,81 +48,26 @@
       state:
         - disarmed
         - armed_night
-  action:
-    - service: light.turn_on
+  actions:
+    - action: light.turn_on
       entity_id: light.basement
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.presence_50
           from: "on"
           to: "off"
     - delay: 60
-    - service: light.turn_off
+    - action: light.turn_off
       entity_id: light.basement
   mode: restart
-- alias: 💡 | 👋 Wardrobe light toggle (motion detected)
-  id: f30e4af7-6b31-4062-8f12-25fde6ae3577
-  trigger:
-    - platform: state
-      entity_id: binary_sensor.presence_63
-      from: "off"
-      to: "on"
-  condition:
-    - condition: numeric_state
-      entity_id: sensor.lightlevel_65
-      below: 50
-    # Only switch on the lights under normal circumstances (i.e. the alarm is
-    # either disarmed or "Armed night")
-    - condition: state
-      entity_id: alarm_control_panel.home_alarm
-      state:
-        - disarmed
-        - armed_night
-  action:
-    - if:
-        - condition: state
-          entity_id: sensor.time_of_day
-          state:
-            - dusk
-            - night
-      then:
-        - if:
-            - condition: state
-              entity_id: input_boolean.everyone_asleep
-              state: "on"
-          then:
-            # Nighttime (everyone asleep)
-            - service: scene.turn_on
-              target:
-                entity_id: scene.wardrobe_nighttime
-          else:
-            # Evenings
-            - service: scene.turn_on
-              target:
-                entity_id: scene.wardrobe_bright
-      else:
-        # Daytime
-        - service: scene.turn_on
-          target:
-            entity_id: scene.wardrobe_concentrate
-    - wait_for_trigger:
-        - platform: state
-          entity_id: binary_sensor.presence_63
-          from: "on"
-          to: "off"
-    - delay: 120
-    - service: light.turn_off
-      entity_id: light.wardrobe
-  mode: restart
-- alias: >-
-    💡 | 👋/💤 Upstairs hallway light toggle (motion detected; everyone asleep)
+- alias: Upstairs hallway light toggle
   id: 456be834-0809-442b-a022-2827923c3358
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.presence_127
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "on"
@@ -136,33 +78,29 @@
       state:
         - disarmed
         - armed_night
-  action:
-    - service: light.turn_on
-      data:
-        brightness_pct: 15
-        color_temp_kelvin: 2200
-      entity_id: light.upstairs_hallway
+  actions:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.hallway_upstairs_nightlight
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: binary_sensor.presence_127
           from: "on"
           to: "off"
     - delay: 60
-    - service: light.turn_off
+    - action: light.turn_off
       entity_id: light.upstairs_hallway
   mode: restart
-- alias: >-
-    💡 | 👋/💤 Downstairs hallway light toggle (motion detected; everyone
-    asleep)
+- alias: Downstairs hallway light toggle
   id: 6d3da877-2a4f-453a-a4a2-cda751548fe0
-  trigger:
+  triggers:
     # Trigger only on the sensor in the staircase (i.e. someone walks down from
     # the bedroom at night)
-    - platform: state
+    - trigger: state
       entity_id: binary_sensor.presence_121
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "on"
@@ -173,14 +111,10 @@
       state:
         - disarmed
         - armed_night
-  action:
-    - service: light.turn_on
-      data:
-        brightness_pct: 15
-        color_temp_kelvin: 2200
-      entity_id:
-        - light.front_hallway
-        - light.back_hallway
+  actions:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.hallway_downstairs_nightlight
     # Wait for _all_ motion sensors in the downstairs hallway to clear
     - wait_template: >-
         {{
@@ -189,21 +123,21 @@
           states('binary_sensor.presence_125') == 'off'
         }}
     - delay: 60
-    - service: light.turn_off
+    - action: light.turn_off
       entity_id:
         - light.front_hallway
         - light.back_hallway
   mode: restart
-- alias: 💡 | 👋 Attic hallway light toggle (motion detected)
+- alias: Attic hallway light toggle
   id: 6eb9fb1b-c177-4e11-986c-d6cfec41454a
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id:
         - binary_sensor.presence_91
         - binary_sensor.presence_92
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: timer.attic_hallway_motion_pause
       state: idle
@@ -214,7 +148,7 @@
       state:
         - disarmed
         - armed_night
-  action:
+  actions:
     - choose:
         # Upstairs
         - conditions:
@@ -222,7 +156,7 @@
               value_template: >-
                 {{ trigger.entity_id == 'binary_sensor.presence_91' }}
           sequence:
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: light.attic_hallway_up
         # Downstairs
@@ -231,11 +165,11 @@
               value_template: >-
                 {{ trigger.entity_id == 'binary_sensor.presence_92' }}
           sequence:
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: light.attic_hallway_down
       default:
-        - service: light.turn_on
+        - action: light.turn_on
           target:
             entity_id: light.attic_hallway
     # Wait for _all_ motion sensors to clear
@@ -269,7 +203,7 @@
     - condition: state
       entity_id: timer.attic_hallway_motion_pause
       state: idle
-    - service: light.turn_off
+    - action: light.turn_off
       target:
         entity_id: light.attic_hallway
   mode: restart

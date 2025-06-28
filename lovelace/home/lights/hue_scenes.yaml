@@ -68,6 +68,8 @@ entities:
     icon: hue:room-bedroom
   - entity: sensor.hue_scene_attic
     icon: hue:room-attic
+  - entity: sensor.hue_scene_wardrobe
+    icon: hue:room-closet
   - entity: sensor.hue_scene_hallway
     icon: hue:room-hallway
   - entity: sensor.hue_scene_hallway_downstairs
