@@ -5,67 +5,68 @@
       entity_id: media_player.epson_eh_ls800b
       to: playing
   conditions: []
+  # Acts when the lights are on, and _not_ in Daytime-mode. During the day,
+  # switching on the projector is most likely more functional than for
+  # entertainment purposes – also, the new Epson is more than bright enough to
+  # overpower the Daytime-lighting...
   actions:
-    # Living room
-    - if:
-        # Only act if Living room lights are on, and not in Daytime-mode. During
-        # the day, switching on the projector is most likely more functional
-        # than for entertainment purposes – also, the new Epson is more than
-        # bright enough to overpower the Daytime-lighting...
-        - condition: state
-          entity_id: light.living_room
-          state: "on"
-        - condition: not
-          conditions:
+    - parallel:
+        # Living room
+        - if:
             - condition: state
-              entity_id: sensor.hue_scene_living_room
-              state: Daytime
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.living_room_movie
-    # Ensuite
-    - if:
-        - condition: state
-          entity_id: light.ensuite
-          state: "on"
-        - condition: not
-          conditions:
+              entity_id: light.living_room
+              state: "on"
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_living_room
+                  state: Daytime
+          then:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.living_room_movie
+        # Ensuite
+        - if:
             - condition: state
-              entity_id: sensor.hue_scene_ensuite
-              state: Daytime
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.ensuite_movie
-    # Kitchen
-    - if:
-        - condition: state
-          entity_id: light.kitchen
-          state: "on"
-        - condition: not
-          conditions:
+              entity_id: light.ensuite
+              state: "on"
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_ensuite
+                  state: Daytime
+          then:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.ensuite_movie
+        # Kitchen
+        - if:
             - condition: state
-              entity_id: sensor.hue_scene_kitchen
-              state: Daytime
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.kitchen_movie
-    # Hallway – downstairs
-    - if:
-        - condition: state
-          entity_id: light.hallway_downstairs
-          state: "on"
-        - condition: not
-          conditions:
+              entity_id: light.kitchen
+              state: "on"
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_kitchen
+                  state: Daytime
+          then:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.kitchen_movie
+        # Hallway – downstairs
+        - if:
             - condition: state
-              entity_id: sensor.hue_scene_hallway_downstairs
-              state: Daytime
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.hallway_downstairs_movie
+              entity_id: light.hallway_downstairs
+              state: "on"
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_hallway_downstairs
+                  state: Daytime
+          then:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.hallway_downstairs_movie
   mode: single
 - alias: Restore lights
   id: 586f5ad1-0c79-4213-820d-9e6ed587d540
@@ -85,50 +86,51 @@
       to: "off"
   conditions: []
   actions:
-    # Living room
-    - if:
-        - condition: state
-          entity_id: sensor.hue_scene_living_room
-          state:
-            - Movie
-            - Movie (ambiance)
-      then:
+    - parallel:
+        # Living room
         - if:
-            - condition: trigger
-              id: paused
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state:
+                - Movie
+                - Movie (ambiance)
+          then:
+            - if:
+                - condition: trigger
+                  id: paused
+              then:
+                - action: scene.turn_on
+                  target:
+                    entity_id: scene.living_room_movie_ambiance
+              else:
+                - action: scene.turn_on
+                  target:
+                    entity_id: scene.living_room_ambiance
+        # Ensuite
+        - if:
+            - condition: state
+              entity_id: sensor.hue_scene_ensuite
+              state: Movie
           then:
             - action: scene.turn_on
               target:
-                entity_id: scene.living_room_movie_ambiance
-          else:
+                entity_id: scene.ensuite_ambiance
+        # Kitchen
+        - if:
+            - condition: state
+              entity_id: sensor.hue_scene_kitchen
+              state: Movie
+          then:
             - action: scene.turn_on
               target:
-                entity_id: scene.living_room_ambiance
-    # Ensuite
-    - if:
-        - condition: state
-          entity_id: sensor.hue_scene_ensuite
-          state: Movie
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.ensuite_ambiance
-    # Kitchen
-    - if:
-        - condition: state
-          entity_id: sensor.hue_scene_kitchen
-          state: Movie
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.kitchen_ambiance
-    # Hallway – downstairs
-    - if:
-        - condition: state
-          entity_id: sensor.hue_scene_hallway_downstairs
-          state: Movie
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.hallway_downstairs_evening
+                entity_id: scene.kitchen_ambiance
+        # Hallway – downstairs
+        - if:
+            - condition: state
+              entity_id: sensor.hue_scene_hallway_downstairs
+              state: Movie
+          then:
+            - action: scene.turn_on
+              target:
+                entity_id: scene.hallway_downstairs_evening
   mode: single
