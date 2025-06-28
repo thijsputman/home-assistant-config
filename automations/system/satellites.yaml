@@ -10,10 +10,7 @@
         - assist_satellite.ha_voice_attic
         - assist_satellite.ha_voice_bedroom
         - assist_satellite.ha_voice_guestroom
-      from:
-        - listening
-        - processing
-        - responding
+      from: idle
       to: listening
   condition: []
   action:
