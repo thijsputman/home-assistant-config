@@ -258,74 +258,39 @@
 - alias: Store activity snapshot
   id: 4dbb8ad5-e671-4f72-ba30-70fe0a29932e
   triggers:
-    - trigger: event
-      event_type: aarlo_capture_updated
-  conditions:
-    # Prevent trigger in case of a manual snapshot (e.g., by another automation)
-    - condition: state
+    - trigger: state
       entity_id:
-        - camera.aarlo_front
-        - camera.aarlo_back
-        - camera.aarlo_balcony
-      state:
-        - recording
-        - recently active
-      match: any
+        - sensor.aarlo_last_front
+        - sensor.aarlo_last_back
+        - sensor.aarlo_last_balcony
+      to: ~
+  conditions: []
   actions:
     - variables:
-        filename: >-
-          -{{ now() | as_timestamp | timestamp_custom('%Y%m%d%H%M') }}.jpg
-        time_of_day: >-
-          {% set time_of_day = states('sensor.time_of_day') %}
-          {% if time_of_day in ['day', 'dusk', 'night', 'dawn'] %}
-            -{{ time_of_day }}
-          {% else %}
-            -unknown
+        location: >-
+          {% if trigger.to_state.entity_id == 'sensor.aarlo_last_front' %}
+            front
+          {% elif trigger.to_state.entity_id == 'sensor.aarlo_last_back' %}
+            back
+          {% elif trigger.to_state.entity_id == 'sensor.aarlo_last_balcony' %}
+            balcony
           {% endif %}
-    - parallel:
-        # Front
-        - if:
-            - condition: state
-              entity_id: camera.aarlo_front
-              state:
-                - recording
-                - recently active
-          then:
-            - action: downloader.download_file
-              data:
-                url: >-
-                  {{ state_attr('camera.aarlo_front', 'last_thumbnail') }}
-                subdir: arlo/activity
-                filename: >-
-                  {{ 'front' ~ time_of_day ~ filename }}
-        # Back
-        - if:
-            - condition: state
-              entity_id: camera.aarlo_back
-              state:
-                - recording
-                - recently active
-          then:
-            - action: downloader.download_file
-              data:
-                url: >-
-                  {{ state_attr('camera.aarlo_back', 'last_thumbnail') }}
-                subdir: arlo/activity
-                filename: >-
-                  {{ 'back' ~ time_of_day ~ filename }}
-        # Balcony
-        - if:
-            - condition: state
-              entity_id: camera.aarlo_balcony
-              state:
-                - recording
-                - recently active
-          then:
-            - action: downloader.download_file
-              data:
-                url: >-
-                  {{ state_attr('camera.aarlo_balcony', 'last_thumbnail') }}
-                subdir: arlo/activity
-                filename: >-
-                  {{ 'balcony' ~ time_of_day ~ filename }}
-  mode: single
+        object_type: >-
+          {{
+            state_attr(trigger.to_state.entity_id, 'object_type') | lower
+          }}
+        timestamp: >-
+          {{
+            strptime(now().year ~ ' ' ~ states(trigger.to_state.entity_id),
+              '%Y %m-%d %H:%M') | as_timestamp | timestamp_custom('%Y%m%d%H%M')
+          }}
+        filename: >-
+          {{ location ~ '-' ~ object_type ~ '-' ~ timestamp }}.jpg
+    - action: downloader.download_file
+      data:
+        url: >-
+          {{ state_attr(trigger.to_state.entity_id, 'last_thumbnail') }}
+        subdir: arlo/activity
+        filename: >-
+          {{ filename }}
+  mode: queued
