@@ -68,21 +68,41 @@
               target:
                 entity_id: scene.hallway_downstairs_movie
   mode: single
+- alias: Dim lights (initial)
+  id: f168660c-0dc6-4c56-8221-fecb7cad1ece
+  triggers:
+    - trigger: state
+      entity_id: media_player.epson_eh_ls800b
+      from: "off"
+      to: idle
+  conditions: []
+  actions:
+    - if:
+        - condition: state
+          entity_id: light.living_room
+          state: "on"
+        - condition: not
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Daytime
+      then:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_movie_ambiance
+  mode: single
 - alias: Restore lights
   id: 586f5ad1-0c79-4213-820d-9e6ed587d540
   triggers:
     - trigger: state
       id: paused
       entity_id: media_player.epson_eh_ls800b
+      from: playing
       to:
-        - standby
         - idle
         - paused
     - trigger: state
       entity_id: media_player.epson_eh_ls800b
-      not_from:
-        - unknown
-        - unavailable
       to: "off"
   conditions: []
   actions:
