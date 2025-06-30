@@ -167,11 +167,11 @@ lights_out:
 hallway_downstairs_daytime_lights:
   alias: Dynamic daytime lights (Hallway – downstairs)
   sequence:
-    # If the Sun is below 40° on the horizon, and setting (as signified by next
-    # noon being tomorrow), use reduced brightness daytime lighting
+    # If the Sun is below 40° on the horizon, and setting (or has set), use
+    # reduced brightness daytime lighting
     - if: >-
         {{
-          (states('sensor.sun_next_noon') | as_datetime).day > now().day and
+          state_attr('sun.sun', 'rising') != true and
             state_attr('sun.sun', 'elevation') < 40
         }}
       then:
