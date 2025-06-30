@@ -143,7 +143,7 @@
             entity_id: light.hue_filament_bulb_1
   mode: single
   max_exceeded: silent
-- alias: Garden lights on
+- alias: Garden lights toggle
   id: cd0a0eac-d482-4add-ba9f-28e63fae0d26
   triggers:
     - trigger: state
@@ -170,14 +170,28 @@
     - action: scene.turn_on
       target:
         entity_id: scene.garden_ambiance
-    # Wait for the door to close
+    # Wait for the door to close – abort if we transition from dusk to night
+    # (lights should stay on), or if the lights get switched off (nothing more
+    # to do). Additionally, if a door remains open for more than 8-hours,
+    # continue to switch off the lights (this should never happen; something
+    # should've switched off the lights, and triggered one of the aborts).
     - wait_for_trigger:
         - trigger: template
+          id: door_closed
           value_template: >-
             {{ is_state(trigger.entity_id, 'off') }}
-    # Keep the lights on for an additional 5 minutes – abort if we transition
-    # from dusk to night (lights should stay on) or if the lights get switched
-    # off (nothing more to do)
+        - trigger: state
+          entity_id: sensor.time_of_day
+          from: dusk
+          to: night
+        - trigger: state
+          entity_id: light.garden
+          to: "off"
+      timeout: "08:00:00"
+      continue_on_timeout: true
+    - condition: >-
+        {{ wait.trigger is none or wait.trigger.id == 'door_closed' }}
+    # Keep the lights on for an additional 5 minutes (same abort conditions)
     - wait_for_trigger:
         - trigger: state
           entity_id: sensor.time_of_day
