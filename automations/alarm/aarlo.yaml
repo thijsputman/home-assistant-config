@@ -289,7 +289,7 @@
     - action: downloader.download_file
       data:
         url: >-
-          {{ state_attr(trigger.to_state.entity_id, 'last_thumbnail') }}
+          {{ state_attr(trigger.to_state.entity_id, 'thumbnail_url') }}
         subdir: arlo/activity
         filename: >-
           {{ filename }}
