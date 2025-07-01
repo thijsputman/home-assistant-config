@@ -36,6 +36,10 @@ card:
       conditions:
         - entity: !secret tado_ib1_connection_state
           state: "on"
+        - entity: climate.tado_living_room
+          state:
+            - heat
+            - auto
       card:
         type: thermostat
         card_mod:
@@ -62,6 +66,10 @@ card:
       conditions:
         - entity: !secret tado_ib1_connection_state
           state: "off"
+        - entity: climate.tado_smart_thermostat
+          state:
+            - heat
+            - auto
       card:
         type: thermostat
         card_mod:

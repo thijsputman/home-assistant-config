@@ -255,6 +255,35 @@
       target:
         entity_id: climate.tado_attic_ac
   mode: single
+# Opposite side of this is in "bedroom.yaml"
+- alias: Airco – Attic off
+  id: 8f2ec70c-bc8b-4569-abce-a4161ec384f4
+  triggers:
+    - trigger: state
+      entity_id: climate.tado_smart_ac_control_attic
+      from: "off"
+      to: cool
+  conditions:
+    - condition: state
+      entity_id: climate.tado_smart_ac_control_bedroom
+      state: cool
+  actions:
+    # Pull the handbrake
+    - action: climate.set_hvac_mode
+      data:
+        hvac_mode: "off"
+      target:
+        entity_id: climate.tado_smart_ac_control_attic
+    - action: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          rooms: attic
+          priority: attention
+          message: >-
+            The airco in the Bedroom is switched on; please switch it off before
+            switching on the airco in the Attic...
 - alias: Airco – Attic enable schedule
   id: 0669c656-3142-4572-8e4b-30e9c65b4761
   triggers:
