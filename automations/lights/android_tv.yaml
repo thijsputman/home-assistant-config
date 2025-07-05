@@ -74,7 +74,9 @@
     - trigger: state
       entity_id: media_player.epson_eh_ls800b
       from: "off"
-      to: idle
+      to:
+        - idle
+        - paused
   conditions: []
   actions:
     - if:

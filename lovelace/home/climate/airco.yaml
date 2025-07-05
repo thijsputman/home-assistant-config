@@ -27,10 +27,8 @@ card:
         - current_temperature
     - type: conditional
       conditions:
-        - entity: climate.tado_attic_ac
-          state:
-            - cool
-            - auto
+        - entity: climate.tado_smart_ac_control_attic
+          state: cool
       card:
         type: thermostat
         card_mod:
@@ -71,10 +69,8 @@ card:
         - current_temperature
     - type: conditional
       conditions:
-        - entity: climate.tado_bedroom_ac
-          state:
-            - cool
-            - auto
+        - entity: climate.tado_smart_ac_control_bedroom
+          state: cool
       card:
         type: thermostat
         card_mod:
