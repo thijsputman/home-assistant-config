@@ -46,6 +46,10 @@
       entity_id: input_boolean.airco_active
       state: "on"
     - condition: state
+      entity_id: climate.tado_bedroom_ac
+      attribute: preset_mode
+      state: home
+    - condition: state
       entity_id: climate.tado_smart_ac_control_bedroom
       state: "off"
     # Don't trigger after going to bed, nor in the morning after waking up...
@@ -160,6 +164,10 @@
       entity_id: input_boolean.airco_active
       state: "on"
     - condition: state
+      entity_id: climate.tado_bedroom_ac
+      attribute: preset_mode
+      state: home
+    - condition: state
       entity_id: climate.tado_smart_ac_control_bedroom
       state: cool
     - condition: or
@@ -232,6 +240,10 @@
     - condition: state
       entity_id: input_boolean.airco_active
       state: "on"
+    - condition: state
+      entity_id: climate.tado_bedroom_ac
+      attribute: preset_mode
+      state: home
     - condition: state
       entity_id: climate.tado_smart_ac_control_bedroom
       state: cool
