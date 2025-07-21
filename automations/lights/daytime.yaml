@@ -83,7 +83,7 @@
     - trigger: numeric_state
       entity_id: sensor.lightlevel_46
       for: "00:01:00"
-      below: 25
+      below: 80
     - trigger: state
       id: dawn
       entity_id: sensor.time_of_day
@@ -105,7 +105,7 @@
       state: day
     - condition: numeric_state
       entity_id: sensor.lightlevel_46
-      below: 30
+      below: 80
     # Only act if the lights are off, _unless_ we are running because of a
     # dawn-/wakeup-trigger
     - condition: or
@@ -144,7 +144,7 @@
     - trigger: numeric_state
       entity_id: sensor.lightlevel_46
       for: "00:10:00"
-      above: 30
+      above: 90
   conditions:
     - condition: state
       entity_id: sensor.time_of_day
