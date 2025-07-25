@@ -1,14 +1,15 @@
-# Used in "📄 ./fans.yaml" and "📄 ./switches.yaml" – there's no need to ever
-# call these scripts directly; they're just to prevent duplicating logic...
+# Used in "📄 /templates/sonair/fans.yaml" and "📄 switches.yaml" – there's no
+# need to ever call these scripts directly; they're just to prevent duplicating
+# logic...
 sonair_turn_on:
   alias: Sonair – turn on [internal]
   sequence:
-    - service: switch.turn_on
+    - action: switch.turn_on
       target:
         entity_id: >-
           {{ switch_entity_id }}
     - delay: 3
-    - service: remote.send_command
+    - action: remote.send_command
       target:
         entity_id: >-
           {{ remote_entity_id }}
@@ -16,11 +17,11 @@ sonair_turn_on:
         device: sonair
         command: power
     - delay: 3
-    - service: input_boolean.turn_off
+    - action: input_boolean.turn_off
       target:
         entity_id: >-
           {{ boolean_entity_id }}
-    - service: remote.send_command
+    - action: remote.send_command
       target:
         entity_id: >-
           {{ remote_entity_id }}
@@ -33,11 +34,11 @@ sonair_turn_on:
 sonair_turn_off:
   alias: Sonair – turn off [internal]
   sequence:
-    - service: input_boolean.turn_off
+    - action: input_boolean.turn_off
       target:
         entity_id: >-
           {{ boolean_entity_id }}
-    - service: switch.turn_off
+    - action: switch.turn_off
       target:
         entity_id: >-
           {{ switch_entity_id }}
@@ -53,16 +54,16 @@ sonair_set_percentage:
               value_template: >-
                 {{ percentage == 0 }}
           sequence:
-            - service: switch.turn_off
+            - action: switch.turn_off
               target:
                 entity_id: >-
                   {{ switch_entity_id }}
       default:
-        - service: input_boolean.turn_off
+        - action: input_boolean.turn_off
           target:
             entity_id: >-
               {{ boolean_entity_id }}
-        - service: remote.send_command
+        - action: remote.send_command
           target:
             entity_id: >-
               {{ remote_entity_id }}
@@ -93,11 +94,11 @@ sonair_co2_turn_on:
           states(switch_entity_id) == 'on' and
           states(speed_entity_id) | int(0) > 0
         }}
-    - service: input_boolean.turn_on
+    - action: input_boolean.turn_on
       target:
         entity_id: >-
           {{ boolean_entity_id }}
-    - service: remote.send_command
+    - action: remote.send_command
       target:
         entity_id: >-
           {{ remote_entity_id }}
@@ -117,11 +118,11 @@ sonair_co2_turn_off:
           states(switch_entity_id) == 'on' and
           states(speed_entity_id) | int(0) > 0
         }}
-    - service: input_boolean.turn_off
+    - action: input_boolean.turn_off
       target:
         entity_id: >-
           {{ boolean_entity_id }}
-    - service: remote.send_command
+    - action: remote.send_command
       target:
         entity_id: >-
           {{ remote_entity_id }}

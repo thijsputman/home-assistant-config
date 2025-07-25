@@ -85,9 +85,6 @@ light: !include lights.yaml
 
 template: !include_dir_merge_list templates/
 
-fan: !include fans.yaml
-switch: !include switches.yaml
-
 group: !include_dir_merge_named groups/
 
 input_select: !include_dir_merge_named input/select/
