@@ -1,6 +1,9 @@
-- alias: Trigger "Good morning!" announcements
+- alias: Trigger "Good morning!"-announcements
   id: 5cfff24f-e0c7-422a-a181-9836432e1cf4
   triggers:
+    # Trigger both on snooze _and_ on silence of the wakeup alarm. Some of the
+    # announcements can be time-sensitive (e.g. the Albert Heijn one), so better
+    # to blast them out when snoozing, than holding too long on lazy mornings...
     - trigger: event
       event_type: timer.started
       event_data:
@@ -9,42 +12,33 @@
       event_type: wakeup_alarm_silenced
   conditions: []
   actions:
-    # Slight delay both for "ergonomic" reasons and to allow other automations
-    # to queue up their TTS announcements. Furthermore, there's no need to
-    # explicitly pull "attention"; that happens automatically once the speaker
-    # starts announcing – we want those to come out after the "Good morning"-
-    # announcements anyway...
+    # Slight delay for ergonomic reasons
     - delay: 5
+    - action: script.turn_on
+      target:
+        entity_id: script.tts_announce
+      data:
+        variables:
+          rooms: bedroom
+          priority: regular
+          message: Good morning!
+    # The queued up "Good morning!"-announcements should mesh seemlessly with
+    # the (just started) opening announcement.
+    # Furthermore, unlike in the evening, there's no need to explicitly pull
+    # "attention" – that happens automatically once the speaker starts
+    # announcing; we want the regular announcements to come out after the
+    # "Good morning"-announcements...
     - event: tts_announce
       event_data:
         room: bedroom
         tag: good_morning
-- alias: Queue "Good morning!"
-  id: f1a0a203-6d0e-4c91-99a8-ced118c4c478
-  triggers:
-    - trigger: state
-      entity_id: input_boolean.everyone_asleep
-      from: "on"
-      to: "off"
-  conditions: []
-  actions:
-    - action: script.turn_on
-      target:
-        entity_id: script.tts_queue
-      data:
-        variables:
-          channel: announce
-          tag: good_morning
-          expiry: "01:00:00"
-          message: Good morning!
-  mode: single
 - alias: Queue "Activity while armed"-announcement
   id: bd31f54a-d88e-44d0-958b-4da2eb248150
   triggers:
     - trigger: state
-      entity_id: input_boolean.everyone_asleep
-      from: "on"
-      to: "off"
+      entity_id: script.wakeup_alarm
+      from: "off"
+      to: "on"
   variables:
     activity_while_armed: >-
       {% from 'voice.jinja' import activity_while_armed %}
@@ -53,7 +47,6 @@
     - >-
       {{ activity_while_armed | trim != '' }}
   actions:
-    - delay: 1 # Ensure "Good morning!" comes first
     - action: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -64,7 +57,11 @@
           expiry: "01:00:00"
           message: >-
             While you were asleep, {{ activity_while_armed }}.
+    # The initial wakeup alarm can sound twice within a 5-minute window; block
+    # to prevent queuing twice
+    - delay: "00:10:00"
   mode: single
+  max_exceeded: silent
 # N.B. Another automation is responsible for (potentially) changing the «wakeup»
 # time to be ahead of appointments in the morning
 - alias: Queue calendar announcement
@@ -97,7 +94,6 @@
         today_at(states('input_datetime.wakeup')) >= now ()
       }}
   actions:
-    - delay: 1 # Ensure "Good morning!" comes first
     - action: script.turn_on
       target:
         entity_id: script.tts_queue
@@ -123,9 +119,9 @@
   id: c74b7fa1-eb7d-46d7-ba62-7186e2c5cc32
   triggers:
     - trigger: state
-      entity_id: input_boolean.everyone_asleep
-      from: "on"
-      to: "off"
+      entity_id: script.wakeup_alarm
+      from: "off"
+      to: "on"
   conditions: []
   actions:
     - delay: 3 # Queue this one up last
@@ -171,4 +167,6 @@
                 It will likely rain.
               {% endif %}
             {% endif %}
+    - delay: "00:10:00"
   mode: single
+  max_exceeded: silent

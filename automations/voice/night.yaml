@@ -1,4 +1,4 @@
-- alias: Trigger "Goodnight" announcements
+- alias: Trigger "Goodnight"-announcements
   id: 6af957b0-bc4e-489c-8ff7-4ae492b7ca21
   triggers:
     - trigger: state
