@@ -2,5 +2,5 @@ wakeup_alarm_mute:
   name: Mute wakeup-alarm
   icon: mdi:volume-off
 everyone_asleep:
-  name: Everyone asleep
+  name: Everyone asleep [internal]
   icon: mdi:sleep

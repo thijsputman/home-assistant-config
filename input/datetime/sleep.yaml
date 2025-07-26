@@ -4,7 +4,7 @@ wakeup:
   has_time: true
   icon: mdi:weather-sunset-up
 wakeup_light_start:
-  name: Wakeup light start
+  name: Wakeup light start [internal]
   has_date: false
   has_time: true
   icon: mdi:brightness-6
