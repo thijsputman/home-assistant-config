@@ -67,6 +67,9 @@
     - trigger: state
       id: alarm_disarmed
       entity_id: alarm_control_panel.home_alarm
+      from:
+        - armed_away
+        - armed_vacation
       to: disarmed
   conditions:
     - condition: state

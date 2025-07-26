@@ -494,6 +494,12 @@
             Bright
           {% elif trigger.entity_id in
             [
+              'scene.attic_concentrate'
+            ]
+          %}
+            Concentrate
+          {% elif trigger.entity_id in
+            [
               'scene.attic_office_back',
               'event.attic_switch_button_2'
             ]
