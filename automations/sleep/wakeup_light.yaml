@@ -17,11 +17,12 @@
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"
   actions:
-    - action: script.turn_on
+    - action: hue.activate_scene
       target:
-        entity_id: script.wakeup_light
+        entity_id: scene.bedroom_concentrate
+      data:
+        transition: 1200 # 20-minutes
   mode: single
-  max_exceeded: silent
 - alias: Bedroom lights on; off after 2-hours
   id: 41125109-0a50-4f70-aaaf-ec40cd780a3e
   triggers:
@@ -57,4 +58,3 @@
     - action: light.turn_off
       entity_id: light.bedroom
   mode: single
-  max_exceeded: silent

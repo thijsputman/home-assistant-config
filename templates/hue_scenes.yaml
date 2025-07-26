@@ -398,10 +398,6 @@
         # event.bedroom_switch_button_4 – lights off
       to: ~
     - trigger: state
-      id: wakeup_light
-      entity_id: script.wakeup_light
-      to: "on"
-    - trigger: state
       id: lights_off
       entity_id: light.bedroom
       to: "off"
@@ -412,8 +408,6 @@
       state: >-
         {% if trigger.id == 'lights_off' %}
           «Off»
-        {% elif trigger.id == 'wakeup_light' %}
-          «Wakeup»
         {% elif
           trigger.id == 'scene_change' or (
             trigger.id == 'button_press' and
@@ -441,7 +435,11 @@
             ]
           %}
             Relax
-          {% elif trigger.entity_id in ['scene.bedroom_concentrate'] %}
+          {% elif trigger.entity_id in
+            [
+              'scene.bedroom_concentrate'
+            ]
+          %}
             Concentrate
           {% endif %}
         {% else %}
