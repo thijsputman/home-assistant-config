@@ -1,0 +1,91 @@
+- fan:
+    # As I want to adjust the airflow direction (and prefer the four fan speeds
+    # offered by the Broadlink IR-remote over the three offered by the
+    # tado°-integration), an override template fan-entity is provided that sends
+    # the correct (composite) IR-commands directly.
+    - name: Airco (Bedroom) – Broadlink
+      unique_id: d0624421-d656-43d7-8ab5-a032e4b1f6a7
+      # Better to use HomeKit for the state – it updates more rapidly and
+      # doesn't make a distinction between "auto" and "cool" (which is
+      # irrelevant here)
+      state: >-
+        {%
+          if not has_value('remote.broadlink_bedroom_remote') or
+            not has_value('climate.tado_smart_ac_control_bedroom')
+        %}
+          {{-
+            states('remote.broadlink_bedroom_remote')
+              if not has_value('remote.broadlink_bedroom_remote')
+              else states('climate.tado_smart_ac_control_bedroom')
+          -}}
+        {% else %}
+          {%
+            if states('climate.tado_smart_ac_control_bedroom') == 'cool' and
+              states('input_number.speed_airco_bedroom') | int(0) > 0
+          %}
+            on
+          {% else %}
+            off
+          {% endif %}
+        {% endif %}
+      percentage: >-
+        {{ states('input_number.speed_airco_bedroom') | int(0) }}
+      turn_on:
+        - action: climate.set_hvac_mode
+          data:
+            hvac_mode: cool
+          # Control via tadoº – this ensures a planned schedule change _doesn't_
+          # impact the override
+          target:
+            entity_id: climate.tado_bedroom_ac
+        - action: remote.send_command
+          data:
+            command: fan_2_bottom_right_20
+            device: airco
+          target:
+            entity_id: remote.broadlink_bedroom_remote
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.speed_airco_bedroom
+          data:
+            value: 50
+      turn_off:
+        # This doesn't actually switch off the airco, it merely puts it back in
+        # auto-mode (ie, cedes control back to tado°) – ending the override. We
+        # use a fan speed of zero to indicate/track this state.
+        - action: climate.set_hvac_mode
+          data:
+            hvac_mode: auto
+          target:
+            entity_id: climate.tado_bedroom_ac
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.speed_airco_bedroom
+          data:
+            value: 0
+      set_percentage:
+        # Here we intentionally don't interact with tado° – just setting the
+        # percentage of this fan-entity results in a "silent" override (which
+        # can be overridden by tado°)
+        - action: remote.send_command
+          data:
+            command: >-
+              {% if percentage == 100 %}
+                fan_4_bottom_right_20
+              {% elif percentage == 75 %}
+                fan_3_bottom_right_20
+              {% elif percentage == 50 %}
+                fan_2_bottom_right_20
+              {% elif percentage == 25 %}
+                fan_1_bottom_right_20
+              {% endif %}
+            device: airco
+          target:
+            entity_id: remote.broadlink_bedroom_remote
+        - action: input_number.set_value
+          target:
+            entity_id: input_number.speed_airco_bedroom
+          data:
+            value: >-
+              {{ percentage }}
+      speed_count: 4

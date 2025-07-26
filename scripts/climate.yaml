@@ -16,20 +16,30 @@ climate_set_operating_mode:
       target:
         entity_id: >-
           {{ entity_id }}
-    # Swing-mode is optional (only relevant for Airco)
-    - choose:
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ swing_mode is defined }}
-          sequence:
-            - action: climate.set_swing_mode
-              data:
-                swing_mode: >-
-                  {{ swing_mode }}
-              target:
-                entity_id: >-
-                  {{ entity_id }}
+    # Swing-mode is optional (only relevant for airco)
+    - if:
+        - >-
+          {{ swing_mode is defined }}
+      then:
+        - action: climate.set_swing_mode
+          data:
+            swing_mode: >-
+              {{ swing_mode }}
+          target:
+            entity_id: >-
+              {{ entity_id }}
+    # Fan mode is optional (only relevant for airco)
+    - if:
+        - >-
+          {{ fan_mode is defined }}
+      then:
+        - action: climate.set_fan_mode
+          data:
+            fan_mode: >-
+              {{ fan_mode }}
+          target:
+            entity_id: >-
+              {{ entity_id }}
   mode: parallel
-  max: 5
+  max: 2
   icon: mdi:hvac
