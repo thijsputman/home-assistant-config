@@ -95,7 +95,7 @@
       entity_id: sensor.attic_window_position
       state: open
   actions:
-    - delay: 1 # Queue this one up first
+    # Top-priority; no delay
     - action: script.turn_on
       target:
         entity_id: script.tts_queue

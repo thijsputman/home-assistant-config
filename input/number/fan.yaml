@@ -4,5 +4,5 @@ speed_airco_bedroom:
   min: 0
   max: 100
   step: 25
-  initial: 50
+  initial: 0
   unit_of_measurement: "%"

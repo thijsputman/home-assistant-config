@@ -1,12 +1,10 @@
-# Restore twice daily from potential overrides that happen further down in this
-# file
+# Restore schedule daily to prevent (accidental) overrides from keeping the
+# airco off
 - alias: Airco (Bedroom) restore schedule
   id: bdfe854c-79d1-474d-a30e-84a3e99e1672
   triggers:
     - trigger: time
-      at: "01:00:00"
-    - trigger: time
-      at: "11:00:00"
+      at: "15:00:00"
   conditions:
     - condition: state
       entity_id: input_boolean.airco_active
@@ -99,6 +97,27 @@
       target:
         entity_id: climate.tado_bedroom_ac
   mode: single
+# Switching off the airco implicitly switches off the override controlled via
+# `fan.airco_bedroom_broadlink`; keep its state in sync with the actual airco –
+# no better way around this than using an automation
+- alias: Airco (Bedroom) – Broadlink off
+  id: ebf46928-d119-4f9d-8c8c-fde90b28fed7
+  triggers:
+    - trigger: state
+      entity_id: climate.tado_smart_ac_control_bedroom
+      from: cool
+      to: "off"
+  conditions:
+    - condition: numeric_state
+      entity_id: input_number.speed_airco_bedroom
+      above: 0
+  actions:
+    - action: input_number.set_value
+      target:
+        entity_id: input_number.speed_airco_bedroom
+      data:
+        value: 0
+  mode: single
 # Prevent the Bedroom- and Attic-aircos from running simultaneously – doesn't
 # blow a fuse, but leaves too little margin for comfort. There's an opposite
 # automation defined in "attic.yaml".
@@ -130,6 +149,132 @@
           message: >-
             The airco in the Attic is switched on; please switch it off before
             switching on the airco in the Bedroom...
+  mode: single
+- alias: Airco (Bedroom) off
+  id: c70eb89e-dbca-467a-8e40-19efe902f107
+  triggers:
+    - trigger: state
+      entity_id: climate.tado_smart_ac_control_bedroom
+      from: "off"
+      to: cool
+      for: "00:00:30"
+  conditions:
+    - condition: state
+      entity_id: group.openclose_bedroom
+      state: "on"
+  actions:
+    - variables:
+        # Take HVAC-mode from the tadoº-integration (so we can distinguish
+        # between "cool" and "auto")
+        last_hvac_mode: >-
+          {{ states('climate.tado_bedroom_ac') }}
+        last_swing_mode: >-
+          {{ state_attr('climate.tado_bedroom_ac', 'swing_mode') }}
+        last_fan_mode: >-
+          {{ state_attr('climate.tado_bedroom_ac', 'fan_mode') }}
+        # HomeKit updates much faster, so prefer that for the temperature
+        last_temperature: >-
+          {{
+            state_attr('climate.tado_smart_ac_control_bedroom', 'temperature')
+          }}
+    - action: climate.turn_off
+      target:
+        entity_id: climate.tado_bedroom_ac
+    - wait_for_trigger:
+        - trigger: state
+          entity_id: group.openclose_bedroom
+          from: "on"
+          to: "off"
+        # Abort conditions
+        - trigger: state
+          id: abort
+          entity_id: input_boolean.everyone_asleep
+          from: "off"
+          to: "on"
+        - trigger: event
+          id: abort
+          event_type: airco_bedroom_abort_wait
+      timeout: "06:00:00"
+      continue_on_timeout: false
+    - condition: template
+      value_template: >-
+        {{ wait.trigger.id != 'abort' }}
+    - if:
+        # No need to restore other settings in "auto" HVAC-mode
+        - >-
+          {{ last_hvac_mode == 'auto' }}
+      then:
+        - action: climate.set_hvac_mode
+          data:
+            hvac_mode: >-
+              {{ last_hvac_mode }}
+          target:
+            entity_id: climate.tado_bedroom_ac
+      else:
+        - action: script.climate_set_operating_mode
+          data:
+            entity_id: climate.tado_bedroom_ac
+            hvac_mode: >-
+              {{ last_hvac_mode }}
+            swing_mode: >-
+              {{ last_swing_mode }}
+            fan_mode: >-
+              {{ last_fan_mode }}
+            temperature: >-
+              {{ last_temperature }}
+  mode: single
+- alias: Airco (Bedroom) window open
+  id: 7ccc2315-fd8a-479e-a29f-c6df92707c4a
+  triggers:
+    - trigger: state
+      entity_id: script.lights_out
+      from: "off"
+      to: "on"
+  conditions:
+    - condition: state
+      entity_id: group.openclose_bedroom
+      state: "on"
+    # The airco _should_ be on
+    - condition: state
+      entity_id: input_boolean.airco_active
+      state: "on"
+    - condition: state
+      entity_id: climate.tado_bedroom_ac
+      attribute: preset_mode
+      state: home
+  actions:
+    - delay: 1 # Queue these announcements up first
+    - if:
+        - condition: numeric_state
+          entity_id: sensor.weewx_outside_temperature_balcony
+          above: 18
+        - condition: numeric_state
+          entity_id: sensor.smart_ac_control_wr2352422400_current_temperature
+          above: 20.5
+      then:
+        - action: script.turn_on
+          target:
+            entity_id: script.tts_queue
+          data:
+            variables:
+              channel: announce
+              tag: goodnight
+              priority: regular
+              message: >-
+                The airco was not switched on because the Bedroom window is
+                open. Close the window to switch on the airco...
+      else:
+        - action: script.turn_on
+          target:
+            entity_id: script.tts_queue
+          data:
+            variables:
+              channel: announce
+              tag: goodnight
+              priority: regular
+              message: >-
+                The airco isn't needed tonight. Consider leaving the Bedroom
+                window open so it remains switched off...
   mode: single
 - alias: Airco (Bedroom) nighttime airflow adjustment
   id: ac143f4e-ef0a-4da5-a975-9793c81a4373
@@ -197,7 +342,6 @@
     # As the airco is higher up in the room than the tado°-unit, it'll barely
     # bring the temperature to the setpoint (20° C) from tado°'s perspective...
     - choose:
-        # Fan-speed 4
         - conditions:
             # The HomeKit-backed temperature-sensor of the tado° unit itself is
             # most appropriate in this case
@@ -205,43 +349,67 @@
               entity_id: >-
                 sensor.smart_ac_control_wr2352422400_current_temperature
               above: 26
+            # Only send if the fan isn't already at the wanted speed
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: fan.airco_bedroom_broadlink
+                  attribute: percentage
+                  state: 100
           sequence:
             - action: fan.set_percentage
               data:
                 percentage: 100
               target:
                 entity_id: fan.airco_bedroom_broadlink
-        # Fan-speed 3
         - conditions:
             - condition: numeric_state
               entity_id: >-
                 sensor.smart_ac_control_wr2352422400_current_temperature
               above: 24
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: fan.airco_bedroom_broadlink
+                  attribute: percentage
+                  state: 75
           sequence:
             - action: fan.set_percentage
               data:
                 percentage: 75
               target:
                 entity_id: fan.airco_bedroom_broadlink
-        # Fan-speed 2
         - conditions:
             - condition: numeric_state
               entity_id: >-
                 sensor.smart_ac_control_wr2352422400_current_temperature
               above: 20.5
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: fan.airco_bedroom_broadlink
+                  attribute: percentage
+                  state: 50
           sequence:
             - action: fan.set_percentage
               data:
                 percentage: 50
               target:
                 entity_id: fan.airco_bedroom_broadlink
-      # Fan-speed 1
       default:
-        - action: fan.set_percentage
-          data:
-            percentage: 25
-          target:
-            entity_id: fan.airco_bedroom_broadlink
+        if:
+          - condition: not
+            conditions:
+              - condition: state
+                entity_id: fan.airco_bedroom_broadlink
+                attribute: percentage
+                state: 25
+        then:
+          - action: fan.set_percentage
+            data:
+              percentage: 25
+            target:
+              entity_id: fan.airco_bedroom_broadlink
     # As there's a broad array of triggers, block for one-minute to prevent
     # unintentionally triggering in rapid succession
     - delay: "00:01:00"
