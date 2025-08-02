@@ -24,22 +24,3 @@ card:
       show_name: false
       icon_height: 48px
       icon: mdi:volume-off
-    - type: button
-      card_mod:
-        style: |
-          ha-card ha-state-icon[data-state="active"]{
-            color: var(--error-color) !important;
-          }
-      entity: timer.wakeup_grace_time
-      show_state: false
-      show_icon: true
-      show_name: false
-      icon_height: 48px
-      icon: mdi:history
-      tap_action:
-        action: call-service
-        service: timer.cancel
-        service_data:
-          entity_id: timer.wakeup_grace_time
-      hold_action:
-        action: more-info
