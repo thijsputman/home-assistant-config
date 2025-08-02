@@ -1,0 +1,101 @@
+- alias: Open the Bedroom curtains
+  id: 43406cbb-ac49-4d5e-92ad-84088c5cc3c2
+  triggers:
+    # Open the curtains when the wakeup-alarm gets silenced – this ensures that
+    # in situations where it's muted, the curtains stay closed
+    - trigger: event
+      id: regular_wakeup
+      event_type: wakeup_alarm_silenced
+    - platform: state
+      id: occupancy_simulation
+      entity_id: input_boolean.everyone_asleep
+      from: "on"
+      to: "off"
+    - trigger: state
+      id: bedroom_lights
+      entity_id: light.bedroom
+      from: "on"
+      to: "off"
+  conditions:
+    - condition: state
+      entity_id: cover.curtain_3_4160
+      state: closed
+    - condition: or
+      conditions:
+        # The "everyone awake"-transition is only used for occupancy simulation
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: occupancy_simulation
+            - condition: state
+              entity_id: alarm_control_panel.home_alarm
+              state:
+                - armed_away
+                - armed_vacation
+        # Switching off the lights should only result in the curtains getting
+        # opened in the morning, close to when the wakeup-alarm sounded
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: bedroom_lights
+            - condition: state
+              entity_id: timer.wakeup_grace_time
+              state: active
+        - condition: trigger
+          id: regular_wakeup
+  actions:
+    - action: cover.open_cover
+      target:
+        entity_id: cover.curtain_3_4160
+- alias: Close the Bedroom curtains
+  id: 8cf8c967-2b3f-4d73-95a7-d524198572f7
+  triggers:
+    - trigger: state
+      id: lights
+      entity_id: light.bedroom
+      from: "on"
+      to: "off"
+    - trigger: state
+      id: bed
+      entity_id: binary_sensor.occupancy_bed
+      from: "off"
+      to: "on"
+    - trigger: state
+      entity_id: input_boolean.everyone_asleep
+      from: "off"
+      to: "on"
+    - trigger: state
+      entity_id: script.lights_out
+      from: "off"
+      to: "on"
+  conditions:
+    - condition: or
+      conditions:
+        # The bed- and lights-triggers are only relevant at night
+        - condition: or
+          conditions:
+            - condition: not
+              conditions:
+                - condition: trigger
+                  id:
+                    - bed
+                    - lights
+            - condition: state
+              entity_id: sensor.time_of_day
+              state: night
+        # With one exception: When the lights go off if someone is in the bed,
+        # the curtains should close
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: lights
+            - condition: state
+              entity_id: binary_sensor.occupancy_bed
+              state: "on"
+    - condition: state
+      entity_id: cover.curtain_3_4160
+      state: open
+  actions:
+    - action: cover.close_cover
+      target:
+        entity_id: cover.curtain_3_4160

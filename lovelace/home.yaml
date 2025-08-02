@@ -104,6 +104,7 @@ views:
                 icon: hue:room-attic
                 name: Blink Attic
           - !include home/lights/hue_scenes.yaml
+      - !include home/lights/curtains.yaml
       - !include home/lights/lux_downstairs.yaml
       - !include home/lights/lux_upstairs.yaml
   # Network
