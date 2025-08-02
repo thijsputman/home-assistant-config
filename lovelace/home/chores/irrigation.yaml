@@ -32,8 +32,6 @@ cards:
             - entity: input_number.irrigation_balcony_manual_volume
               icon: mdi:pipe-valve
               name: Balcony
-              tap_action:
-                action: none
               extend_paper_buttons_row:
                 extra_styles: >-
                   @keyframes rotate{
@@ -83,8 +81,6 @@ cards:
             - entity: input_number.irrigation_garden_manual_volume
               icon: mdi:pipe-valve
               name: Garden
-              tap_action:
-                action: none
               extend_paper_buttons_row:
                 extra_styles: >-
                   @keyframes rotate{
