@@ -50,6 +50,9 @@
     - condition: state
       entity_id: climate.tado_smart_ac_control_bedroom
       state: "off"
+    - condition: state
+      entity_id: group.openclose_bedroom
+      state: "off"
     # Don't trigger after going to bed, nor in the morning after waking up...
     - condition: state
       entity_id: input_boolean.everyone_asleep
@@ -222,8 +225,8 @@
               {{ last_fan_mode }}
             temperature: >-
               {{ last_temperature }}
-  mode: single
-- alias: Airco (Bedroom) window open
+  mode: restart
+- alias: Airco (Bedroom) window open nighttime announcement
   id: 7ccc2315-fd8a-479e-a29f-c6df92707c4a
   triggers:
     - trigger: state
@@ -234,7 +237,7 @@
     - condition: state
       entity_id: group.openclose_bedroom
       state: "on"
-    # The airco _should_ be on
+    # The airco _should_ be on, but isn't
     - condition: state
       entity_id: input_boolean.airco_active
       state: "on"
@@ -242,6 +245,9 @@
       entity_id: climate.tado_bedroom_ac
       attribute: preset_mode
       state: home
+    - condition: state
+      entity_id: climate.tado_smart_ac_control_bedroom
+      state: "off"
   actions:
     - delay: 1 # Queue these announcements up first
     - if:
@@ -276,6 +282,56 @@
                 The airco isn't needed tonight. Consider leaving the Bedroom
                 window open so it remains switched off...
   mode: single
+- alias: Airco (Bedroom) window open notification
+  id: 92f0bc70-113d-4b67-a96e-b62373e50e28
+  triggers:
+    - trigger: state
+      entity_id: climate.tado_smart_ac_control_bedroom
+      from: "off"
+      to: cool
+      for: "00:00:30"
+  conditions:
+    - condition: state
+      entity_id: group.openclose_bedroom
+      state: "on"
+    # During nighttime a different approach is taken
+    - condition: state
+      entity_id: script.lights_out
+      state: "off"
+    - condition: state
+      entity_id: timer.everyone_asleep_delay
+      state: idle
+    - condition: state
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+  actions:
+    - action: script.turn_on
+      target:
+        entity_id: script.persistent_notification
+      data:
+        variables:
+          targetDevices: home
+          channel: Notification
+          group: climate
+          tag: airco_bedroom_window
+          action_1: Switch off airco
+          title: ❄️ Bedroom airco switched off – the window is open
+          message: >-
+            Please close the door and/or window(s) in the Bedroom to allow the
+            airco to switch back on...
+    - wait_for_trigger:
+        - trigger: event
+          event_type: mobile_app_notification_action
+          event_data:
+            action: ACTION_1_airco_bedroom_window
+      timeout: "06:00:00"
+      continue_on_timeout: false
+    - action: persistent_notification.dismiss
+      data:
+        notification_id: airco_attic_window
+    - event: airco_bedroom_abort_wait
+  mode: single
+  max_exceeded: silent
 - alias: Airco (Bedroom) nighttime airflow adjustment
   id: ac143f4e-ef0a-4da5-a975-9793c81a4373
   triggers:
@@ -283,6 +339,10 @@
       entity_id: climate.tado_smart_ac_control_bedroom
       from: "off"
       to: cool
+    - trigger: state
+      entity_id: binary_sensor.occupancy_bed
+      from: "off"
+      to: "on"
     - trigger: state
       entity_id: input_boolean.everyone_asleep
       from: "off"
@@ -415,3 +475,31 @@
     - delay: "00:01:00"
   mode: single
   max_exceeded: silent
+- alias: Nighttime reminder to open Bedroom window
+  id: ee31d2d5-cf8f-4538-8570-addc28b43768
+  triggers:
+    - trigger: state
+      entity_id: script.lights_out
+      from: "off"
+      to: "on"
+  conditions:
+    - condition: state
+      entity_id: group.openclose_bedroom
+      state: "on"
+    - condition: state
+      entity_id: input_boolean.airco_active
+      state: "off"
+  actions:
+    - delay: 1 # Queue this one up first
+    - action: script.turn_on
+      target:
+        entity_id: script.tts_queue
+      data:
+        variables:
+          channel: announce
+          tag: goodnight
+          priority: regular
+          message: >-
+            The bedroom window is closed. Consider opening it to get some fresh
+            air during the night...
+  mode: single

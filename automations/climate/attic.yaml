@@ -451,7 +451,7 @@
           channel: Notification
           group: climate
           tag: airco_attic_window
-          action_1: Switch off Airco
+          action_1: Switch off airco
           title: ❄️ Attic airco switched off – the window is open
           message: >-
             Please close the window in the Attic to allow the airco to switch
@@ -476,28 +476,26 @@
     # Only restore the Airco's state if the window was closed, otherwise keep
     # the Airco switched off. Other triggers will attempt to restore the Airco
     # to auto-mode later on (all guarded by "window closed"-conditions).
-    - condition: template
-      value_template: >-
+    - condition: >-
         {{
           wait.trigger is not none and wait.trigger.id != 'switch_off'
         }}
     # Use the (online) tadoº integration to restore so we can properly restore
     # hvac- and swing-modes (even though it's slow to update its state, commands
     # come through without delay)...
-    - choose:
+    - if:
         # No need to restore swing-mode or temperature in "auto" hvac-mode
-        - conditions:
-            - condition: template
-              value_template: >-
-                {{ last_hvac_mode == 'auto' }}
-          sequence:
-            - action: climate.set_hvac_mode
-              data:
-                hvac_mode: >-
-                  {{ last_hvac_mode }}
-              target:
-                entity_id: climate.tado_attic_ac
-      default:
+        - condition: template
+          value_template: >-
+            {{ last_hvac_mode == 'auto' }}
+      then:
+        - action: climate.set_hvac_mode
+          data:
+            hvac_mode: >-
+              {{ last_hvac_mode }}
+          target:
+            entity_id: climate.tado_attic_ac
+      else:
         - action: script.climate_set_operating_mode
           data:
             entity_id: climate.tado_attic_ac
