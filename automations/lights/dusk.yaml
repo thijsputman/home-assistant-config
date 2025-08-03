@@ -10,9 +10,11 @@
       entity_id: light.garden
       state: "off"
   actions:
-    - action: scene.turn_on
+    - action: hue.activate_scene
       target:
         entity_id: scene.garden_ambiance
+      data:
+        transition: 30
   mode: single
 - alias: Inside lights on
   id: 0ca01a00-8847-41f1-b852-70f4c4a49275
@@ -23,75 +25,93 @@
       to: dusk
   conditions: []
   actions:
-    # Living room
-    - if:
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: light.living_room
-              state: "off"
-            - condition: state
-              entity_id: sensor.hue_scene_living_room
-              state: Daytime
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.living_room_ambiance
-    # Ensuite
-    - if:
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: light.ensuite
-              state: "off"
-            - condition: state
-              entity_id: sensor.hue_scene_ensuite
-              state: Daytime
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.ensuite_ambiance
-    # Kitchen
-    - if:
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: light.kitchen
-              state: "off"
-            - condition: state
-              entity_id: sensor.hue_scene_kitchen
-              state: Daytime
-      then:
-        - action: script.hue_activate_scene_kitchen
-          data:
-            scene_id: scene.kitchen_ambiance
-    # Hallway
-    - if:
-        - condition: or
-          conditions:
-            - condition: state
-              entity_id: light.hallway
-              state: "off"
-            # Daytime lighting on; no active override
-            - condition: and
+    - parallel:
+        # Living room
+        - if:
+            - condition: or
               conditions:
                 - condition: state
-                  entity_id: sensor.hue_scene_hallway_downstairs
-                  state:
-                    - Daytime
-                    - Daytime (reduced)
+                  entity_id: light.living_room
+                  state: "off"
                 - condition: state
-                  entity_id: sensor.hue_scene_hallway_upstairs
+                  entity_id: sensor.hue_scene_living_room
                   state: Daytime
-                - condition: not
+          then:
+            - action: hue.activate_scene
+              target:
+                entity_id: scene.living_room_active
+              data:
+                transition: >-
+                  {{ 30 if states('light.living_room') == 'off' else 600 }}
+        # Ensuite
+        - if:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: light.ensuite
+                  state: "off"
+                - condition: state
+                  entity_id: sensor.hue_scene_ensuite
+                  state: Daytime
+          then:
+            - action: hue.activate_scene
+              target:
+                entity_id: scene.ensuite_ambiance
+              data:
+                transition: >-
+                  {{ 30 if states('light.ensuite') == 'off' else 600 }}
+        # Kitchen
+        - if:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: light.kitchen
+                  state: "off"
+                - condition: state
+                  entity_id: sensor.hue_scene_kitchen
+                  state: Daytime
+          then:
+            - action: hue.activate_scene
+              target:
+                entity_id: scene.kitchen_ambiance
+              data:
+                transition: >-
+                  {{ 30 if states('light.kitchen') == 'off' else 600 }}
+        # Hallway
+        - if:
+            - condition: or
+              conditions:
+                - condition: state
+                  entity_id: light.hallway
+                  state: "off"
+                # Daytime lighting on; no active override
+                - condition: and
                   conditions:
-                    - condition: state
-                      entity_id: sensor.hue_scene_hallway
-                      state: «Override»
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.hallway_evening
+                    - condition: or
+                      conditions:
+                        - condition: state
+                          entity_id: sensor.hue_scene_hallway_downstairs
+                          state:
+                            - Daytime
+                            - Daytime (reduced)
+                            # Downstairs Hallway transitions to Evening as part
+                            # of its daytime-lighting automation
+                            - Evening
+                        - condition: state
+                          entity_id: sensor.hue_scene_hallway_upstairs
+                          state: Daytime
+                    - condition: not
+                      conditions:
+                        - condition: state
+                          entity_id: sensor.hue_scene_hallway
+                          state: «Override»
+          then:
+            - action: hue.activate_scene
+              target:
+                entity_id: scene.hallway_evening
+              data:
+                transition: >-
+                  {{ 30 if states('light.hallway') == 'off' else 600 }}
   mode: single
 # The distinction between "Inside lights" and "House lights" is somewhat
 # arbitrary – it serves to keep the dusk and dawn lighting automations aligned.
@@ -115,9 +135,11 @@
           entity_id: light.guestroom
           state: "off"
       then:
-        - action: scene.turn_on
+        - action: hue.activate_scene
           target:
             entity_id: scene.guestroom_relax
+          data:
+            transition: 30
   mode: single
 - alias: Garden lights off
   id: 99711cfd-e1c7-47d8-83af-94876e126b6c
@@ -176,9 +198,12 @@
       entity_id: sensor.hue_scene_garden
       state: Ambiance
     - action: light.turn_off
-      entity_id:
-        - light.garden
-        - light.hue_filament_bulb_1 # Back door light
+      target:
+        entity_id:
+          - light.garden
+          - light.hue_filament_bulb_1 # Back door light
+      data:
+        transition: 30
   # Override in case Home Assistant got restarted during the day (allowing the
   # proper trigger to take over)
   mode: restart

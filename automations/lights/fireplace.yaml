@@ -1,8 +1,8 @@
 - alias: Fireplace toggle
   id: e885702e-c8fb-4720-84f7-07aa9f13855b
   triggers:
-    - entity_id: input_boolean.fireplace
-      platform: state
+    - trigger: state
+      entity_id: input_boolean.fireplace
   conditions: []
   actions:
     - choose:

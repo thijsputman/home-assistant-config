@@ -4,34 +4,36 @@
   id: 4e1d15da-52cb-47ea-90e7-1396257116eb
   triggers:
     - trigger: state
-      entity_id: sensor.hue_scene_hallway
-      to: «Override»
+      id: motion_stop
+      entity_id:
+        - binary_sensor.presence_121 # Stairs
+        - binary_sensor.presence_123 # Downstairs hallway
+        - binary_sensor.presence_125 # Downstairs hallway
+        - binary_sensor.presence_127 # Upstairs hallway
+      from:
+        - "on"
+        - "off"
+      to:
+        - "on"
+        - "off"
   conditions:
+    - condition: state
+      entity_id: sensor.hue_scene_hallway
+      state: «Override»
+    # No more motion detected anywhere
+    - condition: state
+      entity_id:
+        - binary_sensor.presence_121
+        - binary_sensor.presence_123
+        - binary_sensor.presence_125
+        - binary_sensor.presence_127
+      state: "off"
     # Only act under normal circumstances (i.e. the alarm is disarmed)
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: disarmed
   actions:
-    - wait_for_trigger:
-        - trigger: state
-          id: motion_stop
-          entity_id:
-            - binary_sensor.presence_121 # Stairs
-            - binary_sensor.presence_123 # Downstairs hallway
-            - binary_sensor.presence_125 # Downstairs hallway
-            - binary_sensor.presence_127 # Upstairs hallway
-          from: "on"
-          to: "off"
-          for: "00:10:00"
-        - trigger: state
-          entity_id: sensor.hue_scene_hallway
-          not_to: «Override»
-      timeout: "02:00:00"
-      continue_on_timeout: false
-    # Only restore when there's no more activity
-    - condition: template
-      value_template: >-
-        {{ wait.trigger is not none and wait.trigger.id == 'motion_stop' }}
+    - delay: "00:10:00"
     # Daytime
     - if:
         - condition: state
@@ -44,32 +46,58 @@
               entity_id: sensor.lightlevel_48
               below: 60
           then:
-            - action: script.turn_on
-              target:
-                entity_id: script.hallway_downstairs_daytime_lights
-          else:
-            - action: light.turn_off
-              target:
-                entity_id: light.hallway_downstairs
+            - choose:
+                - conditions:
+                    - condition: state
+                      entity_id: sensor.sun_relative_to_house
+                      state: in_back
+                  sequence:
+                    - action: hue.activate_scene
+                      target:
+                        entity_id: scene.hallway_downstairs_daytime_reduced
+                      data:
+                        transition: 600
+                - conditions:
+                    - condition: state
+                      entity_id: sensor.sun_relative_to_house
+                      state: behind_buildings
+                  sequence:
+                    - action: hue.activate_scene
+                      target:
+                        entity_id: scene.hallway_downstairs_evening
+                      data:
+                        transition: 600
+              default:
+                - action: light.turn_off
+                  target:
+                    entity_id: light.downstairs_hallway
+                  data:
+                    transition: 30
         # Upstairs
         - if:
             - condition: numeric_state
               entity_id: sensor.lightlevel_upstairs_hallway
               below: 50
           then:
-            - action: scene.turn_on
+            - action: hue.activate_scene
               target:
                 entity_id: scene.hallway_upstairs_daytime
+              data:
+                transition: 600
           else:
             - action: light.turn_off
               target:
                 entity_id: light.upstairs_hallway
+              data:
+                transition: 30
       # Evening
       else:
-        - action: scene.turn_on
+        - action: hue.activate_scene
           target:
             entity_id: scene.hallway_evening
-  mode: single
+          data:
+            transition: 600
+  mode: restart
 - alias: Dim hallway lights
   id: 2a98868c-c030-4159-803e-3cc6193a9872
   triggers:

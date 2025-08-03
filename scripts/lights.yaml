@@ -164,23 +164,3 @@ lights_out:
           Lights out-script and were forced off...
   mode: single
   icon: mdi:lightbulb-group-off
-hallway_downstairs_daytime_lights:
-  alias: Dynamic daytime lights (Hallway – downstairs)
-  sequence:
-    # If the Sun is below 40° on the horizon, and setting (or has set), use
-    # reduced brightness daytime lighting
-    - if: >-
-        {{
-          state_attr('sun.sun', 'rising') != true and
-            state_attr('sun.sun', 'elevation') < 40
-        }}
-      then:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.hallway_downstairs_daytime_reduced
-      else:
-        - action: scene.turn_on
-          target:
-            entity_id: scene.hallway_downstairs_daytime
-  mode: single
-  icon: mdi:sun-clock

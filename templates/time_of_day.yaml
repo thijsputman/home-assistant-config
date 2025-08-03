@@ -1,5 +1,5 @@
 - trigger:
-    - platform: state
+    - trigger: state
       entity_id: sun.sun
       attribute: elevation
       to: ~
@@ -35,3 +35,28 @@
           {% else %}
             {{ -1.0 }}
           {% endif %}
+    - name: Sun relative to house
+      unique_id: 62f2520c-6dea-4ca7-a06b-78d9a06a343b
+      icon: mdi:sun-angle-outline
+      availability: >-
+        {{ has_value('sun.sun') }}
+      state: >-
+        {% if state_attr('sun.sun', 'elevation') <= 0 %}
+          below_horizon
+        {% elif is_state_attr('sun.sun', 'rising', true) %}
+          {% if
+            state_attr('sun.sun', 'elevation') <= 30
+          %}
+            in_front
+          {% else %}
+            above
+          {% endif %}
+        {% else %}
+          {% if state_attr('sun.sun', 'elevation') >= 40 %}
+            above
+          {% elif state_attr('sun.sun', 'elevation') >= 8 %}
+            in_back
+          {% else %}
+            behind_buildings
+          {% endif %}
+        {% endif %}

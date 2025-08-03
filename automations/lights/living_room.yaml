@@ -1,0 +1,62 @@
+- alias: Living Room scene "Active" to "Daytime"
+  id: 9e3a89ed-8303-472e-a101-9a56258f3109
+  triggers:
+    - trigger: state
+      entity_id: sensor.hue_scene_living_room
+      to: Active
+      for: "00:00:30"
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.living_room_daytime
+      data:
+        transition: 600
+  mode: single
+- alias: Living Room scene "Active" to "Ambiance"
+  id: af490253-fe40-4ce2-a763-ad3c97b99c36
+  triggers:
+    - trigger: time
+      at: "21:30"
+    - trigger: state
+      entity_id: sensor.time_of_day
+      to: night
+  conditions:
+    - condition: state
+      entity_id: sensor.hue_scene_living_room
+      state: Active
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: night
+    - condition: time
+      after: "21:29"
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.living_room_ambiance
+      data:
+        transition: 600
+    - delay: 600
+  mode: single
+  max_exceeded: silent
+- alias: Ensuite scene "Bright" to "Daytime"
+  id: 33a0c5f8-4f88-4a45-afad-2dc1e8c4f913
+  triggers:
+    - trigger: state
+      entity_id: sensor.hue_scene_ensuite
+      to: Bright
+      for: "00:00:30"
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.ensuite_daytime
+      data:
+        transition: 600
+  mode: single

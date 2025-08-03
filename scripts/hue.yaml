@@ -72,14 +72,23 @@ hue_activate_scene_kitchen:
   fields:
     scene_id:
       description: Scene entity for the Kitchen
+      required: true
       selector:
         entity:
           filter:
             - domain: scene
     turn_off:
       description: Turn off the Kitchen lights
+      default: false
       selector:
         boolean: # yamllint disable-line rule:empty-values
+    transition:
+      description: Scene transition-delay
+      default: 0
+      selector:
+        number:
+          min: 0
+          max: 3600
   sequence:
     - if:
         - >-
@@ -91,10 +100,13 @@ hue_activate_scene_kitchen:
               entity_id: sensor.hue_scene_kitchen_counter_cupboards
               state: Activity
           then:
-            - action: scene.turn_on
+            - action: hue.activate_scene
               target:
                 entity_id: >-
                   {{ scene_id }}
+              data:
+                transition: >-
+                  {{ transition }}
             # Slight delay to ensure the Hue scene template sensors are updated
             # prior to making any further changes – it's possible this happens
             # so fast we miss the trigger, hence the continue on timeout.
@@ -104,15 +116,19 @@ hue_activate_scene_kitchen:
                   to: ~
               timeout: "00:00:05"
               continue_on_timeout: true
+            # We intentionally don't apply the transition-delay here
             - action: scene.turn_on
               target:
                 entity_id: scene.kitchen_counter_cupboards_activity
           # Otherwise, simply apply the scene to Kitchen alone
           else:
-            - action: scene.turn_on
+            - action: hue.activate_scene
               target:
                 entity_id: >-
                   {{ scene_id }}
+              data:
+                transition: >-
+                  {{ transition }}
       # Identical — for turning off the lights...
       else:
         - if:
@@ -127,6 +143,9 @@ hue_activate_scene_kitchen:
                 - action: light.turn_off
                   target:
                     entity_id: light.kitchen
+                  data:
+                    transition: >-
+                      {{ transition }}
                 - wait_for_trigger:
                     - trigger: state
                       entity_id: sensor.hue_scene_kitchen
@@ -140,6 +159,9 @@ hue_activate_scene_kitchen:
                 - action: light.turn_off
                   target:
                     entity_id: light.kitchen
+                  data:
+                    transition: >-
+                      {{ transition }}
           else:
             - stop: >-
                 Invalid call to script.hue_activate_scene_kitchen: Incorrect
