@@ -6,7 +6,7 @@
     - trigger: event
       id: regular_wakeup
       event_type: wakeup_alarm_silenced
-    - platform: state
+    - trigger: state
       id: occupancy_simulation
       entity_id: input_boolean.everyone_asleep
       from: "on"
@@ -71,7 +71,7 @@
   conditions:
     - condition: or
       conditions:
-        # The bed- and lights-triggers are only relevant at night
+        # The bed- and lights-triggers should only run at night
         - condition: or
           conditions:
             - condition: not
@@ -83,15 +83,6 @@
             - condition: state
               entity_id: sensor.time_of_day
               state: night
-        # With one exception: When the lights go off if someone is in the bed,
-        # the curtains should close
-        - condition: and
-          conditions:
-            - condition: trigger
-              id: lights
-            - condition: state
-              entity_id: binary_sensor.occupancy_bed
-              state: "on"
     - condition: state
       entity_id: cover.curtain_3_4160
       state: open
