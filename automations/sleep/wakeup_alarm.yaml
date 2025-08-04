@@ -54,11 +54,6 @@
       entity_id: script.wakeup_alarm
       state: "on"
   actions:
-    # Stop the wakeup alarm – the additional "media_stop" ensures the sound
-    # stops playing right away (instead of at the end of the current play-loop)
-    - action: media_player.media_stop
-      data:
-        entity_id: media_player.ha_voice_bedroom
     - action: script.turn_off
       target:
         entity_id: script.wakeup_alarm
@@ -102,13 +97,25 @@
       entity_id: script.wakeup_alarm
       state: "on"
   actions:
-    - action: media_player.media_stop
-      data:
+    # Stopping the (HA Voice) media-player doesn't appear to work; mute it
+    # instead...
+    - action: media_player.volume_mute
+      target:
         entity_id: media_player.ha_voice_bedroom
+      data:
+        is_volume_muted: true
     - action: script.turn_off
       target:
         entity_id: script.wakeup_alarm
     # Let other automations know the wakeup alarm was silenced
     - event: wakeup_alarm_silenced
+    # Wait one-minute and unmute – as fallback, generally speaking the morning-
+    # announcements should've already taken care of this...
+    - delay: "00:01:00"
+    - action: media_player.volume_mute
+      target:
+        entity_id: media_player.ha_voice_bedroom
+      data:
+        is_volume_muted: false
   mode: single
   max_exceeded: silent
