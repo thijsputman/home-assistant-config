@@ -1,13 +1,13 @@
-- alias: 💡 | 👋 Kitchen counter & cupboards toggle (motion detected)
+- alias: Kitchen counter & cupboards toggle
   id: ff4ddb05-91d8-431d-9226-b51e0bbd9b36
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id:
         - binary_sensor.presence_53 # Sink
         - binary_sensor.presence_155 # Coffee machine
       from: "off"
       to: "on"
-  condition:
+  conditions:
     # Don't trigger when Kitchen is "Bright (custom)" – that's bright enough;
     # there's another automation handling motion for that situation
     - condition: not
@@ -38,8 +38,8 @@
       state:
         - disarmed
         - armed_night
-  action:
-    - service: scene.turn_on
+  actions:
+    - action: scene.turn_on
       target:
         entity_id: scene.kitchen_counter_cupboards_activity
     # Wait for _all_ motion sensors to clear – otherwise race conditions are
@@ -66,14 +66,14 @@
       state: Activity
     # Changing the "Kitchen counter & cupboards" scene doesn't change the
     # "Kitchen" scene – we thus can simply re-apply the active scene
-    - service: script.hue_activate_scene
+    - action: script.hue_activate_scene
       data:
         scene_entity: sensor.hue_scene_kitchen
   mode: restart
-- alias: 💡 | 👋 Kitchen scene to "Bright (custom)" (sustained activity)
+- alias: Kitchen to "Bright (custom)"
   id: ac457661-49b6-4ee6-b0cf-ceac3bd4ccab
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       id: activity
       entity_id:
         - binary_sensor.presence_53
@@ -81,14 +81,14 @@
       from: "off"
       to: "on"
     # Initial trigger only considers the sensor above the sink
-    - platform: state
+    - trigger: state
       id: sustained_activity
       entity_id: binary_sensor.presence_53
       from: "off"
       to: "on"
       # Empirically determined to be the threshold for "sustained activity" 😉
       for: "00:01:30"
-  condition:
+  conditions:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state:
@@ -107,7 +107,7 @@
               entity_id: sensor.lightlevel_55
               # N.B. Same threshold value as in the previous automation
               below: 200
-  action:
+  actions:
     # Only attempt to change scene on the initial (sustained activity) trigger.
     # The additional (more prolific) trigger only serves to reset the delay
     # timer...
@@ -121,7 +121,7 @@
                   entity_id: sensor.hue_scene_kitchen
                   state: Bright (custom)
           sequence:
-            - service: scene.turn_on
+            - action: scene.turn_on
               target:
                 entity_id: scene.kitchen_bright_custom
     - wait_template: >-
@@ -129,51 +129,91 @@
           states('binary_sensor.presence_53') == 'off' and
           states('binary_sensor.presence_155') == 'off'
         }}
-    - delay: "00:06:00"
-    # This restores the previous scene even if "Bright (custom)" was applied
-    # manually. Given this automation aims to make manually applying "Bright
-    # (custom)" in the Kitchen unnecessary, this should not pose an issue...
-    - condition: state
-      entity_id: sensor.hue_scene_kitchen
-      state: Bright (custom)
-    # Abort if the Living Room is "Active" and we're about to restore the
-    # Kitchen to "Daytime" – in this case it's better to keep the Kitchen lights
-    # aligned with the Living Room (as it appears someone manually overrode the
-    # daytime lights in the Living Room)
-    # Note that a plain NOT-condition will not work here: In the below situation
-    # that would equate an AND-condition with two nested NOTs. Situations where
-    # _either_ the Living Room _or_ the Kitchen condition would be true, would
-    # lead to an unwanted abort of the automation in that case...
-    - condition: or
-      conditions:
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: sensor.hue_scene_living_room
-              state: Active
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: sensor.hue_scene_kitchen_previous
-              state: Daytime
-    # Don't restore daytime lighting when it's not daytime (anymore) – restoring
-    # to "Ambiance" seems most sensible at this point instead
+    - wait_for_trigger:
+        - trigger: state
+          entity_id: sensor.hue_scene_kitchen
+          from: Bright (custom)
+      timeout: "00:08:00"
+      continue_on_timeout: true
+    # Only continue if Kitchen hasn't been taken out of "Bright (custom)"
+    - condition: >-
+        {{ wait.trigger is none }}
+    # During the day, re-apply daytime-lighting, or switch off
     - if:
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: sensor.time_of_day
-              state: day
         - condition: state
-          entity_id: sensor.hue_scene_kitchen_previous
-          state: Daytime
+          entity_id: sensor.time_of_day
+          state: day
       then:
-        - service: scene.turn_on
-          target:
-            entity_id: scene.kitchen_ambiance
-      # Otherwise, restore Kitchen to previous scene
+        if:
+          - condition: numeric_state
+            entity_id: sensor.lightlevel_47
+            below: 80
+        then:
+          - action: hue.activate_scene
+            target:
+              entity_id: scene.kitchen_daytime
+            data:
+              transition: 120
+        else:
+          - action: light.turn_off
+            target:
+              entity_id: light.kitchen
+            data:
+              transition: 120
+      # Otherwise, follow the Living Room – note that the "Active"-scene is
+      # intentionally omitted; in that case we leave the Kitchen as-is...
       else:
-        - service: script.hue_activate_scene
-          data:
-            scene_entity: sensor.hue_scene_kitchen_previous
+        - choose:
+            # Ambiance
+            - conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_living_room
+                  state:
+                    - Ambiance
+                    - Movie (ambiance)
+              sequence:
+                - action: hue.activate_scene
+                  target:
+                    entity_id: scene.kitchen_ambiance
+                  data:
+                    transition: 120
+            # Movie
+            - conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_living_room
+                  state: Movie
+              sequence:
+                - action: hue.activate_scene
+                  target:
+                    entity_id: scene.kitchen_movie
+                  data:
+                    transition: 30
+            # Off
+            - conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_living_room
+                  state: «Off»
+              sequence:
+                - action: light.turn_off
+                  target:
+                    entity_id: light.kitchen
+                  data:
+                    transition: 120
   mode: restart
+- alias: Kitchen persist "Daytime"
+  id: 1816c80c-83dd-44cd-b902-11f605f73584
+  triggers:
+    - trigger: state
+      entity_id: sensor.hue_scene_kitchen
+      to: Ambiance
+      for: "00:00:30"
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+  actions:
+    - action: script.hue_activate_scene_kitchen
+      data:
+        scene_id: scene.kitchen_daytime
+        transition: 600
+  mode: single

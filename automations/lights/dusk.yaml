@@ -3,8 +3,9 @@
   triggers:
     - trigger: state
       entity_id: sensor.time_of_day
-      from: dusk
-      to: night
+      from: day
+      to: dusk
+      for: "00:10:00"
   conditions:
     - condition: state
       entity_id: light.garden
@@ -211,11 +212,16 @@
   id: dc5c6595-78d3-43c9-94ab-24ddd2a4073d
   triggers:
     - trigger: time
-      at: "23:00:00"
+      at: "22:50:00"
   conditions:
     - condition: state
       entity_id: light.hue_filament_bulb_1_2
       state: "on"
   actions:
+    - delay: >-
+        {{ range(2400) | random }}
+    - condition: state
+      entity_id: light.hue_filament_bulb_1_2
+      state: "on"
     - action: light.turn_off
       entity_id: light.hue_filament_bulb_1_2

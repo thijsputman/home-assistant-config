@@ -32,8 +32,9 @@
     - condition: numeric_state
       entity_id: sensor.lightlevel_47
       below: 80
-    # Don't act if the lights are already on, _unless_ we are running because
-    # of a dawn/wakeup-trigger
+    # Don't act when the lights are already on (to prevent messing with motion-
+    # triggered lighting in the Kitchen), _unless_ we are running because of a
+    # dawn/wakeup-trigger
     - condition: or
       conditions:
         - condition: trigger
@@ -66,7 +67,7 @@
     - trigger: numeric_state
       entity_id: sensor.lightlevel_47
       for: "00:10:00"
-      above: 90 # Same value used in `📄 kitchen.yaml`
+      above: 90
   conditions:
     - condition: state
       entity_id: sensor.time_of_day
@@ -92,12 +93,12 @@
       entity_id: sensor.time_of_day
       from: dawn
       to: day
-    - trigger: state
-      entity_id: sensor.sun_relative_to_house
-      to: behind_buildings
     - trigger: time
       id: wakeup
       at: input_datetime.wakeup
+    - trigger: state
+      entity_id: sensor.sun_relative_to_house
+      to: behind_buildings
   conditions:
     - condition: or
       conditions:
@@ -112,22 +113,6 @@
     - condition: numeric_state
       entity_id: sensor.lightlevel_46
       below: 90
-    # Only act if the lights are off, _unless_ we are running because of a
-    # dawn-/wakeup-trigger
-    - condition: or
-      conditions:
-        - condition: trigger
-          id:
-            - dawn
-            - wakeup
-        - condition: and
-          conditions:
-            - condition: state
-              entity_id: light.living_room
-              state: "off"
-            - condition: state
-              entity_id: light.ensuite
-              state: "off"
     - condition: not
       conditions:
         - condition: state
@@ -268,10 +253,11 @@
         - action: hue.activate_scene
           target:
             entity_id: scene.hallway_downstairs_daytime
-          data: >-
-            {{
-              30 if states('light.hallway_downstairs') == 'off' else 600
-            }}
+          data:
+            transition: >-
+              {{
+                30 if states('light.hallway_downstairs') == 'off' else 600
+              }}
   mode: single
 - alias: Hallway (downstairs) lights off
   id: 9b941157-f359-4d69-a19c-eaa242f6faf3

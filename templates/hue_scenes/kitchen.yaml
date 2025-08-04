@@ -138,24 +138,3 @@
         light_id: light.kitchen
       availability: >-
         {{ has_value('light.kitchen') }}
-- trigger:
-    - trigger: state
-      entity_id: sensor.hue_scene_kitchen
-      to: ~
-  sensor:
-    - name: Hue scene (Kitchen) – previous
-      unique_id: 833bdce8-e798-4279-8d0f-a021e7552a6e
-      icon: mdi:movie-filter
-      state: >-
-        {%
-          if trigger.from_state is defined and
-            trigger.from_state.state not in ['unknown', 'unavailable']
-        %}
-          {{ trigger.from_state.state }}
-        {% else %}
-          «None»
-        {% endif %}
-      attributes:
-        light_id: light.kitchen
-      availability: >-
-        {{ has_value('sensor.hue_scene_kitchen') }}

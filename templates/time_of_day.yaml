@@ -45,16 +45,16 @@
           below_horizon
         {% elif is_state_attr('sun.sun', 'rising', true) %}
           {% if
-            state_attr('sun.sun', 'elevation') <= 30
+            state_attr('sun.sun', 'elevation') <= 40
           %}
             in_front
           {% else %}
             above
           {% endif %}
         {% else %}
-          {% if state_attr('sun.sun', 'elevation') >= 40 %}
+          {% if state_attr('sun.sun', 'elevation') >= 50 %}
             above
-          {% elif state_attr('sun.sun', 'elevation') >= 8 %}
+          {% elif state_attr('sun.sun', 'elevation') >= 12 %}
             in_back
           {% else %}
             behind_buildings
