@@ -1,0 +1,73 @@
+# Attic [Hue room]
+- trigger:
+    - trigger: state
+      id: scene_change
+      entity_id:
+        - scene.attic_bright
+        - scene.attic_concentrate
+        - scene.attic_office_back
+        - scene.attic_office_front
+        - scene.attic_away
+      to: ~
+    - trigger: state
+      id: button_press
+      entity_id:
+        - event.attic_switch_button_1
+        - event.attic_switch_button_2
+        - event.attic_switch_button_3
+        # event.attic_switch_button_4 – lights off
+      to: ~
+    - trigger: state
+      id: lights_off
+      entity_id: light.attic
+      to: "off"
+  sensor:
+    - name: Hue scene (Attic)
+      unique_id: 8c11628b-6d41-4a19-9325-df2b5bb520b7
+      icon: mdi:movie-filter
+      state: >-
+        {% if trigger.id == 'lights_off' %}
+          «Off»
+        {% elif
+          trigger.id == 'scene_change' or (
+            trigger.id == 'button_press' and
+              trigger.to_state.attributes.event_type == 'initial_press'
+          )
+        %}
+          {% if trigger.entity_id in
+            [
+              'scene.attic_bright',
+              'event.attic_switch_button_1',
+            ]
+          %}
+            Bright
+          {% elif trigger.entity_id in
+            [
+              'scene.attic_concentrate'
+            ]
+          %}
+            Concentrate
+          {% elif trigger.entity_id in
+            [
+              'scene.attic_office_back',
+              'event.attic_switch_button_2'
+            ]
+          %}
+            Office (back)
+          {% elif trigger.entity_id in
+            [
+              'scene.attic_office_front',
+              'event.attic_switch_button_3',
+            ]
+          %}
+            Office (front)
+          {% elif trigger.entity_id in ['scene.attic_away'] %}
+            Away
+          {% endif %}
+        {% else %}
+          {{ this.state }}
+        {% endif %}
+      attributes:
+        light_id: light.attic
+      availability: >-
+        {{ has_value('light.attic') }}

@@ -1,0 +1,35 @@
+# Garden [Hue room]
+- trigger:
+    - trigger: state
+      id: scene_change
+      entity_id:
+        - scene.garden_active
+        - scene.garden_ambiance
+        - scene.garden_summer_night
+      to: ~
+    - trigger: state
+      id: lights_off
+      entity_id: light.garden
+      to: "off"
+  sensor:
+    - name: Hue scene (Garden)
+      unique_id: 2e5bc57f-240a-4669-90e4-ace50876fb70
+      icon: mdi:movie-filter
+      state: >-
+        {% if trigger.id == 'lights_off' %}
+          «Off»
+        {% elif trigger.id == 'scene_change' %}
+          {% if trigger.entity_id in ['scene.garden_active'] %}
+            Active
+          {% elif trigger.entity_id in ['scene.garden_ambiance'] %}
+            Ambiance
+          {% elif trigger.entity_id in ['scene.garden_summer_night'] %}
+            Summer Night
+          {% endif %}
+        {% else %}
+          {{ this.state }}
+        {% endif %}
+      attributes:
+        light_id: light.garden
+      availability: >-
+        {{ has_value('light.garden') }}

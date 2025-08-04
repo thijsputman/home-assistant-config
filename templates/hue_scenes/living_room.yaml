@@ -1,0 +1,97 @@
+# Living room (Hue room)
+- trigger:
+    - trigger: state
+      id: scene_change
+      entity_id:
+        - scene.living_room_active
+        - scene.living_room_ambiance
+        - scene.living_room_daytime
+        - scene.living_room_movie
+        - scene.living_room_movie_ambiance
+      to: ~
+    - trigger: state
+      id: button_press
+      entity_id:
+        - event.living_room_switch_couch_button_1
+        - event.living_room_switch_couch_button_2
+        - event.living_room_switch_couch_button_3
+        - event.living_room_switch_couch_button_4
+        - event.living_room_switch_garden_button_1
+        - event.living_room_switch_garden_button_2
+        - event.living_room_switch_garden_button_3
+        # event.living_room_switch_garden_button_4 – lights off
+        - event.hue_tap_dial_switch_1_button_1
+        - event.hue_tap_dial_switch_1_button_2
+        - event.hue_tap_dial_switch_1_button_3
+        - event.hue_tap_dial_switch_1_button_4
+      # Hue Tap      -> event_type: initial_press
+      # Hue Tap Dial -> event_type: short_release
+      to: ~
+    - trigger: state
+      id: lights_off
+      entity_id: light.living_room
+      to: "off"
+  sensor:
+    - name: Hue scene (Living room)
+      unique_id: 9e18ccd2-143b-49a6-a4dc-1642887a6596
+      icon: mdi:movie-filter
+      state: >-
+        {% if trigger.id == 'lights_off' %}
+          «Off»
+        {% elif
+          trigger.id == 'scene_change' or (
+            trigger.id == 'button_press' and
+              trigger.to_state.attributes.event_type in [
+                'initial_press',
+                'short_release'
+              ]
+          )
+        %}
+          {% if trigger.entity_id in
+            [
+              'scene.living_room_daytime',
+              'event.hue_tap_dial_switch_1_button_4'
+            ]
+          %}
+            Daytime
+          {% elif trigger.entity_id in
+            [
+              'scene.living_room_ambiance',
+              'event.living_room_switch_garden_button_1',
+              'event.living_room_switch_couch_button_1',
+              'event.hue_tap_dial_switch_1_button_2'
+            ]
+          %}
+            Ambiance
+          {% elif trigger.entity_id in
+            [
+              'scene.living_room_movie',
+              'event.living_room_switch_couch_button_2'
+            ]
+          %}
+            Movie
+          {% elif trigger.entity_id in
+            [
+              'scene.living_room_movie_ambiance',
+              'event.living_room_switch_couch_button_3'
+            ]
+          %}
+            Movie (ambiance)
+          {% elif trigger.entity_id in
+            [
+              'scene.living_room_active',
+              'event.living_room_switch_garden_button_2',
+              'event.living_room_switch_garden_button_3',
+              'event.living_room_switch_couch_button_4',
+              'event.hue_tap_dial_switch_1_button_3'
+            ]
+          %}
+            Active
+          {% endif %}
+        {% else %}
+          {{ this.state }}
+        {% endif %}
+      attributes:
+        light_id: light.living_room
+      availability: >-
+        {{ has_value('light.living_room') }}
