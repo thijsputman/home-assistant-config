@@ -71,3 +71,20 @@
       target:
         entity_id: light.bathroom
   mode: restart
+- alias: Bathroom scene to "Bright"
+  id: 0b019b50-ca84-4f40-b11b-05da5d8ee41e
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  conditions:
+    - condition: state
+      entity_id: light.bathroom
+      state: "on"
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.bathroom_bright
+      data:
+        transition: 600

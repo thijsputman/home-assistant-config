@@ -1,54 +1,52 @@
-- alias: 💡 | 🕹️ Turn on Attic hallway lights (Dimmer Switches)
+- alias: Turn on Attic hallway lights
   id: 26a80c46-4ba4-4721-b650-6b0fccf034ef
-  mode: single
-  trigger:
-    - device_id: c7a32fb1be6494d32caafb27134fee28
+  triggers:
+    - trigger: device
+      device_id: c7a32fb1be6494d32caafb27134fee28
       domain: deconz
-      platform: device
       type: remote_button_short_press
       subtype: turn_on
-    - device_id: 5999769c0e60efa48786c19add551dec
+    - trigger: device
+      device_id: 5999769c0e60efa48786c19add551dec
       domain: deconz
-      platform: device
       type: remote_button_short_press
       subtype: turn_on
-  condition: []
-  action:
-    - service: light.turn_on
+  conditions: []
+  actions:
+    - action: light.turn_on
       target:
         entity_id: light.attic_hallway
-    - service: timer.start
+    - action: timer.start
       target:
         entity_id: timer.attic_hallway_motion_pause
-- alias: 💡 | 🕹️ Cycle through Attic hallway gangs (Dimmer Switches)
+- alias: Cycle through Attic hallway gangs
   id: 1d18a07f-cd2b-49ac-bcd8-ab48089558c9
-  mode: single
-  trigger:
-    - device_id: c7a32fb1be6494d32caafb27134fee28
+  triggers:
+    - trigger: device
+      device_id: c7a32fb1be6494d32caafb27134fee28
       domain: deconz
-      platform: device
       type: remote_button_short_press
       subtype: dim_up
-    - device_id: c7a32fb1be6494d32caafb27134fee28
+    - trigger: device
+      device_id: c7a32fb1be6494d32caafb27134fee28
       domain: deconz
-      platform: device
       type: remote_button_short_press
       subtype: dim_down
-    - device_id: 5999769c0e60efa48786c19add551dec
+    - trigger: device
+      device_id: 5999769c0e60efa48786c19add551dec
       domain: deconz
-      platform: device
       type: remote_button_short_press
       subtype: dim_up
-    - device_id: 5999769c0e60efa48786c19add551dec
+    - trigger: device
+      device_id: 5999769c0e60efa48786c19add551dec
       domain: deconz
-      platform: device
       type: remote_button_short_press
       subtype: dim_down
-  condition:
+  conditions:
     - condition: state
       entity_id: light.attic_hallway
       state: "on"
-  action:
+  actions:
     - choose:
         - conditions:
             - condition: state
@@ -57,7 +55,7 @@
                 - light.attic_hallway_down
               state: "on"
           sequence:
-            - service: light.turn_off
+            - action: light.turn_off
               target:
                 entity_id: light.attic_hallway_down
         - conditions:
@@ -65,48 +63,87 @@
               entity_id: light.attic_hallway_up
               state: "on"
           sequence:
-            - service: light.turn_off
+            - action: light.turn_off
               target:
                 entity_id: light.attic_hallway_up
-            - service: light.turn_on
+            - action: light.turn_on
               target:
                 entity_id: light.attic_hallway_down
       default:
-        - service: light.turn_on
+        - action: light.turn_on
           target:
             entity_id: light.attic_hallway
-- alias: 💡 | 🕹️ Turn off Attic hallway lights (Dimmer Switches)
+- alias: Turn off Attic hallway lights
   id: d248cca1-d887-40b2-966a-5bbc2ebd84dd
-  mode: single
-  trigger:
-    - device_id: c7a32fb1be6494d32caafb27134fee28
+  triggers:
+    - trigger: device
+      device_id: c7a32fb1be6494d32caafb27134fee28
       domain: deconz
-      platform: device
       type: remote_button_short_press
       subtype: turn_off
-    - device_id: 5999769c0e60efa48786c19add551dec
+    - trigger: device
+      device_id: 5999769c0e60efa48786c19add551dec
       domain: deconz
-      platform: device
       type: remote_button_short_press
       subtype: turn_off
-  condition: []
-  action:
-    - service: timer.cancel
+  conditions: []
+  actions:
+    - action: timer.cancel
       target:
         entity_id: timer.attic_hallway_motion_pause
-    - service: light.turn_off
+    - action: light.turn_off
       target:
         entity_id: light.attic_hallway
-- alias: 💡 | ⏳ Turn off Attic hallway lights (timer finished)
+- alias: Turn off Attic hallway lights
   id: b4a35562-ea3c-4e01-9d4e-ee0f3fead943
-  mode: single
-  trigger:
-    - platform: event
+  triggers:
+    - trigger: event
       event_type: timer.finished
       event_data:
         entity_id: timer.attic_hallway_motion_pause
-  condition: []
-  action:
-    - service: light.turn_off
+  conditions: []
+  actions:
+    - action: light.turn_off
       target:
         entity_id: light.attic_hallway
+- alias: Attic scene to "Concentrate"
+  id: 7f5910f6-98e5-4c59-ab83-e349f38f0022
+  triggers:
+    - trigger: state
+      entity_id: sensor.hue_scene_attic
+      to: Bright
+      for: "00:00:30"
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: state
+      entity_id: sensor.hue_scene_attic
+      state: Bright
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.attic_concentrate
+      data:
+        transition: 600
+- alias: Attic scene to "Bright"
+  id: 03cf9d49-66ce-4f55-9f59-a2faceff1f6d
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  conditions:
+    - condition: state
+      entity_id: sensor.hue_scene_attic
+      state: Concentrate
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.attic_bright
+      data:
+        transition: 600
