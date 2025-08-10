@@ -212,7 +212,9 @@
   triggers:
     - trigger: state
       entity_id: sensor.hue_scene_kitchen
-      to: Ambiance
+      not_to:
+        - Daytime
+        - «Off»
       for: "00:00:30"
   conditions:
     - condition: state

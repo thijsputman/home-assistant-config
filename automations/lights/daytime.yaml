@@ -85,9 +85,9 @@
   id: 05a5eb32-be80-4130-a561-d21015851ae8
   triggers:
     - trigger: numeric_state
-      entity_id: sensor.lightlevel_46
+      entity_id: sensor.lightlevel_194
       for: "00:02:00"
-      below: 90
+      below: 600
     - trigger: state
       id: dawn
       entity_id: sensor.time_of_day
@@ -111,8 +111,8 @@
       entity_id: sensor.time_of_day
       state: day
     - condition: numeric_state
-      entity_id: sensor.lightlevel_46
-      below: 90
+      entity_id: sensor.lightlevel_194
+      below: 600
     - condition: not
       conditions:
         - condition: state
@@ -127,66 +127,121 @@
           entity_id: sensor.sun_relative_to_house
           state: behind_buildings
       then:
-        - parallel:
-            - action: hue.activate_scene
-              target:
-                entity_id: scene.living_room_active
-              data:
-                transition: >-
-                  {{ 30 if states('light.living_room') == 'off' else 600 }}
-            - action: hue.activate_scene
-              target:
-                entity_id: scene.ensuite_ambiance
-              data:
-                transition: >-
-                  {{ 30 if states('light.light_ensuite') == 'off' else 600 }}
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.living_room_active
+          data:
+            transition: >-
+              {{ 30 if states('light.living_room') == 'off' else 600 }}
       else:
-        - parallel:
-            - action: hue.activate_scene
-              target:
-                entity_id: scene.living_room_daytime
-              data:
-                transition: >-
-                  {{ 30 if states('light.living_room') == 'off' else 600 }}
-            - action: hue.activate_scene
-              target:
-                entity_id: scene.ensuite_daytime
-              data:
-                transition: >-
-                  {{ 30 if states('light.light_ensuite') == 'off' else 600 }}
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.living_room_daytime
+          data:
+            transition: >-
+              {{ 30 if states('light.living_room') == 'off' else 600 }}
+  mode: single
+- alias: Ensuite lights on
+  id: d4dd4a4d-20f8-4f08-bcc9-a58941db2063
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_195
+      for: "00:02:00"
+      below: 250
+    - trigger: state
+      id: dawn
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+    - trigger: time
+      id: wakeup
+      at: input_datetime.wakeup
+    - trigger: state
+      entity_id: sensor.sun_relative_to_house
+      to: behind_buildings
+  conditions:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: input_boolean.everyone_asleep
+          state: "off"
+        - condition: trigger
+          id: wakeup
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_195
+      below: 250
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: media_player.epson_eh_ls800b
+          state:
+            - idle
+            - playing
+            - paused
+  actions:
+    - if:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: behind_buildings
+      then:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.ensuite_ambiance
+          data:
+            transition: >-
+              {{ 30 if states('light.light_ensuite') == 'off' else 600 }}
+      else:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.ensuite_daytime
+          data:
+            transition: >-
+              {{ 30 if states('light.light_ensuite') == 'off' else 600 }}
   mode: single
 - alias: Living room lights off
   id: 21a8d2ce-746d-460a-9c65-b9ddf4f1b3b1
   triggers:
     - trigger: numeric_state
-      entity_id: sensor.lightlevel_46
+      entity_id: sensor.lightlevel_194
       for: "00:08:00"
-      above: 100
+      above: 800
   conditions:
     - condition: state
       entity_id: sensor.time_of_day
       state: day
+    - condition: state
+      entity_id: sensor.hue_scene_living_room
+      state: Daytime
   actions:
-    - if:
-        - condition: state
-          entity_id: sensor.hue_scene_living_room
-          state: Daytime
-      then:
-        - action: light.turn_off
-          target:
-            entity_id: light.living_room
-          data:
-            transition: 30
-    - if:
-        - condition: state
-          entity_id: sensor.hue_scene_ensuite
-          state: Daytime
-      then:
-        - action: light.turn_off
-          target:
-            entity_id: light.ensuite
-          data:
-            transition: 30
+    - action: light.turn_off
+      target:
+        entity_id: light.living_room
+      data:
+        transition: 30
+  mode: single
+- alias: Ensuite lights off
+  id: cf719538-53fa-4a46-a566-b14ad3a5c870
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_195
+      for: "00:08:00"
+      above: 300
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: state
+      entity_id: sensor.hue_scene_ensuite
+      state: Daytime
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id: light.ensuite
+      data:
+        transition: 30
   mode: single
 - alias: Hallway (downstairs) lights on
   id: 1815106e-2684-4397-8fe8-73711ca6e7b5
