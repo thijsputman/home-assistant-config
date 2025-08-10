@@ -88,12 +88,12 @@
         type: short_release
     # Interaction with the tablet in the Kitchen
     - trigger: state
-      entity_id: switch.p20hd_eea_screensaver
-      # Wait a short while; when the screensaver gets disabled, attention is
-      # initially direct towards the tablet...
+      entity_id: switch.redmi_pad_se_screen
+      # Wait a short while; when the screen switches on, attention is initially
+      # direct towards the tablet...
       id: delayed
-      from: "on"
-      to: "off"
+      from: "off"
+      to: "on"
     # Motion at the Kitchen counter
     - trigger: state
       entity_id:
