@@ -41,11 +41,11 @@
       availability: >-
         {{ has_value('sun.sun') }}
       state: >-
-        {% if state_attr('sun.sun', 'elevation') <= 0 %}
-          below_horizon
-        {% elif is_state_attr('sun.sun', 'rising', true) %}
-          {% if
-            state_attr('sun.sun', 'elevation') <= 40
+        {% if is_state_attr('sun.sun', 'rising', true) %}
+          {% if state_attr('sun.sun', 'elevation') <= 6 %}
+            obscured
+          {% elif
+            state_attr('sun.sun', 'elevation') <= 42
           %}
             in_front
           {% else %}
@@ -57,6 +57,6 @@
           {% elif state_attr('sun.sun', 'elevation') >= 12 %}
             in_back
           {% else %}
-            behind_buildings
+            obscured
           {% endif %}
         {% endif %}

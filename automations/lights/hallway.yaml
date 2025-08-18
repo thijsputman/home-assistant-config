@@ -57,16 +57,6 @@
                         entity_id: scene.hallway_downstairs_daytime_reduced
                       data:
                         transition: 600
-                - conditions:
-                    - condition: state
-                      entity_id: sensor.sun_relative_to_house
-                      state: behind_buildings
-                  sequence:
-                    - action: hue.activate_scene
-                      target:
-                        entity_id: scene.hallway_downstairs_evening
-                      data:
-                        transition: 600
               default:
                 - action: light.turn_off
                   target:

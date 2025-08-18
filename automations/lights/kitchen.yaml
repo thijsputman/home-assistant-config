@@ -138,18 +138,17 @@
     # Only continue if Kitchen hasn't been taken out of "Bright (custom)"
     - condition: >-
         {{ wait.trigger is none }}
-    # During the day, re-apply daytime-lighting, or switch off
+    # During the bright part of the day, re-apply daytime-lighting, or switch
+    # off the Kitchen
     - if:
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-        # Towards the end of the day, skips as well and instead prefer to follow
-        # the Living Room
         - condition: not
           conditions:
             - condition: state
               entity_id: sensor.sun_relative_to_house
-              state: behind_buildings
+              state: obscured
       then:
         if:
           - condition: numeric_state
@@ -220,6 +219,11 @@
     - condition: state
       entity_id: sensor.time_of_day
       state: day
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
   actions:
     - action: script.hue_activate_scene_kitchen
       data:

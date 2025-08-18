@@ -1,58 +1,193 @@
-# Change scene in Kitchen twice to ensure the Gledopto controllers follow
-- alias: Enforce Kitchen scene change for Gledopto controllers
+# Replay scene/lighting changes in various Hue rooms to ensure recalcitrant
+# Zigbee-controllers follow properly – some cheaper, non-Hue, controllers have
+# the tendency to not respond to the first request.
+# As I want to respect/propagate the transition-delay, trigger on
+# `call_service`-events instead of regular state changes. To keep complexity
+# down, only the first `entity_id` in any provided list is considered...
+- alias: Enforce Kitchen scene change for Gledopto-controllers
   id: 66dc6374-f19a-437c-966b-0679400fc2b5
   triggers:
-    # By prioritising (and blocking for a while) on the Kitchen counter &
-    # cupboards trigger, we ensure that change gets priority over the Kitchen
-    # as a whole — as the Gledopto controllers are part of both sets of Hue
-    # scenes, this is the most straightforward way to reapply their scene (no
-    # need to figure out what to do, simply punch in the triggered scene change
-    # again).
-    - trigger: state
-      entity_id: sensor.hue_scene_kitchen_counter_cupboards
-      not_to: «Off»
-    - trigger: state
-      entity_id: sensor.hue_scene_kitchen
-      not_to: «Off»
-      for: "00:00:01"
-  conditions: []
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: hue
+        service: activate_scene
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: scene
+        service: turn_on
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: light
+        service: turn_off
+  variables:
+    entities: >-
+      {{
+        trigger.event.data.service_data.entity_id if
+          trigger.event.data.service_data.entity_id is list else
+            [trigger.event.data.service_data.entity_id]
+      }}
+    transition: >-
+      {{ trigger.event.data.service_data.transition | default (0) | int }}
+    service: >-
+      {{ trigger.event.data.domain ~ '.' ~ trigger.event.data.service }}
+  conditions:
+    - >-
+      {{
+        entities | first is
+          search('^scene\.kitchen_.+') or
+          entities | first in [
+            'light.kitchen',
+            'light.kitchen_counter_cupboards'
+          ]
+      }}
+    # Ignore triggers resulting from this automation calling the service
+    - >-
+      {{
+        trigger.event.context.id != this.context.id and
+          trigger.event.context.parent_id != this.context.id
+      }}
   actions:
-    - condition: >-
-        {{ trigger.entity_id is defined }}
-    - action: script.hue_activate_scene
+    - action: >-
+        {{ service }}
+      target:
+        entity_id: >-
+          {{ entities | first }}
       data:
-        scene_entity: >-
-          {{ trigger.entity_id }}
-    - delay: "00:10:00"
-  mode: single
-  max_exceeded: silent
-# Occasionally, the Innr colour bulbs in the Garden refuse a scene change, so
-# whenever we change the Garden, change it twice to ensure they properly follow
-- alias: Enforce Garden scene change for Innr bulbs
-  id: 0c7cd39c-6355-45ee-9e53-ab2d3c940f08
-  triggers:
-    - trigger: state
-      entity_id: sensor.hue_scene_garden
-      not_to: «Off»
-      # Best result is achieved if the repeat command is slightly delayed
-      for: "00:00:03"
-  conditions: []
-  actions:
-    - action: script.hue_activate_scene
-      data:
-        scene_entity: sensor.hue_scene_garden
+        transition: >-
+          {{ [0, transition - 3] | max }}
   mode: restart
-# Idem for the Chandelier in the Ensuite...
+  trace:
+    stored_traces: 10
 - alias: Enforce Ensuite scene change for Chandelier
-  id: 48db5b8d-2b8d-4651-a29e-c6614a144b6d
+  id: 7d658000-c06d-4404-93f6-264b3598e9c2
+  triggers:
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: hue
+        service: activate_scene
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: scene
+        service: turn_on
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: light
+        service: turn_off
+  variables:
+    entities: >-
+      {{
+        trigger.event.data.service_data.entity_id if
+          trigger.event.data.service_data.entity_id is list else
+            [trigger.event.data.service_data.entity_id]
+      }}
+    transition: >-
+      {{ trigger.event.data.service_data.transition | default (0) | int }}
+    service: >-
+      {{ trigger.event.data.domain ~ '.' ~ trigger.event.data.service }}
+  conditions:
+    - >-
+      {{
+        entities | first is search('^scene\.ensuite_.+') or
+          entities | first == 'light.ensuite'
+      }}
+    - >-
+      {{
+        trigger.event.context.id != this.context.id and
+          trigger.event.context.parent_id != this.context.id
+      }}
+  actions:
+    - delay: 3
+    - action: >-
+        {{ service }}
+      target:
+        entity_id: >-
+          {{ entities | first }}
+      data:
+        transition: >-
+          {{ [0, transition - 3] | max }}
+  mode: restart
+# The Inner-bulbs don't exhibit the issue when switching off...
+- alias: Enforce Garden scene change for Innr-bulbs
+  id: b0667545-e809-4d14-97db-a22f14031be3
+  triggers:
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: hue
+        service: activate_scene
+    - trigger: event
+      event_type: call_service
+      event_data:
+        domain: scene
+        service: turn_on
+  variables:
+    entities: >-
+      {{
+        trigger.event.data.service_data.entity_id if
+          trigger.event.data.service_data.entity_id is list else
+            [trigger.event.data.service_data.entity_id]
+      }}
+    transition: >-
+      {{ trigger.event.data.service_data.transition | default (0) | int }}
+    service: >-
+      {{ trigger.event.data.domain ~ '.' ~ trigger.event.data.service }}
+  conditions:
+    - >-
+      {{
+        entities | first is search('^scene\.garden_.+')
+      }}
+    - >-
+      {{
+        trigger.event.context.id != this.context.id and
+          trigger.event.context.parent_id != this.context.id
+      }}
+  actions:
+    - delay: 3
+    - action: >-
+        {{ service }}
+      target:
+        entity_id: >-
+          {{ entities | first }}
+      data:
+        transition: >-
+          {{ [0, transition - 3] | max }}
+  mode: restart
+# Apart from the above, one of the Gledopto-controllers has been going
+# absolutely off the rails as of late: It "ghost" switches on (without actually
+# physically switching on) anywhere between 30-seconds and a couple minutes
+# after being switched off.
+# Somehow related to my recent changes; unclear as to why 😕 For now, whenever
+# they get out-of-sync, switch both of them off.
+- alias: Enforce Gledopto "Counter (Kitchen)" off
+  id: 634be090-bb3e-460f-ae13-b9dfc6b72837
   triggers:
     - trigger: state
-      entity_id: sensor.hue_scene_ensuite
-      not_to: «Off»
-      for: "00:00:03"
-  conditions: []
+      entity_id:
+        - light.extended_color_light_1_3
+        - light.extended_color_light_1_4
+      from: "off"
+      to: "on"
+      for: "00:00:02"
+  conditions:
+    - condition: state
+      entity_id:
+        - light.extended_color_light_1_3
+        - light.extended_color_light_1_4
+      state: "off"
+      match: any
   actions:
-    - action: script.hue_activate_scene
+    - action: light.turn_off
+      entity_id:
+        - light.extended_color_light_1_3
+        - light.extended_color_light_1_4
+    - action: system_log.write
       data:
-        scene_entity: sensor.hue_scene_ensuite
+        level: warning
+        message: Forced Kitchen Gledopto-controllers off
   mode: restart

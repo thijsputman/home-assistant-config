@@ -106,7 +106,7 @@ hue_activate_scene_kitchen:
                   {{ scene_id }}
               data:
                 transition: >-
-                  {{ transition }}
+                  {{ transition | default(0) | int }}
             # Slight delay to ensure the Hue scene template sensors are updated
             # prior to making any further changes – it's possible this happens
             # so fast we miss the trigger, hence the continue on timeout.
@@ -128,7 +128,7 @@ hue_activate_scene_kitchen:
                   {{ scene_id }}
               data:
                 transition: >-
-                  {{ transition }}
+                  {{ transition | default(0) | int }}
       # Identical — for turning off the lights...
       else:
         - if:
@@ -145,7 +145,7 @@ hue_activate_scene_kitchen:
                     entity_id: light.kitchen
                   data:
                     transition: >-
-                      {{ transition }}
+                      {{ transition | default(0) | int }}
                 - wait_for_trigger:
                     - trigger: state
                       entity_id: sensor.hue_scene_kitchen
