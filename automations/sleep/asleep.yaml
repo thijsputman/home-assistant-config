@@ -3,34 +3,34 @@
 # as simple as possible. In the limited number of cases where asleep/awake-
 # triggers should not cause things to happen when no-one is home, explicit
 # exceptions are put in place...
-- alias: 💤 | 💡 Everyone asleep (all lights off)
+- alias: Everyone asleep
   id: cdec9ae5-d391-4826-a957-36fb823a73a7
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: group.light_inside_rooms
       from: "on"
       to: "off"
-  condition:
+  conditions:
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
     - condition: state
       entity_id: sensor.time_of_day
       state: night
-  action:
+  actions:
     # This timer allows other automations to modify their behaviour while we're
     # waiting for everyone to go to sleep
-    - service: timer.start
+    - action: timer.start
       target:
         entity_id: timer.everyone_asleep_delay
     - wait_for_trigger:
-        - platform: event
+        - trigger: event
           event_type: timer.finished
           event_data:
             entity_id: timer.everyone_asleep_delay
         # Restart the automation (ie, cancel the timer and wait for the lights
         # to switch off again) in case the lights are switched back on
-        - platform: state
+        - trigger: state
           id: lights_on
           entity_id: group.light_inside_rooms
           from: "off"
@@ -41,9 +41,17 @@
         - condition: trigger
           id: lights_on
       then:
-        - service: timer.cancel
+        - action: timer.cancel
           target:
             entity_id: timer.everyone_asleep_delay
+        # Although this happens under normal circumstances too; it might point
+        # to an issue switching off the lights – erring on the side of caution
+        # here...
+        - action: system_log.write
+          data:
+            level: warning
+            message: >-
+              "Everyone asleep" delay-timer cancelled
     - condition: and
       conditions:
         - condition: state
@@ -55,22 +63,22 @@
         - condition: state
           entity_id: sensor.time_of_day
           state: night
-    - service: input_boolean.turn_on
+    - action: input_boolean.turn_on
       entity_id: input_boolean.everyone_asleep
   mode: single
 # The "everyone awake"-transition fires once daily as a result of people waking
 # up (at the first "wakeup" time of the day). Note that there are other events
 # (irrespective of "wakeup" time) that can trigger this transition too...
-- alias: 💤 | ⏰ Everyone awake (at «wakeup» time)
+- alias: Everyone awake
   id: dfe729c9-436a-4fdb-8970-b68492d9a1a2
-  trigger:
-    - platform: time
+  triggers:
+    - trigger: time
       at: input_datetime.wakeup
-  condition:
+  conditions:
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "on"
-  action:
-    - service: input_boolean.turn_off
+  actions:
+    - action: input_boolean.turn_off
       entity_id: input_boolean.everyone_asleep
   mode: single

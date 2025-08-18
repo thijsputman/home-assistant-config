@@ -1,12 +1,12 @@
-- alias: 🛒 | 💤 Prepone «wakeup» time (Albert Heijn arriving early)
+- alias: Prepone «wakeup» time before Albert Heijn
   id: 866031ac-89c6-4ab4-8a76-b0f67b910ae7
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: sensor.last_notification_albert_heijn_eta
       not_to:
         - unavailabe
         - unknown
-  condition:
+  conditions:
     - condition: state
       entity_id: group.family
       state: home
@@ -31,11 +31,11 @@
             eta <= (wakeup + timedelta(days=1))
         )
       }}
-  action:
+  actions:
     # Set «wakeup» time to 15-minutes _before_ Albert Heijn ETA — note that
     # "input_datetime.wakeup" only cares about the time component; the date
     # component is ignored
-    - service: input_datetime.set_datetime
+    - action: input_datetime.set_datetime
       data:
         datetime: >-
           {%
