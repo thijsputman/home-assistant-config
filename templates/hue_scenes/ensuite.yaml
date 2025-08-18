@@ -26,7 +26,7 @@
       to: ~
     - trigger: state
       id: lights_off
-      entity_id: light.living_room
+      entity_id: light.ensuite
       to: "off"
   sensor:
     - name: Hue scene (Ensuite)
@@ -74,6 +74,7 @@
               'scene.ensuite_bright',
               'event.living_room_switch_garden_button_2',
               'event.living_room_switch_couch_button_4',
+              'hue_tap_dial_switch_1_button_1',
               'event.hue_tap_dial_switch_1_button_3'
             ]
           %}
