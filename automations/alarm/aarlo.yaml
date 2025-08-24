@@ -226,7 +226,7 @@
             - action: aarlo.camera_request_snapshot_to_file
               data:
                 filename: >-
-                  /gtx/var/aarlo-snapshots/daily/front-{{ filename }}
+                  /storage/var/aarlo-snapshots/daily/front-{{ filename }}
               entity_id: camera.aarlo_front
         # Back
         - if:
@@ -239,7 +239,7 @@
             - action: aarlo.camera_request_snapshot_to_file
               data:
                 filename: >-
-                  /gtx/var/aarlo-snapshots/daily/back-{{ filename }}
+                  /storage/var/aarlo-snapshots/daily/back-{{ filename }}
               entity_id: camera.aarlo_back
         # Balcony
         - if:
@@ -252,7 +252,7 @@
             - action: aarlo.camera_request_snapshot_to_file
               data:
                 filename: >-
-                  /gtx/var/aarlo-snapshots/daily/balcony-{{ filename }}
+                  /storage/var/aarlo-snapshots/daily/balcony-{{ filename }}
               entity_id: camera.aarlo_balcony
   mode: single
 - alias: Store activity snapshot

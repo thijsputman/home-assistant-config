@@ -1,15 +1,16 @@
 services:
   piper:
     container_name: piper
-    image: rhasspy/wyoming-piper:1.5.4
+    image: rhasspy/wyoming-piper:1.6.3
     user: 1000:1003
     command:
+      - --streaming
       - --voice
       - en_US-danny-low
       - --length-scale
       - "1.15"
     volumes:
-      - ./data:/data
+      - ./piper:/data
     ports:
       - 10200:10200
-    restart: unless-stopped
+    restart: on-failure

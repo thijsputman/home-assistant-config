@@ -1,14 +1,16 @@
-default_config: # yamllint disable-line rule:empty-values
+# yamllint disable rule:empty-values
+
+default_config:
 
 homeassistant:
   customize: !include customize.yaml
   allowlist_external_dirs:
     - /config/var
-    - /gtx/var
+    - /storage/var
     - /tmp
   media_dirs:
-    sd: /config/var
-    gtx: /gtx/var
+    config: /config/var
+    storage: /storage/var
 
 frontend:
   extra_module_url:
@@ -18,7 +20,6 @@ system_log:
   fire_event: true
 
 recorder:
-  db_url: sqlite:////gtx/home-assistant_v2.db
   exclude: !include recorder_exclude.yaml
 
 logger:
@@ -43,7 +44,6 @@ lovelace:
 influxdb: !include influx_db.yaml
 
 tts:
-  - platform: google_translate
 
 utility_meter: !include utility_meter.yaml
 

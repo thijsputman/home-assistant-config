@@ -304,7 +304,7 @@ tts_announce:
           {{ announcement }}
         preannounce: true
         preannounce_media_id: >-
-          media-source://media_source/sd/audio/{{- preannounce_sample -}}
+          media-source://media_source/config/audio/{{- preannounce_sample -}}
     # Restore volume to its default; switch the LED-ring off – LED-ring colour
     # is not restored here as it leads to colour-"popping" artifacts...
     - parallel:
@@ -386,7 +386,7 @@ play_sample:
       data:
         media_content_type: music
         media_content_id: >-
-          media-source://media_source/sd/audio/{{- sample -}}
+          media-source://media_source/config/audio/{{- sample -}}
         announce: true
       target:
         entity_id: >-

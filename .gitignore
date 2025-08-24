@@ -2,11 +2,13 @@
 /.aarlo
 /.cloud
 /.storage
+/backups
 /blueprints/*/homeassistant
 /custom_components/*
 !/custom_components/README.md
 /deps
 /image
+/tmp*
 /tts
 /www/custom-jsm
 /www/guest-wifi.png
