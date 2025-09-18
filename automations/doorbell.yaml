@@ -153,7 +153,7 @@
     - action: aarlo.camera_request_snapshot_to_file
       data:
         filename: >-
-          /gtx/var/aarlo-snapshots/doorbell/front{{ time_of_day ~ filename }}
+          /storage/var/aarlo-snapshots/doorbell/front{{ time_of_day ~ filename }}
       entity_id: camera.aarlo_front
   mode: single
 - alias: 📱 | 🚪 Send Arlo capture (camera active when doorbell rang)

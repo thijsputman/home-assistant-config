@@ -3,7 +3,7 @@
       entity_id: sun.sun
       attribute: elevation
       to: ~
-- sensor:
+  sensor:
     - name: Time of Day
       unique_id: 970b9e62-e8ca-4a87-955c-eec4577ae343
       icon: mdi:theme-light-dark
