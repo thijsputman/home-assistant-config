@@ -99,7 +99,7 @@
     - trigger: numeric_state
       entity_id: sensor.lightlevel_194
       for: "00:02:00"
-      below: 1200
+      below: 1500
     - trigger: state
       id: dawn
       entity_id: sensor.time_of_day
@@ -127,7 +127,7 @@
       conditions:
         - condition: numeric_state
           entity_id: sensor.lightlevel_194
-          below: 1200
+          below: 1500
         - condition: and
           conditions:
             - condition: trigger

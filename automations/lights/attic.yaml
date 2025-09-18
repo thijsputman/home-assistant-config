@@ -111,6 +111,11 @@
   triggers:
     - trigger: state
       entity_id: sensor.hue_scene_attic
+      from: «Off»
+      to: Bright
+    - trigger: state
+      entity_id: sensor.hue_scene_attic
+      not_from: «Off»
       to: Bright
       for: "00:00:30"
     - trigger: state
@@ -129,7 +134,7 @@
       target:
         entity_id: scene.attic_concentrate
       data:
-        transition: 600
+        transition: 30
 - alias: Attic scene to "Bright"
   id: 03cf9d49-66ce-4f55-9f59-a2faceff1f6d
   triggers:
