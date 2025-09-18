@@ -179,9 +179,8 @@
         - "off"
   conditions:
     # Only run if the states differ
-    - condition: template
-      value_template: >-
-        {{ states('climate.tado_living_room') != states('climate.tado_attic') }}
+    - >-
+      {{ states('climate.tado_living_room') != states('climate.tado_attic') }}
   actions:
     - action: climate.set_hvac_mode
       data:
@@ -359,10 +358,6 @@
     - condition: state
       entity_id: input_boolean.airco_active
       state: "on"
-    - condition: state
-      entity_id: climate.tado_attic_ac
-      attribute: preset_mode
-      state: home
     - condition: not
       conditions:
         - condition: state
@@ -485,9 +480,8 @@
     # come through without delay)...
     - if:
         # No need to restore swing-mode or temperature in "auto" hvac-mode
-        - condition: template
-          value_template: >-
-            {{ last_hvac_mode == 'auto' }}
+        - >-
+          {{ last_hvac_mode == 'auto' }}
       then:
         - action: climate.set_hvac_mode
           data:
@@ -569,9 +563,8 @@
         }}
     - choose:
         - conditions:
-            - condition: template
-              value_template: >-
-                {{ last_hvac_mode == 'auto' }}
+            - >-
+              {{ last_hvac_mode == 'auto' }}
           sequence:
             - action: climate.set_hvac_mode
               data:

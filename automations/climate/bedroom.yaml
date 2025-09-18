@@ -9,10 +9,6 @@
     - condition: state
       entity_id: input_boolean.airco_active
       state: "on"
-    - condition: state
-      entity_id: climate.tado_bedroom_ac
-      attribute: preset_mode
-      state: home
     - condition: not
       conditions:
         - condition: state
@@ -161,10 +157,17 @@
       from: "off"
       to: cool
       for: "00:00:30"
+    - trigger: state
+      entity_id: group.openclose_bedroom
+      from: "off"
+      to: "on"
   conditions:
     - condition: state
       entity_id: group.openclose_bedroom
       state: "on"
+    - condition: state
+      entity_id: climate.tado_smart_ac_control_bedroom
+      state: cool
   actions:
     - variables:
         # Take HVAC-mode from the tadoº-integration (so we can distinguish
@@ -199,6 +202,10 @@
           event_type: airco_bedroom_abort_wait
       timeout: "06:00:00"
       continue_on_timeout: false
+    # Dismiss the notification (regardless of whether we aborted)
+    - action: persistent_notification.dismiss
+      data:
+        notification_id: airco_bedroom_window
     - condition: template
       value_template: >-
         {{ wait.trigger.id != 'abort' }}
@@ -326,9 +333,6 @@
             action: ACTION_1_airco_bedroom_window
       timeout: "06:00:00"
       continue_on_timeout: false
-    - action: persistent_notification.dismiss
-      data:
-        notification_id: airco_bedroom_window
     - event: airco_bedroom_abort_wait
   mode: single
   max_exceeded: silent
@@ -485,7 +489,7 @@
   conditions:
     - condition: state
       entity_id: group.openclose_bedroom
-      state: "on"
+      state: "off"
     - condition: state
       entity_id: input_boolean.airco_active
       state: "off"
