@@ -180,7 +180,7 @@ views:
       - type: vertical-stack
         cards:
           - type: media-control
-            entity: media_player.epson_eh_ls800b
+            entity: media_player.plex_eh_ls800
           - !include home/media/dvb.yaml
       - type: vertical-stack
         cards:

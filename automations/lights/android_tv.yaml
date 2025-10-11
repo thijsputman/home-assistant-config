@@ -2,7 +2,7 @@
   id: c136b7ec-1a71-49d3-b000-efddfcd4b433
   triggers:
     - trigger: state
-      entity_id: media_player.epson_eh_ls800b
+      entity_id: media_player.plex_eh_ls800
       to: playing
   conditions: []
   # Acts when the lights are on, and _not_ in Daytime-mode. During the day,
@@ -72,11 +72,8 @@
   id: f168660c-0dc6-4c56-8221-fecb7cad1ece
   triggers:
     - trigger: state
-      entity_id: media_player.epson_eh_ls800b
-      from: "off"
-      to:
-        - idle
-        - paused
+      entity_id: media_player.eh_ls800b
+      to: "on"
   conditions: []
   actions:
     - if:
@@ -98,13 +95,13 @@
   triggers:
     - trigger: state
       id: paused
-      entity_id: media_player.epson_eh_ls800b
+      entity_id: media_player.plex_eh_ls800
       from: playing
       to:
         - idle
         - paused
     - trigger: state
-      entity_id: media_player.epson_eh_ls800b
+      entity_id: media_player.eh_ls800b
       to: "off"
   conditions: []
   actions:

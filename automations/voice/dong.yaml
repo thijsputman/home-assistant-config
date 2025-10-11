@@ -13,7 +13,7 @@
     - condition: not
       conditions:
         - condition: state
-          entity_id: media_player.epson_eh_ls800b
+          entity_id: media_player.plex_eh_ls800
           state: playing
     # Don't play when going to sleep / being asleep
     - condition: state

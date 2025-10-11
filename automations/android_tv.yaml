@@ -1,22 +1,22 @@
-- alias: 📺/🔊 | 🚪/📱 Pause Android TV (doorbell rang; phone ringing)
+- alias: Pause Android TV
   id: 87c17fff-a8e1-4c5a-8e31-e8ede68d7899
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       id: doorbell
       entity_id: binary_sensor.vibration_43
       from: "off"
       to: "on"
-    - platform: state
+    - trigger: state
       entity_id:
         - sensor.pixel_9_pro_phone_state
         - sensor.sm_g990b2_phone_state
       to: ringing
-  condition:
+  conditions:
     - condition: state
-      entity_id: media_player.epson_eh_ls800b
+      entity_id: media_player.plex_eh_ls800
       state: playing
-  action:
-    - service: media_player.media_play_pause
-      entity_id: media_player.epson_eh_ls800b
+  actions:
+    - action: media_player.media_play_pause
+      entity_id: media_player.plex_eh_ls800
   mode: single
   max_exceeded: silent

@@ -103,12 +103,8 @@
       to: "on"
     # Switching off the Android TV
     - trigger: state
-      entity_id: media_player.epson_eh_ls800b
-      from:
-        - standby
-        - playing
-        - paused
-        - idle
+      entity_id: media_player.eh_ls800b
+      from: "on"
       to: "off"
     # Closing the Kitchen door – relevant when _entering_ the house. Upon
     # departure, this might cause some messages to be missed.

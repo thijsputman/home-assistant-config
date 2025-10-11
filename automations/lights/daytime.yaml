@@ -141,11 +141,8 @@
     - condition: not
       conditions:
         - condition: state
-          entity_id: media_player.epson_eh_ls800b
-          state:
-            - idle
-            - playing
-            - paused
+          entity_id: media_player.eh_ls800b
+          state: "on"
   actions:
     - if:
         - condition: state
@@ -232,11 +229,8 @@
     - condition: not
       conditions:
         - condition: state
-          entity_id: media_player.epson_eh_ls800b
-          state:
-            - idle
-            - playing
-            - paused
+          entity_id: media_player.eh_ls800b
+          state: "on"
   actions:
     - if:
         - condition: state
