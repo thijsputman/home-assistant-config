@@ -1,13 +1,13 @@
-- alias: 💡 | 🛌 Start "All lights off" (everyone in bed)
+- alias: Start "All lights off"
   id: ca1cf82f-e82f-40bc-b0c3-a125993a6f4c
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id:
         - binary_sensor.withings_in_bed
         - binary_sensor.withings_in_bed_2
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: group.family
       state: home
@@ -25,15 +25,18 @@
       entity_id: input_boolean.everyone_asleep
       state: "off"
     # Not after waking up (time of day could still be "night")
-    - condition: state
-      entity_id: timer.wakeup_grace_time
-      state: idle
+    - >-
+      {{
+        (
+          states('input_datetime.last_wakeup') | as_datetime | as_local
+        ).date() != now().date()
+      }}
     # The Attic light is controlled manually (there's even an automation
     # reminding us to switch it off), so it serves as the final fail-safe
     - condition: state
       entity_id: light.attic
       state: "off"
-  action:
+  actions:
     - if:
         - condition: state
           entity_id: !secret person_1
@@ -69,7 +72,7 @@
                   state: charging
       then:
         - stop: Not all preconditions for "person 2" met
-    - service: script.turn_on
+    - action: script.turn_on
       target:
         entity_id: script.lights_out
       data:

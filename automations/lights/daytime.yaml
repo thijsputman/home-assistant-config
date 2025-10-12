@@ -381,8 +381,14 @@
             - condition: state
               entity_id: input_boolean.everyone_asleep
               state: "off"
-            - condition: time
-              after: input_datetime.wakeup
+            # It is possible for everyone_asleep to be disabled, but still have
+            # someone sleeping – to prevent waking them by switching on the
+            # Hallway light, ensure that today's wakeup time has passed.
+            - >-
+              {{
+                states('input_datetime.last_wakeup') |
+                  as_datetime | as_local > now()
+              }}
         - condition: trigger
           id: wakeup
     - condition: state

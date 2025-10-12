@@ -8,11 +8,15 @@
       state: home
       entity_id: group.family
     - condition: state
-      entity_id: timer.wakeup_grace_time
-      state: idle
-    - condition: state
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"
+    # Only trigger if there _hasn't_ been a wakeup alarm today
+    - >-
+      {{
+        (
+          states('input_datetime.last_wakeup') | as_datetime | as_local
+        ).date() != now().date()
+      }}
   actions:
     # Don't block on sounding the alarm
     - action: script.turn_on

@@ -2,17 +2,23 @@
   id: 8dfa00b1-9749-4b77-b0c9-7eceaf146bf6
   triggers:
     - trigger: time
-      at: input_datetime.wakeup_light_start
+      at:
+        entity_id: input_datetime.wakeup
+        offset: -00:20:00
   conditions:
-    - condition: state
-      entity_id: light.bedroom
-      state: "off"
     # N.B. Compared to the wakeup alarm automation the omission of the occupancy
     # condition is intentionally (as the daily wakeup light is considered to be
     # part of occupancy simulation)
     - condition: state
-      entity_id: timer.wakeup_grace_time
-      state: idle
+      entity_id: light.bedroom
+      state: "off"
+    # Only trigger if there _hasn't_ been a wakeup alarm today
+    - >-
+      {{
+        (
+          states('input_datetime.last_wakeup') | as_datetime | as_local
+        ).date() != now().date()
+      }}
     - condition: state
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"
@@ -32,9 +38,12 @@
     # Run regardless of whether the lights are on – this ensures that if the
     # lights are on, but at a lower intensity, we punch them back to maximum
     # brightness at «wakeup » time...
-    - condition: state
-      entity_id: timer.wakeup_grace_time
-      state: idle
+    - >-
+      {{
+        (
+          states('input_datetime.last_wakeup') | as_datetime | as_local
+        ).date() != now().date()
+      }}
     - condition: state
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"

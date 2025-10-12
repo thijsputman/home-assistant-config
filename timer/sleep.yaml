@@ -1,6 +1,3 @@
-wakeup_grace_time:
-  name: Wakeup grace time
-  duration: "06:00:00"
 wakeup_snooze_time:
   name: Wakeup snooze time
   duration: "00:15:00"

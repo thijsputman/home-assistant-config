@@ -36,6 +36,8 @@
       from: "off"
       to: "on"
   conditions:
+    - condition: time
+      before: "22:30:00"
     - condition: state
       entity_id: input_boolean.airco_active
       state: "on"
@@ -49,13 +51,10 @@
     - condition: state
       entity_id: group.openclose_bedroom
       state: "off"
-    # Don't trigger after going to bed, nor in the morning after waking up...
+    # Don't trigger after going to bed
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
-    - condition: state
-      entity_id: timer.wakeup_grace_time
-      state: idle
   actions:
     # Control properly via the tado°-integration – the settings below are
     # identical to what is scheduled to happen at 22:30
@@ -68,8 +67,7 @@
         temperature: 20
   mode: single
 # tado° Is scheduled to switch off daily at 09:00/10:00 (weekdays versus
-# weekend) – the below is in case we get out of bed early
-- alias: Airco (Bedroom) off
+- alias: Airco (Bedroom) morning early off
   id: 6767ad63-9f59-4d70-b304-45cafd75442e
   triggers:
     - trigger: state
@@ -84,11 +82,19 @@
     - condition: state
       entity_id: climate.tado_smart_ac_control_bedroom
       state: cool
-    # Only act when the wakeup "grace-time" timer is running — this ensures it's
-    # in the morning _after_ the wakeup-alarm has sounded
     - condition: state
-      entity_id: timer.wakeup_grace_time
-      state: active
+      entity_id: input_boolean.everyone_asleep
+      state: "off"
+    # Ensure it's between 00:00 and 10:00, and last wakeup was today (in other
+    # words: Today's wakeup alarm has already sounded)
+    - condition: time
+      before: "10:00:00"
+    - >-
+      {{
+        (
+          states('input_datetime.last_wakeup') | as_datetime | as_local
+        ).date() == now().date()
+      }}
   actions:
     - action: climate.set_hvac_mode
       data:
