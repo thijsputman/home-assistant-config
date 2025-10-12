@@ -2,13 +2,14 @@ type: custom:compass-card
 indicator_sensors:
   - sensor: sensor.weewx_wind_direction_filtered
     indicator:
-      type: arrow_inward
+      image: arrow_inward
 value_sensors:
   - sensor: sensor.weewx_wind_speed_beaufort
 header:
   title:
     value: Wind direction
 tap_action:
+  action: more-info
   entity: sensor.weewx_wind_direction_filtered
 compass:
   north:
