@@ -387,7 +387,7 @@
             - >-
               {{
                 states('input_datetime.last_wakeup') |
-                  as_datetime | as_local > now()
+                  as_datetime | as_local < now()
               }}
         - condition: trigger
           id: wakeup
