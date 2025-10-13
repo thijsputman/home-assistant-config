@@ -28,9 +28,10 @@ include:
     - sensor.home_nearest_distance
     - alarm_control_panel.home_alarm
     - sensor.time_of_day
+    - media_player.plex_eh_ls800
     # Round-trip times
-    - sensor.pi4_rtt_ip_8_8_8_8
-    - sensor.pi4_rtt_dd_wrt_1_sgraastra
+    - sensor.ha_yellow_rtt_ip_8_8_8_8
+    - sensor.ha_yellow_rtt_dd_wrt_1_sgraastra
     - sensor.pi5_rtt_ip_8_8_8_8
     - sensor.pi5_rtt_dd_wrt_1_sgraastra
     # WeeWX
