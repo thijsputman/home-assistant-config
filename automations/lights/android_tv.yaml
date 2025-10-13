@@ -102,6 +102,7 @@
         - paused
     - trigger: state
       entity_id: media_player.eh_ls800b
+      from: "on"
       to: "off"
   conditions: []
   actions:
@@ -153,3 +154,20 @@
               target:
                 entity_id: scene.hallway_downstairs_evening
   mode: single
+- alias: Wakeup Plex
+  id: 795b5aa5-ef70-4cea-b81f-6f81f8dbcd7a
+  triggers:
+    - trigger: state
+      entity_id: media_player.eh_ls800b
+      attribute: app_id
+      to: com.plexapp.android
+  conditions:
+    - condition: state
+      entity_id: media_player.plex_eh_ls800
+      state:
+        - unavailable
+        - unknown
+  actions:
+    - action: button.press
+      target:
+        entity_id: button.pi4_sandcastle_scan_clients
