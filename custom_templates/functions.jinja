@@ -31,3 +31,19 @@
   {% endif %}
 
 {% endmacro %}
+
+{#
+  Only a single daily wakeup can occur. The last wakeup's date and time are
+  tracked; it is set/updated whenever this single daily wakeup occurs. If the
+  current date is equal to the date of the last wakeup we thus know for sure
+  today's wakeup has occurred (as otherwise it would be yesterday's wakeup 😉).
+#}
+
+{% macro today_wakeup_occurred() %}
+
+  {{
+    (states('input_datetime.last_wakeup') | as_datetime | as_local).date() ==
+      now().date()
+  }}
+
+{% endmacro %}

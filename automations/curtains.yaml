@@ -33,14 +33,22 @@
                 - armed_away
                 - armed_vacation
         # Switching off the lights should only result in the curtains getting
-        # opened in the morning, close to when the wakeup-alarm sounded
+        # opened _after_ the wakeup alarm has sounded
         - condition: and
           conditions:
             - condition: trigger
               id: bedroom_lights
+            # Last wakeup alarm was today
+            - >-
+              {% from 'functions.jinja' import today_wakeup_occurred %}
+              {{ today_wakeup_occurred() }}
+            # Don't open the curtain in the evening; also no point in opening
+            # when it's still dark outside (an edge-case anyway)
             - condition: state
-              entity_id: timer.wakeup_grace_time
-              state: active
+              entity_id: sensor.time_of_day
+              state:
+                - dawn
+                - day
         - condition: trigger
           id: regular_wakeup
   actions:

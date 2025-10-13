@@ -90,11 +90,8 @@
     - condition: time
       before: "10:00:00"
     - >-
-      {{
-        (
-          states('input_datetime.last_wakeup') | as_datetime | as_local
-        ).date() == now().date()
-      }}
+      {% from 'functions.jinja' import today_wakeup_occurred %}
+      {{ today_wakeup_occurred() }}
   actions:
     - action: climate.set_hvac_mode
       data:

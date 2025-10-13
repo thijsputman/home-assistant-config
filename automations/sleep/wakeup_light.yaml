@@ -14,11 +14,8 @@
       state: "off"
     # Only trigger if there _hasn't_ been a wakeup alarm today
     - >-
-      {{
-        (
-          states('input_datetime.last_wakeup') | as_datetime | as_local
-        ).date() != now().date()
-      }}
+      {% from 'functions.jinja' import today_wakeup_occurred %}
+      {{ today_wakeup_occurred() }}
     - condition: state
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"
@@ -39,11 +36,8 @@
     # lights are on, but at a lower intensity, we punch them back to maximum
     # brightness at «wakeup » time...
     - >-
-      {{
-        (
-          states('input_datetime.last_wakeup') | as_datetime | as_local
-        ).date() != now().date()
-      }}
+      {% from 'functions.jinja' import today_wakeup_occurred %}
+      {{ today_wakeup_occurred() }}
     - condition: state
       entity_id: input_boolean.wakeup_alarm_mute
       state: "off"

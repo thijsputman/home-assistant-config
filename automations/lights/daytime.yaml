@@ -383,12 +383,10 @@
               state: "off"
             # It is possible for everyone_asleep to be disabled, but still have
             # someone sleeping – to prevent waking them by switching on the
-            # Hallway light, ensure that today's wakeup time has passed.
+            # Hallway light, ensure that today's wakeup occurred.
             - >-
-              {{
-                states('input_datetime.last_wakeup') |
-                  as_datetime | as_local < now()
-              }}
+              {% from 'functions.jinja' import today_wakeup_occurred %}
+              {{ today_wakeup_occurred() }}
         - condition: trigger
           id: wakeup
     - condition: state

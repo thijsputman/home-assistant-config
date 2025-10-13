@@ -63,11 +63,12 @@
     - condition: state
       entity_id: switch.smart_plug_9
       state: "off"
-    # Only act when the wakeup "grace-time" timer is running — this ensures we
-    # don't interfer with any of the switch off automations
-    - condition: state
-      entity_id: timer.wakeup_grace_time
-      state: active
+    # Only act in between today's wakeup and 21:00
+    - >-
+      {% from 'functions.jinja' import today_wakeup_occurred %}
+      {{ today_wakeup_occurred() }}
+    - condition: time
+      before: "21:00:00"
     # Only act when the Home Alarm is disarmed (ie, everyone's awake and there's
     # someone home – no need to switch the boiler on otherwise, probably a
     # burglar... 😉)
@@ -107,9 +108,10 @@
     - condition: state
       entity_id: switch.smart_plug_9
       state: "off"
-    # Only act in between «wakeup» time and 21:00
+    - >-
+      {% from 'functions.jinja' import today_wakeup_occurred %}
+      {{ today_wakeup_occurred() }}
     - condition: time
-      after: input_datetime.wakeup
       before: "21:00:00"
   actions:
     - action: switch.turn_on
