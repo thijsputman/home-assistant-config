@@ -208,20 +208,36 @@
   # Override in case Home Assistant got restarted during the day (allowing the
   # proper trigger to take over)
   mode: restart
-- alias: Front door light off
+- alias: House lights off
   id: dc5c6595-78d3-43c9-94ab-24ddd2a4073d
   triggers:
     - trigger: time
       at: "22:50:00"
-  conditions:
-    - condition: state
-      entity_id: light.hue_filament_bulb_1_2
-      state: "on"
+  conditions: []
   actions:
-    - delay: >-
-        {{ range(2400) | random }}
-    - condition: state
-      entity_id: light.hue_filament_bulb_1_2
-      state: "on"
-    - action: light.turn_off
-      entity_id: light.hue_filament_bulb_1_2
+    - parallel:
+        # Front door (back door is handled by the Garden automation)
+        - sequence:
+            - delay: >-
+                {{ range(2400) | random }}
+            - if:
+                - condition: state
+                  entity_id: light.hue_filament_bulb_1_2
+                  state: "on"
+              then:
+                - action: light.turn_off
+                  entity_id: light.hue_filament_bulb_1_2
+        # Guestroom
+        - sequence:
+            - delay: >-
+                {{ range(2400) | random }}
+            - if:
+                - condition: state
+                  entity_id: light.guestroom
+                  state: "on"
+              then:
+                - action: light.turn_off
+                  target:
+                    entity_id: light.guestroom
+                  data:
+                    transition: 30
