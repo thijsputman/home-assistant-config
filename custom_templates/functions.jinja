@@ -39,11 +39,13 @@
   today's wakeup has occurred (as otherwise it would be yesterday's wakeup 😉).
 #}
 
-{% macro today_wakeup_occurred() %}
+{% macro today_wakeup_occurred(occurred=true) %}
 
   {{
-    (states('input_datetime.last_wakeup') | as_datetime | as_local).date() ==
-      now().date()
+    (
+      (states('input_datetime.last_wakeup') | as_datetime | as_local).date() ==
+        now().date()
+    ) == occurred
   }}
 
 {% endmacro %}

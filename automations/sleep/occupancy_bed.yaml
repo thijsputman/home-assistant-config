@@ -24,10 +24,10 @@
     - condition: state
       entity_id: input_boolean.everyone_asleep
       state: "off"
-    # Not after waking up (time of day could still be "night")
+    # Only before waking up (time of day could still be "night")
     - >-
       {% from 'functions.jinja' import today_wakeup_occurred %}
-      {{ today_wakeup_occurred() }}
+      {{ today_wakeup_occurred(false) }}
     # The Attic light is controlled manually (there's even an automation
     # reminding us to switch it off), so it serves as the final fail-safe
     - condition: state

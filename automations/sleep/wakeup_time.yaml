@@ -7,7 +7,7 @@
     # Only trigger if there _hasn't_ been a wakeup alarm today
     - >-
       {% from 'functions.jinja' import today_wakeup_occurred %}
-      {{ today_wakeup_occurred() }}
+      {{ today_wakeup_occurred(false) }}
   actions:
     # Updating `input_datetime.last_wakeup ` is delayed by 10-seconds to ensure
     # it doesn't interfere with the other automations running at «wakeup» time

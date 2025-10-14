@@ -1,4 +1,4 @@
-- alias: 💤 | 🔊 Wakeup alarm bedroom (at «wakeup» time)
+- alias: Wakeup alarm bedroom
   id: 4f9e08f9-b352-4945-b788-215e301ef883
   triggers:
     - trigger: time
@@ -13,7 +13,7 @@
     # Only trigger if there _hasn't_ been a wakeup alarm today
     - >-
       {% from 'functions.jinja' import today_wakeup_occurred %}
-      {{ today_wakeup_occurred() }}
+      {{ today_wakeup_occurred(false) }}
   actions:
     # Don't block on sounding the alarm
     - action: script.turn_on
@@ -37,7 +37,7 @@
       target:
         entity_id: script.wakeup_alarm
   mode: single
-- alias: 💤 | 🕹️ Snooze wakeup alarm (bedside Smart Switches)
+- alias: Snooze wakeup alarm
   id: 3c49fa1c-db0a-44ea-8fb3-8e57c515e310
   triggers:
     - device_id: da1237666189a9a364fa383795ba532d
@@ -80,7 +80,7 @@
         entity_id: script.wakeup_alarm
   mode: single
   max_exceeded: silent
-- alias: 💤 | 🕹️ Silence wakeup alarm (bedside Smart Switches)
+- alias: Silence wakeup alarm
   id: 01722d26-3705-46c6-91c6-92700b39c4e0
   trigger:
     - device_id: da1237666189a9a364fa383795ba532d
