@@ -7,6 +7,7 @@
         - scene.kitchen_ambiance
         - scene.kitchen_bright_custom
         - scene.kitchen_daytime
+        - scene.kitchen_active
         - scene.kitchen_movie
       to: ~
     - trigger: state
@@ -49,6 +50,7 @@
             [
               'scene.kitchen_ambiance',
               'scene.kitchen_daytime',
+              'scene.kitchen_active',
               'scene.kitchen_movie',
               'event.living_room_switch_couch_button_1',
               'event.living_room_switch_couch_button_2',
@@ -74,6 +76,7 @@
         - scene.kitchen_ambiance
         - scene.kitchen_bright_custom
         - scene.kitchen_daytime
+        - scene.kitchen_active
         - scene.kitchen_movie
       to: ~
     - trigger: state
@@ -123,6 +126,8 @@
             Bright (custom)
           {% elif trigger.entity_id in ['scene.kitchen_daytime'] %}
             Daytime
+          {% elif trigger.entity_id in ['scene.kitchen_active'] %}
+            Active
           {% elif trigger.entity_id in
             [
               'scene.kitchen_movie',

@@ -1,0 +1,37 @@
+- alias: Guestroom lights on
+  id: 00f6ccd0-fb5f-4fb2-964f-832085d9c839
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  conditions:
+    - condition: state
+      entity_id: light.guestroom
+      state: "off"
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.guestroom_relax
+      data:
+        transition: 30
+  mode: single
+- alias: Guestroom lights off
+  id: 84ef7130-0c93-4865-8baf-399cdcf93eb9
+  triggers:
+    - trigger: time
+      at: "22:50:00"
+  conditions: []
+  actions:
+    - delay: >-
+        {{ range(2400) | random }}
+    - if:
+        - condition: state
+          entity_id: light.guestroom
+          state: "on"
+      then:
+        - action: light.turn_off
+          target:
+            entity_id: light.guestroom
+          data:
+            transition: 30

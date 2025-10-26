@@ -1,0 +1,234 @@
+- alias: Living Room lights on
+  id: 4adbf84d-a5d3-478a-b422-ea2a3d505c3e
+  triggers:
+    - trigger: time
+      at: input_datetime.wakeup
+  conditions:
+    - condition: state
+      entity_id: light.living_room
+      state: "off"
+  actions:
+    - if:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
+      then:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.living_room_active
+          data:
+            transition: 15
+      else:
+        # Respect the daytime-lighting threshold
+        - condition: numeric_state
+          entity_id: sensor.lightlevel_194
+          below: 1500
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.living_room_daytime
+          data:
+            transition: 15
+  mode: single
+- alias: Living Room lights on
+  id: d665387b-e993-4556-9bba-857e31f11927
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  conditions:
+    - condition: state
+      entity_id: light.living_room
+      state: "off"
+    - condition: state
+      entity_id: sensor.hue_scene_living_room
+      state: Daytime
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.living_room_active
+      data:
+        transition: >-
+          {{ 30 if states('light.living_room') == 'off' else 600 }}
+  mode: single
+- alias: Living Room daytime-lighting on
+  id: 9c0c547b-53ef-4e27-8b89-57cc1d66c147
+  triggers:
+    - trigger: numeric_state
+      id: lux
+      entity_id: sensor.lightlevel_194
+      for: "00:02:00"
+      below: 1500
+    - trigger: state
+      id: obscured
+      entity_id: sensor.sun_relative_to_house
+      from: obscured
+      to: in_front
+    - trigger: state
+      id: obscured
+      entity_id: sensor.sun_relative_to_house
+      from: in_back
+      to: obscured
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: or
+      conditions:
+        # For lux triggers, the lights should be off
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: lux
+            - condition: state
+              entity_id: light.living_room
+              state: "off"
+        # For transitions to/from obscured, the lights should be on
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: obscured
+            - condition: state
+              entity_id: light.living_room
+              state: "on"
+    # Don't act when the Android TV is playing – lights are not automatically
+    # dimmed during the day, but we don't want to run the risk of interfering
+    # with manual adjustments
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: media_player.eh_ls800b
+          state: "on"
+  actions:
+    - if:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
+      then:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.living_room_active
+          data:
+            transition: >-
+              {{ 15 if states('light.living_room') == 'off' else 600 }}
+      else:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.living_room_daytime
+          data:
+            transition: >-
+              {{ 15 if states('light.living_room') == 'off' else 600 }}
+  mode: single
+- alias: Living Room daytime-lighting off
+  id: 21a8d2ce-746d-460a-9c65-b9ddf4f1b3b1
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+    - trigger: state
+      entity_id: sensor.sun_relative_to_house
+      from: obscured
+      to: in_front
+      # Prevent race-condition with "daytime-lighting on"
+      for: "00:00:10"
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_194
+      for: "00:08:00"
+      above: 1600
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    # Ensure the time-of-day triggers respects the lux-requirement
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_194
+      above: 1600
+    # Only act when the lights are in their expected state ("Active" when
+    # obscured; "Daytime" otherwise)
+    - condition: or
+      conditions:
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.sun_relative_to_house
+              state:
+                - in_front
+                - in_back
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Daytime
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.sun_relative_to_house
+              state: obscured
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Active
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: media_player.eh_ls800b
+          state: "on"
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id: light.living_room
+      data:
+        transition: 15
+  mode: single
+- alias: Living Room persist scene "Daytime"
+  id: 9e3a89ed-8303-472e-a101-9a56258f3109
+  triggers:
+    # It seems the regular `light.living_room`-entity is somewhat impacted by
+    # the delayed transitions; can't rely on it the accurately represent the
+    # state of the lights. Using the "Hue scene"-sensor instead...
+    - trigger: state
+      entity_id: sensor.hue_scene_living_room
+      not_to:
+        - Daytime
+        - «Off»
+      for: "00:00:30"
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.living_room_daytime
+      data:
+        transition: 600
+  mode: single
+- alias: Living Room scene "Active" to "Ambiance"
+  id: af490253-fe40-4ce2-a763-ad3c97b99c36
+  triggers:
+    - trigger: time
+      at: "21:30"
+    - trigger: state
+      entity_id: sensor.time_of_day
+      to: night
+  conditions:
+    - condition: state
+      entity_id: sensor.hue_scene_living_room
+      state: Active
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: night
+    - condition: time
+      after: "21:29"
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.living_room_ambiance
+      data:
+        transition: 600
+    - delay: 600
+  mode: single
+  max_exceeded: silent

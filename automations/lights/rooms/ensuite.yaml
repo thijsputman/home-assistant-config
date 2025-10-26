@@ -1,0 +1,194 @@
+- alias: Ensuite lights on
+  id: 6108bbf2-5a38-4a56-bd15-cbc4f42a3c5c
+  triggers:
+    - trigger: time
+      at: input_datetime.wakeup
+  conditions:
+    - condition: state
+      entity_id: light.ensuite
+      state: "off"
+  actions:
+    - if:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
+      then:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.ensuite_ambiance
+          data:
+            transition: 15
+      else:
+        # Respect the daytime-lighting threshold
+        - condition: numeric_state
+          entity_id: sensor.lightlevel_195
+          below: 250
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.ensuite_daytime
+          data:
+            transition: 15
+  mode: single
+- alias: Ensuite lights on
+  id: bea69ea9-679b-4eee-9ace-5e877956a264
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  conditions:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.ensuite
+          state: "off"
+        - condition: state
+          entity_id: sensor.hue_scene_ensuite
+          state: Daytime
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.ensuite_ambiance
+      data:
+        transition: >-
+          {{ 30 if states('light.ensuite') == 'off' else 600 }}
+  mode: single
+- alias: Ensuite daytime-lighting on
+  id: d4dd4a4d-20f8-4f08-bcc9-a58941db2063
+  triggers:
+    - trigger: numeric_state
+      id: lux
+      entity_id: sensor.lightlevel_195
+      for: "00:02:00"
+      below: 250
+    - trigger: state
+      id: obscured
+      entity_id: sensor.sun_relative_to_house
+      from: obscured
+      to: in_front
+    - trigger: state
+      id: obscured
+      entity_id: sensor.sun_relative_to_house
+      from: in_back
+      to: obscured
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: or
+      conditions:
+        # For lux triggers, the lights should be off
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: lux
+            - condition: state
+              entity_id: light.living_room
+              state: "off"
+        # For transitions to/from obscured, the lights should be on
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: obscured
+            - condition: state
+              entity_id: light.living_room
+              state: "on"
+  actions:
+    - if:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
+      then:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.ensuite_ambiance
+          data:
+            transition: >-
+              {{ 15 if states('light.light_ensuite') == 'off' else 600 }}
+      else:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.ensuite_daytime
+          data:
+            transition: >-
+              {{ 15 if states('light.light_ensuite') == 'off' else 600 }}
+  mode: single
+- alias: Ensuite daytime-lighting off
+  id: cf719538-53fa-4a46-a566-b14ad3a5c870
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+    - trigger: state
+      entity_id: sensor.sun_relative_to_house
+      from: obscured
+      to: in_front
+      # Prevent race-condition with "daytime-lighting on"
+      for: "00:00:10"
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_195
+      for: "00:08:00"
+      above: 300
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    # Ensure the time-of-day triggers respects the lux-requirement
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_195
+      above: 300
+    # Only act when the lights are in their expected state ("Ambiance" when
+    # obscured; "Daytime" otherwise)
+    - condition: or
+      conditions:
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.sun_relative_to_house
+              state:
+                - in_front
+                - in_back
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Daytime
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.sun_relative_to_house
+              state: obscured
+            - condition: state
+              entity_id: sensor.hue_scene_living_room
+              state: Ambiance
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id: light.ensuite
+      data:
+        transition: 15
+  mode: single
+- alias: Ensuite persist scene "Daytime"
+  id: 33a0c5f8-4f88-4a45-afad-2dc1e8c4f913
+  triggers:
+    - trigger: state
+      entity_id: sensor.hue_scene_ensuite
+      not_to:
+        - Daytime
+        - «Off»
+      for: "00:00:30"
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.ensuite_daytime
+      data:
+        transition: 600
+  mode: single

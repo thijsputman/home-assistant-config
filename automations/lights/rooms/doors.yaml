@@ -1,3 +1,52 @@
+- alias: Front and Back door lights on
+  id: 57d64e4d-8ec5-4245-a98e-be4ac4dd0fc5
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  conditions: []
+  actions:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.front_back_door_evening
+  mode: single
+# Back door is handled by the Garden automation
+- alias: Front door light off
+  id: eff18963-7828-4cb0-9edd-ff18771e1974
+  triggers:
+    - trigger: time
+      at: "22:50:00"
+  conditions: []
+  actions:
+    - delay: >-
+        {{ range(2400) | random }}
+    - if:
+        - condition: state
+          entity_id: light.hue_filament_bulb_1_2
+          state: "on"
+      then:
+        - action: light.turn_off
+          entity_id: light.hue_filament_bulb_1_2
+# Fallback to prevent the Front and/or Back door lights from staying on the
+# day, should something go wrong with any of the other automations..
+- alias: Front and Back door lights off
+  id: 766babb7-e5b3-43ff-b72a-e782d22e82d6
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+  conditions:
+    - condition: state
+      entity_id: light.front_back_door
+      state: "on"
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id:
+          - light.front_back_door
+  mode: single
 - alias: Front door light to maximum brightness
   id: 78c89018-504b-4ff1-8aa1-fbebc14206e9
   triggers:
@@ -143,74 +192,3 @@
             entity_id: light.hue_filament_bulb_1
   mode: single
   max_exceeded: silent
-- alias: Garden lights toggle
-  id: cd0a0eac-d482-4add-ba9f-28e63fae0d26
-  triggers:
-    - trigger: state
-      entity_id:
-        - binary_sensor.openclose_12 # Kitchen door
-        - binary_sensor.openclose_34 # Back gate
-        - binary_sensor.openclose_189 # Shed door
-      from: "off"
-      to: "on"
-  conditions:
-    # Other automations are in effect if the alarm is armed (or triggered)
-    - condition: state
-      entity_id: alarm_control_panel.home_alarm
-      state: disarmed
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: sensor.time_of_day
-          state: day
-    - condition: state
-      entity_id: light.garden
-      state: "off"
-  actions:
-    - action: scene.turn_on
-      target:
-        entity_id: scene.garden_ambiance
-    # Wait for the door to close – abort if we transition from dusk to night
-    # (lights should stay on), or if the lights get switched off (nothing more
-    # to do). Additionally, if a door remains open for more than 8-hours,
-    # continue to switch off the lights (this should never happen; something
-    # should've switched off the lights, and triggered one of the aborts).
-    - wait_for_trigger:
-        - trigger: template
-          id: door_closed
-          value_template: >-
-            {{ is_state(trigger.entity_id, 'off') }}
-        - trigger: state
-          entity_id: sensor.time_of_day
-          from: dusk
-          to: night
-        - trigger: state
-          entity_id: light.garden
-          to: "off"
-      timeout: "08:00:00"
-      continue_on_timeout: true
-    - condition: >-
-        {{ wait.trigger is none or wait.trigger.id == 'door_closed' }}
-    # Keep the lights on for an additional 5 minutes (same abort conditions)
-    - wait_for_trigger:
-        - trigger: state
-          entity_id: sensor.time_of_day
-          from: dusk
-          to: night
-        - trigger: state
-          entity_id: light.garden
-          to: "off"
-      timeout: "00:05:00"
-      continue_on_timeout: true
-    - condition: >-
-        {{ wait.trigger is none }}
-    # Also, don't bother switching the lights back off at dusk; they'll be
-    # switched on again soon anyway...
-    - condition: not
-      conditions:
-        - condition: state
-          entity_id: sensor.time_of_day
-          state: dusk
-    - action: light.turn_off
-      entity_id: light.garden
-  mode: restart

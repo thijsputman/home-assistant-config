@@ -1,0 +1,437 @@
+- alias: Hallway (downstairs) lights on
+  id: 18a0219a-5019-4357-a3c0-fb94a361a443
+  triggers:
+    - trigger: time
+      at: input_datetime.wakeup
+  conditions:
+    - condition: state
+      entity_id: light.hallway_downstairs
+      state: "off"
+  actions:
+    - if:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
+      then:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.hallway_downstairs_daytime_reduced
+          data:
+            transition: 15
+      else:
+        # Respect the daytime-lighting threshold
+        - condition: numeric_state
+          entity_id: sensor.lightlevel_48
+          below: 40
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.hallway_downstairs_daytime
+          data:
+            transition: 15
+  mode: single
+- alias: Hallway (downstairs) lights on
+  id: 8a652890-8778-4ebb-8946-bc861ba90790
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  conditions:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.hallway_downstairs
+          state: "off"
+        # Daytime-lighting on; no active override
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_hallway_downstairs
+              state:
+                - Daytime
+                - Daytime (reduced)
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_hallway
+                  state: «Override»
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.hallway_downstairs_evening
+      data:
+        transition: >-
+          {{ 30 if states('light.hallway_downstairs') == 'off' else 600 }}
+  mode: single
+- alias: Hallway (downstairs) daytime-lighting on
+  id: 1815106e-2684-4397-8fe8-73711ca6e7b5
+  triggers:
+    - trigger: numeric_state
+      id: lux
+      entity_id: sensor.lightlevel_48
+      for: "00:01:00"
+      below: 40
+    - trigger: state
+      id: obscured
+      entity_id: sensor.sun_relative_to_house
+      from: obscured
+      to: in_front
+    - trigger: state
+      id: obscured
+      entity_id: sensor.sun_relative_to_house
+      from: in_back
+      to: obscured
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: or
+      conditions:
+        # For lux triggers, the lights should be off
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: lux
+            - condition: state
+              entity_id: light.hallway_downstairs
+              state: "off"
+        # For transitions to/from obscured, the lights should be on
+        - condition: and
+          conditions:
+            - condition: trigger
+              id: obscured
+            - condition: state
+              entity_id: light.hallway_downstairs
+              state: "on"
+    # Never interfere with the manual override
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_hallway
+          state: «Override»
+  actions:
+    - if:
+        - condition: state
+          entity_id: sensor.sun_relative_to_house
+          state: obscured
+      then:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.hallway_downstairs_daytime_reduced
+          data:
+            transition: >-
+              {{
+                15 if states('light.hallway_downstairs') == 'off' else 600
+              }}
+      else:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.hallway_downstairs_daytime
+          data:
+            transition: >-
+              {{
+                15 if states('light.hallway_downstairs') == 'off' else 600
+              }}
+  mode: single
+- alias: Hallway (downstairs) daytime-lighting off
+  id: 9b941157-f359-4d69-a19c-eaa242f6faf3
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+    - trigger: state
+      entity_id: sensor.sun_relative_to_house
+      from: obscured
+      to: in_front
+      # Prevent race-condition with "daytime-lighting on"
+      for: "00:00:10"
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_48
+      for: "00:10:00"
+      above: 60
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    # Ensure the time-of-day triggers respects the lux-requirement
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_48
+      above: 60
+    # Only act when the lights are in their expected state ("Daytime (reduced)"
+    # when obscured; "Daytime" otherwise)
+    - condition: or
+      conditions:
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.sun_relative_to_house
+              state:
+                - in_front
+                - in_back
+            - condition: state
+              entity_id: sensor.hue_scene_hallway_downstairs
+              state: Daytime
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.sun_relative_to_house
+              state: obscured
+            - condition: state
+              entity_id: sensor.hue_scene_hallway_downstairs
+              state: Daytime (reduced)
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.hue_scene_hallway
+          state: «Override»
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id: light.hallway_downstairs
+      data:
+        transition: 15
+  mode: single
+- alias: Hallway (upstairs) lights on
+  id: 09fab605-f279-464e-bbb0-00b0e6e33013
+  triggers:
+    - trigger: time
+      at: input_datetime.wakeup
+  conditions:
+    - condition: state
+      entity_id: light.hallway_upstairs
+      state: "off"
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_upstairs_hallway
+      below: 30
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.hallway_upstairs_daytime
+      data:
+        transition: 15
+  mode: single
+- alias: Hallway (upstairs) lights on
+  id: 8960dbe4-0301-4dec-948c-d2e50a66c883
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+  conditions:
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: light.hallway_upstairs
+          state: "off"
+        - condition: and
+          conditions:
+            - condition: state
+              entity_id: sensor.hue_scene_hallway_upstairs
+              state: Daytime
+            - condition: not
+              conditions:
+                - condition: state
+                  entity_id: sensor.hue_scene_hallway
+                  state: «Override»
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.hallway_upstairs_evening
+      data:
+        transition: >-
+          {{ 30 if states('light.hallway_upstairs') == 'off' else 600 }}
+- alias: Hallway (upstairs) daytime-lighting on
+  id: 6fcf79b7-be12-4990-b2dd-21d8a85b4987
+  triggers:
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_upstairs_hallway
+      for: "00:01:00"
+      below: 30
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    # Ensure today's wakeup occurred so we don't unintentionally wake someone up
+    # with the daytime-lighting...
+    - >-
+      {% from 'functions.jinja' import today_wakeup_occurred %}
+      {{ today_wakeup_occurred() }}
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.hallway_upstairs_daytime
+      data:
+        transition: 15
+  mode: single
+- alias: Hallway (upstairs) daytime-lighting off
+  id: 14585406-3c8d-4c76-902a-af71e509e95d
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+    - trigger: numeric_state
+      entity_id: sensor.lightlevel_upstairs_hallway
+      for: "00:10:00"
+      above: 50
+  conditions:
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: day
+    - condition: numeric_state
+      entity_id: sensor.lightlevel_upstairs_hallway
+      above: 50
+    - condition: state
+      entity_id: sensor.hue_scene_hallway_upstairs
+      state: Daytime
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id: light.hallway_upstairs
+      data:
+        transition: 15
+  mode: single
+# The Hallway lights are often manually adjusted – these changes don't need to
+# persist after activity in the Hallway ends
+- alias: Restore Hallway lights after inactivity
+  id: 4e1d15da-52cb-47ea-90e7-1396257116eb
+  triggers:
+    - trigger: state
+      id: motion_stop
+      entity_id:
+        - binary_sensor.presence_121 # Stairs
+        - binary_sensor.presence_123 # Downstairs hallway
+        - binary_sensor.presence_125 # Downstairs hallway
+        - binary_sensor.presence_127 # Upstairs hallway
+      from:
+        - "on"
+        - "off"
+      to:
+        - "on"
+        - "off"
+  conditions:
+    - condition: state
+      entity_id: sensor.hue_scene_hallway
+      state: «Override»
+    # No more motion detected anywhere
+    - condition: state
+      entity_id:
+        - binary_sensor.presence_121
+        - binary_sensor.presence_123
+        - binary_sensor.presence_125
+        - binary_sensor.presence_127
+      state: "off"
+    # Only act under normal circumstances (i.e. the alarm is disarmed)
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
+  actions:
+    - delay: "00:10:00"
+    # Daytime
+    - if:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+      then:
+        # Downstairs
+        - if:
+            - condition: numeric_state
+              entity_id: sensor.lightlevel_48
+              below: 60
+          then:
+            - choose:
+                - conditions:
+                    - condition: state
+                      entity_id: sensor.sun_relative_to_house
+                      state: obscured
+                  sequence:
+                    - action: hue.activate_scene
+                      target:
+                        entity_id: scene.hallway_downstairs_daytime_reduced
+                      data:
+                        transition: 600
+              default:
+                - action: light.turn_off
+                  target:
+                    entity_id: light.downstairs_hallway
+                  data:
+                    transition: 30
+        # Upstairs
+        - if:
+            - condition: numeric_state
+              entity_id: sensor.lightlevel_upstairs_hallway
+              below: 50
+          then:
+            - action: hue.activate_scene
+              target:
+                entity_id: scene.hallway_upstairs_daytime
+              data:
+                transition: 600
+          else:
+            - action: light.turn_off
+              target:
+                entity_id: light.upstairs_hallway
+              data:
+                transition: 30
+      # Evening
+      else:
+        - action: hue.activate_scene
+          target:
+            entity_id: scene.hallway_evening
+          data:
+            transition: 600
+  mode: restart
+- alias: Dim Hallway lights
+  id: 2a98868c-c030-4159-803e-3cc6193a9872
+  triggers:
+    - trigger: state
+      entity_id: binary_sensor.vibration_43 # Doorbell
+      from: "off"
+      to: "on"
+  conditions:
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+    - condition: state
+      entity_id: light.hallway_downstairs
+      state: "on"
+  actions:
+    - wait_for_trigger:
+        - trigger: state
+          entity_id:
+            - binary_sensor.presence_121 # Stairs
+            - binary_sensor.presence_123 # Downstairs hallway
+            - binary_sensor.presence_125 # Downstairs hallway
+          from: "off"
+          to: "on"
+      timeout: "00:02:00"
+      continue_on_timeout: false
+    - action: light.turn_on
+      data:
+        brightness: 8
+        entity_id: light.hallway_downstairs
+    # Restore lights on opening the front door, or after five-minutes if the
+    # door isn't opened
+    - wait_for_trigger:
+        - trigger: state
+          entity_id: binary_sensor.openclose_16
+          from: "off"
+          to: "on"
+          for: "00:00:05"
+        # Abort if the lights get otherwise changed
+        - trigger: state
+          id: abort
+          entity_id: light.hallway_downstairs
+          attribute: brightness
+          from: 8
+      timeout: "00:05:00"
+      continue_on_timeout: true
+    - condition: >-
+        {{ wait.trigger is none or wait.trigger.id != 'abort' }}
+    # Restore the previous (ie, current) scene
+    - action: script.hue_activate_scene
+      data:
+        scene_entity: sensor.hue_scene_hallway_downstairs

@@ -1,0 +1,172 @@
+- alias: Garden lights on
+  id: 8fa0a6d4-f80a-4312-8669-9f5525bbf3d5
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: day
+      to: dusk
+      for: "00:10:00"
+  conditions:
+    - condition: state
+      entity_id: light.garden
+      state: "off"
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.garden_ambiance
+      data:
+        transition: 30
+  mode: single
+- alias: Garden lights off
+  id: bca8278d-d0b5-41a6-a828-8310255cb93d
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dawn
+      to: day
+  conditions:
+    - condition: state
+      entity_id: light.garden
+      state: "on"
+  actions:
+    - action: light.turn_off
+      target:
+        entity_id: light.garden
+  mode: single
+- alias: Garden lights off
+  id: 99711cfd-e1c7-47d8-83af-94876e126b6c
+  triggers:
+    - trigger: state
+      entity_id: sensor.time_of_day
+      from: dusk
+      to: night
+    # If Home Assistant is (re)started while this automation is running, the
+    # lights won't be switched off – account for that edge case too...
+    - trigger: homeassistant
+      id: ha_start
+      event: start
+  conditions: []
+  actions:
+    # Garden lights normally go off at 23:00, _but_ should be on for at least
+    # 90 minutes. If they've been on for less than that, delay execution beyond
+    # 23:00... Note the logic compensates for the 5-minute timeout on the
+    # wait-for-trigger that follows.
+    - delay: >-
+        {% set delay = (today_at("22:55") - now()).seconds %}
+        {#
+          Timedelta's seconds-property doesn't go negative; wraps around at
+          24-hours instead – this guard is required to prevent an impossibly
+          long delay in case we trigger after 22:55...
+        #}
+        {% if today_at("22:55") <= now() %}
+          {{ 0 }}
+        {% elif trigger.id != 'ha_start' and delay < 5100 %}
+          {{ 5100 }}
+        {% else %}
+          {{ delay }}
+        {% endif %}
+    # The Kitchen/Shed door and Back gate have separate automations that trigger
+    # the lights when they're opened. To prevent interfering with those, wait
+    # for their triggers at the end of our run and add an additional delay if
+    # they occur.
+    - wait_for_trigger:
+        - trigger: state
+          entity_id:
+            - binary_sensor.openclose_12 # Kitchen door
+            - binary_sensor.openclose_34 # Back gate
+            - binary_sensor.openclose_189 # Shed
+          from: "off"
+          to: "on"
+      timeout: "00:05:00"
+      continue_on_timeout: true
+    - if: >-
+        {{ wait.trigger is not none }}
+      then:
+        # Unconditional 10-minute delay – should be enough to not override the
+        # other automations' behaviour
+        delay: "00:10:00"
+    # Only continue if the Garden lights are still on their original scene
+    - condition: state
+      entity_id: sensor.hue_scene_garden
+      state: Ambiance
+    - action: light.turn_off
+      target:
+        entity_id:
+          - light.garden
+          - light.hue_filament_bulb_1 # Back door light
+      data:
+        transition: 30
+  # Override in case Home Assistant got restarted during the day (allowing the
+  # proper trigger to take over)
+  mode: restart
+- alias: Garden lights toggle
+  id: cd0a0eac-d482-4add-ba9f-28e63fae0d26
+  triggers:
+    - trigger: state
+      entity_id:
+        - binary_sensor.openclose_12 # Kitchen door
+        - binary_sensor.openclose_34 # Back gate
+        - binary_sensor.openclose_189 # Shed door
+      from: "off"
+      to: "on"
+  conditions:
+    # Other automations are in effect if the alarm is armed (or triggered)
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state: disarmed
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: day
+    - condition: state
+      entity_id: light.garden
+      state: "off"
+  actions:
+    - action: scene.turn_on
+      target:
+        entity_id: scene.garden_ambiance
+    # Wait for the door to close – abort if we transition from dusk to night
+    # (lights should stay on), or if the lights get switched off (nothing more
+    # to do). Additionally, if a door remains open for more than 8-hours,
+    # continue to switch off the lights (this should never happen; something
+    # should've switched off the lights, and triggered one of the aborts).
+    - wait_for_trigger:
+        - trigger: template
+          id: door_closed
+          value_template: >-
+            {{ is_state(trigger.entity_id, 'off') }}
+        - trigger: state
+          entity_id: sensor.time_of_day
+          from: dusk
+          to: night
+        - trigger: state
+          entity_id: light.garden
+          to: "off"
+      timeout: "08:00:00"
+      continue_on_timeout: true
+    - condition: >-
+        {{ wait.trigger is none or wait.trigger.id == 'door_closed' }}
+    # Keep the lights on for an additional 5 minutes (same abort conditions)
+    - wait_for_trigger:
+        - trigger: state
+          entity_id: sensor.time_of_day
+          from: dusk
+          to: night
+        - trigger: state
+          entity_id: light.garden
+          to: "off"
+      timeout: "00:05:00"
+      continue_on_timeout: true
+    - condition: >-
+        {{ wait.trigger is none }}
+    # Also, don't bother switching the lights back off at dusk; they'll be
+    # switched on again soon anyway...
+    - condition: not
+      conditions:
+        - condition: state
+          entity_id: sensor.time_of_day
+          state: dusk
+    - action: light.turn_off
+      entity_id: light.garden
+  mode: restart

@@ -1,4 +1,4 @@
-- alias: Inside lights off
+- alias: Trigger "Lights out"-script
   id: 9b24fc0b-fc61-432c-b881-aa2b644a2efe
   triggers:
     - trigger: time
