@@ -258,7 +258,7 @@
               \nHome Assistant has been running on back-up battery power for {{
                   relative_time(states.sensor.ups_status.last_changed)
                 }} and has {{
-                  states('sensor.ups_battery_runtime_minutes')
+                  states('sensor.ups_battery_runtime')
                 }} minutes of runtime remaining...
             {% endif %}
     # Also sound the alarm – the ZigBee controller is connected to the UPS; the

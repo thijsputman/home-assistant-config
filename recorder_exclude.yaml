@@ -4,6 +4,7 @@ entities:
   - sensor.power_86 # Raw measurement (see *_actual)
   - sensor.power_88 # ↑
   - sensor.power_149 # ↑
+  # Water valves
   - sensor.consumption_170 # Raw measurement (see *_cumulative)
   - sensor.consumption_173 # ↑
   # Miscellaneous
@@ -12,7 +13,6 @@ entities:
   - sensor.failed_devices
   - input_text.failed_devices_active
 entity_globs:
-  - sensor.ups_battery_run*
   - sensor.*_heartbeat*
   - sensor.*_uptime*
   - input_number.irrigation_*_manual_volume
