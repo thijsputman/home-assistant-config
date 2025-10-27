@@ -7,6 +7,8 @@ entities:
   # Water valves
   - sensor.consumption_170 # Raw measurement (see *_cumulative)
   - sensor.consumption_173 # ↑
+  # Android TV is *incapable* of keeping itself alive... 😕
+  - media_player.eh_ls800b
   # Miscellaneous
   - sensor.gammu_received_unprocessed_message
   - sensor.last_notification_unprocessed
