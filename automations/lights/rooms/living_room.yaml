@@ -231,4 +231,3 @@
         transition: 600
     - delay: 600
   mode: single
-  max_exceeded: silent

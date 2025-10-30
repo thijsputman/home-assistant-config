@@ -124,6 +124,7 @@
       id: scene_change
       entity_id:
         - scene.hallway_upstairs_daytime
+        - scene.hallway_upstairs_evening
         - scene.hallway_upstairs_nightlight
         - scene.hallway_evening
       to: ~
@@ -141,7 +142,12 @@
         {% elif trigger.id == 'scene_change' %}
           {% if trigger.entity_id in ['scene.hallway_upstairs_daytime'] %}
             Daytime
-          {% elif trigger.entity_id in ['scene.hallway_evening'] %}
+          {% elif trigger.entity_id in
+            [
+              'scene.hallway_upstairs_evening',
+              'scene.hallway_evening'
+            ]
+          %}
             Evening
           {% elif trigger.entity_id in ['scene.hallway_upstairs_nightlight'] %}
             Nighlight

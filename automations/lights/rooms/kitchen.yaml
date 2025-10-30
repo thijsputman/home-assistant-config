@@ -48,7 +48,7 @@
   actions:
     - action: script.hue_activate_scene_kitchen
       data:
-        scene_id: scene.kitchen_ambiance
+        scene_id: scene.kitchen_active
         transition: >-
           {{ 30 if states('light.kitchen') == 'off' else 600 }}
   mode: single
@@ -175,6 +175,31 @@
       data:
         turn_off: true
         transition: 15
+  mode: single
+- alias: Kitchen scene "Active" to "Ambiance"
+  id: 61478b1a-9dab-4b1f-a7cc-5ded98df1f95
+  triggers:
+    - trigger: time
+      at: "21:30"
+    - trigger: state
+      entity_id: sensor.time_of_day
+      to: night
+  conditions:
+    - condition: state
+      entity_id: sensor.hue_scene_kitchen
+      state: Active
+    - condition: state
+      entity_id: sensor.time_of_day
+      state: night
+    - condition: time
+      after: "21:29"
+  actions:
+    - action: hue.activate_scene
+      target:
+        entity_id: scene.kitchen_ambiance
+      data:
+        transition: 600
+    - delay: 600
   mode: single
 - alias: Kitchen counter & cupboards toggle
   id: ff4ddb05-91d8-431d-9226-b51e0bbd9b36
