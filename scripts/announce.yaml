@@ -261,15 +261,17 @@ tts_announce:
             - armed_away
             - armed_vacation
     - variables:
-        # Compress all whitespace; remove all HTML-tags (they are
-        # pronounced, instead of being used as intonation hints as I
-        # would've hoped); convert timestamps into a format slightly more
-        # conductive to TTS; replace "ij" with "y" (English-language TTSs
-        # trip over it – also hard-coded a fix for my own name 😇).
+        # Compress all whitespace (including errant spacing before punctuation);
+        # remove all HTML-tags (they are pronounced, instead of being used as
+        # intonation hints as I would've hoped); convert timestamps into a
+        # format slightly more conductive to TTS; replace "ij" with "y"
+        # (English-language TTSs trip over it – also hard-coded a fix for my own
+        # name 😇).
         announcement: >-
           {{
             message | string |
               regex_replace('[ \n]+', ' ') |
+              regex_replace('\s+([.,;:!?])', '\g<1>') |
               regex_replace('<.+?>', '') |
               regex_replace('0([1-9]{1}):([0-9]{2})', '\g<1>:\g<2>') |
               regex_replace('([0-9]{1,2}):0([1-9]{1})',

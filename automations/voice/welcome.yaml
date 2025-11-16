@@ -101,11 +101,15 @@
               {{ person_away.name | regex_replace(' .*$', '') }} left
               {{ person_away.last_changed | relative_time }} ago,
               and is currently somewhere in
-              {{ state_attr(sensor, 'sub_locality') }}
-              {%
-                if state_attr(sensor, 'locality') not in
-                  state_attr(sensor, 'sub_locality')
-              %}, {{ state_attr(sensor, 'locality') }}
+              {% if state_attr(sensor, 'sub_locality') is defined %}
+                {{ state_attr(sensor, 'sub_locality') }}
+                {%
+                  if state_attr(sensor, 'locality') not in
+                    state_attr(sensor, 'sub_locality')
+                %}, {{ state_attr(sensor, 'locality') }}
+                {% endif %}
+              {% else %}
+                {{ state_attr(sensor, 'locality') }}
               {% endif %}.
             {% endif %}
             While you were away,
