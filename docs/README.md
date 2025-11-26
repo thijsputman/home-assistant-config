@@ -1,6 +1,5 @@
 # Docs
 
-- [`📄 ANDROIDTV.md`](./ANDROIDTV.md)
 - [`📄 deCONZ.md`](./deCONZ.md)
 - [`📄 GAMMU.md`](./GAMMU.md)
 - [`📄 HUE.md`](./HUE.md)

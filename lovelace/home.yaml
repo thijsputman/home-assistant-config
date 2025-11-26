@@ -179,8 +179,9 @@ views:
     cards:
       - type: vertical-stack
         cards:
-          - type: media-control
-            entity: media_player.plex_eh_ls800
+          - type: entity
+            entity: sensor.plex_shield_android_tv
+            attribute: title
           - !include home/media/dvb.yaml
       - type: vertical-stack
         cards:

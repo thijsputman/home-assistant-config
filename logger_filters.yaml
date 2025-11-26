@@ -34,3 +34,10 @@ pyaarlo:
   - error loading the image library
   - event loop closed by server
   - failed to read modes (v2)
+# Not only is Android TV incapable of keeping itself alive, it also insist on
+# noisily not doing so
+pychromecast.socket_client:
+  - >-
+    ^Error reading from socket: socket connection broken$
+  - >-
+    ^Failed to connect to service HostServiceInfo(.+), retrying in .+s$

@@ -1,0 +1,57 @@
+- triggers:
+    - trigger: webhook
+      allowed_methods:
+        - POST
+        - PUT
+      local_only: true
+      webhook_id: plex_pi4_sandcastle
+  conditions:
+    - >-
+      {{ 'Player' in payload and payload.Player.uuid == player_uuid }}
+  variables:
+    player_uuid: !secret plex_shield_android_tv
+    payload: >-
+      {{ trigger.data['payload'].decode('utf-8') | from_json }}
+  sensor:
+    - name: Plex – SHIELD Android TV
+      unique_id: aef31d95-b91c-4620-b2a8-604d0edcb3d0
+      icon: mdi:plex
+      state: >-
+        {% if payload.event in ['media.play', 'media.resume'] %}
+          playing
+        {% elif payload.event in ['media.pause'] %}
+          paused
+        {% elif payload.event in ['media.stop'] %}
+          idle
+        {% else %}
+          {{ this.state }}
+        {% endif %}
+      attributes:
+        player: >-
+          {{
+            payload.Player.title if 'Player' in payload else
+              this.attributes.player
+          }}
+        media_type: >-
+          {{
+            payload.Metadata.type if 'Metadata' in payload else
+              this.attributes.media_type
+          }}
+        title: >-
+          {% if 'Metadata' in payload %}
+            {% if payload.Metadata.type == 'movie' %}
+               {{ payload.Metadata.title }} ({{ payload.Metadata.year }})
+            {% elif payload.Metadata.type == 'episode' %}
+              {{ payload.Metadata.grandparentTitle }} S{{
+                '%02d' % (payload.Metadata.parentIndex | int) }}E{{
+                '%02d' % (payload.Metadata.index | int) }} – {{
+                payload.Metadata.title }}
+            {% elif payload.Metadata.type == 'track' %}
+              {{ payload.Metadata.grandparentTitle }} – {{
+                payload.Metadata.index }}. {{ payload.Metadata.title }}
+            {% else %}
+              {{ this.attributes.title }}
+            {% endif %}
+          {% else%}
+            {{ this.attributes.title }}
+          {% endif %}

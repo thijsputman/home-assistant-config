@@ -24,7 +24,6 @@ Anyway...
   - ["Remote" connections](#remote-connections)
 - [Setup](#setup)
   - [Keys](#keys)
-- [See Also](#see-also)
 
 ## `adb`-server
 
@@ -110,7 +109,3 @@ Home Assistant's AndroidTV integration by default keeps its keys in
 Rename those to `📄 adbkey` and `📄 adbkey.pub` respectively and feed them into
 the container (see above) to prevent having to reauthenticate with your
 AndroidTV-device.
-
-## See Also
-
-- [`📄 docs/ANDROIDTV.md`](/docs/ANDROIDTV.md)

@@ -91,14 +91,14 @@
             - condition: state
               entity_id: light.living_room
               state: "on"
-    # Don't act when the Android TV is playing – lights are not automatically
-    # dimmed during the day, but we don't want to run the risk of interfering
-    # with manual adjustments
+    # Don't act when Plex is playing – lights are not automatically dimmed
+    # during the day, but we don't want to run the risk of interfering with
+    # manual adjustments
     - condition: not
       conditions:
         - condition: state
-          entity_id: media_player.eh_ls800b
-          state: "on"
+          entity_id: sensor.plex_shield_android_tv
+          state: playing
   actions:
     - if:
         - condition: state
@@ -169,8 +169,8 @@
     - condition: not
       conditions:
         - condition: state
-          entity_id: media_player.eh_ls800b
-          state: "on"
+          entity_id: sensor.plex_shield_android_tv
+          state: playing
   actions:
     - action: light.turn_off
       target:

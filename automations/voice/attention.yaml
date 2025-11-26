@@ -101,10 +101,12 @@
         - binary_sensor.presence_155 # Coffee machine
       from: "off"
       to: "on"
-    # Switching off the Android TV
+    # Switching off the AVR
     - trigger: state
-      entity_id: media_player.eh_ls800b
-      from: "on"
+      entity_id: media_player.marantz_cinema_70s
+      from:
+        - "on"
+        - playing
       to: "off"
     # Closing the Kitchen door – relevant when _entering_ the house. Upon
     # departure, this might cause some messages to be missed.

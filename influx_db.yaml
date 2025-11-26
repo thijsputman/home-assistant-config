@@ -28,7 +28,7 @@ include:
     - sensor.home_nearest_distance
     - alarm_control_panel.home_alarm
     - sensor.time_of_day
-    - media_player.plex_eh_ls800
+    - sensor.plex_shield_android_tv
     # Round-trip times
     - sensor.ha_yellow_rtt_ip_8_8_8_8
     - sensor.ha_yellow_rtt_dd_wrt_1_sgraastra
@@ -136,6 +136,11 @@ component_config_domain:
     ignore_attributes:
       - code_format
       - code_arm_required
+  # No need to keep track of _what_ we're watching...
+  sensor.plex_shield_android_tv:
+    ignore_attributes:
+      - player
+      - title
 component_config_glob:
   # Ignore the voltage, current and temperature measurements provided by the
   # smart-plugs – the voltage/current measurements are redundant; better
