@@ -160,10 +160,7 @@ views:
     layout:
       min_height: 1
     cards:
-      - type: vertical-stack
-        cards:
-          - !include home/chores/neato_downstairs.yaml
-          - !include home/chores/neato_upstairs.yaml
+      - !include home/chores/roborock.yaml
       - !include home/chores/irrigation.yaml
       - type: vertical-stack
         cards:

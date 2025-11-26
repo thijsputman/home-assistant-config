@@ -25,7 +25,9 @@ custom CSS.
 - [`mini-graph-card-bundle.js?v=0.13.0`](https://github.com/kalkih/mini-graph-card/releases/tag/v0.13.0)
 - [`paper-buttons-row.js?v=2.3.1`](https://github.com/jcwillox/lovelace-paper-buttons-row/releases/tag/2.3.1)
 - [`slider-entity-row.js?v=17.5.0`](https://github.com/thomasloven/lovelace-slider-entity-row/releases/tag/17.5.0)
-- [`vacuum-card.js?v=2.8.1`](https://github.com/denysdovhan/vacuum-card/releases/tag/v2.8.1)
+- [`vacuum-card.js?v=2.11.0`](https://github.com/denysdovhan/vacuum-card/releases/tag/v2.11.0)
+  - Including the changes from
+    [`denysdovhan/vacuum-card#1025`](https://github.com/denysdovhan/vacuum-card/pull/1025)
 
 ## Custom CSS
 

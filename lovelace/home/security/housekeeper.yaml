@@ -3,7 +3,7 @@ entities:
   - entity: input_boolean.housekeeper_present
     name: Housekeeper
     tap-action: more-info
-  - entity: vacuum.d7_downstairs
+  - entity: vacuum.qrevo_curv_2_pro
     name: Downstairs
   - entity: vacuum.d7_upstairs
     name: Upstairs

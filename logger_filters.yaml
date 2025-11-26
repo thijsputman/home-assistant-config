@@ -1,43 +1,14 @@
-# The Neato integration generates *a lot* of warnings and errors; most of them
-# are of temporary nature – the ones that aren't, are picked up by the general
-# "device failure" automation...
-homeassistant.helpers.entity:
-  - >-
-    ^Update of (sensor|switch|vacuum)\.d7_[a-z0-9_]+ is taking over
-    [0-9]+ seconds$
-  - >-
-    ^Update of (sensor|switch|vacuum)\.d7_[a-z0-9_]+ fails$
-  - >-
-    ^Update for vacuum\.d7_[a-z0-9_]+ fails$
-homeassistant.components.switch:
-  - ^Updating neato [a-z]+ took longer than the scheduled update interval
-homeassistant.components.sensor:
-  - ^Updating neato [a-z]+ took longer than the scheduled update interval
-homeassistant.components.vacuum:
-  - ^Updating neato [a-z]+ took longer than the scheduled update interval
-homeassistant.components.neato.vacuum:
-  - >-
-    ^Neato [a-z]+ connection error for '.+': Unable to communicate with robot$
-  - >-
-    ^Could not fetch map boundaries for '.+': Unable to communicate with
-    robot$
-homeassistant.components.neato.sensor:
-  - >-
-    ^Neato [a-z]+ connection error for '.+': Unable to communicate with robot$
-homeassistant.components.neato.switch:
-  - >-
-    ^Neato [a-z]+ connection error for '.+': Unable to communicate with robot$
-# Since updating to 0.8, Aarlo started generating a lot of noise too – these
-# appear to be the most common/harmless/transient ones...
+# Since updating to 0.8, Aarlo started generating a lot of noise – these appear
+# to be the most common/harmless/transient ones...
 pyaarlo:
   - request-error=ReadTimeout
   - error loading the image library
   - event loop closed by server
   - failed to read modes (v2)
-# Not only is Android TV incapable of keeping itself alive, it also insist on
-# noisily not doing so
-pychromecast.socket_client:
+# Roborock is turning out far superior to Neato; it's integration is equally
+# chatty where it comes to useless error messages though
+roborock.version_1_apis.roborock_mqtt_client_v1:
   - >-
-    ^Error reading from socket: socket connection broken$
-  - >-
-    ^Failed to connect to service HostServiceInfo(.+), retrying in .+s$
+    ^Failed to connect (Client identifier not valid)$
+roborock.data.code_mappings:
+  - RoborockMopIntensityS7

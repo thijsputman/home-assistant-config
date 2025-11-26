@@ -1,0 +1,52 @@
+type: vertical-stack
+cards:
+  - type: custom:mod-card
+    card_mod:
+      style:
+        vacuum-card$: |
+          ha-card span.status-text {
+            margin-left: 0px !important;
+          }
+    card:
+      type: custom:vacuum-card
+      entity: vacuum.qrevo_curv_2_pro
+      battery_sensor:
+        entity_id: sensor.qrevo_curv_2_pro_battery
+      stats:
+        default:
+          - entity_id: sensor.qrevo_curv_2_pro_cleaning_area
+            unit: m²
+            subtitle: Last clean
+          - entity_id: sensor.qrevo_curv_2_pro_cleaning_time
+            value_template: >-
+              {{ (value | float(0) ) | round(0) }}
+            unit: min
+            subtitle: Last clean
+          - entity_id: sensor.qrevo_curv_2_pro_main_brush_time_left
+            value_template: >-
+              {{ (value | float(0) ) | round(0) }}
+            unit: h
+            subtitle: Main brush
+          - entity_id: sensor.qrevo_curv_2_pro_sensor_time_left
+            value_template: >-
+              {{ (value | float(0) ) | round(0) }}
+            unit: h
+            subtitle: Sensor
+        cleaning:
+          - entity_id: sensor.qrevo_curv_2_pro_cleaning_progress
+            value_template: >-
+              {{ (value | float(0) ) | round(0) }}
+            unit: "%"
+            subtitle: Progress
+          - entity_id: sensor.qrevo_curv_2_pro_cleaning_area
+            unit: m²
+            subtitle: Area
+          - entity_id: sensor.qrevo_curv_2_pro_cleaning_time
+            value_template: >-
+              {{ (value | float(0) ) | round(0) }}
+            unit: min
+            subtitle: Time
+          - entity_id: binary_sensor.qrevo_curv_2_pro_mop_attached
+            value_template: >-
+              {{ 'Attached' if value == 'on' else 'Detached' }}
+            subtitle: Mop
