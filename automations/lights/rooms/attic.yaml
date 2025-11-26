@@ -111,11 +111,6 @@
   triggers:
     - trigger: state
       entity_id: sensor.hue_scene_attic
-      from: «Off»
-      to: Bright
-    - trigger: state
-      entity_id: sensor.hue_scene_attic
-      not_from: «Off»
       to: Bright
       for: "00:00:30"
     - trigger: state

@@ -87,7 +87,6 @@ template: !include_dir_merge_list templates/
 
 group: !include_dir_merge_named groups/
 
-input_select: !include_dir_merge_named input/select/
 input_text: !include_dir_merge_named input/text/
 input_number: !include_dir_merge_named input/number/
 input_boolean: !include_dir_merge_named input/boolean/
