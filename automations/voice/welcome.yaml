@@ -101,7 +101,7 @@
               {{ person_away.name | regex_replace(' .*$', '') }} left
               {{ person_away.last_changed | relative_time }} ago,
               and is currently somewhere in
-              {% if state_attr(sensor, 'sub_locality') is defined %}
+              {% if state_attr(sensor, 'sub_locality') is not none %}
                 {{ state_attr(sensor, 'sub_locality') }}
                 {%
                   if state_attr(sensor, 'locality') not in

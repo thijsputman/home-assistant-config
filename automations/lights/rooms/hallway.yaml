@@ -354,7 +354,7 @@
               default:
                 - action: light.turn_off
                   target:
-                    entity_id: light.downstairs_hallway
+                    entity_id: light.hallway_downstairs
                   data:
                     transition: 30
         # Upstairs
