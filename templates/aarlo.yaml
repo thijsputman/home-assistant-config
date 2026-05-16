@@ -9,7 +9,7 @@
       icon: mdi:cctv
       state: >-
         {{ states('sensor.aarlo_alarm_state') in
-            ['armed_home', 'armed_night', 'armed_away'] }}
+            ['armed_home', 'armed_away'] }}
       availability: >-
         {{ is_state('binary_sensor.aarlo_connected_front', 'on') }}
     - name: Aarlo Armed Back
@@ -17,7 +17,7 @@
       icon: mdi:cctv
       state: >-
         {{ states('sensor.aarlo_alarm_state') in
-            [ 'armed_night', 'armed_away'] }}
+            [ 'armed_away'] }}
       availability: >-
         {{ is_state('binary_sensor.aarlo_connected_back', 'on') }}
     - name: Aarlo Armed Balcony
@@ -25,6 +25,6 @@
       icon: mdi:cctv
       state: >-
         {{ states('sensor.aarlo_alarm_state') in
-            [ 'armed_night', 'armed_away'] }}
+            [ 'armed_away'] }}
       availability: >-
         {{ is_state('binary_sensor.aarlo_connected_balcony', 'on') }}

@@ -44,7 +44,7 @@
               entity_id: alarm_control_panel.home_alarm
               state: armed_night
           sequence:
-            - action: alarm_control_panel.alarm_arm_night
+            - action: alarm_control_panel.alarm_arm_away
               entity_id: !secret aarlo_control_panel
       # Armed "Away" is stricter than armed "Night", so we default to that...
       default:
