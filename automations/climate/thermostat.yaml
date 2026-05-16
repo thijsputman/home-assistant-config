@@ -55,6 +55,13 @@
 - alias: tado° to "Home"-mode
   id: 745e4d9b-3b06-4860-af1b-28b959df460f
   triggers:
+    - trigger: state
+      id: departure
+      entity_id: alarm_control_panel.home_alarm
+      from:
+        - disarmed
+        - armed_night
+      to: armed_away
     # Car / public transport; further away from home
     - trigger: numeric_state
       id: far
@@ -89,6 +96,16 @@
         - armed_away
         - armed_vacation
   actions:
+    # After leaving the house, block the automation for an hour as to not run
+    # proximity-checks during that time. There's no need for them during a short
+    # absence, *and* lots of opportunities for false positives while moving away
+    # from the house...
+    - if:
+        - condition: trigger
+          id: departure
+      then:
+        - delay: "01:00:00"
+        - stop: Unblocking tado° proximity-check
     # Car / public transport – ensure we're really moving closer. This assumes
     # a speed (as the crow flies) of at least 60 km/h (realistic for both car
     # and train travel towards home).
@@ -117,6 +134,13 @@
         - condition: template
           value_template: >-
             {{ wait.trigger is none }}
+    # If someone came home during the time required to do the proximity-check,
+    # there's no point in continuing...
+    - condition: state
+      entity_id: alarm_control_panel.home_alarm
+      state:
+        - armed_away
+        - armed_vacation
     # Notify (with the option to cancel)
     - action: script.turn_on
       target:
