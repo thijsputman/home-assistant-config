@@ -3,8 +3,8 @@ entities:
   - entity: input_boolean.housekeeper_present
     name: Housekeeper
     tap-action: more-info
-  - entity: vacuum.qrevo_curv_2_pro
+  - entity: vacuum.qrevo_downstairs
     name: Downstairs
-  - entity: vacuum.d7_upstairs
+  - entity: vacuum.qrevo_upstairs
     name: Upstairs
 show_state: false
