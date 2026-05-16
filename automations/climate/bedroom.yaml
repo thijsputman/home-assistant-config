@@ -67,6 +67,10 @@
         temperature: 20
   mode: single
 # tado° Is scheduled to switch off daily at 09:00/10:00 (weekdays versus
+# weekend) – the below is in case we get out of bed early. Based on the lights
+# as they are setup to automatically go off 2-hours after getting out of bed.
+# Running directly at wakeup time might switch the airco off a bit too early
+# as we might be snoozing in the bed...
 - alias: Airco (Bedroom) morning early off
   id: 6767ad63-9f59-4d70-b304-45cafd75442e
   triggers:
