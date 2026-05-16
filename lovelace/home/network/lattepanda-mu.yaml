@@ -17,17 +17,18 @@ card:
             margin: 0px !important;
             padding: 0px !important;
           }
-      title: Pi4 Sandbox
+      title: LattePanda Mu
       entities:
-        - entity: sensor.pi4_sandbox_cpu_load
-        - entity: sensor.pi4_sandbox_mem_used
-        - entity: sensor.pi4_sandbox_cpu_temp
-        - entity: sensor.pi4_sandbox_uptime
+        - entity: sensor.lattepanda_mu_cpu_load
+        - entity: sensor.lattepanda_mu_cpu_temp
+        - entity: sensor.lattepanda_mu_fan_speed
+        - entity: sensor.lattepanda_mu_pkg_power
+        - entity: sensor.lattepanda_mu_uptime
       show_name: false
       show_icon: true
       show_state: true
       state_color: false
-      columns: 4
+      columns: 5
     - type: markdown
       card_mod:
         style:
@@ -47,21 +48,21 @@ card:
                 margin-bottom: 6px;
               }
       content: >-
-        {% set update_id = 'update.pi4_sandbox_apt' %}
+        {% set update_id = 'update.lattepanda_mu_apt' %}
         {% if states(update_id) == 'on' -%}
           <ha-alert alert-type="info">**{{ device_attr(update_id,
             'name') }}** has {{ state_attr(update_id,
             'latest_version') }} package upgrade(s) available.
           </ha-alert>
         {%- endif %}
-        {% if states('binary_sensor.pi4_sandbox_reboot_required') == 'on' -%}
+        {% if states('binary_sensor.lattepanda_mu_reboot_required') == 'on' -%}
           <ha-alert alert-type="warning">**{{ device_attr(update_id,
             'name') }}** requires a restart.</ha-alert>
         {%- endif %}
-        {% if states('sensor.pi4_sandbox_status') != 'running' -%}
+        {% if states('sensor.lattepanda_mu_status') != 'running' -%}
           <ha-alert alert-type="error">systemd reports **{{-
             device_attr(update_id, 'name') }}** is _{{-
-            states('sensor.pi4_sandbox_status')}}_!</ha-alert>
+            states('sensor.lattepanda_mu_status')}}_!</ha-alert>
         {%- endif %}
     - type: custom:mini-graph-card
       card_mod:
@@ -86,17 +87,17 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.pi4_sandbox_mem_used
+        - entity: sensor.lattepanda_mu_mem_used
           name: Memory (%)
           show_points: false
           show_fill: true
           color: thistle
-        - entity: sensor.pi4_sandbox_cpu_load
+        - entity: sensor.lattepanda_mu_cpu_load
           name: CPU (%)
           show_points: false
           show_fill: false
           color: var(--accent-color)
-        - entity: sensor.pi4_sandbox_cpu_temp
+        - entity: sensor.lattepanda_mu_cpu_temp
           name: Temperature (ºC)
           show_points: false
           show_fill: false
