@@ -4,6 +4,10 @@
     - trigger: state
       entity_id: sensor.plex_shield_android_tv
       to: playing
+      # Occasionally, the Plex-webhook sends an errant "media.resume" at the end
+      # of an episode (immediately followed by another "media.stop"). This delay
+      # debounces that behaviour...
+      for: "00:00:02"
   conditions: []
   # Acts when the lights are on, and _not_ in Daytime-mode. During the day,
   # switching on the projector is most likely more functional than for
@@ -75,6 +79,9 @@
       entity_id: media_player.marantz_cinema_70s
       attribute: source
       to: SHIELD
+      # When switching on due to a source select, the source momentarily is the
+      # previously selected source (often "SHIELD"). The delay ensures those
+      # triggers are ignored.
       for: "00:00:02"
   conditions: []
   actions:
@@ -104,6 +111,7 @@
       to:
         - idle
         - paused
+      for: "00:00:02"
     - trigger: state
       entity_id: media_player.marantz_cinema_70s
       attribute: source

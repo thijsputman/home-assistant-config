@@ -1,5 +1,6 @@
 - alias: Open the Bedroom curtains
   id: 43406cbb-ac49-4d5e-92ad-84088c5cc3c2
+  initial_state: false
   triggers:
     # Open the curtains when the wakeup-alarm gets silenced – this ensures that
     # in situations where it's muted, the curtains stay closed
@@ -57,6 +58,7 @@
         entity_id: cover.curtain_3_4160
 - alias: Close the Bedroom curtains
   id: 8cf8c967-2b3f-4d73-95a7-d524198572f7
+  initial_state: false
   triggers:
     - trigger: state
       id: lights

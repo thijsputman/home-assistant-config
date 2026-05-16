@@ -159,20 +159,20 @@
 # the only other way to detect the race-condition).
 - alias: 🚧 | 🕹️ Reload automations at startup – canary
   id: 4705ec2c-8003-43dd-b5a0-0fbd0409673e
-  trigger:
+  triggers:
     # Random/unlikely trigger – doesn't really matter, but tried to pick one
     # that doesn't occur a lot...
-    - device_id: 7053d7e589bf4a4496cff59a24b7c83c
+    - trigger: device
+      device_id: 5999769c0e60efa48786c19add551dec # Dimmer Switch (Attic; down)
       domain: deconz
-      platform: device
-      type: remote_moved
-      subtype: side_6
-  condition:
+      type: remote_button_long_press
+      subtype: dim_up
+  conditions:
     # Prevent automation from actually executing
     - condition: template
       value_template: >-
         {{ false }}
-  action: []
+  actions: []
   mode: single
 # As of Home Assistant 2024.3, it's not sufficient any more to simply reload all
 # automations – each affected automation needs to be individually disabled and
