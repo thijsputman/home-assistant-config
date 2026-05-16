@@ -1,32 +1,32 @@
-- alias: ✈️ | 🛡️ Enable Holiday-mode ("Armed away" ⏰ > 16-hours)
+- alias: Enable Vacation-mode
   id: c8b73e92-cc5f-4090-8c1f-cac4d6377630
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       to: armed_away
       for: "16:00:00"
-    - platform: homeassistant
+    - trigger: homeassistant
       id: start
       event: start
-  condition:
+  conditions:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: armed_away
-  action:
+  actions:
     # As this automation has a rather long-running trigger, a secondary trigger
     # on Home Assistant start is provided to ensure restarts don't interfer with
     # the logic: If Home Assistant starts while the alarm is "Armed Away", wait
     # for 16-hours for it to move away from that state. If that does *not*
-    # happen, toggle on Holiday-mode...
+    # happen, toggle on Vacation-mode...
     - if:
         - condition: trigger
           id: start
       then:
         - wait_for_trigger:
-            - platform: state
+            - trigger: state
               entity_id: alarm_control_panel.home_alarm
               from: armed_away
           timeout: "16:00:00"
           continue_on_timeout: false
-    - service: alarm_control_panel.alarm_arm_vacation
+    - action: alarm_control_panel.alarm_arm_vacation
       entity_id: alarm_control_panel.home_alarm

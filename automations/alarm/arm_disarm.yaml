@@ -138,7 +138,7 @@
     - service: input_boolean.turn_off
       entity_id: input_boolean.everyone_asleep
   mode: single
-# If the Home Alarm is "Armed Night" prior to "wakeup"-time, and "Everyone
+# If the Home Alarm is "Armed night" prior to "wakeup"-time, and "Everyone
 # asleep" is not enabled, enable it. Relevant when one of us gets up early,
 # leaves the house, and manually "arms night" the Home Alarm.
 # Without this automation, "Everyone asleep" would remain off in those cases,
@@ -156,7 +156,7 @@
       state: "off"
     # This should not happen after "wakeup"-time. The interval is intentionally
     # a bit broader to also capture the (unlikely, but not impossible) situation
-    # where the Home Alarm is manually set to "Armed Night" prior to going to
+    # where the Home Alarm is manually set to "Armed night" prior to going to
     # bed.
     - condition: time
       after: "23:00:00"

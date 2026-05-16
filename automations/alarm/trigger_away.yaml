@@ -1,11 +1,11 @@
-- alias: 🚨 | 👋 Trigger alarm (motion detected; "Armed away/vacation")
+- alias: Trigger alarm
   id: 358bd339-33e4-4c0a-a92e-0682346e48a1
-  trigger:
+  triggers:
     # Not all motion sensors are optimally positioned for intruder detection
     # (e.g. the one triggering the light in the toilet probably won't catch a
     # burglar). Still, if no-one is home, there's no harm in having all of them
     # trigger the alarm...
-    - platform: state
+    - trigger: state
       # N.B. This list of entities is duplicated further down
       entity_id:
         - binary_sensor.presence_50 # Basement
@@ -23,14 +23,14 @@
         - binary_sensor.presence_127 # Upstairs hallway
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state:
         - armed_away
         - armed_vacation
-    # Ignore motion sensors upstairs while Neato is active – Neato's LIDAR uses
-    # infrared and thus triggers (PIR) motion sensors...
+    # Upstairs motion sensors are only considered when the Roborock is docked –
+    # it triggers the infrared (PIR) motion sensors when roaming around...
     - condition: or
       conditions:
         - condition: state
@@ -38,21 +38,20 @@
             - binary_sensor.presence_63
             - binary_sensor.presence_127
           state: "off"
-        - condition: not
-          conditions:
-            - condition: state
-              entity_id: vacuum.d7_upstairs
-              state: cleaning
-  action:
-    # Wait up to five minutes for either the same or another motion sensor to
-    # trigger. This prevents false positives (e.g. due to Sunlight or heat) – if
-    # someone is really moving around the house it's highly likely they'll
-    # trigger another sensor within this timeframe...
+        - condition: state
+          entity_id: vacuum.qrevo_upstairs
+          state: docked
+  actions:
+    # Wait up to five minutes for another motion sensor to trigger (the initial
+    # sensor will never trigger the below as it start out in the "on"-state).
+    # This prevents false positives (e.g. due to Sunlight or heat) – if someone
+    # is really moving around the house it's highly likely they'll trigger
+    # another sensor within this timeframe...
     # There remains a slight possibility for a false positive when the initial
-    # trigger occurs while one of the Neato units is active. The below triggers
-    # don't account for that – would make things overly complex.
+    # trigger occurs while one of the Roborock units is active. The below
+    # triggers don't account for that – would make things overly complex.
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - binary_sensor.presence_50
             - binary_sensor.presence_53
@@ -71,31 +70,31 @@
           to: "on"
       timeout: 300
       continue_on_timeout: false
-    - service: alarm_control_panel.alarm_trigger
+    - action: alarm_control_panel.alarm_trigger
       entity_id: alarm_control_panel.home_alarm
   mode: single
   max_exceeded: silent
-- alias: 🚨 | ⚡ Trigger alarm (power outage; "Armed away/vacation")
+- alias: Trigger alarm
   id: c9c16198-8524-440f-99ea-0b447c68b798
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: binary_sensor.power_outage
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state:
         - armed_away
         - armed_vacation
-  action:
-    - service: alarm_control_panel.alarm_trigger
+  actions:
+    - action: alarm_control_panel.alarm_trigger
       entity_id: alarm_control_panel.home_alarm
     # A generic "alarm pending" persistent notification is also raised. Since
     # the power is out, that notification probably won't be received in time /
     # at all. As such, that notification does not factor in the possibility of
     # a power outage – this information is conveyed exclusively via the below
     # SMS.
-    - service: script.sms_notification
+    - action: script.sms_notification
       data:
         message: >-
           ⚡ Power outage at home!

@@ -112,7 +112,7 @@
           group: home alarm
           channel: Notification
           criticalNotification: true
-          title: 🛡️ Home Alarm activated Holiday-mode
+          title: 🛡️ Home Alarm activated Vacation-mode
           message: >-
             The Home Alarm just changed into "Armed vacation"-mode; enjoy your
             travels... ✈️🏝️

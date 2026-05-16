@@ -1,7 +1,7 @@
-- alias: 🛡️ | 💡 Downstairs lights on (armed → disarmed; door open)
+- alias: Restore downstairs lights
   id: 23900a05-e8bd-4296-a8fe-fdcaa53caedf
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       from:
         - arming
@@ -9,18 +9,18 @@
         - armed_vacation
         - armed_night
       to: disarmed
-  condition:
+  conditions:
     - condition: not
       conditions:
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-  action:
+  actions:
     # Wait five minutes for either the Front or Kitchen door to open – presence
     # detection might have disarmed the alarm earlier than one would've done
     # manually, so some extra slack is required...
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - binary_sensor.openclose_16 # Front door
             - binary_sensor.openclose_12 # Kitchen door
@@ -28,37 +28,38 @@
           to: "on"
       timeout: "00:05:00"
       continue_on_timeout: false
-    - service: scene.turn_on
-      target:
-        entity_id: scene.kitchen_ambiance
-    - service: scene.turn_on
-      target:
-        entity_id: scene.living_room_ambiance
-    - service: scene.turn_on
-      target:
-        entity_id: scene.ensuite_ambiance
-    - service: scene.turn_on
-      target:
-        entity_id: scene.hallway_evening
-- alias: 🛡️ | 💡 Downstairs lights on (armed → pending → disarmed)
+    - parallel:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.kitchen_ambiance
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_ambiance
+        - action: scene.turn_on
+          target:
+            entity_id: scene.ensuite_ambiance
+        - action: scene.turn_on
+          target:
+            entity_id: scene.hallway_evening
+- alias: Restore downstairs lights
   id: 84d125f9-e88c-4bce-81e7-6f08a04f5afe
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id: alarm_control_panel.home_alarm
       from:
         - armed_away
         - armed_vacation
         - armed_night
       to: pending
-  condition:
+  conditions:
     - condition: not
       conditions:
         - condition: state
           entity_id: sensor.time_of_day
           state: day
-  action:
+  actions:
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id: alarm_control_panel.home_alarm
           from: pending
           to: disarmed
@@ -66,15 +67,16 @@
       # after 60 seconds it's safe to give up
       timeout: 60
       continue_on_timeout: false
-    - service: scene.turn_on
-      target:
-        entity_id: scene.kitchen_ambiance
-    - service: scene.turn_on
-      target:
-        entity_id: scene.living_room_ambiance
-    - service: scene.turn_on
-      target:
-        entity_id: scene.ensuite_ambiance
-    - service: scene.turn_on
-      target:
-        entity_id: scene.hallway_evening
+    - parallel:
+        - action: scene.turn_on
+          target:
+            entity_id: scene.kitchen_ambiance
+        - action: scene.turn_on
+          target:
+            entity_id: scene.living_room_ambiance
+        - action: scene.turn_on
+          target:
+            entity_id: scene.ensuite_ambiance
+        - action: scene.turn_on
+          target:
+            entity_id: scene.hallway_evening

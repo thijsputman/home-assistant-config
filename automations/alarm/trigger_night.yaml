@@ -1,8 +1,7 @@
-- alias: >-
-    🚨 | 👋 Trigger alarm (motion detected in Hallway/staircase; "Armed night")
+- alias: Trigger alarm
   id: 84cdd8f4-00e3-4bc1-8fc7-8344ba722c19
-  trigger:
-    - platform: state
+  triggers:
+    - trigger: state
       entity_id:
         - binary_sensor.presence_91 # Attic stairs/hallway
         - binary_sensor.presence_92 # Attic stairs/hallway
@@ -11,16 +10,16 @@
         - binary_sensor.presence_121 # Stairs
       from: "off"
       to: "on"
-    - platform: state
+    - trigger: state
       id: upstairs_hallway
       entity_id: binary_sensor.presence_127 # Upstairs hallway
       from: "off"
       to: "on"
-  condition:
+  conditions:
     - condition: state
       entity_id: alarm_control_panel.home_alarm
       state: armed_night
-  action:
+  actions:
     # If motion is detected in the Upstairs hallway, ignore it, and block the
     # automation for 15-minutes. The idea here is that when we're home, all
     # motion at night will start in the Upstairs hallway (i.e. by someone
@@ -34,12 +33,13 @@
         - stop: >-
             Motion detected in the Upstairs hallway; ignored further motion
             detection for 15-minutes...
-    # Wait up to five-minutes for either the same or another motion sensor to
-    # trigger. This prevents false positives (e.g. due to sunlight or heat) – if
-    # someone is really moving around the house, they'll trigger another sensor
-    # within this timeframe...
+    # Wait up to five minutes for another motion sensor to trigger (the initial
+    # sensor will never trigger the below as it start out in the "on"-state).
+    # This prevents false positives (e.g. due to Sunlight or heat) – if someone
+    # is really moving around the house it's highly likely they'll trigger
+    # another sensor within this timeframe...
     - wait_for_trigger:
-        - platform: state
+        - trigger: state
           entity_id:
             - binary_sensor.presence_91
             - binary_sensor.presence_92
@@ -51,7 +51,7 @@
           to: "on"
       timeout: 300
       continue_on_timeout: false
-    - service: alarm_control_panel.alarm_trigger
+    - action: alarm_control_panel.alarm_trigger
       entity_id: alarm_control_panel.home_alarm
   mode: single
   max_exceeded: silent
