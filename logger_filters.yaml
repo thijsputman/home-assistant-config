@@ -12,3 +12,16 @@ roborock.version_1_apis.roborock_mqtt_client_v1:
     ^Failed to connect (Client identifier not valid)$
 roborock.data.code_mappings:
   - RoborockMopIntensityS7
+# As of 2025.12(.3), the Roborock-integration started to spam the logs with
+# "Failed to decode message"-warnings. Accompanied by a "repair" that indicates
+# the Cloud API is used (instead of the preferred local connection). Most likely
+# related.
+# A similar issue appears to have been resolved in 2025.12.3:
+#  - <https://github.com/home-assistant/core/issues/157599>
+#  - <https://github.com/home-assistant/core/issues/158538>
+# Not in my case sadly. The issue started occurring after the upgrade from
+# 2025.11 to 2025.12.3. As I'm not majorly reliant on the integration (and am
+# fine with the Cloud API), parking the issue for now...
+roborock.devices.local_channel:
+  - >-
+    ^Failed to decode message:
