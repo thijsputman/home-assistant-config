@@ -262,7 +262,7 @@
     - delay: 1 # Queue these announcements up first
     - if:
         - condition: numeric_state
-          entity_id: sensor.weewx_outside_temperature_balcony
+          entity_id: sensor.gw3000a_temperature_1 # Balcony
           above: 18
         - condition: numeric_state
           entity_id: sensor.smart_ac_control_wr2352422400_current_temperature

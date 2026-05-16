@@ -18,7 +18,7 @@ entities:
     name: upstairs
     show_points: false
     show_fill: false
-  - entity: sensor.weewx_solar_irradiance
+  - entity: sensor.gw3000a_solar_radiation
     name: Solar
     color: darkslategray
     show_line: false

@@ -37,11 +37,11 @@ card:
         labels_secondary: hover
       decimals: 1
       entities:
-        - entity: sensor.weewx_outside_humidity
+        - entity: sensor.gw3000a_humidity
           name: Humidity (%)
           show_points: false
           show_fill: false
-        - entity: sensor.weewx_outside_dewpoint
+        - entity: sensor.gw3000a_dewpoint
           name: Dew point (ºC)
           show_points: false
           show_fill: false
@@ -75,5 +75,5 @@ card:
         icon: false
       decimals: 1
       entities:
-        - entity: sensor.weewx_outside_pressure
+        - entity: sensor.gw3000a_relative_pressure
           show_points: false

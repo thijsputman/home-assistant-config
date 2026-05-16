@@ -1,9 +1,10 @@
-- alias: 🌦️ | 📱/🔊 Notify Attic window is open (starts raining)
+- alias: Notify Attic window is open
   id: 4dd59c72-309a-441a-b97c-07a69c6898da
   triggers:
     - trigger: numeric_state
-      entity_id: sensor.weewx_rain_rate_hour
-      above: 1.0
+      entity_id: sensor.gw3000a_rain_rate_piezo
+      above: 0.5
+      for: "00:02:00"
   conditions:
     - condition: state
       entity_id: sensor.attic_window_position
@@ -35,12 +36,12 @@
           Check the Attic window to ensure it's not raining in...
   mode: single
   max_exceeded: silent
-- alias: 🌦️ | 📱 Dismiss Attic window notification (stops raining)
+- alias: Dismiss Attic window is open notification
   id: 0bfb45f6-5516-4f37-86f1-d7bb7af88e94
   triggers:
     - trigger: numeric_state
-      entity_id: sensor.weewx_rain_rate_hour
-      below: 1.0
+      entity_id: sensor.gw3000a_rain_rate_piezo
+      below: 0.5
       for: "00:10:00"
   conditions: []
   actions:
@@ -48,7 +49,7 @@
       data:
         notification_id: rain-attic
   mode: single
-- alias: 🌦️ | 📱 Dismiss Attic window notification (window closed)
+- alias: Dismiss Attic window is open notification
   id: dd524898-9606-4c30-b7dc-d061515ee6bc
   triggers:
     - trigger: state
@@ -62,14 +63,14 @@
         - closed
   conditions:
     - condition: numeric_state
-      entity_id: sensor.weewx_rain
-      above: 0
+      entity_id: sensor.gw3000a_rain_rate_piezo
+      above: 0.5
   actions:
     - action: persistent_notification.dismiss
       data:
         notification_id: rain-attic
   mode: single
-- alias: 🌦️ | 🔊 Announce expected rain (Buienradar forecast)
+- alias: Announce expected rain (Buienradar forecast)
   id: 47715bbc-60bf-4417-9932-73e59a9edbf8
   triggers:
     - trigger: numeric_state
@@ -79,9 +80,9 @@
     # Don't bother if it's already raining...
     - condition: not
       conditions:
-        - condition: numeric_state
-          entity_id: sensor.weewx_rain_hour
-          above: 0
+        - condition: state
+          entity_id: binary_sensor.gw3000a_rain_state_piezo
+          state: "on"
   actions:
     - action: script.turn_on
       target:
@@ -97,16 +98,15 @@
             Rain is expected at {{
               (now() + timedelta(hours=2)) | as_timestamp |
                 timestamp_custom('%H:%M')
-            }}; that is %WAIT_REMAINING%
+            }}; that is %WAIT_REMAINING%.
+            {% if states('sensor.attic_window_position') == 'open' %}
+              The Attic window is open; ensure it doesn't rain in...
+            {% endif %}
     # Wait for up to 4 hours for it to start raining
     - wait_for_trigger:
-        - trigger: numeric_state
-          # Note the use of the rain-rate (as opposed to "weewx_rain_hour", its
-          # integral) – the former is more responsive, so better suited as a
-          # trigger; the latter is better suited as the "it is raining"-
-          # condition...
-          entity_id: sensor.weewx_rain_rate_hour
-          above: 1.0
+        - trigger: state
+          entity_id: binary_sensor.gw3000a_rain_state_piezo
+          to: "on"
       timeout: "04:00:00"
       continue_on_timeout: true
     - if:
@@ -120,9 +120,9 @@
             tag: forecast_rain
         # Now wait for it to stop raining...
         - wait_for_trigger:
-            - trigger: numeric_state
-              entity_id: sensor.weewx_rain_hour
-              below: 0.1
+            - trigger: state
+              entity_id: binary_sensor.gw3000a_rain_state_piezo
+              to: "off"
               for: "04:00:00"
           timeout: "24:00:00"
           continue_on_timeout: false

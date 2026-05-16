@@ -36,7 +36,7 @@ card:
         labels_secondary: false
       decimals: 0
       entities:
-        - entity: sensor.weewx_solar_irradiance
+        - entity: sensor.gw3000a_solar_radiation
           show_points: false
           show_fill: false
           color: "#FFC107"
@@ -75,6 +75,6 @@ card:
         state: false
         icon: false
       entities:
-        - entity: sensor.weewx_solar_irradiance
+        - entity: sensor.gw3000a_solar_radiation
           unit: W/m²
           color: "#FFC107"

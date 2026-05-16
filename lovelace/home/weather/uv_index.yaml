@@ -1,6 +1,7 @@
 type: gauge
-entity: sensor.weewx_uv_index
+entity: sensor.gw3000a_uv_index
 name: UV index
+unit: ​
 min: 0
 max: 10
 severity:

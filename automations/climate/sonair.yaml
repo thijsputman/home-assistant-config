@@ -17,7 +17,7 @@
         # narrower than those used for the other automations...
         - conditions:
             - condition: numeric_state
-              entity_id: sensor.weewx_outside_temperature
+              entity_id: sensor.gw3000a_outdoor_temperature
               above: 10
               below: 22
           sequence:
@@ -30,7 +30,7 @@
         # less equal to what the CO₂-controlled mode pulls in by default)
         - conditions:
             - condition: numeric_state
-              entity_id: sensor.weewx_outside_temperature
+              entity_id: sensor.gw3000a_outdoor_temperature
               below: 0
           sequence:
             - service: fan.set_percentage
@@ -68,7 +68,7 @@
   id: d7e3c910-09f3-405d-855d-58e9c5564a1b
   trigger:
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 6
       below: 28
       for: "01:00:00"
@@ -83,7 +83,7 @@
       entity_id: switch.co2_sensor_sonair_living_room
       state: "on"
     - condition: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 6
       below: 28
   action:
@@ -104,11 +104,11 @@
     - platform: time
       at: "20:00:00"
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       below: 6
       for: "01:00:00"
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 28
       for: "01:00:00"
     - platform: homeassistant
@@ -135,10 +135,10 @@
         - condition: or
           conditions:
             - condition: numeric_state
-              entity_id: sensor.weewx_outside_temperature
+              entity_id: sensor.gw3000a_outdoor_temperature
               below: 6
             - condition: numeric_state
-              entity_id: sensor.weewx_outside_temperature
+              entity_id: sensor.gw3000a_outdoor_temperature
               above: 28
     # If the fan speed is _above_ 40% it has most likely been manually
     # overridden; in that case we leave the current setting alone...
@@ -163,11 +163,11 @@
       from: "on"
       to: "off"
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 6
       for: "01:00:00"
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       below: 28
       for: "01:00:00"
     - platform: homeassistant
@@ -180,7 +180,7 @@
       entity_id: switch.co2_sensor_sonair_guestroom
       state: "on"
     - condition: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 6
       below: 28
   action:
@@ -202,11 +202,11 @@
       from: "off"
       to: "on"
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       below: 6
       for: "01:00:00"
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 28
       for: "01:00:00"
     - platform: homeassistant
@@ -230,10 +230,10 @@
         - condition: or
           conditions:
             - condition: numeric_state
-              entity_id: sensor.weewx_outside_temperature
+              entity_id: sensor.gw3000a_outdoor_temperature
               below: 6
             - condition: numeric_state
-              entity_id: sensor.weewx_outside_temperature
+              entity_id: sensor.gw3000a_outdoor_temperature
               above: 28
   action:
     - service: switch.turn_on
@@ -243,11 +243,11 @@
   id: f7bbe56e-fef4-4a79-9e94-5ec3d861fc3b
   trigger:
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       below: 6
       for: "01:00:00"
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 28
       for: "01:00:00"
     - platform: homeassistant
@@ -259,10 +259,10 @@
     - condition: or
       conditions:
         - condition: numeric_state
-          entity_id: sensor.weewx_outside_temperature
+          entity_id: sensor.gw3000a_outdoor_temperature
           below: 6
         - condition: numeric_state
-          entity_id: sensor.weewx_outside_temperature
+          entity_id: sensor.gw3000a_outdoor_temperature
           above: 28
     - condition: not
       conditions:
@@ -280,11 +280,11 @@
   id: e97b3037-3e1e-4933-9257-3c1fe74c1295
   trigger:
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 6
       for: "01:00:00"
     - platform: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       below: 28
       for: "01:00:00"
     - platform: homeassistant
@@ -294,7 +294,7 @@
       entity_id: fan.sonair_wardrobe
       state: "on"
     - condition: numeric_state
-      entity_id: sensor.weewx_outside_temperature
+      entity_id: sensor.gw3000a_outdoor_temperature
       above: 6
       below: 28
     - condition: not

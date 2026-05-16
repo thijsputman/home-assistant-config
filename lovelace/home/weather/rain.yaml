@@ -37,7 +37,7 @@ card:
         labels_secondary: false
       decimals: 1
       entities:
-        - entity: sensor.weewx_rain_hour
+        - entity: sensor.gw3000a_hourly_rain_piezo
           show_graph: false
           unit: mm/h
         # Not an identical unit (total mm instead of mm/h), but close enough to
@@ -48,7 +48,7 @@ card:
           show_points: false
           show_fill: false
           color: darkgrey
-        - entity: sensor.weewx_rain_hour
+        - entity: sensor.gw3000a_hourly_rain_piezo
           name: actual
           unit: mm/h
           show_points: false
@@ -89,15 +89,15 @@ card:
         state: true
         icon: false
       entities:
-        - entity: sensor.weewx_rain_day
+        - entity: sensor.gw3000a_daily_rain_piezo
           unit: mm/day
           show_graph: false
           show_legend: false
-        - entity: sensor.weewx_rain_total
+        - entity: sensor.gw3000a_yearly_rain_piezo
           name: rain
           unit: mm/day
           color: "#3498DB"
-        - entity: sensor.weewx_evapotranspiration_total
+        - entity: sensor.evapotranspiration_total_garden
           name: evapotranspiration
           unit: mm/day
           color: "#B3C177"

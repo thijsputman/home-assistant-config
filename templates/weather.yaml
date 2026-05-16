@@ -1,0 +1,85 @@
+- sensor:
+    - name: Evapotranspiration rate (Garden)
+      unique_id: fea9d38d-cd82-42bd-9c6e-5d9fd2cb09f7
+      unit_of_measurement: mm/h
+      state_class: measurement
+      icon: mdi:water-percent
+      state: >-
+        {#
+          FAO-56 Penman-Monteith Reference Evapotranspiration (ET0)
+           – Courtesy of Copilot and Kagi Assistant
+        #}
+
+        {# Sensors: T [C], Rs [W/m2], u2 [m/s], RH [%] #}
+        {% set t = states('sensor.gw3000a_outdoor_temperature') | float(0) %}
+        {% set rs_wm2 = states('sensor.gw3000a_solar_radiation') | float(0) %}
+        {% set u2 = states('sensor.gw3000a_wind_speed') | float(0) %}
+        {% set rh = states('sensor.gw3000a_humidity') | float(0) %}
+
+        {#
+          Vapour pressures [kPa]:
+            - `es`: Saturation vapour pressure
+            - `vpd`: Vapour pressure deficit
+        #}
+        {% set es = 0.6108 * (e ** ((17.27 * t) / (t + 237.3))) %}
+        {% set vpd =
+          states('sensor.gw3000a_vapour_pressure_deficit') | float(0) / 10 %}
+
+        {# Slope of saturation vapour pressure curve [kPa/C] #}
+        {% set delta = (4098 * es) / ((t + 237.3) ** 2) %}
+
+        {#
+          Psychrometric constant gamma [kPa/C] from pressure [kPa]. Optionally
+          set elevation `z` [m] to a non-zero value.
+        #}
+        {% set z = 0 %}
+        {% set p = 101.3 * (((293 - 0.0065 * z) / 293) ** 5.26) %}
+        {% set gamma = 0.000665 * p %}
+
+        {#
+          Net radiation approximation [W/m2 → MJ/m2/day]. This is a significant
+          simplification over the FAO-56 standard. If results seem consistently
+          off, adjust the 0.77-factor.
+        #}
+        {% set rn = 0.77 * rs_wm2 * 0.0864 %}
+
+        {#
+          Soil heat flux [MJ/m2/day]. For daily calculations, G may be assumed
+          to be at zero.
+        #}
+        {% set g = 0 %}
+
+        {# ET0 [mm/day] #}
+        {% set et0_day =
+            (0.408 * delta * (rn - g) + gamma * (900 / (t + 273)) * u2 * vpd)
+            / (delta + gamma * (1 + 0.34 * u2))
+        %}
+
+        {#
+          ET0 [mm/hour]. The base equation is calibrated for daily time steps.
+          Dividing by 24 for hourly values is a reasonable approximation, but
+          ignores physical differences in energy balance and aerodynamic
+          resistance over short durations.
+          This approach is suitable for irrigation scheduling where daily totals
+          matter more than precise hourly rates.
+        #}
+        {{ [et0_day / 24, 0] | max | round(3) }}
+    # Copy wind speed sensors so we can track them in Beaufort
+    - name: GW3000A Wind Speed – Beaufort
+      unique_id: b8bc9a6e-fed5-49e0-9926-f2f6397a425a
+      unit_of_measurement: beaufort
+      state_class: measurement
+      icon: mdi:weather-windy
+      state: >-
+        {{ states('sensor.gw3000a_wind_speed')  | float(0) | round(0) }}
+      availability: >-
+        {{ has_value('sensor.gw3000a_wind_speed') }}
+    - name: GW3000A Wind Gust – Beaufort
+      unique_id: 5789a1b6-7c09-438b-9bf0-35383253810a
+      unit_of_measurement: beaufort
+      state_class: measurement
+      icon: mdi:weather-windy
+      state: >-
+        {{ states('sensor.gw3000a_wind_gust') | float(0) | round(0) }}
+      availability: >-
+        {{ has_value('sensor.gw3000a_wind_gust') }}

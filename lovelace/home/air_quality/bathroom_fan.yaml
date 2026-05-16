@@ -47,7 +47,7 @@ card:
       entities:
         - entity: sensor.humidity_25
           show_graph: false
-        - entity: sensor.weewx_outside_humidity
+        - entity: sensor.gw3000a_humidity
           name: humidity – outside (%)
           color: lightgrey
           show_fill: false

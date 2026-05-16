@@ -35,15 +35,15 @@ card:
         labels_secondary: false
       decimals: 1
       entities:
-        - entity: sensor.weewx_outside_temperature
+        - entity: sensor.gw3000a_outdoor_temperature
           name: Weather station
           show_points: false
           show_fill: false
-        - entity: sensor.weewx_outside_temperature_balcony
+        - entity: sensor.gw3000a_temperature_1
           name: Balcony
           show_points: false
           show_fill: false
-        - entity: sensor.weewx_outside_temperature_garden
+        - entity: sensor.gw3000a_temperature_2
           name: Garden
           show_points: false
           show_fill: false
@@ -86,5 +86,5 @@ card:
         state: false
         icon: false
       entities:
-        - entity: sensor.weewx_outside_temperature
+        - entity: sensor.gw3000a_outdoor_temperature
           color: gray

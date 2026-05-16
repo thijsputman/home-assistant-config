@@ -35,17 +35,21 @@ card:
       show:
         labels: true
         labels_secondary: false
-      decimals: 1
       entities:
-        - entity: sensor.weewx_wind_speed
+        - entity: sensor.gw3000a_wind_gust_beaufort
+          show_legend: false
+          show_graph: false
+        - entity: sensor.gw3000a_wind_speed
           name: speed
           show_points: false
           show_fill: false
-        - entity: sensor.weewx_wind_gust
+          color: "#FF9800"
+        - entity: sensor.gw3000a_wind_gust
           name: gust – maximum
           show_points: false
           show_fill: false
           aggregate_func: max
+          color: "#3498DB"
         - color: dimgray
           entity: sensor.time_of_day
           attribute: numeric
@@ -82,5 +86,5 @@ card:
         state: false
         icon: false
       entities:
-        - entity: sensor.weewx_wind_gust
+        - entity: sensor.gw3000a_wind_gust
           color: gray
