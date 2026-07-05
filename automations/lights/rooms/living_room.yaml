@@ -181,14 +181,11 @@
 - alias: Living Room persist scene "Daytime"
   id: 9e3a89ed-8303-472e-a101-9a56258f3109
   triggers:
-    # It seems the regular `light.living_room`-entity is somewhat impacted by
-    # the delayed transitions; can't rely on it the accurately represent the
-    # state of the lights. Using the "Hue scene"-sensor instead...
     - trigger: state
       entity_id: sensor.hue_scene_living_room
-      not_to:
-        - Daytime
-        - «Off»
+      to:
+        - Ambiance
+        - Active
       for: "00:00:30"
   conditions:
     - condition: state
