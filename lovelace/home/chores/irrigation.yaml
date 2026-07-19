@@ -234,18 +234,14 @@ cards:
           entities:
             - entity: sensor.moisture_178
               show_graph: false
-              unit: "% — Soil moisture (Garden)"
+              unit: "% — Soil moisture (Oleander)"
             - entity: sensor.moisture_176
               name: Balcony (Yasmin)
               color: "#AE7FED"
               show_points: false
-              show_fill: false
-            - entity: sensor.moisture_180
+              show_fill: true
+            - entity: sensor.moisture_178
               name: Balcony (Oleander)
               color: "#C1342A"
               show_points: false
               show_fill: false
-            - entity: sensor.moisture_178
-              name: Garden
-              show_points: false
-              show_fill: true
