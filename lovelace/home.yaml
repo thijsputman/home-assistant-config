@@ -115,7 +115,7 @@ views:
       - type: vertical-stack
         cards:
           - !include home/network/lattepanda-mu.yaml
-          - !include home/network/pi4_sandcastle.yaml
+          - !include home/network/pi5_luchtkasteel.yaml
       - type: vertical-stack
         cards:
           - !include home/network/ha_yellow.yaml
