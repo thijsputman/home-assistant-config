@@ -34,14 +34,6 @@ include:
     - sensor.ha_yellow_rtt_dd_wrt_1_sgraastra
     - sensor.pi5_rtt_ip_8_8_8_8
     - sensor.pi5_rtt_dd_wrt_1_sgraastra
-    # WeeWX – deprecated
-    - sensor.weewx_outside_temperature
-    - sensor.weewx_outside_temperature_balcony
-    - sensor.weewx_outside_temperature_garden
-    - sensor.weewx_solar_irradiance
-    - sensor.weewx_wind_speed
-    - sensor.weewx_rain_hour
-    - sensor.weewx_outside_humidity
     # GW3000A
     - sensor.gw3000a_outdoor_temperature
     - sensor.gw3000a_temperature_1 # Balcony

@@ -157,9 +157,9 @@ cards:
             state: false
             legend: false
           entities:
-            - entity: sensor.evapotranspiration_net
+            - entity: sensor.evapotranspiration_total_garden
               show_points: false
-              name: evapotranspiration (net)
+              name: evapotranspiration
               unit: mm/day
         - type: conditional
           conditions:

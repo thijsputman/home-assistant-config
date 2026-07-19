@@ -60,11 +60,8 @@
           {% set matched = 'unknown' %}
           {# Individual entities (not part of a device) #}
           {% if device_id(entity_id) == None %}
-            {# WeeWX #}
-            {% if entity_id is search('^sensor\.weewx_.+') %}
-              {% set matched = 'WeeWX' %}
             {# Aarlo #}
-            {% elif entity_id is search('^(?:binary_|)sensor\.aarlo_.+') %}
+            {% if entity_id is search('^(?:binary_|)sensor\.aarlo_.+') %}
               {% set matched = 'Aarlo' %}
             {# Gammu #}
             {% elif entity_id is search('^sensor\.gammu_.+') %}
