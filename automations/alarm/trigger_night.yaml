@@ -12,7 +12,7 @@
       to: "on"
     - trigger: state
       id: upstairs_hallway
-      entity_id: binary_sensor.presence_127 # Upstairs hallway
+      entity_id: binary_sensor.presence_200 # Upstairs hallway
       from: "off"
       to: "on"
   conditions:
@@ -46,7 +46,7 @@
             - binary_sensor.presence_123
             - binary_sensor.presence_125
             - binary_sensor.presence_121
-            - binary_sensor.presence_127
+            - binary_sensor.presence_200
           from: "off"
           to: "on"
       timeout: 300

@@ -20,7 +20,7 @@
         - binary_sensor.presence_121 # Stairs
         - binary_sensor.presence_123 # Downstairs hallway
         - binary_sensor.presence_125 # Downstairs hallway
-        - binary_sensor.presence_127 # Upstairs hallway
+        - binary_sensor.presence_200 # Upstairs hallway
       from: "off"
       to: "on"
   conditions:
@@ -36,7 +36,7 @@
         - condition: state
           entity_id:
             - binary_sensor.presence_63
-            - binary_sensor.presence_127
+            - binary_sensor.presence_200
           state: "off"
         - condition: state
           entity_id: vacuum.qrevo_upstairs
@@ -65,7 +65,7 @@
             - binary_sensor.presence_121
             - binary_sensor.presence_123
             - binary_sensor.presence_125
-            - binary_sensor.presence_127
+            - binary_sensor.presence_200
           from: "off"
           to: "on"
       timeout: 300
